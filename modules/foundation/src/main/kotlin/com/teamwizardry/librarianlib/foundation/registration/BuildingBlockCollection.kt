@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.foundation.registration
 
 import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.foundation.block.*
+import net.minecraft.tags.BlockTags
 
 /**
  * @param fullName The name of the full block (e.g. "oak_planks")
@@ -40,6 +41,9 @@ public class BuildingBlockCollection(private val fullName: String, private val s
             .withProperties(blockProperties)
             .renderLayer(renderLayer)
             .block { BaseSlabBlock(it.blockProperties, fullName) }
+            .datagen {
+                tags(BlockTags.SLABS)
+            }
     }
 
     public val stairs: BlockSpec by lazy {
@@ -47,6 +51,9 @@ public class BuildingBlockCollection(private val fullName: String, private val s
             .withProperties(blockProperties)
             .renderLayer(renderLayer)
             .block { BaseStairsBlock({ full.lazy.get().defaultState }, it.blockProperties, fullName) }
+            .datagen {
+                tags(BlockTags.STAIRS)
+            }
     }
 
     public val fence: BlockSpec by lazy {
@@ -54,6 +61,9 @@ public class BuildingBlockCollection(private val fullName: String, private val s
             .withProperties(blockProperties)
             .renderLayer(renderLayer)
             .block { BaseFenceBlock(it.blockProperties, fullName) }
+            .datagen {
+                tags(BlockTags.FENCES)
+            }
     }
 
     public val fenceGate: BlockSpec by lazy {
@@ -68,5 +78,8 @@ public class BuildingBlockCollection(private val fullName: String, private val s
             .withProperties(blockProperties)
             .renderLayer(renderLayer)
             .block { BaseWallBlock(it.blockProperties, fullName) }
+            .datagen {
+                tags(BlockTags.WALLS)
+            }
     }
 }
