@@ -204,7 +204,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun gatherData(e: GatherDataEvent) {
-        e.generator.addProvider(BlockStateGeneration(e.generator, e.existingFileHelper))
+        e.generator.addProvider(BlockStateGeneration(e.generator, FoundationExistingFileHelper(e.existingFileHelper)))
 
         val locales = mutableSetOf<String>()
         for(spec in blocks) {
@@ -250,8 +250,15 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         }
     }
 
-    private inner class BlockStateGeneration(gen: DataGenerator, exFileHelper: ExistingFileHelper):
-        BlockStateProvider(gen, modid, TextureExistsExistingFileHelper(exFileHelper)) {
+    private inner class BlockStateGeneration(
+        gen: DataGenerator,
+        val existingFileHelper: FoundationExistingFileHelper
+    ): BlockStateProvider(gen, modid, existingFileHelper) {
+        init {
+            existingFileHelper.modelProviders.add(models())
+            existingFileHelper.modelProviders.add(itemModels())
+        }
+
         override fun registerStatesAndModels() {
             logger.debug("Manager for $modid: Generating blockstates/models")
             for(spec in blocks) {
