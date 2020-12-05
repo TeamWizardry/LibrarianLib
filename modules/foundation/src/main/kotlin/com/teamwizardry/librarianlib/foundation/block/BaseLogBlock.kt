@@ -18,13 +18,9 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
  * - `<modid>:block/<block_id>.png`
  * - `<modid>:block/<block_id>_top.png`
  */
-public class BaseLogBlock(verticalColorIn: MaterialColor, properties: Properties): LogBlock(verticalColorIn, properties), IFoundationBlock {
+public open class BaseLogBlock(verticalColorIn: MaterialColor, properties: Properties): LogBlock(verticalColorIn, properties), IFoundationBlock {
     override fun generateBlockState(gen: BlockStateProvider) {
         gen.logBlock(this)
-    }
-
-    override fun createBlockItem(itemProperties: Item.Properties): BlockItem {
-        return BaseBlockItem(this, itemProperties).useBlockModel(loc("librarianlib-foundation-test:block/${registryName!!.path}"))
     }
 
     public companion object {

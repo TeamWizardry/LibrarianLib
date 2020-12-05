@@ -18,8 +18,19 @@ public class DefaultProperties {
         }
     }
 
+    /**
+     * Applies the given properties. Modifications to [other] after calling this method won't affect this object.
+     */
     public fun propertiesFrom(other: DefaultProperties): DefaultProperties = build {
         this.configs.addAll(other.configs)
+    }
+
+    /**
+     * Similar to [propertiesFrom] except that modifications to [other] after calling this method will be reflected in
+     * this object.
+     */
+    public fun extendFrom(other: DefaultProperties): DefaultProperties = build {
+        this.configs.add { other.apply(it) }
     }
 
     public fun material(material: Material): DefaultProperties = build { it.material(material) }

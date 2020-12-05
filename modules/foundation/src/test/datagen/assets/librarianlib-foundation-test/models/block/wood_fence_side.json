@@ -1,0 +1,6 @@
+{
+  "parent": "block/fence_side",
+  "textures": {
+    "texture": "librarianlib-foundation-test:block/wood_planks"
+  }
+}

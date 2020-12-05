@@ -1,16 +1,20 @@
 package com.teamwizardry.librarianlib.foundation.testmod
 
 import com.teamwizardry.librarianlib.foundation.block.BaseLogBlock
-import com.teamwizardry.librarianlib.foundation.registration.BlockSpec
-import com.teamwizardry.librarianlib.foundation.registration.LazyBlock
-import com.teamwizardry.librarianlib.foundation.registration.RegistrationManager
-import com.teamwizardry.librarianlib.foundation.registration.RenderLayerSpec
+import com.teamwizardry.librarianlib.foundation.registration.*
 import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestTileBlock
 import net.minecraft.block.material.MaterialColor
 
 object ModBlocks {
     val testTile: LazyBlock = LazyBlock()
     val testLog: LazyBlock = LazyBlock()
+
+    val woodPlanks: LazyBlock = LazyBlock()
+    val woodSlab: LazyBlock = LazyBlock()
+    val woodStairs: LazyBlock = LazyBlock()
+    val woodFence: LazyBlock = LazyBlock()
+    val woodFenceGate: LazyBlock = LazyBlock()
+    val woodWall: LazyBlock = LazyBlock()
 
     internal fun registerBlocks(registrationManager: RegistrationManager) {
         testTile.from(registrationManager.add(
@@ -28,5 +32,13 @@ object ModBlocks {
                 .block { BaseLogBlock(MaterialColor.PINK, it.blockProperties) }
                 .datagen { tags(ModTags.TEST_LOGS).name("Test Log") }
         ))
+
+        val woodCollection = BuildingBlockCollection("wood_planks", "wood")
+        woodPlanks.from(registrationManager.add(woodCollection.full))
+        woodSlab.from(registrationManager.add(woodCollection.slab))
+        woodStairs.from(registrationManager.add(woodCollection.stairs))
+        woodFence.from(registrationManager.add(woodCollection.fence))
+        woodFenceGate.from(registrationManager.add(woodCollection.fenceGate))
+        woodWall.from(registrationManager.add(woodCollection.wall))
     }
 }

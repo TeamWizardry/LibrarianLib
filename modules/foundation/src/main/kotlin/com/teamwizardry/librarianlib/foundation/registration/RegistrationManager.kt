@@ -186,12 +186,12 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
                 renderer.applyClient(it) as TileEntityRenderer<TileEntity>
             }
         }
-        for(spec in entities) {
+        for (spec in entities) {
             val factory = spec.renderFactory ?: continue
-                logger.debug("Manager for $modid: Registering EntityRenderer for ${spec.registryName}")
-                @Suppress("UNCHECKED_CAST")
-                RenderingRegistry.registerEntityRenderingHandler(spec.typeInstance as EntityType<Entity>) {
-                    factory.applyClient(it) as EntityRenderer<Entity>
+            logger.debug("Manager for $modid: Registering EntityRenderer for ${spec.registryName}")
+            @Suppress("UNCHECKED_CAST")
+            RenderingRegistry.registerEntityRenderingHandler(spec.typeInstance as EntityType<Entity>) {
+                factory.applyClient(it) as EntityRenderer<Entity>
             }
         }
     }
@@ -207,13 +207,13 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         e.generator.addProvider(BlockStateGeneration(e.generator, FoundationExistingFileHelper(e.existingFileHelper)))
 
         val locales = mutableSetOf<String>()
-        for(spec in blocks) {
+        for (spec in blocks) {
             locales.addAll(spec.datagen.names.keys)
         }
-        for(spec in items) {
+        for (spec in items) {
             locales.addAll(spec.datagen.names.keys)
         }
-        for(locale in locales) {
+        for (locale in locales) {
             e.generator.addProvider(LanguageGeneration(e.generator, locale))
         }
 
@@ -261,13 +261,13 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
         override fun registerStatesAndModels() {
             logger.debug("Manager for $modid: Generating blockstates/models")
-            for(spec in blocks) {
+            for (spec in blocks) {
                 val manualGen = spec.datagen.model
                 val instance = spec.blockInstance
                 if (manualGen != null) {
                     logger.debug("Manager for $modid: Calling manual blockstate generator for block ${spec.registryName}")
                     manualGen.accept(this)
-                } else if(instance is IFoundationBlock) {
+                } else if (instance is IFoundationBlock) {
                     logger.debug("Manager for $modid: Calling IFoundationBlock blockstate generator for block ${spec.registryName}")
                     instance.generateBlockState(this)
                 }
@@ -277,19 +277,19 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
                 if (manualItemGen != null) {
                     logger.debug("Manager for $modid: Calling manual item model generator for block ${spec.registryName}")
                     manualItemGen.accept(this.itemModels())
-                } else if(itemInstance is IFoundationItem) {
+                } else if (itemInstance is IFoundationItem) {
                     logger.debug("Manager for $modid: Calling IFoundationItem model generator for block item ${spec.registryName}")
                     itemInstance.generateItemModel(this.itemModels())
                 }
             }
 
-            for(spec in items) {
+            for (spec in items) {
                 val manualGen = spec.datagen.model
                 val instance = spec.itemInstance
                 if (manualGen != null) {
                     logger.debug("Manager for $modid: Calling manual model generator for item ${spec.registryName}")
                     manualGen.accept(this.itemModels())
-                } else if(instance is IFoundationItem) {
+                } else if (instance is IFoundationItem) {
                     logger.debug("Manager for $modid: Calling IFoundationItem model generator for item ${spec.registryName}")
                     instance.generateItemModel(this.itemModels())
                 }
@@ -302,7 +302,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         override fun addTranslations() {
             logger.debug("Manager for $modid: Generating $locale language")
 
-            for(spec in blocks) {
+            for (spec in blocks) {
                 val name = spec.datagen.names[locale] ?: continue
                 this.add(spec.blockInstance, name)
                 spec.itemInstance?.also { item ->
@@ -311,7 +311,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
                 }
             }
 
-            for(spec in items) {
+            for (spec in items) {
                 spec.datagen.names[locale]?.also { name ->
                     this.add(spec.itemInstance, name)
                 }
@@ -322,7 +322,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     private inner class BlockTagsGeneration(gen: DataGenerator): BlockTagsProvider(gen) {
         override fun registerTags() {
             logger.debug("Manager for $modid: Generating tags")
-            for(spec in blocks) {
+            for (spec in blocks) {
                 spec.datagen.tags.forEach { tag ->
                     getBuilder(tag).add(spec.blockInstance)
                 }
@@ -340,14 +340,14 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
     private inner class ItemTagsGeneration(gen: DataGenerator): ItemTagsProvider(gen) {
         override fun registerTags() {
-            for(spec in blocks) {
+            for (spec in blocks) {
                 val item = spec.itemInstance ?: continue
                 spec.datagen.itemTags.forEach { tag ->
                     getBuilder(tag).add(item)
                 }
             }
 
-            for(spec in items) {
+            for (spec in items) {
                 spec.datagen.tags.forEach { tag ->
                     getBuilder(tag).add(spec.itemInstance)
                 }

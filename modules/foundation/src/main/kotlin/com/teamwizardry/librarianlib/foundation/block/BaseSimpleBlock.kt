@@ -1,11 +1,15 @@
 package com.teamwizardry.librarianlib.foundation.block
 
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.foundation.item.BaseBlockItem
 import com.teamwizardry.librarianlib.foundation.registration.DefaultProperties
 import net.minecraft.block.Block
 import net.minecraft.block.LogBlock
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
 import net.minecraft.block.material.MaterialColor
+import net.minecraft.item.BlockItem
+import net.minecraft.item.Item
 import net.minecraftforge.client.model.generators.BlockStateProvider
 
 /**
@@ -14,7 +18,7 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
  * Required textures:
  * - `<modid>:block/<block_id>.png`
  */
-public class BaseSimpleBlock(properties: Properties): Block(properties), IFoundationBlock {
+public open class BaseSimpleBlock(properties: Properties): Block(properties), IFoundationBlock {
     override fun generateBlockState(gen: BlockStateProvider) {
         gen.simpleBlock(this)
     }
