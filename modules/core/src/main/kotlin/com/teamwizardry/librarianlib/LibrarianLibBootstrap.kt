@@ -18,21 +18,16 @@ internal object LibrarianLibBootstrap {
     private val logger = LogManager.getLogger("LibrarianLib Bootstrap")
     private val failedLoading = mutableListOf<String>()
 
-    /**
-     * The list of modules to enable debugging for.
-     */
-    private val debugModules = mutableSetOf<String>()
-
     init {
-        debugModules.addAll(System.getProperty("librarianlib.debug.modules", "").split(","))
-        if("bootstrap" in debugModules)
+        if("bootstrap" in System.getProperty("librarianlib.debug.modules", "").split(","))
             changeLogLevel(logger, Level.DEBUG)
 
         checkEnvironment()
 
         val names = resource("/META-INF/ll/core/modules.txt")?.lines()
             ?: throw RuntimeException("Unable to find LibrarianLib modules list")
-        logger.debug("Module index had ${names.size} modules")
+        logger.info("Module index contained ${names.size} modules")
+        logger.info("To enable LibrarianLib debug logging, add the `-Dlibrarianlib.debug.modules=<module>,<module>` VM option")
         names.forEach {
             try {
                 loadModule(it)
@@ -43,7 +38,7 @@ internal object LibrarianLibBootstrap {
         if(failedLoading.isNotEmpty()) {
             throw RuntimeException("Failed to load LibrarianLib modules [${failedLoading.joinToString(", ")}]")
         }
-        logger.debug("Finished loading modules")
+        logger.info("Finished loading modules")
     }
 
     /**
@@ -75,7 +70,7 @@ internal object LibrarianLibBootstrap {
     }
 
     private fun loadModule(name: String) {
-        logger.info("Loading $name module")
+        logger.info("Loading module: $name")
         val info = ModuleInfo.loadModuleInfo(name)
         if(info == null) {
             logger.info("Unable to find module info file for $name, skipping")
@@ -90,12 +85,13 @@ internal object LibrarianLibBootstrap {
         }
         val clazz = Class.forName(info.mainClass)
         val module = clazz.kotlin.objectInstance ?: clazz.newInstance()
-        if(module is LibrarianLibModule && name in debugModules)
-            module.enableDebugging()
+        if(module is LibrarianLibModule && module.debugEnabled) {
+            logger.info("Debug logging enabled for $name")
+        }
         MinecraftForge.EVENT_BUS.register(module)
         modEventBus.register(module)
 
-        logger.info("Finished loading $name module")
+        logger.info("Finished loading $name")
     }
 
     private fun resource(path: String): String? {

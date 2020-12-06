@@ -21,7 +21,7 @@ public abstract class LibrarianLibModule(public val name: String, public val hum
     /**
      * Whether debugging is enabled for this module.
      */
-    public var debugEnabled: Boolean = false
+    public var debugEnabled: Boolean = name in System.getProperty("librarianlib.debug.modules", "").split(",")
         private set
 
     /**
