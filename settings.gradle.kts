@@ -27,3 +27,5 @@ pluginManagement {
         }
     }
 }
+
+rootProject.name = "LibrarianLib"

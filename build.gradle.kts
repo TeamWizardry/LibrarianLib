@@ -69,7 +69,7 @@ dependencies {
 
     shade("com.ibm.icu:icu4j:63.1")
     shade("org.msgpack:msgpack-core:0.8.16")
-    shade("com.github.thecodewarrior:bitfont:-SNAPSHOT")
+    shade("com.github.thecodewarrior:bitfont:b8251e7ba0")
 //    implementation("com.ibm.icu:icu4j:63.1")
 //    implementation("org.msgpack:msgpack-core:0.8.16")
 //    implementation("com.github.thecodewarrior:bitfont:-SNAPSHOT")
