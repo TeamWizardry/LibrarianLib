@@ -1,8 +1,10 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
 import com.teamwizardry.librarianlib.core.util.mapSrgName
+import com.teamwizardry.librarianlib.foundation.block.BaseSimpleBlock
 import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
 import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
+import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.block.Block
 import net.minecraft.block.SoundType
@@ -11,21 +13,18 @@ import net.minecraft.block.material.MaterialColor
 import net.minecraft.block.material.PushReaction
 import net.minecraft.client.renderer.model.IBakedModel
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer
-import net.minecraft.item.BlockItem
-import net.minecraft.item.DyeColor
-import net.minecraft.item.Food
-import net.minecraft.item.Item
-import net.minecraft.item.Rarity
+import net.minecraft.item.*
 import net.minecraft.tags.Tag
+import net.minecraft.util.IItemProvider
 import net.minecraft.util.ResourceLocation
+import net.minecraft.world.storage.loot.LootPool
 import net.minecraftforge.client.model.generators.BlockStateProvider
 import net.minecraftforge.client.model.generators.ItemModelProvider
 import net.minecraftforge.common.ToolType
-import java.lang.RuntimeException
 import java.util.concurrent.Callable
 import java.util.function.Consumer
-import java.util.function.Supplier
 import java.util.function.Function
+import java.util.function.Supplier
 
 /**
  * The specs for creating and registering a block. The [BlockItem] instance is generated using the callback provided to
@@ -37,7 +36,7 @@ public class BlockSpec(
      * The registry name, sans mod ID
      */
     public val name: String
-) {
+): IItemProvider {
     /**
      * The mod ID to register this block under. This is populated by the [RegistrationManager].
      */
@@ -74,7 +73,7 @@ public class BlockSpec(
      */
     public val datagen: DataGen = DataGen()
 
-    private var blockConstructor: Function<BlockSpec, Block> = Function { Block(it.blockProperties) }
+    private var blockConstructor: Function<BlockSpec, Block> = Function { BaseSimpleBlock(it.blockProperties) }
     private var itemConstructor: Function<BlockSpec, BlockItem>? = null
 
     /** Disables the registration of a [BlockItem] for this block */
@@ -170,8 +169,12 @@ public class BlockSpec(
     public fun jumpFactor(factor: Float): BlockSpec = build { blockProperties.jumpFactor(factor) }
     public fun sound(soundType: SoundType): BlockSpec = build { blockProperties.sound(soundType) }
     public fun lightValue(lightValue: Int): BlockSpec = build { blockProperties.lightValue(lightValue) }
-    public fun hardnessAndResistance(hardness: Float, resistance: Float): BlockSpec = build { blockProperties.hardnessAndResistance(hardness, resistance) }
-    public fun hardnessAndResistance(hardnessAndResistance: Float): BlockSpec = build { blockProperties.hardnessAndResistance(hardnessAndResistance) }
+    public fun hardnessAndResistance(hardness: Float, resistance: Float): BlockSpec =
+        build { blockProperties.hardnessAndResistance(hardness, resistance) }
+
+    public fun hardnessAndResistance(hardnessAndResistance: Float): BlockSpec =
+        build { blockProperties.hardnessAndResistance(hardnessAndResistance) }
+
     public fun tickRandomly(): BlockSpec = build { blockProperties.tickRandomly() }
     public fun variableOpacity(): BlockSpec = build { blockProperties.variableOpacity() }
     public fun harvestLevel(harvestLevel: Int): BlockSpec = build { blockProperties.harvestLevel(harvestLevel) }
@@ -223,7 +226,8 @@ public class BlockSpec(
      * Sets the [ItemStackTileEntityRenderer]. Note that [IBakedModel.isBuiltInRenderer] must return true for this to
      * be used.
      */
-    public fun setISTER(ister: Supplier<Callable<ItemStackTileEntityRenderer>>): BlockSpec = build { itemProperties.setISTER(ister) }
+    public fun setISTER(ister: Supplier<Callable<ItemStackTileEntityRenderer>>): BlockSpec =
+        build { itemProperties.setISTER(ister) }
     //endregion
 
     /**
@@ -232,7 +236,7 @@ public class BlockSpec(
     public val blockInstance: Block by lazy {
         try {
             blockConstructor.apply(this).setRegistryName(registryName)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             throw RuntimeException("Error instantiating block $registryName", e)
         }
     }
@@ -247,9 +251,13 @@ public class BlockSpec(
                 ?: (blockInstance as? IFoundationBlock)?.createBlockItem(itemProperties)
                 ?: BlockItem(blockInstance, itemProperties)
             item.setRegistryName(registryName)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             throw RuntimeException("Error instantiating block item $registryName", e)
         }
+    }
+
+    override fun asItem(): Item {
+        return itemInstance ?: throw IllegalStateException("BlockSpec doesn't have an item")
     }
 
     public val lazy: LazyBlock = LazyBlock(this)
@@ -261,15 +269,36 @@ public class BlockSpec(
         @get:JvmSynthetic
         internal var model: Consumer<BlockStateProvider>? = null
             private set
+
         @get:JvmSynthetic
         internal var itemModel: Consumer<ItemModelProvider>? = null
             private set
+
         @get:JvmSynthetic
         internal val names: MutableMap<String, String> = mutableMapOf()
+
         @get:JvmSynthetic
         internal val tags: MutableSet<Tag<Block>> = mutableSetOf()
+
         @get:JvmSynthetic
         internal val itemTags: MutableSet<Tag<Item>> = mutableSetOf()
+
+        /**
+         * The loot table generation options
+         */
+        public val lootTable: LootDataGen = LootDataGen()
+
+        /**
+         * The block instance, for use in data generators
+         */
+        public val block: Block
+            get() = lazy.get()
+
+        /**
+         * The item instance, for use in data generators
+         */
+        public val item: Item?
+            get() = itemInstance
 
         /**
          * Sets the model generation function. Note: this will override [IFoundationBlock.generateBlockState].
@@ -283,7 +312,8 @@ public class BlockSpec(
          * Sets the model generation function. Note: this will override [IFoundationBlock.generateBlockState].
          */
         @JvmSynthetic
-        public inline fun model(crossinline model: BlockStateProvider.() -> Unit): DataGen = model(Consumer { it.model() })
+        public inline fun model(crossinline model: BlockStateProvider.() -> Unit): DataGen =
+            model(Consumer { it.model() })
 
         /**
          * Sets the item model generation function. Note: this will override [IFoundationItem.generateItemModel].
@@ -297,7 +327,8 @@ public class BlockSpec(
          * Sets the item model generation function. Note: this will override [IFoundationItem.generateItemModel].
          */
         @JvmSynthetic
-        public inline fun itemModel(crossinline model: ItemModelProvider.() -> Unit): DataGen = itemModel(Consumer { it.model() })
+        public inline fun itemModel(crossinline model: ItemModelProvider.() -> Unit): DataGen =
+            itemModel(Consumer { it.model() })
 
         /**
          * Sets the model generation function to create a simple cube block using the texture at
@@ -333,6 +364,31 @@ public class BlockSpec(
             this.itemTags.addAll(tags)
             return this
         }
+    }
+
+    public inner class LootDataGen {
+        @get:JvmSynthetic
+        internal var generator: Consumer<BlockLootTableGenerator>? = null
+            private set
+
+        /**
+         * Sets the loot table generation function. Note: this will override [IFoundationBlock.generateLootTable].
+         */
+        public fun custom(loot: Consumer<BlockLootTableGenerator>) {
+            this.generator = loot
+        }
+
+        /**
+         * Sets the loot table generation function. Note: this will override [IFoundationBlock.generateLootTable].
+         */
+        @JvmSynthetic
+        public inline fun custom(crossinline loot: BlockLootTableGenerator.() -> Unit) {
+            custom(Consumer { it.loot() })
+        }
+
+        // shortcuts:
+        // - drop self
+        // - silk touch
     }
 
     private inline fun build(block: () -> Unit): BlockSpec {

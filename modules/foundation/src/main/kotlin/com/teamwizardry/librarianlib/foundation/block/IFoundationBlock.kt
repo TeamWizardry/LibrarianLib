@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.foundation.block
 
 import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.foundation.item.BaseBlockItem
+import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
@@ -32,5 +33,12 @@ public interface IFoundationBlock: IForgeBlock {
         return BaseBlockItem(block, itemProperties).useBlockModel(
             loc(block.registryName!!.namespace, inventoryModelName())
         )
+    }
+
+    /**
+     * Generates the loot table for this block. The default implementation directly drops this block
+     */
+    public fun generateLootTable(gen: BlockLootTableGenerator) {
+        gen.setLootTable(block, gen.createSingleItemDrop(block, false)) // TODO: configure explosion immunity?
     }
 }

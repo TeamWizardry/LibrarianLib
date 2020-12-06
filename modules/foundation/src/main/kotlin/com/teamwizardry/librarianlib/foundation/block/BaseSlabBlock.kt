@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.block
 
+import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
 import net.minecraft.block.SlabBlock
 import net.minecraftforge.client.model.generators.BlockStateProvider
 
@@ -18,5 +19,9 @@ public open class BaseSlabBlock(properties: Properties, private val modelName: S
     override fun generateBlockState(gen: BlockStateProvider) {
         val modelLoc = gen.modLoc("block/$modelName")
         gen.slabBlock(this, modelLoc, modelLoc)
+    }
+
+    override fun generateLootTable(gen: BlockLootTableGenerator) {
+        gen.setLootTable(this, gen.createDefaultSlabDrops(this))
     }
 }

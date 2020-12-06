@@ -4,10 +4,12 @@ import com.teamwizardry.librarianlib.foundation.block.BaseLogBlock
 import com.teamwizardry.librarianlib.foundation.registration.*
 import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestTileBlock
 import net.minecraft.block.material.MaterialColor
+import net.minecraft.item.Items
 
 object ModBlocks {
     val testTile: LazyBlock = LazyBlock()
     val testLog: LazyBlock = LazyBlock()
+    val strangeLoot: LazyBlock = LazyBlock()
 
     val woodPlanks: LazyBlock = LazyBlock()
     val woodSlab: LazyBlock = LazyBlock()
@@ -31,6 +33,15 @@ object ModBlocks {
                 .mapColor(MaterialColor.ADOBE)
                 .block { BaseLogBlock(MaterialColor.PINK, it.blockProperties) }
                 .datagen { tags(ModTags.TEST_LOGS).name("Test Log") }
+        ))
+
+        strangeLoot.from(registrationManager.add(
+            BlockSpec("strange_loot")
+                .datagen {
+                    lootTable.custom {
+                        setLootTable(block, createSingleItemDrop(Items.STICK, false))
+                    }
+                }
         ))
 
         val woodCollection = BuildingBlockCollection("wood_planks", "wood")

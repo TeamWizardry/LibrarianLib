@@ -8,6 +8,7 @@ import net.minecraft.item.Food
 import net.minecraft.item.Item
 import net.minecraft.item.Rarity
 import net.minecraft.tags.Tag
+import net.minecraft.util.IItemProvider
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.generators.ItemModelBuilder
 import net.minecraftforge.client.model.generators.ItemModelProvider
@@ -27,7 +28,7 @@ public class ItemSpec(
      * The registry name, sans mod ID
      */
     public val name: String
-) {
+): IItemProvider {
     public var itemProperties: Item.Properties = Item.Properties()
 
     /**
@@ -131,6 +132,10 @@ public class ItemSpec(
         } catch(e: Exception) {
             throw RuntimeException("Error instantiating item $registryName", e)
         }
+    }
+
+    override fun asItem(): Item {
+        return itemInstance
     }
 
     public val lazy: LazyItem = LazyItem(this)

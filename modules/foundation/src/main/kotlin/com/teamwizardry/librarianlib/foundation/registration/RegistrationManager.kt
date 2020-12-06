@@ -1,8 +1,11 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
+import com.mojang.datafixers.util.Pair
 import com.teamwizardry.librarianlib.foundation.LibrarianLibFoundationModule
 import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
 import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
+import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
+import com.teamwizardry.librarianlib.foundation.loot.LootTableGenerator
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderTypeLookup
 import net.minecraft.client.renderer.entity.EntityRenderer
@@ -10,20 +13,21 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer
 import net.minecraft.data.BlockTagsProvider
 import net.minecraft.data.DataGenerator
 import net.minecraft.data.ItemTagsProvider
+import net.minecraft.data.LootTableProvider
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
-import net.minecraft.item.BlockItem
-import net.minecraft.item.Item
-import net.minecraft.item.ItemGroup
-import net.minecraft.item.ItemStack
-import net.minecraft.item.Items
+import net.minecraft.item.*
 import net.minecraft.tags.Tag
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityType
+import net.minecraft.util.ResourceLocation
+import net.minecraft.world.storage.loot.LootParameterSet
+import net.minecraft.world.storage.loot.LootTable
+import net.minecraft.world.storage.loot.LootTableManager
+import net.minecraft.world.storage.loot.ValidationTracker
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.model.generators.BlockStateProvider
-import net.minecraftforge.client.model.generators.ExistingFileHelper
 import net.minecraftforge.common.capabilities.CapabilityInject
 import net.minecraftforge.common.capabilities.CapabilityManager
 import net.minecraftforge.common.data.LanguageProvider
@@ -36,6 +40,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent
+import java.util.function.BiConsumer
+import java.util.function.Consumer
+import java.util.function.Supplier
 
 /**
  * The main class for registering objects in LibrarianLib Foundation. This class manages when to register them, along
@@ -219,11 +226,20 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
         e.generator.addProvider(BlockTagsGeneration(e.generator))
         e.generator.addProvider(ItemTagsGeneration(e.generator))
+
+        e.generator.addProvider(LootTableGeneration(e.generator))
     }
 
     public class DataGen {
+        @get:JvmSynthetic
+        internal val lootTableGenerators = mutableListOf<LootTableGenerator>()
+
         public val blockTags: TagGen<Block> = TagGen()
         public val itemTags: TagGen<Item> = TagGen()
+
+        public fun add(lootTableGenerator: LootTableGenerator) {
+            lootTableGenerators.add(lootTableGenerator)
+        }
 
         public class TagGen<T> {
             @get:JvmSynthetic
@@ -252,7 +268,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
     private inner class BlockStateGeneration(
         gen: DataGenerator,
-        val existingFileHelper: FoundationExistingFileHelper
+        existingFileHelper: FoundationExistingFileHelper
     ): BlockStateProvider(gen, modid, existingFileHelper) {
         init {
             existingFileHelper.modelProviders.add(models())
@@ -359,6 +375,34 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
             datagen.itemTags.metaTags.forEach { (tag, values) ->
                 getBuilder(tag).add(*values.toTypedArray())
+            }
+        }
+    }
+
+    private inner class LootTableGeneration(gen: DataGenerator): LootTableProvider(gen) {
+        override fun getTables(): List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> {
+
+            val blockTableGenerator = BlockLootTableGenerator()
+            for (spec in blocks) {
+                val manualGen = spec.datagen.lootTable.generator
+                val instance = spec.blockInstance
+                if (manualGen != null) {
+                    logger.debug("Manager for $modid: Calling manual loot table generator for block ${spec.registryName}")
+                    manualGen.accept(blockTableGenerator)
+                } else if (instance is IFoundationBlock) {
+                    logger.debug("Manager for $modid: Calling IFoundationBlock loot table generator for block ${spec.registryName}")
+                    instance.generateLootTable(blockTableGenerator)
+                }
+            }
+
+            return (listOf(blockTableGenerator) + datagen.lootTableGenerators).map {
+                Pair.of(it.lootTableProviderSupplier, it.parameterSet)
+            }
+        }
+
+        override fun validate(map: MutableMap<ResourceLocation, LootTable>, validationtracker: ValidationTracker) {
+            for ((name, table) in map) {
+                LootTableManager.func_227508_a_(validationtracker, name, table)
             }
         }
     }
