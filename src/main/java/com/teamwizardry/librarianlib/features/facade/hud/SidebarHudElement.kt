@@ -62,13 +62,14 @@ class SidebarHudElement: HudElement(RenderGameOverlayEvent.ElementType.CHAT) { /
         )
 
         val scoreSet = scores.map { it.objective.name to it.playerName }.toSet()
-        val scoreLayers = this.scores.associateByTo(mutableMapOf()) { it.objective to it.playerName }
-        scoreLayers.entries.forEach { (key, value) ->
-            if(key !in scoreSet) {
-                value.removeFromParent()
-                scoreLayers.remove(key)
+        val scoreLayers = this.scores
+            .associateBy { it.objective to it.playerName }
+            .filterTo(mutableMapOf()) { (key, value) ->
+                if(key !in scoreSet) {
+                    value.removeFromParent()
+                }
+                key in scoreSet
             }
-        }
 
         val newScores = mutableListOf<ScoreLayer>()
 
