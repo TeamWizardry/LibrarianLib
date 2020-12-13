@@ -13,7 +13,9 @@ minecraft {
 
 
 dependencies {
-    minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
+    minecraft("net.minecraftforge:forge:$mc_version-$forge_version") {
+        exclude group: 'com.ibm.icu', module: 'icu4j-core-mojang'
+    }
 //    mod "kottle:Kottle:$kottle_version"
     mod rootProject.files('libs/Kottle-2.0.0.jar')
 
