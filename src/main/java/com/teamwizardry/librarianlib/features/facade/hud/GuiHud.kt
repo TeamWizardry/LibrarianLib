@@ -126,7 +126,7 @@ object GuiHud {
             ElementType.VIGNETTE to vignette
         )
 
-        root.add(*elements.values.toTypedArray())
+        root.add(*elements.values.toSet().toTypedArray())
         root.add(sidebar)
 
         reloadListeners.forEach { it.reloadHud() }
