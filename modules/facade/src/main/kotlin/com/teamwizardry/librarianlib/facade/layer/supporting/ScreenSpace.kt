@@ -11,7 +11,7 @@ import com.teamwizardry.librarianlib.math.MutableMatrix3d
  * objective location on the display (measured in logical pixels at Minecraft's GUI scale, not literal screen pixels).
  */
 public object ScreenSpace: CoordinateSpace2D {
-    override val parentSpace: CoordinateSpace2D? = DisplaySpace
+    override val parentSpace: CoordinateSpace2D = DisplaySpace
 
     private val _transform = MutableMatrix3d()
     private val _inverseTransform = MutableMatrix3d()

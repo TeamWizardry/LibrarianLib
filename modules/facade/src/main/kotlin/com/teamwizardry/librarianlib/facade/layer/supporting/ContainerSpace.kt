@@ -14,7 +14,7 @@ public object ContainerSpace: CoordinateSpace2D {
     public var guiLeft: Int = 0
     public var guiTop: Int = 0
 
-    override val parentSpace: CoordinateSpace2D? = ScreenSpace
+    override val parentSpace: CoordinateSpace2D = ScreenSpace
 
     private val _transform = MutableMatrix3d()
     private val _inverseTransform = MutableMatrix3d()

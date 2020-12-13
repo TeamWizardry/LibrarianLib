@@ -94,10 +94,7 @@ public class ItemStackTooltip: GuiLayer() {
         val rootMousePos = root.mousePos
 
         stack?.also { stack ->
-            val s = Client.guiScaleFactor
-            RenderSystem.scaled(s, s, 1.0)
             VanillaTooltipRenderer.renderTooltip(stack, rootMousePos.xi, rootMousePos.yi)
-            RenderSystem.scaled(1 / s, 1 / s, 1.0)
         }
     }
 }
@@ -116,10 +113,7 @@ public class VanillaTooltip: GuiLayer() {
         val rootMousePos = root.mousePos
 
         (lines ?: text?.let { listOf(it) })?.also { lines ->
-            val s = Client.guiScaleFactor
-            RenderSystem.scaled(s, s, 1.0)
             VanillaTooltipRenderer.renderTooltip(lines, rootMousePos.xi, rootMousePos.yi, font)
-            RenderSystem.scaled(1 / s, 1 / s, 1.0)
         }
     }
 }

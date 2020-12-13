@@ -64,7 +64,7 @@ public open class FacadeWidget(
             debugConfigurator.mouseMoved(xPos, yPos)
             return
         }
-        val pos = rescale(xPos, yPos)
+        val pos = vec(xPos, yPos)
         computeMouseOver(pos)
         safetyNet("firing a MouseMove event") {
             root.triggerEvent(GuiLayerEvents.MouseMove(pos, mousePos))
@@ -77,7 +77,7 @@ public open class FacadeWidget(
             debugConfigurator.mouseClicked(xPos, yPos, button)
             return
         }
-        val pos = rescale(xPos, yPos)
+        val pos = vec(xPos, yPos)
         computeMouseOver(pos)
         safetyNet("firing a MouseDown event") {
             root.triggerEvent(GuiLayerEvents.MouseDown(pos, button))
@@ -86,7 +86,7 @@ public open class FacadeWidget(
 
     public fun mouseReleased(xPos: Double, yPos: Double, button: Int) {
         if (debugConfigurator.isOpen) return
-        val pos = rescale(xPos, yPos)
+        val pos = vec(xPos, yPos)
         computeMouseOver(pos)
         safetyNet("firing a MouseUp event") {
             root.triggerEvent(GuiLayerEvents.MouseUp(pos, button))
@@ -95,8 +95,8 @@ public open class FacadeWidget(
 
     public fun mouseScrolled(xPos: Double, yPos: Double, deltaY: Double) {
         if (debugConfigurator.isOpen) return
-        val pos = rescale(xPos, yPos)
-        val delta = rescale(0.0, deltaY)
+        val pos = vec(xPos, yPos)
+        val delta = vec(0.0, deltaY)
         computeMouseOver(pos)
         safetyNet("firing a MouseScroll event") {
             root.triggerEvent(GuiLayerEvents.MouseScroll(pos, delta))
@@ -105,8 +105,8 @@ public open class FacadeWidget(
 
     public fun mouseDragged(xPos: Double, yPos: Double, button: Int, deltaX: Double, deltaY: Double) {
         if (debugConfigurator.isOpen) return
-        val pos = rescale(xPos, yPos)
-        val lastPos = rescale(xPos - deltaX, yPos - deltaY)
+        val pos = vec(xPos, yPos)
+        val lastPos = vec(xPos - deltaX, yPos - deltaY)
         computeMouseOver(pos)
         safetyNet("firing a MouseDrag event") {
             root.triggerEvent(GuiLayerEvents.MouseDrag(pos, lastPos, button))
@@ -175,17 +175,6 @@ public open class FacadeWidget(
     }
     //endregion
 
-    /**
-     * Convert logical pixels to screen pixels
-     */
-    private fun rescale(logical: Double): Double = logical * Client.guiScaleFactor
-
-    /**
-     * Convert logical pixels to screen pixels
-     */
-    private fun rescale(logicalX: Double, logicalY: Double): Vec2d =
-        vec(logicalX * Client.guiScaleFactor, logicalY * Client.guiScaleFactor)
-
     private fun computeMouseOver(absolute: Vec2d) {
         safetyNet("computing the mouse position") {
             lastHit = null
@@ -206,8 +195,8 @@ public open class FacadeWidget(
         val isAboveVanilla = rootZ >= 1000
         if (screen is FacadeMouseMask) {
             if (!isAboveVanilla && screen.isMouseMasked(
-                    absolute.x / Client.guiScaleFactor,
-                    absolute.y / Client.guiScaleFactor
+                    absolute.x,
+                    absolute.y
                 )
             ) {
                 hitLayer = null
@@ -227,7 +216,7 @@ public open class FacadeWidget(
      * @param yPos the absolute y coordinate to test in logical pixels
      */
     public fun hitTest(xPos: Double, yPos: Double): MouseHit {
-        val pos = rescale(xPos, yPos)
+        val pos = vec(xPos, yPos)
         lastHit?.also {
             if (pos == it.pos)
                 return it
@@ -241,11 +230,7 @@ public open class FacadeWidget(
      */
     public fun update() {
         safetyNet("updating") {
-            val guiScale = Client.guiScaleFactor
-
             root.pos = vec(0, 0)
-            // we use OpenGL to undo the GUI scale transform and then reapply it ourself
-            root.scale = guiScale
             root.size = vec(Client.window.scaledWidth, Client.window.scaledHeight)
             main.pos = ((root.size - main.size) / 2).round()
             tooltipContainer.frame = root.bounds
@@ -279,12 +264,9 @@ public open class FacadeWidget(
      */
     public fun render() {
         safetyNet("rendering") {
-            val guiScale = Client.guiScaleFactor
-
             StencilUtil.clear()
             StencilUtil.enable()
             RenderSystem.pushMatrix()
-            RenderSystem.scaled(1 / guiScale, 1 / guiScale, 1.0)
             val context = GuiDrawContext(Matrix3dStack(), debugOptions, false)
             root.renderLayer(context)
             RenderSystem.popMatrix()
