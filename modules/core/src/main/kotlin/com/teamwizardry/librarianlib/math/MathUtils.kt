@@ -97,7 +97,7 @@ public fun block(x: Int, y: Int, z: Int): BlockPos = BlockPosPool.getPooled(x, y
 @Suppress("NOTHING_TO_INLINE")
 public inline fun rect(x: Number, y: Number, width: Number, height: Number): Rect2d = Rect2d(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 
-private object Vec3dPool {
+internal object Vec3dPool {
     private val poolBits = 5
     private val poolMask = (1 shl poolBits) - 1
     private val poolMax = (1 shl poolBits - 1) - 1
@@ -131,7 +131,7 @@ private object Vec3dPool {
     }
 }
 
-private object Vec3iPool {
+internal object Vec3iPool {
     private val poolBits = 5
     private val poolMask = (1 shl poolBits) - 1
     private val poolMax = (1 shl poolBits - 1) - 1
@@ -162,7 +162,7 @@ private object Vec3iPool {
     }
 }
 
-private object BlockPosPool {
+internal object BlockPosPool {
     private val poolBits = 5
     private val poolMask = (1 shl poolBits) - 1
     private val poolMax = (1 shl poolBits - 1) - 1
