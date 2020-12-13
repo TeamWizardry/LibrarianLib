@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.foundation.block.*
 import net.minecraft.tags.BlockTags
 
@@ -33,7 +32,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
         BlockSpec(fullName)
             .withProperties(blockProperties)
             .renderLayer(renderLayer)
-            .block { BaseSimpleBlock(it.blockProperties) }
+            .block { BaseBlock(it.blockProperties) }
     }
 
     public val slab: BlockSpec by lazy {

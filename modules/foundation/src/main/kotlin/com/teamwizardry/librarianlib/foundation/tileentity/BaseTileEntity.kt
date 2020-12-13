@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.tileentity
 
+import com.teamwizardry.librarianlib.foundation.registration.LazyTileEntityType
 import com.teamwizardry.librarianlib.prism.Save
 import com.teamwizardry.librarianlib.prism.SimpleSerializer
 import com.teamwizardry.librarianlib.prism.Sync
@@ -8,9 +9,19 @@ import net.minecraft.network.NetworkManager
 import net.minecraft.network.play.server.SUpdateTileEntityPacket
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityType
+import net.minecraftforge.common.util.Constants
 
 public abstract class BaseTileEntity(tileEntityTypeIn: TileEntityType<*>): TileEntity(tileEntityTypeIn) {
+    public constructor(tileEntityTypeIn: LazyTileEntityType<*>) : this(tileEntityTypeIn.get())
+
     private val serializer = SimpleSerializer.get(this.javaClass)
+
+    /**
+     * Triggers a block update to send updated tile information to clients
+     */
+    public fun notifyStateChange() {
+        world?.notifyBlockUpdate(pos, blockState, blockState, Constants.BlockFlags.BLOCK_UPDATE)
+    }
 
     override fun write(compound: CompoundNBT): CompoundNBT {
         super.write(compound)

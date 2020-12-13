@@ -10,7 +10,7 @@ import net.minecraft.particles.ParticleTypes
 import net.minecraft.world.server.ServerWorld
 import net.minecraftforge.common.util.Constants
 
-class TestTileEntity: BaseTileEntity(ModTiles.testTile.get()) {
+class TestTileEntity: BaseTileEntity(ModTiles.testTile) {
     @Save
     var totalFallDistance: Float = 0f
     @Sync
@@ -26,7 +26,7 @@ class TestTileEntity: BaseTileEntity(ModTiles.testTile.get()) {
         totalFallDistance += fallDistance
         lastFallDistance = fallDistance
         markDirty()
-        world.notifyBlockUpdate(pos, blockState, blockState, Constants.BlockFlags.BLOCK_UPDATE)
+        notifyStateChange()
 
         (world as? ServerWorld)?.spawnParticle(
             ParticleTypes.POOF,

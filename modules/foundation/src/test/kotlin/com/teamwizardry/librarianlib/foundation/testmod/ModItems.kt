@@ -9,19 +9,17 @@ import net.minecraft.item.Item
 
 object ModItems {
     val testItem: LazyItem = LazyItem()
+    val testCapabilityItem: LazyItem = LazyItem()
 
     internal fun registerItems(registrationManager: RegistrationManager) {
         testItem.from(registrationManager.add(
             ItemSpec("test_item")
                 .maxStackSize(16)
-                .item { TestItem(it.itemProperties) }
-                .datagen { simpleModel() }
         ))
-        testItem.from(registrationManager.add(
+        testCapabilityItem.from(registrationManager.add(
             ItemSpec("test_capabilities")
                 .maxStackSize(1)
                 .item { TestCapabilityItem(it.itemProperties) }
-                .datagen { simpleModel() }
         ))
     }
 }

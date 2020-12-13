@@ -5,7 +5,7 @@ import net.minecraft.item.BlockItem
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.generators.ItemModelProvider
 
-public class BaseBlockItem(blockIn: Block, builder: Properties): BlockItem(blockIn, builder), IFoundationItem {
+public open class BaseBlockItem(blockIn: Block, builder: Properties): BlockItem(blockIn, builder), IFoundationItem {
     private var blockModel: ResourceLocation? = null
 
     /**

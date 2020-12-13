@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.foundation.testmod
 import com.teamwizardry.librarianlib.foundation.block.BaseLogBlock
 import com.teamwizardry.librarianlib.foundation.registration.*
 import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestTileBlock
+import net.minecraft.block.material.Material
 import net.minecraft.block.material.MaterialColor
 import net.minecraft.item.Items
 
@@ -45,6 +46,10 @@ object ModBlocks {
         ))
 
         val woodCollection = BuildingBlockCollection("wood_planks", "wood")
+        woodCollection.blockProperties
+            .material(Material.WOOD)
+            .mapColor(MaterialColor.WOOD)
+            .hardnessAndResistance(2f, 3f)
         woodPlanks.from(registrationManager.add(woodCollection.full))
         woodSlab.from(registrationManager.add(woodCollection.slab))
         woodStairs.from(registrationManager.add(woodCollection.stairs))

@@ -1,13 +1,12 @@
 package com.teamwizardry.librarianlib.foundation.testmod.customtypes
 
 import com.teamwizardry.librarianlib.core.util.kotlin.getOrNull
-import com.teamwizardry.librarianlib.foundation.testmod.ModCapabilities
-import net.minecraft.item.Item
+import com.teamwizardry.librarianlib.foundation.item.BaseItem
 import net.minecraft.item.ItemUseContext
 import net.minecraft.util.ActionResultType
 import net.minecraft.util.text.StringTextComponent
 
-class TestCapabilityItem(properties: Properties): Item(properties) {
+class TestCapabilityItem(properties: Properties): BaseItem(properties) {
     override fun onItemUse(context: ItemUseContext): ActionResultType {
         val te = context.world.getTileEntity(context.pos)
         val cap = te?.getCapability(TestCapability.capability)?.getOrNull()

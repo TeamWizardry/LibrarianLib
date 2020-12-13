@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
 import com.teamwizardry.librarianlib.core.util.mapSrgName
-import com.teamwizardry.librarianlib.foundation.block.BaseSimpleBlock
+import com.teamwizardry.librarianlib.foundation.block.BaseBlock
 import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
 import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
 import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
@@ -17,7 +17,6 @@ import net.minecraft.item.*
 import net.minecraft.tags.Tag
 import net.minecraft.util.IItemProvider
 import net.minecraft.util.ResourceLocation
-import net.minecraft.world.storage.loot.LootPool
 import net.minecraftforge.client.model.generators.BlockStateProvider
 import net.minecraftforge.client.model.generators.ItemModelProvider
 import net.minecraftforge.common.ToolType
@@ -73,7 +72,7 @@ public class BlockSpec(
      */
     public val datagen: DataGen = DataGen()
 
-    private var blockConstructor: Function<BlockSpec, Block> = Function { BaseSimpleBlock(it.blockProperties) }
+    private var blockConstructor: Function<BlockSpec, Block> = Function { BaseBlock(it.blockProperties) }
     private var itemConstructor: Function<BlockSpec, BlockItem>? = null
 
     /** Disables the registration of a [BlockItem] for this block */
