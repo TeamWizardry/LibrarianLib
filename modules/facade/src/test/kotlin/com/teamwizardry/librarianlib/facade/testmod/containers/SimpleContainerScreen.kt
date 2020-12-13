@@ -1,30 +1,41 @@
 package com.teamwizardry.librarianlib.facade.testmod.containers
 
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
+import com.teamwizardry.librarianlib.facade.layers.RectLayer
+import com.teamwizardry.librarianlib.facade.layers.StackLayout
+import com.teamwizardry.librarianlib.facade.pastry.components.PastryButton
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
+import com.teamwizardry.librarianlib.math.Align2d
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
+import java.awt.Color
 
 class SimpleContainerScreen(
     container: SimpleContainer,
     inventory: PlayerInventory,
     title: ITextComponent
 ): FacadeContainerScreen<SimpleContainer>(container, inventory, title) {
-    override fun drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) {
-    }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        val position = vec(mouseX.toInt(), mouseY.toInt())
-        player.sendMessage(StringTextComponent("[GUI] mouseClicked: $position, $button"))
-        sendMessage("mouseClicked", position, button)
-        return super.mouseClicked(mouseX, mouseY, button)
-    }
+    init {
+        main.size = vec(90, 30)
 
-    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        val position = vec(mouseX.toInt(), mouseY.toInt())
-        player.sendMessage(StringTextComponent("[GUI] mouseReleased: $position, $button"))
-        sendMessage("mouseReleased", position, button)
-        return super.mouseReleased(mouseX, mouseY, button)
+        val background = PastryBackground(0, 0, 90, 30)
+        val button = PastryButton("Click me!", 0, 0)
+        button.hook<PastryButton.ClickEvent> {
+            val position = vec(button.mousePos.xi, button.mousePos.yi)
+            player.sendMessage(StringTextComponent("[GUI] mouse click event: $position"))
+            sendMessage("buttonClick", position)
+        }
+
+        main.add(
+            background,
+            StackLayout.build(0, 0)
+                .align(Align2d.CENTER)
+                .size(main.size)
+                .add(button)
+                .build()
+        )
     }
 }
