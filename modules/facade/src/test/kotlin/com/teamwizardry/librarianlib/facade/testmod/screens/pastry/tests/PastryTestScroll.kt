@@ -15,7 +15,7 @@ class PastryTestScroll: PastryTestBase() {
     init {
         val size = vec(150, 150)
         val scroll = PastryScrollPane(0, 0, size.xi + 2, size.yi + 2)
-        val contentBackground = SpriteLayer(Mosaic(ResourceLocation("textures/blocks/dirt.png"), 16, 16).getSprite(""))
+        val contentBackground = SpriteLayer(Mosaic(ResourceLocation("textures/block/dirt.png"), 16, 16).getSprite(""))
         scroll.content.add(contentBackground)
         scroll.showHorizontalScrollbar = null
         scroll.showVerticalScrollbar = null

@@ -1,28 +1,15 @@
 package com.teamwizardry.librarianlib.core.util
 
+import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
+import com.teamwizardry.librarianlib.core.util.kotlin.mixinCast
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.vertex.VertexFormat
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
-import java.util.UUID
 import java.util.function.Consumer
 
-// Note: Render type names have UUIDs affixed to them because MC caching is idiotic:
-//
-// `RenderType`:
-// - `hashCode()` is based on: `name` (but not `vertexFormat`, `drawMode`, `bufferSize`, `useDelegate`, or `needsSorting`)
-// - `equals()` is based on: `name` (`getClass` must also be equal, so subclasses are not accepted)
-//
-// `RenderType.Type`:
-// - `hashCode()` is based on: `name` and `renderState`
-// - `equals()` is based on: identity
-//
-// `RenderType.Type.TYPES` (cache uses custom equality strategy):
-// - `hashCode()` is based on: `name` and `renderState`
-// - `equals()` is based on: `renderState`
-//
 public object SimpleRenderTypes {
     private val flatColorCache = mutableMapOf<Int, RenderType>()
     private val flatTextureCache = mutableMapOf<Pair<ResourceLocation, Int>, RenderType>()
@@ -44,7 +31,7 @@ public object SimpleRenderTypes {
         glMode: Int = GL11.GL_QUADS,
         configure: Consumer<RenderType.State.Builder>? = null
     ): RenderType {
-        if(configure != null)
+        if (configure != null)
             return makeFlat(texture, glMode, configure)
         return flatTextureCache.getOrPut(texture to glMode) {
             makeFlat(texture, glMode, configure)
@@ -63,7 +50,8 @@ public object SimpleRenderTypes {
             .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
         configure?.accept(renderState)
 
-        return makeType("flat_texture",
+        return makeType(
+            "flat_texture",
             DefaultVertexFormats.POSITION_COLOR_TEX, glMode, 256, false, false, renderState.build(true)
         )
     }
@@ -80,7 +68,7 @@ public object SimpleRenderTypes {
     @JvmOverloads
     @JvmStatic
     public fun flat(glMode: Int, configure: Consumer<RenderType.State.Builder>? = null): RenderType {
-        if(configure != null)
+        if (configure != null)
             return makeFlat(glMode, configure)
         return flatColorCache.getOrPut(glMode) {
             makeFlat(glMode, configure)
@@ -95,22 +83,41 @@ public object SimpleRenderTypes {
             .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
         configure?.accept(renderState)
 
-        return makeType("flat_color",
+        return makeType(
+            "flat_color",
             DefaultVertexFormats.POSITION_COLOR, glMode, 256, false, false, renderState.build(true)
         )
     }
 
     /**
      * [RenderType.makeType] returns a package-private class [RenderType.Type] because... Mojang?
+     *
+     * Also their caching is garbage that sometimes will give you back some other random render type with the wrong
+     * primitive type or vertex format. To deal with this, this method works around the cache by adding a custom NOP
+     * render state that implements the missing equality operations.
      */
     @JvmStatic
-    public fun makeType(name: String,
+    public fun makeType(
+        name: String,
         vertexFormatIn: VertexFormat, glMode: Int,
         bufferSizeIn: Int, useDelegate: Boolean, needsSorting: Boolean,
         renderState: RenderType.State
     ): RenderType {
+        mixinCast<IMutableRenderTypeState>(renderState).addState(
+            CacheFixerRenderState(
+                vertexFormatIn, glMode, bufferSizeIn, useDelegate, needsSorting
+            )
+        )
         @Suppress("INACCESSIBLE_TYPE")
-        return RenderType.makeType("${name}_${UUID.randomUUID()}", vertexFormatIn, glMode, bufferSizeIn, useDelegate, needsSorting, renderState)
+        return RenderType.makeType(
+            name,
+            vertexFormatIn,
+            glMode,
+            bufferSizeIn,
+            useDelegate,
+            needsSorting,
+            renderState
+        )
     }
 
     /**
@@ -130,4 +137,31 @@ public object SimpleRenderTypes {
      */
     @JvmStatic
     public val flatLineStrip: RenderType = flat(GL11.GL_LINE_STRIP)
+
+    /**
+     * Note: We add a custom identity-hashed/equals render state because MC's render type caching is idiotic.
+     *
+     * Minecraft doesn't even consider the vertex format or GL draw mode when pulling render types from the cache, only
+     * the GL *state*. To work around this we have to add the missing equality checks to a custom NOP "GL state" object
+     * so they will get included in the necessary locations.
+     *
+     * `RenderType.Type.TYPES` (cache uses custom equality strategy):
+     * - `hashCode()` is based on: RenderType.Type hashCode
+     * - `equals()` is based on: `renderState`
+     *
+     * `RenderType.Type`:
+     * - `hashCode()` is based on: `name` and `renderState`
+     * - `equals()` is based on: identity
+     *
+     * `RenderType.State`:
+     * - `hashCode()` is based on: outline state and `renderStates` list
+     * - `equals()` is based on: outline state and `renderStates` list
+     */
+    private data class CacheFixerRenderState(
+        val vertexFormatIn: VertexFormat,
+        val glMode: Int,
+        val bufferSizeIn: Int,
+        val useDelegate: Boolean,
+        val needsSorting: Boolean
+    ): RenderState("cache_fixer", {}, {})
 }

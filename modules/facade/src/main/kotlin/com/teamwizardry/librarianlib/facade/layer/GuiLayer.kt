@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.facade.layer
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.bridge.IRenderTypeState
+import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.util.*
 import com.teamwizardry.librarianlib.core.util.kotlin.color
@@ -1865,7 +1865,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         private val flatLayerRenderType: RenderType = run {
             val renderState = RenderType.State.getBuilder()
                 .build(false)
-            mixinCast<IRenderTypeState>(renderState).addState(FlatLayerShader.renderState)
+            mixinCast<IMutableRenderTypeState>(renderState).addState(FlatLayerShader.renderState)
 
             SimpleRenderTypes.makeType("librarianlib.facade.flat_layer",
                 DefaultVertexFormats.POSITION_TEX, GL11.GL_QUADS, 256, false, false, renderState
@@ -1877,7 +1877,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 .depthTest(DefaultRenderStates.DEPTH_ALWAYS)
                 .build(false)
 
-            mixinCast<IRenderTypeState>(renderState).addState(FramebufferClearShader.renderState)
+            mixinCast<IMutableRenderTypeState>(renderState).addState(FramebufferClearShader.renderState)
 
             SimpleRenderTypes.makeType("librarianlib.facade.clear_buffer",
                 DefaultVertexFormats.POSITION, GL11.GL_QUADS, 256, false, false, renderState

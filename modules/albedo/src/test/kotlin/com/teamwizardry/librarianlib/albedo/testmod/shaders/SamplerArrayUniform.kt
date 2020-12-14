@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
-import com.teamwizardry.librarianlib.core.bridge.IRenderTypeState
+import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
@@ -76,7 +76,7 @@ internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
             .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
             .build(true)
 
-        mixinCast<IRenderTypeState>(renderState).addState("albedo", { shader.bind() }, { shader.unbind() })
+        mixinCast<IMutableRenderTypeState>(renderState).addState("albedo", { shader.bind() }, { shader.unbind() })
 
         renderType = SimpleRenderTypes.makeType("flat_texture",
             DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, false, renderState

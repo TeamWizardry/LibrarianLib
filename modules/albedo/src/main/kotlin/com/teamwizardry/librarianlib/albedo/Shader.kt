@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.albedo
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.bridge.IRenderTypeState
+import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
@@ -48,8 +48,8 @@ public abstract class Shader(
 
     /**
      * A [RenderState] object that can be added to a [RenderType.State] to bind, push uniforms, and unbind this shader
-     * program when drawing. Doing so requires the [IRenderTypeState] mixin, so cast to that and call
-     * [IRenderTypeState.addState].
+     * program when drawing. Doing so requires the [IMutableRenderTypeState] mixin, so cast to that and call
+     * [IMutableRenderTypeState.addState].
      *
      * **NOTE!!** If your shader uses samplers (textures), your texture state *must not be set*, or else it may
      * inadvertently overwrite one of the textures the shader is using.
