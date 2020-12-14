@@ -179,11 +179,6 @@ public class ItemSpec(
         }
 
         /**
-         * Sets the name of this block in the generated en_us lang file
-         */
-        public fun name(name: String): DataGen = name("en_us", name)
-
-        /**
          * Sets the name of this block in the generated lang file
          */
         public fun name(locale: String, name: String): DataGen {

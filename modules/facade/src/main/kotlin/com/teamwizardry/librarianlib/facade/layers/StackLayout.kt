@@ -140,14 +140,17 @@ public class StackLayout(
     }
 
     public companion object {
+        @JvmStatic
         public fun build(): StackLayoutBuilder {
             return StackLayoutBuilder(0.0, 0.0)
         }
 
+        @JvmStatic
         public fun build(posX: Int, posY: Int): StackLayoutBuilder {
             return StackLayoutBuilder(posX.toDouble(), posY.toDouble())
         }
 
+        @JvmStatic
         public fun build(pos: Vec2d): StackLayoutBuilder {
             return StackLayoutBuilder(pos.x, pos.y)
         }

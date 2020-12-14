@@ -66,7 +66,7 @@ private class FacadeContainerFactory<T: FacadeContainer>(clazz: Class<T>): ICont
         try {
             argumentSerializers = argumentTypes.map { Prisms.nbt[it].value }
         } catch (e: PrismException) {
-            throw IllegalArgumentException("Unable to serialize the constructor for $type")
+            throw IllegalArgumentException("Unable to serialize the constructor for $type", e)
         }
     }
 

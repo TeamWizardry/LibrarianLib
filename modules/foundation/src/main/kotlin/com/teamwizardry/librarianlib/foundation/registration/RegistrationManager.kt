@@ -1,12 +1,17 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
 import com.mojang.datafixers.util.Pair
+import com.teamwizardry.librarianlib.facade.container.FacadeContainer
 import com.teamwizardry.librarianlib.foundation.LibrarianLibFoundationModule
 import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
 import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
 import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
 import com.teamwizardry.librarianlib.foundation.loot.LootTableGenerator
 import net.minecraft.block.Block
+import net.minecraft.client.gui.IHasContainer
+import net.minecraft.client.gui.ScreenManager
+import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.gui.screen.inventory.ContainerScreen
 import net.minecraft.client.renderer.RenderTypeLookup
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer
@@ -16,6 +21,7 @@ import net.minecraft.data.ItemTagsProvider
 import net.minecraft.data.LootTableProvider
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
+import net.minecraft.inventory.container.ContainerType
 import net.minecraft.item.*
 import net.minecraft.tags.Tag
 import net.minecraft.tileentity.TileEntity
@@ -73,6 +79,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     private val tileEntities = mutableListOf<TileEntitySpec<*>>()
     private val entities = mutableListOf<EntitySpec<*>>()
     private val capabilities = mutableListOf<CapabilitySpec<*>>()
+    private val containers = mutableListOf<ContainerSpec<*>>()
 
     /**
      * Methods for performing data generation
@@ -127,10 +134,19 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         capabilities.add(spec)
     }
 
+    /**
+     * Adds a container type to this registration manager and returns a lazy reference to it
+     */
+    public fun <T: FacadeContainer> add(spec: ContainerSpec<T>): LazyContainerType<T> {
+        spec.modid = modid
+        containers.add(spec)
+        return spec.lazy
+    }
+
     @SubscribeEvent
     @JvmSynthetic
     internal fun registerBlocks(e: RegistryEvent.Register<Block>) {
-        blocks.forEach { block ->
+        for(block in blocks) {
             logger.debug("Manager for $modid: Registering block ${block.registryName}")
             e.registry.register(block.blockInstance)
         }
@@ -139,13 +155,13 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun registerItems(e: RegistryEvent.Register<Item>) {
-        blocks.forEach { block ->
+        for(block in blocks) {
             if (block.hasItem) {
                 logger.debug("Manager for $modid: Registering blockitem ${block.registryName}")
                 e.registry.register(block.itemInstance)
             }
         }
-        items.forEach { item ->
+        for(item in items) {
             logger.debug("Manager for $modid: Registering item ${item.registryName}")
             e.registry.register(item.itemInstance)
         }
@@ -154,7 +170,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun registerTileEntities(e: RegistryEvent.Register<TileEntityType<*>>) {
-        tileEntities.forEach { te ->
+        for(te in tileEntities) {
             logger.debug("Manager for $modid: Registering TileEntityType ${te.registryName}")
             e.registry.register(te.typeInstance)
         }
@@ -163,16 +179,25 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun registerEntities(e: RegistryEvent.Register<EntityType<*>>) {
-        entities.forEach { te ->
-            logger.debug("Manager for $modid: Registering EntityType ${te.registryName}")
-            e.registry.register(te.typeInstance)
+        for(type in entities) {
+            logger.debug("Manager for $modid: Registering EntityType ${type.registryName}")
+            e.registry.register(type.typeInstance)
+        }
+    }
+
+    @SubscribeEvent
+    @JvmSynthetic
+    internal fun registerContainers(e: RegistryEvent.Register<ContainerType<*>>) {
+        for(type in containers) {
+            logger.debug("Manager for $modid: Registering FacadeContainerType ${type.registryName}")
+            e.registry.register(type.typeInstance)
         }
     }
 
     @SubscribeEvent
     @JvmSynthetic
     internal fun commonSetup(e: FMLCommonSetupEvent) {
-        capabilities.forEach { cap ->
+        for(cap in capabilities) {
             @Suppress("UNCHECKED_CAST")
             cap as CapabilitySpec<Any> // appease the type checking gods
             CapabilityManager.INSTANCE.register(cap.type, cap.storage, cap.defaultImpl)
@@ -182,11 +207,11 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun clientSetup(e: FMLClientSetupEvent) {
-        blocks.forEach { block ->
+        for (block in blocks) {
             RenderTypeLookup.setRenderLayer(block.blockInstance, block.renderLayer.getRenderType())
         }
-        tileEntities.forEach { spec ->
-            val renderer = spec.renderer ?: return@forEach
+        for (spec in tileEntities) {
+            val renderer = spec.renderer ?: continue
             logger.debug("Manager for $modid: Registering TileEntityRenderer for ${spec.registryName}")
             @Suppress("UNCHECKED_CAST")
             ClientRegistry.bindTileEntityRenderer(spec.typeInstance as TileEntityType<TileEntity>) {
@@ -199,6 +224,14 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
             @Suppress("UNCHECKED_CAST")
             RenderingRegistry.registerEntityRenderingHandler(spec.typeInstance as EntityType<Entity>) {
                 factory.applyClient(it) as EntityRenderer<Entity>
+            }
+        }
+        for(spec in containers) {
+            val factory = spec.screenFactory
+            logger.debug("Manager for $modid: Registering ContainerScreen factory for ${spec.registryName}")
+            @Suppress("UNCHECKED_CAST")
+            ScreenManager.registerFactory(spec.typeInstance as ContainerType<FacadeContainer>) { container, inventory, title ->
+                (factory as ContainerSpec.ContainerScreenFactory<FacadeContainer>).create(container, inventory, title)
             }
         }
     }
@@ -339,7 +372,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         override fun registerTags() {
             logger.debug("Manager for $modid: Generating tags")
             for (spec in blocks) {
-                spec.datagen.tags.forEach { tag ->
+                for(tag in spec.datagen.tags) {
                     getBuilder(tag).add(spec.blockInstance)
                 }
             }
@@ -358,13 +391,13 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         override fun registerTags() {
             for (spec in blocks) {
                 val item = spec.itemInstance ?: continue
-                spec.datagen.itemTags.forEach { tag ->
+                for(tag in spec.datagen.itemTags) {
                     getBuilder(tag).add(item)
                 }
             }
 
             for (spec in items) {
-                spec.datagen.tags.forEach { tag ->
+                for(tag in spec.datagen.tags) {
                     getBuilder(tag).add(spec.itemInstance)
                 }
             }

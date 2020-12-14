@@ -37,8 +37,9 @@ public abstract class FacadeContainer(
     private val decoder = MessageDecoder(this, windowId)
 
     /**
-     * Send a message to the opposite side's container. Often the server will be the one messaging the client, not the
-     * other way around. Which side this container is on can be checked using [isClientContainer].
+     * Send a message to the opposite side's container. The server should message the client to update state, and the
+     * client screen should message the server when the player performs an action. Which side this container is on can
+     * be checked using [isClientContainer].
      */
     public fun sendMessage(name: String, vararg arguments: Any?) {
         LibrarianLibFacadeModule.channel.send(messageDirection, encoder.encode(name, arguments))

@@ -10,27 +10,48 @@ import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.math.Align2d
 import com.teamwizardry.librarianlib.math.vec
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
+import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
 @ExperimentalBitfont
-public class PastryButton @JvmOverloads constructor(
-    buttonText: String = "",
-    posX: Int, posY: Int, width: Int? = null, height: Int = Pastry.lineHeight,
-    callback: Runnable? = null
-): PastryActivatedControl(posX, posY, width ?: 0, height) {
+public class PastryButton: PastryActivatedControl {
+    public val label: PastryLabel
+    private val sprite: SpriteLayer
+
+    // text + position + size + optional callback
+    @JvmOverloads
+    public constructor(buttonText: String, posX: Int, posY: Int, width: Int, height: Int, callback: Runnable? = null)
+            : super(posX, posY, width, height) {
+        sprite = SpriteLayer(PastryTexture.button, 0, 0, width, height)
+
+        label = PastryLabel(4, 0, buttonText)
+        label.textAlignment = TextLayoutManager.Alignment.CENTER
+        label.enableDefaultTruncation()
+        if (callback != null)
+            this.BUS.hook<ClickEvent> {
+                callback.run()
+            }
+        this.add(sprite, label)
+    }
+
+    // text + position + width + optional callback
+    @JvmOverloads
+    public constructor(buttonText: String, posX: Int, posY: Int, width: Int, callback: Runnable? = null)
+            : this(buttonText, posX, posY, width, Pastry.lineHeight, callback)
+
+    // text + position + optional callback
+    @JvmOverloads
+    public constructor(buttonText: String, posX: Int, posY: Int, callback: Runnable? = null)
+            : this(buttonText, posX, posY, 0, Pastry.lineHeight, callback) {
+        this.width = label.width + 8
+    }
+
+    // just text + optional callback
+    @JvmOverloads
+    public constructor(buttonText: String, callback: Runnable? = null): this(buttonText, 0, 0, callback)
 
     public class ClickEvent(): Event()
 
-    public val label: PastryLabel = PastryLabel(4, 0, buttonText)
-
-    init {
-        if (width == null) {
-            this.width = label.width + 8
-        }
-//        label.align = Align2d.CENTER TODO
-    }
-
-    private val sprite = SpriteLayer(PastryTexture.button, 0, 0, this.widthi, height)
     private var mouseDown = false
 
     private var pressed = false
@@ -41,18 +62,6 @@ public class PastryButton @JvmOverloads constructor(
             else
                 sprite.sprite = PastryTexture.button
         }
-
-    init {
-        label.enableDefaultTruncation()
-        label.text = buttonText
-        if (callback != null)
-            this.BUS.hook<ClickEvent> {
-                callback.run()
-            }
-        this.add(sprite, label)
-
-//        clipToBounds = true TODO
-    }
 
     override fun activate() {
         this.BUS.fire(ClickEvent())

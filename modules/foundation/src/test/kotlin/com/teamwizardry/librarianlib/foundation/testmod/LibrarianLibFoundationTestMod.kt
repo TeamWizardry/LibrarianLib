@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.foundation.testmod
 
 import com.teamwizardry.librarianlib.foundation.BaseMod
+import com.teamwizardry.librarianlib.foundation.example.ExampleModContainers
+import com.teamwizardry.librarianlib.foundation.example.ExampleModItems
 import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestItem
 import net.minecraftforge.fml.common.Mod
 
@@ -15,6 +17,10 @@ object LibrarianLibFoundationTestMod: BaseMod(true) {
         ModEntities.registerEntities(registrationManager)
         ModTags.registerTagsDatagen(registrationManager)
         ModCapabilities.registerCapabilities(registrationManager)
+        ModContainers.registerContainers(registrationManager)
+
+        ExampleModItems.register(registrationManager)
+        ExampleModContainers.register(registrationManager)
 
         registrationManager.itemGroupIcon = ModItems.testItem
 
