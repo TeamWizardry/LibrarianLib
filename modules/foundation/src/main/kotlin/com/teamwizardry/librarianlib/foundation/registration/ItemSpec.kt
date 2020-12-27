@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
-import com.teamwizardry.librarianlib.core.util.IncompleteBuilderException
 import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
 import net.minecraft.client.renderer.model.IBakedModel
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer
@@ -10,7 +9,6 @@ import net.minecraft.item.Rarity
 import net.minecraft.tags.Tag
 import net.minecraft.util.IItemProvider
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.client.model.generators.ItemModelBuilder
 import net.minecraftforge.client.model.generators.ItemModelProvider
 import net.minecraftforge.client.model.generators.ModelFile
 import net.minecraftforge.client.model.generators.ModelProvider
@@ -27,7 +25,7 @@ public class ItemSpec(
     /**
      * The registry name, sans mod ID
      */
-    public val name: String
+    public var id: String
 ): IItemProvider {
     public var itemProperties: Item.Properties = Item.Properties()
 
@@ -42,7 +40,7 @@ public class ItemSpec(
      * The registry name of the block. The [mod ID][modid] is populated by the [RegistrationManager].
      */
     public val registryName: ResourceLocation
-        get() = ResourceLocation(modid, name)
+        get() = ResourceLocation(modid, id)
 
     /**
      * What item group this item should be in
@@ -173,9 +171,9 @@ public class ItemSpec(
          * `yourmodid:item/item_id.png`.
          */
         public fun simpleModel(): DataGen = model {
-            getBuilder(this@ItemSpec.name)
+            getBuilder(this@ItemSpec.id)
                 .parent(ModelFile.UncheckedModelFile("item/generated"))
-                .texture("layer0", modLoc("${ModelProvider.ITEM_FOLDER}/${this@ItemSpec.name}"))
+                .texture("layer0", modLoc("${ModelProvider.ITEM_FOLDER}/${this@ItemSpec.id}"))
         }
 
         /**

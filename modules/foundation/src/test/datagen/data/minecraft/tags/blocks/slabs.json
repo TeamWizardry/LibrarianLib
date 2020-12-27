@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "librarianlib-foundation-test:wood_slab"
+    "librarianlib-foundation-test:building_block_slab",
+    "librarianlib-foundation-test:test_wood_slab"
   ]
 }

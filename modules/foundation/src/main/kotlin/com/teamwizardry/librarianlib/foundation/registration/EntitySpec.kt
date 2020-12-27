@@ -20,7 +20,7 @@ public class EntitySpec<T: Entity>(
     /**
      * The registry name, sans mod ID.
      */
-    public val id: String,
+    public var id: String,
     /**
      * The entity's classification
      */

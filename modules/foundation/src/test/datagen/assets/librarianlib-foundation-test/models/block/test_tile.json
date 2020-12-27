@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "librarianlib-foundation-test:block/test_tile"
+  }
+}

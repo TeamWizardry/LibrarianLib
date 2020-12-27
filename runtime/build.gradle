@@ -51,10 +51,12 @@ task(createEmptyOutputDirs).doLast {
 }
 
 def link(File link, File target) {
+    // create the target first. a symlink to a non-existent directory will return false from .exists(), but will crash
+    // if we create its target and try to create a new link, since it now "exists"
+    target.mkdirs()
     if(link.exists())
         return
     link.parentFile.mkdirs()
-    target.mkdirs()
     Files.createSymbolicLink(
             Paths.get(link.absolutePath),
             Paths.get(target.absolutePath)

@@ -13,8 +13,18 @@ import net.minecraft.util.ResourceLocation
 
 /**
  * A utility class for easily creating tags.
+ *
+ * **Note:** You'll almost always want to create an item tag when you create a block tag. You can do this using
+ * [itemFormOf], and you can specify their equivalence using
+ * `registrationManager.datagen.blockTags.addItemForm(blockTag, itemTag)`
  */
 public object TagWrappers {
+    /**
+     * Creates a tag for the item form of the given block. i.e. creates an item tag with the same ID as the block tag.
+     */
+    @JvmStatic
+    public fun itemFormOf(blockTag: Tag<Block>): Tag<Item> = item(blockTag.id)
+
     @JvmStatic
     public fun block(name: String): Tag<Block> = BlockTags.Wrapper(ResourceLocation(name))
 

@@ -1,16 +1,14 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
-import com.teamwizardry.librarianlib.core.util.mapSrgName
 import com.teamwizardry.librarianlib.foundation.block.BaseBlock
+import com.teamwizardry.librarianlib.foundation.block.FoundationBlockProperties
 import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
 import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
 import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
-import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.block.Block
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
 import net.minecraft.block.material.MaterialColor
-import net.minecraft.block.material.PushReaction
 import net.minecraft.client.renderer.model.IBakedModel
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer
 import net.minecraft.item.*
@@ -34,7 +32,7 @@ public class BlockSpec(
     /**
      * The registry name, sans mod ID
      */
-    public val name: String
+    public var id: String
 ): IItemProvider {
     /**
      * The mod ID to register this block under. This is populated by the [RegistrationManager].
@@ -47,7 +45,7 @@ public class BlockSpec(
      * The registry name of the block. The [mod ID][modid] is populated by the [RegistrationManager].
      */
     public val registryName: ResourceLocation
-        get() = ResourceLocation(modid, name)
+        get() = ResourceLocation(modid, id)
 
     /**
      * Whether a [BlockItem] should be registered for this block
@@ -134,52 +132,110 @@ public class BlockSpec(
     public inline fun datagen(crossinline data: DataGen.() -> Unit): BlockSpec = datagen(Consumer { it.data() })
 
     //region block properties
-    public var blockProperties: Block.Properties = Block.Properties.create(GENERIC_MATERIAL)
-        private set
-    private var blockPropertiesHasCustomColor: Boolean = false
+    public val blockProperties: FoundationBlockProperties = FoundationBlockProperties()
 
     /**
      * Applies the supplied properties to this block spec
      */
-    public fun withProperties(properties: DefaultProperties): BlockSpec = build {
-        properties.apply(this)
+    public fun withProperties(other: FoundationBlockProperties): BlockSpec = build {
+        blockProperties.applyFrom(other)
     }
 
-    public fun material(material: Material): BlockSpec = build {
-        if (!blockPropertiesHasCustomColor)
-            blockPropertiesMapColorMirror.set(blockProperties, material.color)
-        blockPropertiesMaterialMirror.set(blockProperties, material)
-    }
+    public fun material(value: Material): BlockSpec = build { blockProperties.material(value) }
 
-    public fun mapColor(color: MaterialColor): BlockSpec = build {
-        blockPropertiesHasCustomColor = true
-        blockPropertiesMapColorMirror.set(blockProperties, color)
-    }
-
-    public fun mapColor(color: DyeColor): BlockSpec = mapColor(color.mapColor)
-    public fun propertiesFrom(other: Block): BlockSpec = build {
-        blockProperties = Block.Properties.from(other)
-    }
+    public fun mapColor(value: MaterialColor): BlockSpec = build { blockProperties.mapColor(value) }
 
     public fun doesNotBlockMovement(): BlockSpec = build { blockProperties.doesNotBlockMovement() }
-    public fun notSolid(): BlockSpec = build { blockProperties.notSolid() }
-    public fun slipperiness(slipperiness: Float): BlockSpec = build { blockProperties.slipperiness(slipperiness) }
-    public fun speedFactor(factor: Float): BlockSpec = build { blockProperties.speedFactor(factor) }
-    public fun jumpFactor(factor: Float): BlockSpec = build { blockProperties.jumpFactor(factor) }
-    public fun sound(soundType: SoundType): BlockSpec = build { blockProperties.sound(soundType) }
-    public fun lightValue(lightValue: Int): BlockSpec = build { blockProperties.lightValue(lightValue) }
-    public fun hardnessAndResistance(hardness: Float, resistance: Float): BlockSpec =
-        build { blockProperties.hardnessAndResistance(hardness, resistance) }
 
-    public fun hardnessAndResistance(hardnessAndResistance: Float): BlockSpec =
-        build { blockProperties.hardnessAndResistance(hardnessAndResistance) }
+    public fun blocksMovement(value: Boolean): BlockSpec = build { blockProperties.blocksMovement(value) }
+
+    public fun notSolid(): BlockSpec = build { blockProperties.notSolid() }
+
+    public fun isSolid(value: Boolean): BlockSpec = build { blockProperties.isSolid(value) }
+
+    public fun slipperiness(slipperiness: Float): BlockSpec = build { blockProperties.slipperiness(slipperiness) }
+
+    public fun speedFactor(factor: Float): BlockSpec = build { blockProperties.speedFactor(factor) }
+
+    public fun jumpFactor(factor: Float): BlockSpec = build { blockProperties.jumpFactor(factor) }
+
+    public fun sound(soundType: SoundType?): BlockSpec = build { blockProperties.sound(soundType) }
+
+    public fun lightValue(lightValue: Int): BlockSpec = build { blockProperties.lightValue(lightValue) }
+
+    public fun hardnessAndResistance(hardness: Float, resistance: Float): BlockSpec = build {
+        blockProperties.hardnessAndResistance(hardness, resistance)
+    }
+
+    public fun hardnessAndResistance(hardnessAndResistance: Float): BlockSpec = build {
+        blockProperties.hardnessAndResistance(hardnessAndResistance)
+    }
 
     public fun tickRandomly(): BlockSpec = build { blockProperties.tickRandomly() }
+
+    public fun ticksRandomly(value: Boolean): BlockSpec = build { blockProperties.ticksRandomly(value) }
+
     public fun variableOpacity(): BlockSpec = build { blockProperties.variableOpacity() }
+
+    public fun variableOpacity(value: Boolean): BlockSpec = build { blockProperties.variableOpacity(value) }
+
     public fun harvestLevel(harvestLevel: Int): BlockSpec = build { blockProperties.harvestLevel(harvestLevel) }
-    public fun harvestTool(harvestTool: ToolType): BlockSpec = build { blockProperties.harvestTool(harvestTool) }
+
+    public fun harvestTool(harvestTool: ToolType?): BlockSpec = build { blockProperties.harvestTool(harvestTool) }
+
     public fun noDrops(): BlockSpec = build { blockProperties.noDrops() }
-    public fun lootFrom(other: Block): BlockSpec = build { blockProperties.lootFrom(other) }
+
+    public fun noDrops(value: Boolean): BlockSpec = build { blockProperties.noDrops(value) }
+
+    public fun lootFrom(block: Block?): BlockSpec = build { blockProperties.lootFrom(block) }
+
+    // Foundation properties
+    /**
+     * Sets the chance that fire will spread and consume this block. 300 being a 100% chance, 0, being a 0% chance.
+     *
+     * Some example values (taken from [FireBlock.init]):
+     * - wood planks/slabs/etc. = 20
+     * - wood logs = 5
+     * - leaves, wool = 60
+     * - grass, ferns, dead bush, flowers = 100
+     *
+     * This property only works with [IFoundationBlock] blocks. The spec's default block type is an `IFoundationBlock`.
+     */
+    public fun flammability(value: Int): BlockSpec = build { blockProperties.flammability(value) }
+
+    /**
+     * Used when fire is updating on a neighbor block. The higher the number returned, the faster fire will spread
+     * around this block.
+     *
+     * Some example values (taken from [FireBlock.init]):
+     * - wood = 5
+     * - leaves, wool, carpet = 30
+     * - grass, ferns, dead bush, flowers = 60
+     *
+     * This property only works with [IFoundationBlock] blocks. The spec's default block type is an `IFoundationBlock`.
+     */
+    public fun fireSpreadSpeed(value: Int): BlockSpec = build { blockProperties.fireSpreadSpeed(value) }
+
+    /**
+     * Sets the fire behavior for this block.
+     *
+     * Some example values (taken from [FireBlock.init]):
+     * - wood planks/slabs/fences/etc. = 5, 20
+     * - wood logs = 5, 5
+     * - leaves, wool = 30, 60
+     * - grass, ferns, dead bush, flowers = 60, 100
+     *
+     * This property only works with [IFoundationBlock] blocks.
+     *
+     * @param flammability the chance that fire will spread and consume this block. 300 being a 100% chance, 0,
+     * being a 0% chance.
+     *
+     * @param fireSpreadSpeed used when fire is updating on a neighbor block. The higher the number returned, the
+     * faster fire will spread around this block.
+     */
+    public fun fireInfo(flammability: Int, fireSpreadSpeed: Int): BlockSpec = build {
+        blockProperties.fireInfo(flammability, fireSpreadSpeed)
+    }
     //endregion
 
     //region item properties
@@ -393,23 +449,5 @@ public class BlockSpec(
     private inline fun build(block: () -> Unit): BlockSpec {
         block()
         return this
-    }
-
-    private companion object {
-        private val blockPropertiesMaterialMirror = Mirror.reflectClass<Block.Properties>()
-            .getDeclaredField(mapSrgName("field_200953_a")) // material
-        private val blockPropertiesMapColorMirror = Mirror.reflectClass<Block.Properties>()
-            .getDeclaredField(mapSrgName("field_200954_b")) // mapColor
-        private val GENERIC_MATERIAL = Material(
-            MaterialColor.AIR, // materialMapColor
-            false, // liquid
-            true, // solid
-            true, // doesBlockMovement
-            true, // opaque
-            true, // requiresNoTool
-            false, // canBurn
-            false, // replaceable
-            PushReaction.NORMAL // mobilityFlag
-        )
     }
 }

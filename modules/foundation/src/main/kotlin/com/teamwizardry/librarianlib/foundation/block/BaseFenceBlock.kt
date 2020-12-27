@@ -1,10 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.block
 
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import net.minecraft.block.FenceBlock
-import net.minecraft.item.BlockItem
-import net.minecraft.item.Item
-import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.model.generators.BlockStateProvider
 
 /**
@@ -14,8 +10,11 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
  * Required textures:
  * - `<modid>:block/<textureName>.png`
  */
-public open class BaseFenceBlock(properties: Properties, private val textureName: String): FenceBlock(properties),
-    IFoundationBlock {
+public open class BaseFenceBlock(
+    override val properties: FoundationBlockProperties,
+    private val textureName: String
+): FenceBlock(properties.vanillaProperties), IFoundationBlock {
+
     override fun generateBlockState(gen: BlockStateProvider) {
         gen.fenceBlock(this, gen.modLoc("block/$textureName"))
         gen.itemModels().fenceInventory("block/${registryName!!.path}_inventory", gen.modLoc("block/$textureName"))

@@ -14,8 +14,11 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
  * Required models:
  * - `<modid>:block/<modelName>.json`
  */
-public open class BaseSlabBlock(properties: Properties, private val modelName: String): SlabBlock(properties),
-    IFoundationBlock {
+public open class BaseSlabBlock(
+    override val properties: FoundationBlockProperties,
+    private val modelName: String
+): SlabBlock(properties.vanillaProperties), IFoundationBlock {
+
     override fun generateBlockState(gen: BlockStateProvider) {
         val modelLoc = gen.modLoc("block/$modelName")
         gen.slabBlock(this, modelLoc, modelLoc)

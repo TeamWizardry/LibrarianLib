@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "librarianlib-foundation-test:block/test_tile"
+    }
+  }
+}

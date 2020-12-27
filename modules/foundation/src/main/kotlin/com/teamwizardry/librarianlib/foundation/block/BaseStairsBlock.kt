@@ -10,10 +10,15 @@ import java.util.function.Supplier
  * `textureName` would be `oak_planks`.
  *
  * Required textures:
- * - `<modid>:block/<modelName>.png`
+ * - `<modid>:block/<textureName>.png`
+ *
+ * @param state A supplier returning the blockstate for the full block
  */
-public open class BaseStairsBlock(state: Supplier<BlockState>, properties: Properties, private val textureName: String):
-    StairsBlock(state, properties), IFoundationBlock {
+public open class BaseStairsBlock(
+    state: Supplier<BlockState>,
+    override val properties: FoundationBlockProperties,
+    private val textureName: String
+): StairsBlock(state, properties.vanillaProperties), IFoundationBlock {
 
     override fun generateBlockState(gen: BlockStateProvider) {
         gen.stairsBlock(this, gen.modLoc("block/$textureName"))

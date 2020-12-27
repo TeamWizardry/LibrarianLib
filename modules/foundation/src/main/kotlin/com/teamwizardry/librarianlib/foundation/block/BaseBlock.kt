@@ -1,8 +1,5 @@
 package com.teamwizardry.librarianlib.foundation.block
 
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
-import com.teamwizardry.librarianlib.foundation.item.BaseBlockItem
-import com.teamwizardry.librarianlib.foundation.registration.DefaultProperties
 import net.minecraft.block.Block
 import net.minecraft.block.SoundType
 import net.minecraft.block.material.Material
@@ -15,53 +12,33 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
  * Required textures:
  * - `<modid>:block/<block_id>.png`
  */
-public open class BaseBlock(properties: Properties): Block(properties), IFoundationBlock {
+public open class BaseBlock(override val properties: FoundationBlockProperties):
+    Block(properties.vanillaProperties), IFoundationBlock {
+
     override fun generateBlockState(gen: BlockStateProvider) {
         gen.simpleBlock(this)
     }
 
     public companion object {
-        @JvmField
-        public val STONE_DEFAULTS: DefaultProperties = DefaultProperties()
-            .material(Material.ROCK)
-            .mapColor(MaterialColor.STONE)
-            .hardnessAndResistance(1.5f, 6f)
+        @JvmStatic
+        public val defaultStoneProperties: FoundationBlockProperties
+            get() = FoundationBlockProperties()
+                .material(Material.ROCK)
+                .mapColor(MaterialColor.STONE)
+                .hardnessAndResistance(1.5f, 6f)
 
-        @JvmField
-        public val OBSIDIAN_DEFAULTS: DefaultProperties = DefaultProperties()
-            .material(Material.ROCK)
-            .mapColor(MaterialColor.BLACK)
-            .hardnessAndResistance(50f, 1200f)
+        @JvmStatic
+        public val defaultMetalBlockProperties: FoundationBlockProperties
+            get() = FoundationBlockProperties()
+                .material(Material.IRON)
+                .hardnessAndResistance(3f, 6f)
+                .sound(SoundType.METAL)
 
-        @JvmField
-        public val DIRT_DEFAULTS: DefaultProperties = DefaultProperties()
-            .material(Material.EARTH)
-            .mapColor(MaterialColor.DIRT)
-            .hardnessAndResistance(0.5f)
-            .sound(SoundType.GROUND)
-
-        @JvmField
-        public val PLANK_DEFAULTS: DefaultProperties = DefaultProperties()
-            .material(Material.WOOD)
-            .mapColor(MaterialColor.WOOD)
-            .hardnessAndResistance(2f, 3f)
-            .sound(SoundType.WOOD)
-
-        @JvmField
-        public val STONE_BRICKS_DEFAULTS: DefaultProperties = DefaultProperties()
-            .material(Material.ROCK)
-            .hardnessAndResistance(2f, 6f)
-
-        @JvmField
-        public val METAL_BLOCK_DEFAULTS: DefaultProperties = DefaultProperties()
-            .material(Material.IRON)
-            .hardnessAndResistance(3f, 6f)
-            .sound(SoundType.METAL)
-
-        @JvmField
-        public val GEM_BLOCK_DEFAULTS: DefaultProperties = DefaultProperties()
-            .material(Material.IRON)
-            .hardnessAndResistance(5f, 6f)
-            .sound(SoundType.METAL)
+        @JvmStatic
+        public val defaultGemBlockProperties: FoundationBlockProperties
+            get() = FoundationBlockProperties()
+                .material(Material.IRON)
+                .hardnessAndResistance(5f, 6f)
+                .sound(SoundType.METAL)
     }
 }

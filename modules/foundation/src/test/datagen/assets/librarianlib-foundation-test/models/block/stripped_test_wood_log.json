@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_column",
+  "textures": {
+    "side": "librarianlib-foundation-test:block/stripped_test_wood_log",
+    "end": "librarianlib-foundation-test:block/stripped_test_wood_log_top"
+  }
+}

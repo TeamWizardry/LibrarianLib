@@ -1,0 +1,8 @@
+{
+  "parent": "block/stairs",
+  "textures": {
+    "side": "librarianlib-foundation-test:block/building_block",
+    "bottom": "librarianlib-foundation-test:block/building_block",
+    "top": "librarianlib-foundation-test:block/building_block"
+  }
+}

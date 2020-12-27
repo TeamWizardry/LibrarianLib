@@ -17,7 +17,7 @@ public class ContainerSpec<T: FacadeContainer>(
     /**
      * The registry name, sans mod ID
      */
-    public val id: String,
+    public var id: String,
     /**
      * The container class. This class must have a single constructor with entirely Prism-serializable arguments.
      */

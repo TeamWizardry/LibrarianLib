@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "librarianlib-foundation-test:test_wood_log",
+    "librarianlib-foundation-test:stripped_test_wood_log",
+    "librarianlib-foundation-test:stripped_test_wood",
+    "librarianlib-foundation-test:test_wood"
+  ]
+}

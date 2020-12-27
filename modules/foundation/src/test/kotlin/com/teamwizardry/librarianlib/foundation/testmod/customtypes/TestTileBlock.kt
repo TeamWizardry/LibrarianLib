@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.foundation.testmod.customtypes
 
+import com.teamwizardry.librarianlib.foundation.block.BaseBlock
+import com.teamwizardry.librarianlib.foundation.block.FoundationBlockProperties
 import com.teamwizardry.librarianlib.foundation.registration.LazyTileEntityType
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
@@ -15,7 +17,7 @@ import net.minecraft.world.IBlockReader
 import net.minecraft.world.World
 import net.minecraftforge.common.extensions.IForgeBlock
 
-class TestTileBlock(properties: Properties): Block(properties), IForgeBlock {
+class TestTileBlock(properties: FoundationBlockProperties): BaseBlock(properties), IForgeBlock {
     override fun onBlockActivated(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, handIn: Hand, hit: BlockRayTraceResult): ActionResultType {
         val prefix = if(worldIn.isRemote) "[Client]" else "[Server]"
         val tile = worldIn.getTileEntity(pos) as? TestTileEntity ?: return ActionResultType.CONSUME

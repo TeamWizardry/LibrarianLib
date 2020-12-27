@@ -1,0 +1,6 @@
+{
+  "parent": "block/leaves",
+  "textures": {
+    "all": "librarianlib-foundation-test:block/test_wood_leaves"
+  }
+}

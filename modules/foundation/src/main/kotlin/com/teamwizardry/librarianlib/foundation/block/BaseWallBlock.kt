@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.foundation.block
 
-import net.minecraft.block.FenceBlock
 import net.minecraft.block.WallBlock
 import net.minecraftforge.client.model.generators.BlockStateProvider
 
@@ -11,8 +10,11 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
  * Required textures:
  * - `<modid>:block/<textureName>.png`
  */
-public open class BaseWallBlock(properties: Properties, private val textureName: String): WallBlock(properties),
-    IFoundationBlock {
+public open class BaseWallBlock(
+    override val properties: FoundationBlockProperties,
+    private val textureName: String
+): WallBlock(properties.vanillaProperties), IFoundationBlock {
+
     override fun generateBlockState(gen: BlockStateProvider) {
         gen.wallBlock(this, gen.modLoc("block/$textureName"))
         gen.itemModels().wallInventory("block/${registryName!!.path}_inventory", gen.modLoc("block/$textureName"))

@@ -3,9 +3,13 @@ package com.teamwizardry.librarianlib.foundation.block
 import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.foundation.item.BaseBlockItem
 import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
+import net.minecraft.block.BlockState
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
+import net.minecraft.util.Direction
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.math.BlockPos
+import net.minecraft.world.IBlockReader
 import net.minecraftforge.client.model.generators.BlockStateProvider
 import net.minecraftforge.common.extensions.IForgeBlock
 
@@ -13,6 +17,8 @@ import net.minecraftforge.common.extensions.IForgeBlock
  * An interface for implementing Foundation's extended block functionality.
  */
 public interface IFoundationBlock: IForgeBlock {
+    public val properties: FoundationBlockProperties
+
     /**
      * Generates the models for this block
      */
@@ -40,5 +46,15 @@ public interface IFoundationBlock: IForgeBlock {
      */
     public fun generateLootTable(gen: BlockLootTableGenerator) {
         gen.setLootTable(block, gen.createSingleItemDrop(block, false)) // TODO: configure explosion immunity?
+    }
+
+    @JvmDefault
+    override fun getFlammability(state: BlockState?, world: IBlockReader?, pos: BlockPos?, face: Direction?): Int {
+        return properties.getFlammabilityImpl(state, world, pos, face)
+    }
+
+    @JvmDefault
+    override fun getFireSpreadSpeed(state: BlockState?, world: IBlockReader?, pos: BlockPos?, face: Direction?): Int {
+        return properties.getFireSpreadSpeedImpl(state, world, pos, face)
     }
 }

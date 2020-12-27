@@ -11,7 +11,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
     /**
      * Custom block properties to apply to all the blocks in this collection
      */
-    public val blockProperties: DefaultProperties = DefaultProperties()
+    public val blockProperties: FoundationBlockProperties = FoundationBlockProperties()
 
     /**
      * What layer the blocks should be rendered in
@@ -32,6 +32,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
         BlockSpec(fullName)
             .withProperties(blockProperties)
             .renderLayer(renderLayer)
+            .itemGroup(itemGroup)
             .block { BaseBlock(it.blockProperties) }
     }
 
@@ -39,6 +40,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
         BlockSpec(specialName + "_slab")
             .withProperties(blockProperties)
             .renderLayer(renderLayer)
+            .itemGroup(itemGroup)
             .block { BaseSlabBlock(it.blockProperties, fullName) }
             .datagen {
                 tags(BlockTags.SLABS)
@@ -49,6 +51,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
         BlockSpec(specialName + "_stairs")
             .withProperties(blockProperties)
             .renderLayer(renderLayer)
+            .itemGroup(itemGroup)
             .block { BaseStairsBlock({ full.lazy.get().defaultState }, it.blockProperties, fullName) }
             .datagen {
                 tags(BlockTags.STAIRS)
@@ -59,6 +62,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
         BlockSpec(specialName + "_fence")
             .withProperties(blockProperties)
             .renderLayer(renderLayer)
+            .itemGroup(itemGroup)
             .block { BaseFenceBlock(it.blockProperties, fullName) }
             .datagen {
                 tags(BlockTags.FENCES)
@@ -69,6 +73,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
         BlockSpec(specialName + "_fence_gate")
             .withProperties(blockProperties)
             .renderLayer(renderLayer)
+            .itemGroup(itemGroup)
             .block { BaseFenceGateBlock(it.blockProperties, fullName) }
     }
 
@@ -76,6 +81,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
         BlockSpec(specialName + "_wall")
             .withProperties(blockProperties)
             .renderLayer(renderLayer)
+            .itemGroup(itemGroup)
             .block { BaseWallBlock(it.blockProperties, fullName) }
             .datagen {
                 tags(BlockTags.WALLS)

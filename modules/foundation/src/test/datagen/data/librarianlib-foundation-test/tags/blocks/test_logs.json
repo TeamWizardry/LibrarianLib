@@ -1,6 +1,6 @@
 {
   "replace": false,
   "values": [
-    "librarianlib-foundation-test:test_log"
+    "librarianlib-foundation-test:stripped_test_wood_log"
   ]
 }

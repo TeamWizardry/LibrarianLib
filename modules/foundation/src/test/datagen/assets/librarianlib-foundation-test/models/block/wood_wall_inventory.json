@@ -1,6 +1,0 @@
-{
-  "parent": "block/wall_inventory",
-  "textures": {
-    "wall": "librarianlib-foundation-test:block/wood_planks"
-  }
-}

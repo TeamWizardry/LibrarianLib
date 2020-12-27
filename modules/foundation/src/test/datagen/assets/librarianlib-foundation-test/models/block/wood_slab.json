@@ -1,8 +1,0 @@
-{
-  "parent": "block/slab",
-  "textures": {
-    "side": "librarianlib-foundation-test:block/wood_planks",
-    "bottom": "librarianlib-foundation-test:block/wood_planks",
-    "top": "librarianlib-foundation-test:block/wood_planks"
-  }
-}
