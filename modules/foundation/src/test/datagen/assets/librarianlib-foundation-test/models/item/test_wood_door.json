@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "librarianlib-foundation-test:item/test_wood_door"
+  }
+}

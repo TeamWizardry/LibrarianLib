@@ -26,6 +26,9 @@ object ModBlocks {
     val wood: LazyBlock = LazyBlock()
     val woodLeaves: LazyBlock = LazyBlock()
 
+    val woodTrapdoor: LazyBlock = LazyBlock()
+    val woodDoor: LazyBlock = LazyBlock()
+
     internal fun registerBlocks(registrationManager: RegistrationManager) {
         testTile.from(registrationManager.add(
             BlockSpec("test_tile")
@@ -72,5 +75,8 @@ object ModBlocks {
         wood.from(registrationManager.add(woodCollection.wood))
 
         woodLeaves.from(registrationManager.add(woodCollection.leaves))
+
+        woodTrapdoor.from(registrationManager.add(woodCollection.trapdoor))
+        woodDoor.from(registrationManager.add(woodCollection.door))
     }
 }

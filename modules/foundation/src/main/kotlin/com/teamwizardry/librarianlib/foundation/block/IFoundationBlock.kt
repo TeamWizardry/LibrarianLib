@@ -25,7 +25,7 @@ public interface IFoundationBlock: IForgeBlock {
     public fun generateBlockState(gen: BlockStateProvider) {}
 
     /**
-     * Gets the this block's inventory block model name (e.g. the default, `block/block_id`). This is used by the
+     * Gets this block's inventory block model name (e.g. the default, `block/block_id`). This is used by the
      * default [createBlockItem] implementation.
      */
     public fun inventoryModelName(): String {

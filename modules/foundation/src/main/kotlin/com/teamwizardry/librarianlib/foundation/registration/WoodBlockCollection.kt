@@ -1,13 +1,11 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
-import com.teamwizardry.librarianlib.foundation.block.BaseLeavesBlock
-import com.teamwizardry.librarianlib.foundation.block.BaseLogBlock
-import com.teamwizardry.librarianlib.foundation.block.BaseRotatedPillarBlock
-import com.teamwizardry.librarianlib.foundation.block.FoundationBlockProperties
+import com.teamwizardry.librarianlib.foundation.block.*
 import com.teamwizardry.librarianlib.foundation.util.TagWrappers
 import net.minecraft.block.Block
 import net.minecraft.block.RotatedPillarBlock
 import net.minecraft.block.SoundType
+import net.minecraft.block.material.Material
 import net.minecraft.block.material.MaterialColor
 import net.minecraft.item.Item
 import net.minecraft.tags.BlockTags
@@ -197,10 +195,42 @@ public class WoodBlockCollection @JvmOverloads constructor(
     public val leaves: BlockSpec by lazy {
         BlockSpec(woodName + "_leaves")
             .withProperties(BaseLeavesBlock.defaultProperties)
+            .renderLayer(RenderLayerSpec.CUTOUT_MIPPED)
             .block {
                 BaseLeavesBlock(it.blockProperties)
             }
+    }
 
+    public val trapdoor: BlockSpec by lazy {
+        BlockSpec(woodName + "_trapdoor")
+            .material(Material.WOOD)
+            .mapColor(woodColor)
+            .hardnessAndResistance(3.0F)
+            .sound(SoundType.WOOD)
+            .notSolid()
+            .renderLayer(RenderLayerSpec.CUTOUT)
+            .datagen {
+                tags(BlockTags.WOODEN_TRAPDOORS)
+            }
+            .block {
+                BaseTrapDoorBlock(it.blockProperties)
+            }
+    }
+
+    public val door: BlockSpec by lazy {
+        BlockSpec(woodName + "_door")
+            .material(Material.WOOD)
+            .mapColor(woodColor)
+            .hardnessAndResistance(3.0F)
+            .sound(SoundType.WOOD)
+            .notSolid()
+            .renderLayer(RenderLayerSpec.CUTOUT)
+            .datagen {
+                tags(BlockTags.WOODEN_DOORS)
+            }
+            .block {
+                BaseDoorBlock(it.blockProperties)
+            }
     }
 
 //    + planks: BuildingBlockProducts
@@ -208,8 +238,8 @@ public class WoodBlockCollection @JvmOverloads constructor(
 //    + stripped log
 //    + stripped
 //    + bark
-//    - trapdoor
-//    - door
+//    + trapdoor
+//    + door
 //    - sign
 //    - button?
 //    - pressure plate?
