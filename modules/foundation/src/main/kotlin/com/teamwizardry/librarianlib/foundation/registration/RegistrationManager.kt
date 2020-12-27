@@ -4,16 +4,15 @@ import com.mojang.datafixers.util.Pair
 import com.teamwizardry.librarianlib.facade.container.FacadeContainer
 import com.teamwizardry.librarianlib.foundation.LibrarianLibFoundationModule
 import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
+import com.teamwizardry.librarianlib.foundation.bridge.FoundationSignTileEntityCreator
 import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
 import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
 import com.teamwizardry.librarianlib.foundation.loot.LootTableGenerator
 import net.minecraft.block.Block
-import net.minecraft.client.gui.IHasContainer
 import net.minecraft.client.gui.ScreenManager
-import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.gui.screen.inventory.ContainerScreen
 import net.minecraft.client.renderer.RenderTypeLookup
 import net.minecraft.client.renderer.entity.EntityRenderer
+import net.minecraft.client.renderer.tileentity.SignTileEntityRenderer
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer
 import net.minecraft.data.BlockTagsProvider
 import net.minecraft.data.DataGenerator
@@ -24,6 +23,7 @@ import net.minecraft.entity.EntityType
 import net.minecraft.inventory.container.ContainerType
 import net.minecraft.item.*
 import net.minecraft.tags.Tag
+import net.minecraft.tileentity.SignTileEntity
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityType
 import net.minecraft.util.ResourceLocation
@@ -33,6 +33,7 @@ import net.minecraft.world.storage.loot.LootTableManager
 import net.minecraft.world.storage.loot.ValidationTracker
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import net.minecraftforge.client.event.TextureStitchEvent
 import net.minecraftforge.client.model.generators.BlockStateProvider
 import net.minecraftforge.common.capabilities.CapabilityInject
 import net.minecraftforge.common.capabilities.CapabilityManager
@@ -82,6 +83,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     private val entities = mutableListOf<EntitySpec<*>>()
     private val capabilities = mutableListOf<CapabilitySpec<*>>()
     private val containers = mutableListOf<ContainerSpec<*>>()
+    private val atlasSprites = mutableMapOf<ResourceLocation, MutableSet<ResourceLocation>>()
 
     /**
      * Methods for performing data generation
@@ -143,6 +145,23 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         spec.modid = modid
         containers.add(spec)
         return spec.lazy
+    }
+
+    public fun addAtlasSprite(atlas: ResourceLocation, sprite: ResourceLocation) {
+        atlasSprites.getOrPut(atlas) { mutableSetOf() }.add(sprite)
+    }
+
+    /**
+     * A lazy TE type used by built-in block collections
+     */
+    @get:JvmSynthetic
+    internal val foundationSignTileEntityType: LazyTileEntityType<SignTileEntity> by lazy {
+        if(tileEntities.any { it.id == "sign" })
+            throw IllegalStateException("Tile entity type `$modid:sign` already configured")
+        this.add(
+            TileEntitySpec("sign") { FoundationSignTileEntityCreator.create(foundationSignTileEntityType.get()) }
+                .renderer { SignTileEntityRenderer(it) }
+        )
     }
 
     @SubscribeEvent
@@ -241,6 +260,14 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun dedicatedServerSetup(e: FMLDedicatedServerSetupEvent) {
+    }
+
+    @SubscribeEvent
+    @JvmSynthetic
+    internal fun stitchAtlasSprites(e: TextureStitchEvent.Pre) {
+        (atlasSprites[e.map.textureLocation] ?: return).forEach { sprite ->
+            e.addSprite(sprite)
+        }
     }
 
     @SubscribeEvent

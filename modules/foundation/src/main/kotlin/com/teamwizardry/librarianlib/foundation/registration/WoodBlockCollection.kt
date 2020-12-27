@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
+import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.foundation.block.*
 import com.teamwizardry.librarianlib.foundation.util.TagWrappers
 import net.minecraft.block.Block
@@ -205,7 +206,7 @@ public class WoodBlockCollection @JvmOverloads constructor(
         BlockSpec(woodName + "_trapdoor")
             .material(Material.WOOD)
             .mapColor(woodColor)
-            .hardnessAndResistance(3.0F)
+            .hardnessAndResistance(3 * hardnessMultiplier, 3 * resistanceMultiplier)
             .sound(SoundType.WOOD)
             .notSolid()
             .renderLayer(RenderLayerSpec.CUTOUT)
@@ -221,7 +222,7 @@ public class WoodBlockCollection @JvmOverloads constructor(
         BlockSpec(woodName + "_door")
             .material(Material.WOOD)
             .mapColor(woodColor)
-            .hardnessAndResistance(3.0F)
+            .hardnessAndResistance(3 * hardnessMultiplier, 3 * resistanceMultiplier)
             .sound(SoundType.WOOD)
             .notSolid()
             .renderLayer(RenderLayerSpec.CUTOUT)
@@ -233,6 +234,52 @@ public class WoodBlockCollection @JvmOverloads constructor(
             }
     }
 
+    public val sign: BlockSpec by lazy {
+        // todo: temporary atlas system
+        registrationManager.addAtlasSprite(loc("textures/atlas/signs.png"), FoundationStandingSignBlock.signTexture(registrationManager.modid, woodName))
+        BlockSpec(woodName + "_sign")
+            .material(Material.WOOD)
+            .mapColor(woodColor)
+            .doesNotBlockMovement()
+            .hardnessAndResistance(1 * hardnessMultiplier, 1 * resistanceMultiplier)
+            .sound(SoundType.WOOD)
+            .tileEntity(registrationManager.foundationSignTileEntityType)
+            .datagen {
+                tags(BlockTags.STANDING_SIGNS)
+            }
+            .block {
+                FoundationStandingSignBlock(
+                    it.blockProperties,
+                    woodName, loc(registrationManager.modid, "block/" + woodName + "_planks"),
+                    LazyBlock { wallSign.lazy.get() }, // wallSign uses us in its lootFrom call, so we can't access it at all yet
+                    registrationManager.foundationSignTileEntityType
+                )
+            }
+    }
+
+    public val wallSign: BlockSpec by lazy {
+        registrationManager.addAtlasSprite(loc("textures/atlas/signs.png"), FoundationStandingSignBlock.signTexture(registrationManager.modid, woodName))
+        BlockSpec(woodName + "_wall_sign")
+            .material(Material.WOOD)
+            .mapColor(woodColor)
+            .doesNotBlockMovement()
+            .hardnessAndResistance(1 * hardnessMultiplier, 1 * resistanceMultiplier)
+            .sound(SoundType.WOOD)
+            .lootFrom(sign.blockInstance)
+            .noItem()
+            .tileEntity(registrationManager.foundationSignTileEntityType)
+            .datagen {
+                tags(BlockTags.WALL_SIGNS)
+            }
+            .block {
+                FoundationWallSignBlock(
+                    it.blockProperties,
+                    woodName, woodName + "_sign",
+                    registrationManager.foundationSignTileEntityType
+                )
+            }
+    }
+
 //    + planks: BuildingBlockProducts
 //    + log
 //    + stripped log
@@ -240,7 +287,7 @@ public class WoodBlockCollection @JvmOverloads constructor(
 //    + bark
 //    + trapdoor
 //    + door
-//    - sign
+//    + sign
 //    - button?
 //    - pressure plate?
 //    # tree stuff:

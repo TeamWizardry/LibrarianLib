@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
 import net.minecraft.block.BlockState
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
+import net.minecraft.item.Items
 import net.minecraft.util.Direction
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
@@ -45,7 +46,8 @@ public interface IFoundationBlock: IForgeBlock {
      * Generates the loot table for this block. The default implementation directly drops this block
      */
     public fun generateLootTable(gen: BlockLootTableGenerator) {
-        gen.setLootTable(block, gen.createSingleItemDrop(block, false)) // TODO: configure explosion immunity?
+        if(!properties.usesExternalLoot && block.asItem() != Items.AIR)
+            gen.setLootTable(block, gen.createSingleItemDrop(block, false)) // TODO: configure explosion immunity?
     }
 
     @JvmDefault

@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.teamwizardry.librarianlib.foundation.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "ll-foundation.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "SignTileEntityRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

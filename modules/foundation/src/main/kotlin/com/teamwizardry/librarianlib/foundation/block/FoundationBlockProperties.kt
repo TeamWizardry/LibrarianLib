@@ -212,6 +212,12 @@ public class FoundationBlockProperties {
         return fireSpreadSpeed ?: 0
     }
 
+    /**
+     * True if this block is sourcing its properties from another block's table
+     */
+    public val usesExternalLoot: Boolean
+        get() = lootFrom != null
+
     private inline fun build(block: () -> Unit): FoundationBlockProperties {
         block()
         return this
