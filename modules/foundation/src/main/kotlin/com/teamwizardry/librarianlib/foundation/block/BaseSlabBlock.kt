@@ -16,7 +16,7 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
  */
 public open class BaseSlabBlock(
     override val properties: FoundationBlockProperties,
-    private val modelName: String
+    protected val modelName: String
 ): SlabBlock(properties.vanillaProperties), IFoundationBlock {
 
     override fun generateBlockState(gen: BlockStateProvider) {

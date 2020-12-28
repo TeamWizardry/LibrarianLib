@@ -18,14 +18,14 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
 /**
  * The foundation wall sign block
  *
- * Required textures:
- * - `<modid>:entity/signs/<materialName>.png`
+ * Required models:
+ * - `<modid>:block/<standingSignName>`
  */
 public open class FoundationWallSignBlock(
     override val properties: FoundationBlockProperties,
-    private val materialName: String,
-    private val standingSignName: String,
-    private val tileEntityType: LazyTileEntityType<SignTileEntity>
+    protected val materialName: String,
+    protected val standingSignName: String,
+    protected val tileEntityType: LazyTileEntityType<SignTileEntity>
 ): WallSignBlock(properties.vanillaProperties, WoodType.OAK), IFoundationBlock, ICustomSignMaterialBlock {
 
     override fun signMaterial(): Material {
@@ -33,7 +33,7 @@ public open class FoundationWallSignBlock(
     }
 
     override fun generateBlockState(gen: BlockStateProvider) {
-        gen.simpleBlock(this, gen.models().getBuilder(standingSignName)) // empty model
+        gen.simpleBlock(this, gen.models().getBuilder(standingSignName))
     }
 
     override fun createTileEntity(state: BlockState?, world: IBlockReader?): TileEntity? {

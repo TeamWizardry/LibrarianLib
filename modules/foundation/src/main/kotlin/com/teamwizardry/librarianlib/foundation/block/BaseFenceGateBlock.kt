@@ -12,7 +12,7 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
  */
 public open class BaseFenceGateBlock(
     override val properties: FoundationBlockProperties,
-    private val textureName: String
+    protected val textureName: String
 ): FenceGateBlock(properties.vanillaProperties), IFoundationBlock {
 
     override fun generateBlockState(gen: BlockStateProvider) {

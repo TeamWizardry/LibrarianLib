@@ -9,6 +9,7 @@ import net.minecraft.block.material.MaterialColor
 import net.minecraft.item.Item
 import net.minecraft.tags.BlockTags
 import net.minecraft.tags.Tag
+import net.minecraft.util.SoundEvents
 
 /**
  * All the basic blocks for a type of wood.
@@ -145,7 +146,7 @@ public class WoodBlockCollection @JvmOverloads constructor(
      * The base name for the all-stripped [strippedWood] and all-bark [wood] blocks. Defaults to `<woodName>_wood`, or
      * just the [woodName] if it already ends in `wood`.
      */
-    public var bareWoodName: String = if(woodName.endsWith("wood")) woodName else woodName + "_wood"
+    public var bareWoodName: String = if (woodName.endsWith("wood")) woodName else woodName + "_wood"
 
     /**
      * The all-stipped log variant
@@ -234,7 +235,10 @@ public class WoodBlockCollection @JvmOverloads constructor(
 
     public val sign: BlockSpec by lazy {
         // todo: temporary atlas system
-        registrationManager.addAtlasSprite(loc("textures/atlas/signs.png"), FoundationStandingSignBlock.signTexture(registrationManager.modid, woodName))
+        registrationManager.addAtlasSprite(
+            loc("textures/atlas/signs.png"),
+            FoundationStandingSignBlock.signTexture(registrationManager.modid, woodName)
+        )
         BlockSpec(woodName + "_sign")
             .material(Material.WOOD)
             .mapColor(woodColor)
@@ -256,7 +260,10 @@ public class WoodBlockCollection @JvmOverloads constructor(
     }
 
     public val wallSign: BlockSpec by lazy {
-        registrationManager.addAtlasSprite(loc("textures/atlas/signs.png"), FoundationStandingSignBlock.signTexture(registrationManager.modid, woodName))
+        registrationManager.addAtlasSprite(
+            loc("textures/atlas/signs.png"),
+            FoundationStandingSignBlock.signTexture(registrationManager.modid, woodName)
+        )
         BlockSpec(woodName + "_wall_sign")
             .material(Material.WOOD)
             .mapColor(woodColor)
@@ -278,8 +285,6 @@ public class WoodBlockCollection @JvmOverloads constructor(
             }
     }
 
-    public var pressurePlateSensitivity: BasePressurePlateBlock.SensitivityFunction = BasePressurePlateBlock.SensitivityFunction.EVERYTHING
-
     public val pressurePlate: BlockSpec by lazy {
         BlockSpec(woodName + "_pressure_plate")
             .material(Material.WOOD)
@@ -291,7 +296,27 @@ public class WoodBlockCollection @JvmOverloads constructor(
                 tags(BlockTags.WOODEN_PRESSURE_PLATES)
             }
             .block {
-                BasePressurePlateBlock(it.blockProperties, pressurePlateSensitivity, woodName + "_planks")
+                FoundationBooleanPressurePlateBlock(it.blockProperties, 20, woodName + "_planks")
+            }
+    }
+
+    public val button: BlockSpec by lazy {
+        BlockSpec(woodName + "_button")
+            .material(Material.MISCELLANEOUS)
+            .mapColor(woodColor)
+            .doesNotBlockMovement()
+            .hardnessAndResistance(0.5f * hardnessMultiplier, 0.5f * resistanceMultiplier)
+            .sound(SoundType.WOOD)
+            .datagen {
+                tags(BlockTags.WOODEN_BUTTONS)
+            }
+            .block {
+                FoundationButtonBlock(
+                    it.blockProperties,
+                    true, 30,
+                    SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_ON, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_OFF,
+                    woodName + "_planks"
+                )
             }
     }
 
@@ -303,8 +328,8 @@ public class WoodBlockCollection @JvmOverloads constructor(
 //    + trapdoor
 //    + door
 //    + sign
-//    - button?
-//    + pressure plate?
+//    + button
+//    + pressure plate
 //    # tree stuff:
 //    + leaves
 //    - sapling

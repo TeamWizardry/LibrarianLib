@@ -26,14 +26,14 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
  *
  * Required textures:
  * - `<modid>:entity/signs/<materialName>.png`
- * - `<particleTexture>`
+ * - `<particleTexture>.png`
  */
 public open class FoundationStandingSignBlock(
     override val properties: FoundationBlockProperties,
-    private val materialName: String,
-    private val particleTexture: ResourceLocation,
-    private val wallSignBlock: LazyBlock,
-    private val tileEntityType: LazyTileEntityType<SignTileEntity>
+    protected val materialName: String,
+    protected val particleTexture: ResourceLocation,
+    protected val wallSignBlock: LazyBlock,
+    protected val tileEntityType: LazyTileEntityType<SignTileEntity>
 ): StandingSignBlock(properties.vanillaProperties, WoodType.OAK), IFoundationBlock, ICustomSignMaterialBlock {
 
     override fun signMaterial(): Material {
@@ -41,10 +41,8 @@ public open class FoundationStandingSignBlock(
     }
 
     override fun generateBlockState(gen: BlockStateProvider) {
-        gen.simpleBlock(this, gen.models()
-            .getBuilder(this.registryName!!.path)
-            .texture("particle", particleTexture)
-        ) // empty model
+        // empty model w/ particle texture
+        gen.simpleBlock(this, gen.models().getBuilder(this.registryName!!.path).texture("particle", particleTexture))
     }
 
     override fun createBlockItem(itemProperties: Item.Properties): BlockItem {

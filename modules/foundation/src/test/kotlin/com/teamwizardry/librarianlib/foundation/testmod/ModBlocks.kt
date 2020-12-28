@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.foundation.testmod
 
 import com.teamwizardry.librarianlib.foundation.registration.*
+import com.teamwizardry.librarianlib.foundation.testmod.customtypes.StackPressurePlateBlock
 import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestTileBlock
 import net.minecraft.block.material.Material
 import net.minecraft.block.material.MaterialColor
@@ -9,6 +10,7 @@ import net.minecraft.item.Items
 object ModBlocks {
     val testTile: LazyBlock = LazyBlock()
     val strangeLoot: LazyBlock = LazyBlock()
+    val stackPressurePlate: LazyBlock = LazyBlock()
 
     val buildingBlock: LazyBlock = LazyBlock()
     val buildingBlockSlab: LazyBlock = LazyBlock()
@@ -31,6 +33,7 @@ object ModBlocks {
     val woodSign: LazyBlock = LazyBlock()
     val woodWallSign: LazyBlock = LazyBlock()
     val woodPressurePlate: LazyBlock = LazyBlock()
+    val woodButton: LazyBlock = LazyBlock()
 
     internal fun registerBlocks(registrationManager: RegistrationManager) {
         testTile.from(registrationManager.add(
@@ -47,6 +50,14 @@ object ModBlocks {
                         setLootTable(block, createSingleItemDrop(Items.STICK, false))
                     }
                     tags(ModTags.STRANGE_BLOCK)
+                }
+        ))
+
+        // a pressure plate that measures the number of items on it
+        stackPressurePlate.from(registrationManager.add(
+            BlockSpec("stack_pressure_plate")
+                .block {
+                    StackPressurePlateBlock(it.blockProperties, "stack_pressure_plate")
                 }
         ))
 
@@ -84,5 +95,6 @@ object ModBlocks {
         woodSign.from(registrationManager.add(woodCollection.sign))
         woodWallSign.from(registrationManager.add(woodCollection.wallSign))
         woodPressurePlate.from(registrationManager.add(woodCollection.pressurePlate))
+        woodButton.from(registrationManager.add(woodCollection.button))
     }
 }

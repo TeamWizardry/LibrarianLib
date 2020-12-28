@@ -17,7 +17,7 @@ import java.util.function.Supplier
 public open class BaseStairsBlock(
     state: Supplier<BlockState>,
     override val properties: FoundationBlockProperties,
-    private val textureName: String
+    protected val textureName: String
 ): StairsBlock(state, properties.vanillaProperties), IFoundationBlock {
 
     override fun generateBlockState(gen: BlockStateProvider) {
