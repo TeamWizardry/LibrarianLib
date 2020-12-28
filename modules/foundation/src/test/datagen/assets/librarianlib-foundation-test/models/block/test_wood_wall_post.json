@@ -1,6 +1,0 @@
-{
-  "parent": "block/template_wall_post",
-  "textures": {
-    "wall": "librarianlib-foundation-test:block/test_wood_planks"
-  }
-}

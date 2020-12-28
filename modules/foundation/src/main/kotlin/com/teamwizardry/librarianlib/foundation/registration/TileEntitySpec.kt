@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.foundation.registration
 import com.teamwizardry.librarianlib.core.util.IncompleteBuilderException
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.core.util.sided.ClientFunction
+import net.minecraft.block.Block
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.tileentity.TileEntity
@@ -36,13 +37,20 @@ public class TileEntitySpec<T: TileEntity>(
     public val registryName: ResourceLocation
         get() = ResourceLocation(modid, id)
 
-
-    internal val _validBlocks: MutableSet<LazyBlock> = mutableSetOf()
+    internal val _validBlocks: MutableList<LazyBlock> = mutableListOf()
 
     /**
      * The list of blocks that this tile entity can exist for.
      */
-    public val validBlocks: Set<LazyBlock> = _validBlocks.unmodifiableView()
+    public val validBlocks: List<LazyBlock> = _validBlocks.unmodifiableView()
+
+    /**
+     * Manually add a valid block. Prefer using [BlockSpec.tileEntity] if you're using a BlockSpec.
+     */
+    public fun validBlock(block: Block): TileEntitySpec<T> {
+        _validBlocks.add(LazyBlock(block))
+        return this
+    }
 
     @get:JvmSynthetic
     internal var renderer: ClientFunction<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>? = null
@@ -62,7 +70,7 @@ public class TileEntitySpec<T: TileEntity>(
     public val typeInstance: TileEntityType<T> by lazy {
         if (this.validBlocks.isEmpty())
             throw IncompleteBuilderException("Tile entity $registryName was never added to any blocks")
-        val resolvedBlocks = this.validBlocks.map { it.get() }.toTypedArray()
+        val resolvedBlocks = this.validBlocks.map { it.get() }.toSet().toTypedArray()
         val type = TileEntityType.Builder.create(factory, *resolvedBlocks).build(null)
         type.registryName = registryName
         type

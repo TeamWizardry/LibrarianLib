@@ -3,9 +3,7 @@ package com.teamwizardry.librarianlib.foundation.registration
 import com.teamwizardry.librarianlib.core.util.kotlin.loc
 import com.teamwizardry.librarianlib.foundation.block.*
 import com.teamwizardry.librarianlib.foundation.util.TagWrappers
-import net.minecraft.block.Block
-import net.minecraft.block.RotatedPillarBlock
-import net.minecraft.block.SoundType
+import net.minecraft.block.*
 import net.minecraft.block.material.Material
 import net.minecraft.block.material.MaterialColor
 import net.minecraft.item.Item
@@ -280,6 +278,23 @@ public class WoodBlockCollection @JvmOverloads constructor(
             }
     }
 
+    public var pressurePlateSensitivity: BasePressurePlateBlock.SensitivityFunction = BasePressurePlateBlock.SensitivityFunction.EVERYTHING
+
+    public val pressurePlate: BlockSpec by lazy {
+        BlockSpec(woodName + "_pressure_plate")
+            .material(Material.WOOD)
+            .mapColor(woodColor)
+            .doesNotBlockMovement()
+            .hardnessAndResistance(0.5f * hardnessMultiplier, 0.5f * resistanceMultiplier)
+            .sound(SoundType.WOOD)
+            .datagen {
+                tags(BlockTags.WOODEN_PRESSURE_PLATES)
+            }
+            .block {
+                BasePressurePlateBlock(it.blockProperties, pressurePlateSensitivity, woodName + "_planks")
+            }
+    }
+
 //    + planks: BuildingBlockProducts
 //    + log
 //    + stripped log
@@ -289,7 +304,7 @@ public class WoodBlockCollection @JvmOverloads constructor(
 //    + door
 //    + sign
 //    - button?
-//    - pressure plate?
+//    + pressure plate?
 //    # tree stuff:
 //    + leaves
 //    - sapling

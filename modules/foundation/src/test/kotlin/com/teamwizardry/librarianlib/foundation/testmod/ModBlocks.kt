@@ -30,6 +30,7 @@ object ModBlocks {
     val woodDoor: LazyBlock = LazyBlock()
     val woodSign: LazyBlock = LazyBlock()
     val woodWallSign: LazyBlock = LazyBlock()
+    val woodPressurePlate: LazyBlock = LazyBlock()
 
     internal fun registerBlocks(registrationManager: RegistrationManager) {
         testTile.from(registrationManager.add(
@@ -82,5 +83,6 @@ object ModBlocks {
         woodDoor.from(registrationManager.add(woodCollection.door))
         woodSign.from(registrationManager.add(woodCollection.sign))
         woodWallSign.from(registrationManager.add(woodCollection.wallSign))
+        woodPressurePlate.from(registrationManager.add(woodCollection.pressurePlate))
     }
 }
