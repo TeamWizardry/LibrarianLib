@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.foundation.bridge
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import net.minecraft.tileentity.SignTileEntity
 import net.minecraft.tileentity.TileEntityType
+import java.lang.IllegalStateException
 
 /**
  * The vanilla SignTileEntity hard-codes the vanilla TileEntityType, which means it's impossible to use it with other
@@ -21,7 +22,13 @@ public object FoundationSignTileEntityCreator {
     public fun create(type: TileEntityType<SignTileEntity>): SignTileEntity {
         tileEntityTypeOverride = type
         try {
-            return SignTileEntity()
+            val te = SignTileEntity()
+            if(te.type != type) {
+                throw IllegalStateException("Sign tile entity type wasn't overridden! The actual type was " +
+                        "${te.type.registryName}, not ${type.registryName}. Did another mod add a destructive ASM " +
+                        "transformer?")
+            }
+            return te
         } finally {
             tileEntityTypeOverride = null
         }

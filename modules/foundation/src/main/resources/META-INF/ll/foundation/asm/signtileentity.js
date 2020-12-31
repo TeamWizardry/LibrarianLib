@@ -3,15 +3,12 @@ var Opcodes = org.objectweb.asm.Opcodes;
 
 function initializeCoreMod() {
     return {
-        "ll.mirage.fallbackresourcemanager": {
+        "ll.foundation.signtileentity": {
             "target": {
                 "type": "CLASS",
                 "name": "net/minecraft/tileentity/SignTileEntity"
             },
             'transformer': function (node) {
-                var ASMAPI = Java.type('net.minecraftforge.coremod.api.ASMAPI');
-                var signFieldName = ASMAPI.mapField('field_200978_i')
-
                 for (var m in node.methods) {
                     var method = node.methods[m];
                     if (method.name === "<init>") {
@@ -23,11 +20,12 @@ function initializeCoreMod() {
                         for (var i = 0; i < method.instructions.size(); i++) {
                             var insn = method.instructions.get(i);
                             if (
-                                insn.getOpcode() === Opcodes.GETSTATIC &&
-                                insn.owner === "net/minecraft/tileentity/TileEntityType" &&
-                                insn.name === signFieldName
+                                insn.getOpcode() === Opcodes.INVOKESPECIAL &&
+                                insn.owner === "net/minecraft/tileentity/TileEntity" &&
+                                insn.name === "<init>" &&
+                                insn.desc === "(Lnet/minecraft/tileentity/TileEntityType;)V"
                             ) {
-                                method.instructions.insert(insn, interceptInsn);
+                                method.instructions.insertBefore(insn, interceptInsn);
                                 break;
                             }
                         }
