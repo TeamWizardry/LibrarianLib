@@ -66,11 +66,13 @@ public class WoodBlockCollection @JvmOverloads constructor(
 
     init {
         plankProperties
+            .material(Material.WOOD)
             .hardnessAndResistance(2f * hardnessMultiplier, 2f * resistanceMultiplier)
             .sound(SoundType.WOOD)
             .fireInfo(5, 20)
 
         logProperties
+            .material(Material.WOOD)
             .hardnessAndResistance(2f * hardnessMultiplier, 2f * resistanceMultiplier)
             .sound(SoundType.WOOD)
             .fireInfo(5, 5)

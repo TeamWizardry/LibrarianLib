@@ -37,5 +37,6 @@ public open class BaseLeavesBlock(override val properties: FoundationBlockProper
                 .tickRandomly()
                 .sound(SoundType.PLANT)
                 .notSolid()
+                .fireInfo(30, 60)
     }
 }
