@@ -66,6 +66,17 @@ public object Client {
         get() = Tessellator.getInstance()
 
     /**
+     * Datagen is like a quasi-client, so some things don't work. For example, there's no [Minecraft] instance.
+     */
+    @JvmStatic
+    public val isDataGen: Boolean =
+        Thread.getAllStackTraces().any { trace ->
+            trace.value.any { element ->
+                element.className == "net.minecraft.data.Main"
+            }
+        }
+
+    /**
      * The game time, as measured from the game launch
      */
     @JvmStatic
@@ -278,7 +289,10 @@ public object Client {
         }
     }
 
-    private val timer: Timer = Mirror.reflectClass<Minecraft>().getField(mapSrgName("field_71428_T")).get(minecraft)
+    private val timer: Timer = if(isDataGen)
+        Timer(50f, 0)
+    else
+        Mirror.reflectClass<Minecraft>().getField(mapSrgName("field_71428_T")).get(minecraft)
 
     private val renderPartialTicksPaused = Mirror.reflectClass<Minecraft>().getField(mapSrgName("field_193996_ah"))
 
