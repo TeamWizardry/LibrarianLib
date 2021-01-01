@@ -1,7 +1,5 @@
-package com.teamwizardry.librarianlib.facade.pastry.components
+package com.teamwizardry.librarianlib.facade.pastry.layers
 
-import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
-import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 
 public open class PastryControl: GuiLayer {
@@ -28,9 +26,9 @@ public open class PastryControl: GuiLayer {
     /**
      * Focuses the next control, or if there's no next control focuses the first control.
      *
-     * If both next and previous are null this method simply blurs this component and returns true.
+     * If both next and previous are null this method simply blurs this layer and returns true.
      * The "first" control is found by recursively searching along [previous] until either null is encountered or a
-     * component is encountered a second time (to prevent infinite recursion)
+     * layer is encountered a second time (to prevent infinite recursion)
      *
      * @return whether the focus successfully switched
      */
@@ -61,9 +59,9 @@ public open class PastryControl: GuiLayer {
     /**
      * Focuses the previous control, or if there's no previous control focuses the last control.
      *
-     * If both next and previous are null this method simply blurs this component and returns true.
+     * If both next and previous are null this method simply blurs this layer and returns true.
      * The "last" control is found by recursively searching along [next] until either null is encountered or a
-     * component is encountered a second time (to prevent infinite recursion)
+     * layer is encountered a second time (to prevent infinite recursion)
      *
      * @return whether the focus successfully switched
      */

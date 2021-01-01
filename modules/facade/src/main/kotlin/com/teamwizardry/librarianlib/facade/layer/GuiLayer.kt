@@ -34,7 +34,7 @@ import com.teamwizardry.librarianlib.etcetera.eventbus.EventBus
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.FacadeWidget
 import com.teamwizardry.librarianlib.facade.input.Cursor
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryBasicTooltip
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBasicTooltip
 import com.teamwizardry.librarianlib.facade.value.ChangeListener
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
 import com.teamwizardry.librarianlib.facade.value.IMValueInt
@@ -84,7 +84,7 @@ import kotlin.math.max
  * Each layer implements [CoordinateSpace2D] and has methods to convert points between its local coordinate system and
  * another layer's local coordinate system.
  *
- * Each layer has its own event bus, which is used to hook into the many events fired by the GuiLayer/GuiComponent
+ * Each layer has its own event bus, which is used to hook into the many events fired by the GuiLayer
  * itself or by one of its subclasses.
  *
  * Layers that have custom rendering (as opposed to consisting solely of other layers) can override the [draw] method
@@ -112,15 +112,14 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * This method is called before each frame if this layer's bounds have changed, children have been added/removed,
      * a child's frame has changed, or [markLayoutDirty] has been called on this layer.
      *
-     * After this method completes, the children of this component will be checked for layout. This means that changes
+     * After this method completes, the children of this layer will be checked for layout. This means that changes
      * made in one layer can ripple downward, but also that children can override the layout of their parent.
      * [isLayoutDirty] is reset to false after this layer and its children are laid out, so any changes while laying out
      * will not cause the layout to be recalculated on the next frame.
      *
-     * The idea behind this method is that self-contained components/layers can lay out their children dynamically
-     * themselves. Examples of such a component would be a self-contained list item, a component that spaces out its
-     * children equally along its length, or simply a component that needs to resize its background layer
-     * to fit its dimensions.
+     * The idea behind this method is that self-contained layers can lay out their children dynamically themselves.
+     * Examples of such a layer would be a self-contained list item, a layer that spaces out its children equally
+     * along its length, or simply a layer that needs to resize its background layer to fit its dimensions.
      *
      * This is called *after* Yoga layout has been applied.
      */
@@ -409,14 +408,14 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
     //region LayerBaseHandler
     /**
-     * Whether this component should be drawn. If this value is false, this component won't respond to input events.
+     * Whether this layer should be drawn. If this value is false, this layer won't respond to input events.
      *
      * Drives [isVisible]
      */
     public val isVisible_im: IMValueBoolean = imBoolean(true)
 
     /**
-     * Whether this component should be drawn. If this value is false, this component won't respond to input events.
+     * Whether this layer should be drawn. If this value is false, this layer won't respond to input events.
      *
      * Driven by [isVisible_im]
      */
@@ -446,8 +445,8 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         get() = generateSequence(parent) { it.parent }.toSet()
 
     /**
-     * The root of this component's hierarchy. i.e. the last layer found when iterating back through the parents. If this
-     * component has no parent, returns this component.
+     * The root of this layer's hierarchy. i.e. the last layer found when iterating back through the parents. If this
+     * layer has no parent, returns this layer.
      */
     public val root: GuiLayer
         get() = this.parent?.root ?: this
@@ -562,7 +561,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     public inline fun forEachChild(includeMask: Boolean = true, block: (GuiLayer) -> Unit) {
         // calling `toList` just creates an array and then an ArrayList, so we just use the array
         for (child in children.toTypedArray()) {
-            // a component may have been removed, in which case it won't be expecting any interaction
+            // a layer may have been removed, in which case it won't be expecting any interaction
             if (child.parent !== this || (child === maskLayer && !includeMask))
                 continue
             block(child)
@@ -579,7 +578,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     public fun forEachChild(includeMask: Boolean, block: Consumer<GuiLayer>) {
         // calling `toList` just creates an array and then an ArrayList, so we just use the array
         for (child in children.toTypedArray()) {
-            // a component may have been removed, in which case it won't be expecting any interaction
+            // a layer may have been removed, in which case it won't be expecting any interaction
             if (child.parent !== this || (child === maskLayer && !includeMask))
                 continue
             block.accept(child)
@@ -903,14 +902,14 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         }
 
     /**
-     * Returns true if the passed point is inside this component, ignoring any clipping.
+     * Returns true if the passed point is inside this layer, ignoring any clipping.
      */
     public open fun isPointInBounds(point: Vec2d): Boolean {
         return point in bounds
     }
 
     /**
-     * Returns true if the passed point is outside this component's clipping mask.
+     * Returns true if the passed point is outside this layer's clipping mask.
      */
     @Suppress("UNUSED_PARAMETER")
     public fun isPointClipped(point: Vec2d): Boolean {
@@ -951,7 +950,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * ```kotlin
      * var totalBounds = null
      * if(includeOwnBounds(this)) {
-     *     <expand totalBounds to fit this component's bounds>
+     *     <expand totalBounds to fit this layer's bounds>
      * }
      * if(includeChildren(this)) {
      *     for(child in children) {
@@ -1322,7 +1321,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     }
 
     /**
-     * Draws a bounding box around the edge of this component
+     * Draws a bounding box around the edge of this layer
      */
     private fun drawBoundingBox(context: GuiDrawContext, color: Color) {
         val points = getBoundingBoxPoints()
@@ -1473,32 +1472,32 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     public var cursor: Cursor? = null
 
     /**
-     * If [interactive] is false, this component and its descendents won't be considered for mouseover calculations
+     * If [interactive] is false, this layer and its descendents won't be considered for mouseover calculations
      * and won't receive input events
      */
     public var interactive: Boolean = true
 
     /**
-     * If [ignoreMouseOverBounds] is true, this component's bounding box won't be taken into consideration for mouseover
+     * If [ignoreMouseOverBounds] is true, this layer's bounding box won't be taken into consideration for mouseover
      * calculations, however its children will be considered as usual.
      */
     public var ignoreMouseOverBounds: Boolean = false
 
     /**
      * If [propagatesMouseOver] is true (the default), the [mouseOver] state will be propagated to this layer's parent.
-     * i.e. when true, if the mouse is over this component it will also count as over this component's parent.
+     * i.e. when true, if the mouse is over this layer it will also count as over this layer's parent.
      */
     public var propagatesMouseOver: Boolean = true
 
     /**
-     * True if the current [mousePos] is inside the bounds of component. This ignores components that may be covering
-     * this component.
+     * True if the current [mousePos] is inside the bounds of layer. This ignores layer that may be covering
+     * this layer.
      */
     public var mouseInside: Boolean = false
         private set
 
     /**
-     * True if this component is [interactive] and the mouse is hovering over it or one of its children.
+     * True if this layer is [interactive] and the mouse is hovering over it or one of its children.
      */
     public var mouseOver: Boolean = false
         @JvmSynthetic
@@ -1507,7 +1506,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     private var wasMouseOver: Boolean = false
 
     /**
-     * The mouse position within this component
+     * The mouse position within this layer
      */
     public var mousePos: Vec2d = vec(0, 0)
         private set
@@ -1630,7 +1629,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     public val tooltipText_im: IMValue<String?> = imValue()
 
     /**
-     * The text to display as a tooltip when the mouse is over this component. If [tooltip] is nonnull this value will
+     * The text to display as a tooltip when the mouse is over this layer. If [tooltip] is nonnull this value will
      * be ignored.
      */
     public var tooltipText: String? by tooltipText_im
@@ -1641,7 +1640,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     public val tooltip_rm: RMValue<GuiLayer?> = rmValue(null)
 
     /**
-     * The layer to display as a tooltip when the mouse is over this component. If this value is null it will fall back
+     * The layer to display as a tooltip when the mouse is over this layer. If this value is null it will fall back
      * to [tooltipText].
      */
     public var tooltip: GuiLayer? by tooltip_rm
@@ -1653,7 +1652,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     public val tooltipDelay_im: IMValueInt = imInt(0)
 
     /**
-     * How many ticks should the mouse have to hover over this component before the tooltip appears.
+     * How many ticks should the mouse have to hover over this layer before the tooltip appears.
      */
     @Deprecated("UNIMPLEMENTED")
     public var tooltipDelay: Int by tooltipDelay_im

@@ -2,10 +2,10 @@ package com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests
 
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import com.teamwizardry.librarianlib.facade.layers.minecraft.ItemStackLayer
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryLabel
-import com.teamwizardry.librarianlib.facade.pastry.components.dropdown.DropdownSeparatorItem
-import com.teamwizardry.librarianlib.facade.pastry.components.dropdown.DropdownTextItem
-import com.teamwizardry.librarianlib.facade.pastry.components.dropdown.PastryDropdown
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryLabel
+import com.teamwizardry.librarianlib.facade.pastry.layers.dropdown.DropdownSeparatorItem
+import com.teamwizardry.librarianlib.facade.pastry.layers.dropdown.DropdownTextItem
+import com.teamwizardry.librarianlib.facade.pastry.layers.dropdown.PastryDropdown
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestBase
 import com.teamwizardry.librarianlib.math.Align2d
 import net.minecraft.block.Blocks
@@ -30,20 +30,20 @@ class PastryTestDropdown: PastryTestBase() {
             ItemStack(Blocks.COBBLESTONE),
             ItemStack(Blocks.OAK_PLANKS)
         )
-        val stackComponent = ItemStackLayer(0, 0)
+        val stackLayer = ItemStackLayer(0, 0)
 
         val dropdownWidth = stacks.map { stack ->
             stack?.let { PastryLabel(0, 0, it.displayName.string).widthi } ?: 0
         }.maxOrNull() ?: 50
         dropdown = PastryDropdown(0, 0, dropdownWidth + 15) {
-            stackComponent.stack = it
+            stackLayer.stack = it
         }
         dropdown.items.addAll(stacks.map { stack ->
             stack?.let { DropdownTextItem(it, it.displayName.string) } ?: DropdownSeparatorItem<ItemStack>()
         })
 
         val horizontalStack = StackLayout.build()
-            .add(stackComponent, dropdown)
+            .add(stackLayer, dropdown)
             .spacing(5)
             .horizontal()
             .fit()

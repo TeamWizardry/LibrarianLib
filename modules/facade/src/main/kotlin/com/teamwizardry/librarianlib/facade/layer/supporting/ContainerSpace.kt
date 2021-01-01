@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.math.Matrix3dView
 import com.teamwizardry.librarianlib.math.MutableMatrix3d
 
 /**
- * The "main" pixel coordinate space for container GUIs. Any component within a container can convert points to
+ * The "main" pixel coordinate space for container GUIs. Any layer within a container can convert points to
  * [ContainerSpace] to get the location within the "main", centered coordinate system.
  */
 public object ContainerSpace: CoordinateSpace2D {

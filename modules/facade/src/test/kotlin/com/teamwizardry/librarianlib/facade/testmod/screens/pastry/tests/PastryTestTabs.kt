@@ -2,11 +2,11 @@ package com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests
 
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import com.teamwizardry.librarianlib.facade.pastry.ExperimentalPastryAPI
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryLabel
-import com.teamwizardry.librarianlib.facade.pastry.components.PastrySwitch
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryTabPage
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryTabPane
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryToggle
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryLabel
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastrySwitch
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryTabPage
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryTabPane
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryToggle
 import com.teamwizardry.librarianlib.math.Align2d
 import com.teamwizardry.librarianlib.math.rect
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestBase

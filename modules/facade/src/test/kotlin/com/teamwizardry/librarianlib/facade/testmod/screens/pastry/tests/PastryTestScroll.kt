@@ -1,14 +1,13 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests
 
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryScrollPane
-import com.teamwizardry.librarianlib.facade.pastry.components.dropdown.DropdownTextItem
-import com.teamwizardry.librarianlib.facade.pastry.components.dropdown.PastryDropdown
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryScrollPane
+import com.teamwizardry.librarianlib.facade.pastry.layers.dropdown.DropdownTextItem
+import com.teamwizardry.librarianlib.facade.pastry.layers.dropdown.PastryDropdown
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestBase
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
-import com.teamwizardry.librarianlib.mosaic.Sprite
 import net.minecraft.util.ResourceLocation
 
 class PastryTestScroll: PastryTestBase() {

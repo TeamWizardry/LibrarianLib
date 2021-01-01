@@ -1,9 +1,4 @@
-package com.teamwizardry.librarianlib.facade.pastry.components
-
-import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
-import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
-import net.minecraft.client.gui.screen.Screen
-import org.lwjgl.glfw.GLFW.*
+package com.teamwizardry.librarianlib.facade.pastry.layers
 
 public abstract class PastryActivatedControl: PastryControl {
     public constructor(posX: Int, posY: Int): super(posX, posY)

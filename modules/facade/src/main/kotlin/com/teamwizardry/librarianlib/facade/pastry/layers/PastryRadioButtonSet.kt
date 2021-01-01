@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.pastry.components
+package com.teamwizardry.librarianlib.facade.pastry.layers
 
 import com.teamwizardry.librarianlib.etcetera.eventbus.EventBus
 import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
@@ -11,13 +11,13 @@ public class PastryRadioButtonSet<T> {
 
     public inner class OptionSelected(public val option: T?): CancelableEvent()
 
-    private val components = mutableMapOf<T, PastryCheckbox>()
+    private val layers = mutableMapOf<T, PastryCheckbox>()
 
     public var selectedValue: T? = null
         private set(value) {
             if (field != value) {
                 field = value
-                components.forEach { key, box ->
+                layers.forEach { key, box ->
                     box.state = key == value
                 }
             }
@@ -25,7 +25,7 @@ public class PastryRadioButtonSet<T> {
 
     public fun addOption(option: T, x: Int, y: Int): PastryCheckbox {
         val checkbox = PastryCheckbox(x, y, true)
-        components[option] = checkbox
+        layers[option] = checkbox
         checkbox.BUS.hook<PastryToggle.BeginToggleEvent> {
             if (checkbox.state) it.cancel()
         }

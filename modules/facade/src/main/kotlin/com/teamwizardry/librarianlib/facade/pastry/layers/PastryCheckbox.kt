@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.pastry.components
+package com.teamwizardry.librarianlib.facade.pastry.layers
 
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture

@@ -1,11 +1,10 @@
-package com.teamwizardry.librarianlib.facade.pastry.components
+package com.teamwizardry.librarianlib.facade.pastry.layers
 
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
-import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.math.clamp
 import com.teamwizardry.librarianlib.math.rect
 import com.teamwizardry.librarianlib.math.vec

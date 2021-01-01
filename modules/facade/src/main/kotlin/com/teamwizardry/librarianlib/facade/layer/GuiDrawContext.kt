@@ -19,7 +19,7 @@ public class GuiDrawContext(
 
     /**
      * Pushes the current matrix to the GL transform. This matrix can be popped using [popGlMatrix] or, if it isn't, it
-     * will be popped after the component is drawn. Calling this multiple times will not push the matrix multiple times.
+     * will be popped after the layer is drawn. Calling this multiple times will not push the matrix multiple times.
      */
     @Suppress("CAST_NEVER_SUCCEEDS")
     public fun pushGlMatrix() {

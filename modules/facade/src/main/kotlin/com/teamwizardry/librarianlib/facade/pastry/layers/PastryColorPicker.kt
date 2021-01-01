@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.pastry.components
+package com.teamwizardry.librarianlib.facade.pastry.layers
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
@@ -13,7 +13,6 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
-import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.math.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import net.minecraft.client.renderer.IRenderTypeBuffer
@@ -22,9 +21,9 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 public class PastryColorPicker: GuiLayer() {
-    private val gradient = GradientComponent()
-    private val hueComponent = HueComponent()
-    private val colorWell = ColorWellComponent()
+    private val gradient = GradientLayer()
+    private val hueLayer = HueLayer()
+    private val colorWell = ColorWellLayer()
 
     private var _hue: Float = 0f
     public var hue: Float
@@ -72,7 +71,7 @@ public class PastryColorPicker: GuiLayer() {
             .flexGrow(3)
             .minWidth.px(4)
             .marginRight.px(2)
-        hueComponent.yoga()
+        hueLayer.yoga()
             .flex(0, 0)
             .flexBasis.px(10)
             .marginRight.px(2)
@@ -80,10 +79,10 @@ public class PastryColorPicker: GuiLayer() {
             .flex(0, 0)
             .flexBasis.px(32)
             .alignSelf.start()
-        this.add(gradient, hueComponent, colorWell)
+        this.add(gradient, hueLayer, colorWell)
     }
 
-    private inner class GradientComponent: GuiLayer(0, 0, 0, 0) {
+    private inner class GradientLayer: GuiLayer(0, 0, 0, 0) {
         val background = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
         val square = ColorSquare()
         var draggingFromInside = false
@@ -155,7 +154,7 @@ public class PastryColorPicker: GuiLayer() {
         }
     }
 
-    private inner class HueComponent: GuiLayer(0, 0, 0, 0) {
+    private inner class HueLayer: GuiLayer(0, 0, 0, 0) {
         private val background = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
         private val sprite = SpriteLayer(hueSprite)
 
@@ -184,7 +183,7 @@ public class PastryColorPicker: GuiLayer() {
         }
     }
 
-    private inner class ColorWellComponent: GuiLayer(0, 0, 0, 16) {
+    private inner class ColorWellLayer: GuiLayer(0, 0, 0, 16) {
         private val background = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
         val colorRect = RectLayer(Color.white, 0, 0, 0, 0)
 

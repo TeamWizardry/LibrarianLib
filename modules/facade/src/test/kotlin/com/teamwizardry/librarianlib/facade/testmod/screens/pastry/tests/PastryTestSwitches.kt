@@ -2,10 +2,10 @@ package com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests
 
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.pastry.ExperimentalPastryAPI
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryCheckbox
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryLabel
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryRadioButtonSet
-import com.teamwizardry.librarianlib.facade.pastry.components.PastrySwitch
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryCheckbox
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryLabel
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryRadioButtonSet
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastrySwitch
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestBase
 import com.teamwizardry.librarianlib.math.vec
 

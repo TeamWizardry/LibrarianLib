@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.pastry.components
+package com.teamwizardry.librarianlib.facade.pastry.layers
 
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
@@ -20,7 +20,7 @@ public class ScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y,
     public constructor(): this(0, 0, 0, 0)
 
     /**
-     * The contents of the scroll pane. If the this component is larger than the pane the pane it will be able to
+     * The contents of the scroll pane. If the this layer is larger than the pane the pane it will be able to
      * scroll.
      */
     public val content: GuiLayer = GuiLayer()
@@ -67,7 +67,7 @@ public class ScrollBar internal constructor(private val scrollPane: ScrollPane, 
      * The offset for the scroll pane contents. This is stored in actual offset pixels both for convenience and so the
      * scroll position is retained even if the contents change in size. A positive scroll position indicates that the
      * contents should be moved in the negative direction, so this acts like moving the viewport over a static content
-     * component. Negative scroll positions are clamped to zero.
+     * layer. Negative scroll positions are clamped to zero.
      *
      * Setting this value stops any current drag action by the user.
      */

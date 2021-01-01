@@ -6,10 +6,9 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
 import com.teamwizardry.librarianlib.facade.pastry.Pastry
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryButton
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryLabel
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryLabel
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
-import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestButton
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestDropdown
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestProgress
@@ -19,7 +18,6 @@ import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryT
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestTooltips
 import com.teamwizardry.librarianlib.math.rect
 import com.teamwizardry.librarianlib.math.vec
-import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.*
 import net.minecraft.util.text.ITextComponent
 
 class PastryTestScreen(title: ITextComponent): FacadeScreen(title) {

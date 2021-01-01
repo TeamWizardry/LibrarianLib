@@ -1,6 +1,5 @@
-package com.teamwizardry.librarianlib.facade.pastry.components
+package com.teamwizardry.librarianlib.facade.pastry.layers
 
-import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
@@ -8,15 +7,12 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
-import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.facade.provided.VanillaTooltipRenderer
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.math.vec
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import net.minecraft.client.gui.FontRenderer
-import net.minecraft.client.gui.screen.Screen
 import net.minecraft.item.ItemStack
-import net.minecraft.util.text.StringTextComponent
 import java.awt.Color
 import kotlin.math.max
 

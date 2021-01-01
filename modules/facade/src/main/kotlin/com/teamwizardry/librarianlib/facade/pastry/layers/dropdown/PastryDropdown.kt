@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.pastry.components.dropdown
+package com.teamwizardry.librarianlib.facade.pastry.layers.dropdown
 
 import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.Pastry
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryActivatedControl
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryActivatedControl
 import com.teamwizardry.librarianlib.facade.layer.supporting.ScreenSpace
 import com.teamwizardry.librarianlib.math.rect
 import com.teamwizardry.librarianlib.math.vec

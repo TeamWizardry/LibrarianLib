@@ -4,10 +4,10 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.layers.minecraft.ItemStackLayer
-import com.teamwizardry.librarianlib.facade.pastry.components.ItemStackTooltip
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryButton
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryTooltip
-import com.teamwizardry.librarianlib.facade.pastry.components.VanillaTooltip
+import com.teamwizardry.librarianlib.facade.pastry.layers.ItemStackTooltip
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryTooltip
+import com.teamwizardry.librarianlib.facade.pastry.layers.VanillaTooltip
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestBase
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.item.ItemStack

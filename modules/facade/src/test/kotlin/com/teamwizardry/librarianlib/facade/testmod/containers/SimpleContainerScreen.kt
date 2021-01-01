@@ -1,16 +1,14 @@
 package com.teamwizardry.librarianlib.facade.testmod.containers
 
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
-import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryButton
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.math.Align2d
 import com.teamwizardry.librarianlib.math.vec
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
-import java.awt.Color
 
 class SimpleContainerScreen(
     container: SimpleContainer,

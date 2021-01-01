@@ -69,12 +69,12 @@ public object GuiLayerEvents {
     public class MouseMove(rootPos: Vec2d, lastRootPos: Vec2d): MovingMouseEvent(rootPos, lastRootPos)
 
     /**
-     * Triggers when the mouse moves from off of this component to over this component
+     * Triggers when the mouse moves from off of this layer to over this layer
      */
     public class MouseMoveOver(rootPos: Vec2d, lastRootPos: Vec2d): MovingMouseEvent(rootPos, lastRootPos)
 
     /**
-     * Triggers when the mouse moves from over this component to off this component
+     * Triggers when the mouse moves from over this layer to off this layer
      */
     public class MouseMoveOff(rootPos: Vec2d, lastRootPos: Vec2d): MovingMouseEvent(rootPos, lastRootPos)
 
@@ -89,7 +89,7 @@ public object GuiLayerEvents {
     public class MouseUp(rootPos: Vec2d, public val button: Int): MouseEvent(rootPos)
 
     /**
-     * Triggers when the mouse button is pressed then released while over this component
+     * Triggers when the mouse button is pressed then released while over this layer
      *
      * @see MouseRightClick
      * @see MouseOtherClick
@@ -97,7 +97,7 @@ public object GuiLayerEvents {
     public class MouseClick(rootPos: Vec2d): MouseEvent(rootPos)
 
     /**
-     * Triggers when the right mouse button is pressed then released while over this component
+     * Triggers when the right mouse button is pressed then released while over this layer
      *
      * @see MouseClick
      * @see MouseOtherClick
@@ -105,7 +105,7 @@ public object GuiLayerEvents {
     public class MouseRightClick(rootPos: Vec2d): MouseEvent(rootPos)
 
     /**
-     * Triggers when a button other than the right or left mouse button is pressed then released while over this component
+     * Triggers when a button other than the right or left mouse button is pressed then released while over this layer
      *
      * @see MouseClick
      * @see MouseRightClick
@@ -135,22 +135,22 @@ public object GuiLayerEvents {
     public class CharTyped(public val codepoint: Char, public val modifiers: Int): KeyEvent()
 
     /**
-     * Fired before adding a child component
+     * Fired before adding a child layer
      */
     public class AddChildEvent(public val child: GuiLayer): CancelableEvent()
 
     /**
-     * Fired before removing a child component
+     * Fired before removing a child layer
      */
     public class RemoveChildEvent(public val child: GuiLayer): CancelableEvent()
 
     /**
-     * Fired before adding the component to a new parent
+     * Fired before adding the layer to a new parent
      */
     public class AddToParentEvent(public val parent: GuiLayer): Event()
 
     /**
-     * Fired before removing the component from its parent.
+     * Fired before removing the layer from its parent.
      */
     public class RemoveFromParentEvent(public val parent: GuiLayer): Event()
 

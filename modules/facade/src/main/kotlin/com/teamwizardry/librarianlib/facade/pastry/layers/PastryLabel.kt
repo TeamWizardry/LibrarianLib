@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.pastry.components
+package com.teamwizardry.librarianlib.facade.pastry.layers
 
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont

@@ -54,16 +54,16 @@ public class FluidGaugeLayer(x: Int, y: Int, width: Int, height: Int): LinearGau
             get() = direction == Cardinal2d.LEFT ||
                 (direction != Cardinal2d.RIGHT && flow == Cardinal2d.LEFT)
     }
-    private val fluidComponent = SpriteLayer(pinnedFluidSprite)
+    private val fluidLayer = SpriteLayer(pinnedFluidSprite)
 
     init {
-        contents.add(fluidComponent)
+        contents.add(fluidLayer)
         fluidSprite.fluid_im.set { fluid }
         fluidSprite.flow_im.set { flow }
     }
 
     override fun update() { // todo yoga
         super.update()
-        fluidComponent.frame = contents.bounds
+        fluidLayer.frame = contents.bounds
     }
 }

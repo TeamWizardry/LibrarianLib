@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests
 
-import com.teamwizardry.librarianlib.facade.pastry.components.PastryButton
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestBase
 
 class PastryTestButton: PastryTestBase() {

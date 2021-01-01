@@ -8,8 +8,8 @@ import net.minecraft.util.text.ITextComponent
 /**
  * The base class for all LibrarianLib GUIs.
  *
- * The [root] component represents the entire screen, while the [main] component is where the main content of your GUI
- * should be added.
+ * The [root] layer represents the entire screen, while the [main] layer is where the main content of your GUI should
+ * be added.
  *
  * [main] is automatically repositioned to remain centered on the screen, so setting its size is the equivalent of
  * setting its size is equivalent to setting [xSize][ContainerScreen.xSize] and [ySize][ContainerScreen.ySize].

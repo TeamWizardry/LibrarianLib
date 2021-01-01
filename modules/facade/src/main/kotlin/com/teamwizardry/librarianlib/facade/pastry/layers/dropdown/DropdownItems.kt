@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.pastry.components.dropdown
+package com.teamwizardry.librarianlib.facade.pastry.layers.dropdown
 
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
