@@ -6,91 +6,89 @@ import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 
 public abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int): PastryActivatedControl(posX, posY, width, height) {
-    private var mouseDown = false
-    private var pressed = false
-    private var visualState = false
     public var state: Boolean = false
         set(value) {
             if (field != value) {
                 field = value
                 updateVisualState()
-            } else {
+            }
+        }
+    private var clickStarted = false
+    private var previewToggle = false
+    private var visualState = false
+        set(value) {
+            if(field != value) {
                 field = value
+                visualStateChanged(value)
             }
         }
 
     private fun updateVisualState() {
-        val visualState = pressed != state
-        if (visualState != this.visualState) {
-            this.visualState = visualState
-            visualStateChanged(visualState)
-        }
+        visualState = if(previewToggle) !state else state
     }
 
     public abstract fun visualStateChanged(visualState: Boolean)
 
     override fun activate() {
         if (!BUS.fire(BeginToggleEvent()).isCanceled()) {
-            pressed = true
+            previewToggle = true
             updateVisualState()
         }
     }
 
     override fun activationEnd() {
-        val state = state
-        pressed = false
-        if (!BUS.fire(StateWillChangeEvent(!state)).isCanceled()) {
-            this.state = !state
+        val newState = !state
+        if (!BUS.fire(StateWillChangeEvent(newState)).isCanceled()) {
+            state = newState
             BUS.fire(StateChangedEvent())
         }
+        previewToggle = false
         updateVisualState()
     }
 
     @Hook
     private fun mouseDown(e: GuiLayerEvents.MouseDown) {
-        if (this.mouseOver && !BUS.fire(BeginToggleEvent()).isCanceled()) {
-            pressed = true
-            mouseDown = true
+        if (mouseOver && !BUS.fire(BeginToggleEvent()).isCanceled()) {
+            clickStarted = true
+            previewToggle = true
             updateVisualState()
         }
     }
 
     @Hook
     private fun mouseLeave(e: GuiLayerEvents.MouseMoveOff) {
-        if (mouseDown) {
-            pressed = false
+        if (clickStarted) {
+            previewToggle = false
             updateVisualState()
         }
     }
 
     @Hook
     private fun mouseEnter(e: GuiLayerEvents.MouseMoveOver) {
-        if (mouseDown) {
-            pressed = true
+        if (clickStarted) {
+            previewToggle = true
             updateVisualState()
         }
     }
 
     @Hook
     private fun click(e: GuiLayerEvents.MouseClick) {
-        val state = state
-        pressed = false
-        if (mouseDown && !BUS.fire(StateWillChangeEvent(!state)).isCanceled()) {
-            this.state = !state
-            updateVisualState()
+        val newState = !state
+        if (!BUS.fire(StateWillChangeEvent(newState)).isCanceled()) {
+            state = newState
             BUS.fire(StateChangedEvent())
         }
-        mouseDown = false
+        clickStarted = false
+        previewToggle = false
+        updateVisualState()
     }
 
     @Hook
     private fun mouseUp(e: GuiLayerEvents.MouseUp) {
-        if (mouseDown) {
-            pressed = false
-            if (mouseDown) {
-                updateVisualState()
-            }
-            mouseDown = false
+        if (mouseOver && clickStarted) {
+            clickStarted = false
+            previewToggle = false
+            updateVisualState()
         }
     }
 

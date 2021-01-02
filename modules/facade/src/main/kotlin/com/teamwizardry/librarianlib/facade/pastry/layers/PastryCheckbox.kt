@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.facade.pastry.layers
 
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
+import com.teamwizardry.librarianlib.math.Easing
 import kotlin.math.abs
 
 public class PastryCheckbox(posX: Int, posY: Int, radioStyle: Boolean): PastryToggle(posX, posY, 7, 7) {
@@ -14,7 +15,7 @@ public class PastryCheckbox(posX: Int, posY: Int, radioStyle: Boolean): PastryTo
     override fun visualStateChanged(visualState: Boolean) {
         val current = background.animationFrame
         if (visualState) {
-            background.animationFrame_im.animate(sprite.frameCount - 1, abs(sprite.frameCount - current).toFloat())
+            background.animationFrame_im.animate(sprite.frameCount - 1, abs(sprite.frameCount - current).toFloat(), Easing.easeOutQuart)
         } else {
             background.animationFrame_im.animate(0, (current + 1).toFloat())
         }
