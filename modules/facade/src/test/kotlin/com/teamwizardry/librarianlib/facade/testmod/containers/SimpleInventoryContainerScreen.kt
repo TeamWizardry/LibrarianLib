@@ -27,9 +27,9 @@ class SimpleInventoryContainerScreen(
             .add(SlotGridLayer(0, 0, container.playerSlots.hotbar, 9, 2))
             .fit()
             .build()
-        main.add(stack)
         main.size = stack.size
         main.add(RectLayer(Color.GRAY, 0, 0, main.widthi, main.heighti))
+        main.add(stack)
         val overlay = GuiLayer()
         overlay.ignoreMouseOverBounds = true
         overlay.zIndex = 1000.0

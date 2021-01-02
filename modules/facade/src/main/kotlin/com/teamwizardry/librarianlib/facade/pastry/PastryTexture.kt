@@ -8,7 +8,7 @@ import java.awt.Color
 
 internal object PastryTexture {
 
-    var theme: Theme = Theme.NORMAL
+//    var theme: Theme = Theme.NORMAL
     // TODO: theme switching
 //        set(value) {
 //            field = value
@@ -28,23 +28,8 @@ internal object PastryTexture {
     val backgroundSlightInsetInnerCorners: Sprite by texture.delegate
     val backgroundBlack: Sprite by texture.delegate
     val backgroundBlackInnerCorners: Sprite by texture.delegate
-
-    val windowBackgroundTitlebar: Sprite by texture.delegate
-    val windowBackgroundBody: Sprite by texture.delegate
-    val windowDialogBackgroundTitlebar: Sprite by texture.delegate
-    val windowDialogBackgroundBody: Sprite by texture.delegate
-    val windowSlightBackgroundTitlebar: Sprite by texture.delegate
-    val windowSlightBackgroundBody: Sprite by texture.delegate
-
-    val windowIconsCloseMacosSmall: Sprite by texture.delegate
-    val windowIconsMinimizeMacosSmall: Sprite by texture.delegate
-    val windowIconsMaximizeMacosSmall: Sprite by texture.delegate
-    val windowIconsCloseMacos: Sprite by texture.delegate
-    val windowIconsMinimizeMacos: Sprite by texture.delegate
-    val windowIconsMaximizeMacos: Sprite by texture.delegate
-    val windowIconsMinimize: Sprite by texture.delegate
-    val windowIconsMaximize: Sprite by texture.delegate
-    val windowIconsClose: Sprite by texture.delegate
+    val backgroundInput: Sprite by texture.delegate
+    val backgroundInputInnerCorners: Sprite by texture.delegate
 
     val tabsButton: Sprite by texture.delegate
     val tabsBody: Sprite by texture.delegate
@@ -95,5 +80,6 @@ public enum class BackgroundTexture(internal val background: Sprite, internal va
     SLIGHT(PastryTexture.backgroundSlight, PastryTexture.backgroundSlightInnerCorners),
     SLIGHT_INSET(PastryTexture.backgroundSlightInset, PastryTexture.backgroundSlightInsetInnerCorners),
     SLIGHT_ROUND(PastryTexture.backgroundSlightRound, PastryTexture.backgroundSlightRoundInnerCorners),
-    BLACK(PastryTexture.backgroundBlack, PastryTexture.backgroundBlackInnerCorners)
+    BLACK(PastryTexture.backgroundBlack, PastryTexture.backgroundBlackInnerCorners),
+    INPUT(PastryTexture.backgroundInput, PastryTexture.backgroundInputInnerCorners)
 }
