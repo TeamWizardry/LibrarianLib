@@ -71,6 +71,11 @@ public interface TransferRule {
                 val transferLimit = max(0, maxStackSize - slotStack.count)
                 val transferAmount = min(transfer.stack.count, transferLimit)
 
+                // true, the item matched, but if none of it actually *fit*, we didn't find a spot and shouldn't do
+                // anything
+                if(transferAmount == 0)
+                    return
+
                 // split off a stack and insert it
                 // we copy the transferring stack instead of the current stack so we can seamlessly handle empty slots
                 val insert = transfer.stack.copy()
