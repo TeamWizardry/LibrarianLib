@@ -36,7 +36,6 @@ class SimpleInventoryContainerScreen(
         overlay.hook<GuiLayerEvents.Update> {
             overlay.frame = main.frame
         }
-        overlay.add(RectLayer(Color(1f, 0f, 0f, 0.2f), -20, -20, main.widthi/2 + 20, main.heighti/2 + 20))
         facade.root.add(overlay)
     }
 }

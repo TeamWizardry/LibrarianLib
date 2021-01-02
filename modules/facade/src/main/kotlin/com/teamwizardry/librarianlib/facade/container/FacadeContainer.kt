@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.facade.container.slot.CustomClickSlot
 import com.teamwizardry.librarianlib.facade.container.slot.SlotRegion
 import com.teamwizardry.librarianlib.facade.container.transfer.BasicTransferRule
 import com.teamwizardry.librarianlib.facade.container.transfer.TransferManager
+import com.teamwizardry.librarianlib.facade.container.transfer.TransferRule
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.inventory.container.ClickType
@@ -53,6 +54,11 @@ public abstract class FacadeContainer(
         region.forEach {
             addSlot(it)
         }
+    }
+
+    public fun <T: TransferRule> addTransferRule(rule: T): T {
+        transferManager.add(rule)
+        return rule
     }
 
     public fun createTransferRule(): BasicTransferRule {

@@ -93,6 +93,7 @@ public class SlotRegion(private val slots: List<SlotReference>): Iterable<Slot> 
      * Returns a region containing all the slots in this region and then all the slots in the given region. Any slots
      * present in both regions will be excluded from the given region before merging.
      */
+    @JvmName("union")
     public operator fun plus(other: SlotRegion): SlotRegion {
         return SlotRegion(slots + (other.slots - slots))
     }
@@ -100,6 +101,7 @@ public class SlotRegion(private val slots: List<SlotReference>): Iterable<Slot> 
     /**
      * Returns a region containing all the slots in this region except the slots in the given region.
      */
+    @JvmName("excluding")
     public operator fun minus(other: SlotRegion): SlotRegion {
         return SlotRegion(slots - other.slots)
     }
