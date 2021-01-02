@@ -8,15 +8,14 @@ import com.teamwizardry.librarianlib.facade.value.IMValueDouble
 import com.teamwizardry.librarianlib.math.clamp
 import com.teamwizardry.librarianlib.math.vec
 
-public class PastryProgressBar(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
+public class PastryProgressBar(posX: Int, posY: Int, width: Int): GuiLayer(posX, posY, width, 6) {
     private val bg = SpriteLayer(PastryTexture.progressbar, 0, 0, 0, 0)
     private val fg = SpriteLayer(PastryTexture.progressbarFill, 0, 0, 0, 0)
 
-    public val progress_im: IMValueDouble = IMValueDouble(0.0)
+    public val progress_im: IMValueDouble = imDouble(1.0)
     public val progress: Double by progress_im
 
     init {
-        fg.clipToBounds = true
         this.add(bg, fg)
     }
 
