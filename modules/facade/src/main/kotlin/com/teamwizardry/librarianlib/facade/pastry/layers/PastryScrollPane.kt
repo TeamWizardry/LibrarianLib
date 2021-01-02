@@ -72,16 +72,14 @@ public class PastryScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer
     }
 
     override fun layoutChildren() {
-        super.layoutChildren()
-
         val contentSize = content.frame.size
 
         var needsVertical = showVerticalScrollbar ?: (contentSize.y > this.height - 2)
         var needsHorizontal = showHorizontalScrollbar ?: (contentSize.x > this.width - 2)
 
-        if (needsHorizontal)
+        if (needsHorizontal && showVerticalScrollbar == null)
             needsVertical = contentSize.y > this.height - 2 - scrollBarWidth
-        else if (needsVertical)
+        if (needsVertical && showHorizontalScrollbar == null)
             needsHorizontal = contentSize.x > this.width - 2 - scrollBarWidth
 
         val contentAreaSize = vec(

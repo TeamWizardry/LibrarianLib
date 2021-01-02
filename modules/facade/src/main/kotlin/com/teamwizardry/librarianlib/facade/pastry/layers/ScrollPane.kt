@@ -49,11 +49,10 @@ public class ScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y,
     }
 
     override fun layoutChildren() {
-        super.layoutChildren()
+        verticalScrollBar.markLayoutDirty()
+        horizontalScrollBar.markLayoutDirty()
         verticalScrollBar.runLayout()
-        verticalScrollBar.updateHandle()
         horizontalScrollBar.runLayout()
-        horizontalScrollBar.updateHandle()
     }
 }
 
