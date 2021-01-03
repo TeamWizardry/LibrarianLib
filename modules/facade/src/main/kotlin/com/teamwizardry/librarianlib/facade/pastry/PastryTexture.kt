@@ -18,18 +18,22 @@ internal object PastryTexture {
     val texture = Mosaic(Theme.NORMAL.location, 256, 256)
     val shadowTexture = Mosaic(loc("librarianlib:facade/textures/pastry/shadow.png"), 256, 256)
 
-    val background: Sprite by texture.delegate
-    val backgroundInnerCorners: Sprite by texture.delegate
-    val backgroundSlightRound: Sprite by texture.delegate
-    val backgroundSlightRoundInnerCorners: Sprite by texture.delegate
-    val backgroundSlight: Sprite by texture.delegate
-    val backgroundSlightInnerCorners: Sprite by texture.delegate
-    val backgroundSlightInset: Sprite by texture.delegate
-    val backgroundSlightInsetInnerCorners: Sprite by texture.delegate
-    val backgroundBlack: Sprite by texture.delegate
-    val backgroundBlackInnerCorners: Sprite by texture.delegate
-    val backgroundInput: Sprite by texture.delegate
-    val backgroundInputInnerCorners: Sprite by texture.delegate
+    val defaultBackground: Sprite by texture.delegate
+    val defaultBackgroundEdges: Sprite by texture.delegate
+    val lightRoundBackground: Sprite by texture.delegate
+    val lightRoundBackgroundEdges: Sprite by texture.delegate
+    val lightSquareBackground: Sprite by texture.delegate
+    val lightSquareBackgroundEdges: Sprite by texture.delegate
+    val lightInsetBackground: Sprite by texture.delegate
+    val lightInsetBackgroundEdges: Sprite by texture.delegate
+    val blackRoundBackground: Sprite by texture.delegate
+    val blackRoundBackgroundEdges: Sprite by texture.delegate
+    val blackSquareBackground: Sprite by texture.delegate
+    val blackSquareBackgroundEdges: Sprite by texture.delegate
+    val blackInsetBackground: Sprite by texture.delegate
+    val blackInsetBackgroundEdges: Sprite by texture.delegate
+    val inputBackground: Sprite by texture.delegate
+    val inputBackgroundEdges: Sprite by texture.delegate
 
     val tabsButton: Sprite by texture.delegate
     val tabsBody: Sprite by texture.delegate
@@ -38,7 +42,6 @@ internal object PastryTexture {
     val splitpaneHsplit: Sprite by texture.delegate
     val splitpaneVsplit: Sprite by texture.delegate
 
-    val textfield: Sprite by texture.delegate
     val dropdown: Sprite by texture.delegate
     val dropdownBackground: Sprite by texture.delegate
     val dropdownHighlight: Sprite by texture.delegate
@@ -75,11 +78,36 @@ internal object PastryTexture {
     }
 }
 
-public enum class BackgroundTexture(internal val background: Sprite, internal val innerCorners: Sprite) {
-    DEFAULT(PastryTexture.background, PastryTexture.backgroundInnerCorners),
-    SLIGHT(PastryTexture.backgroundSlight, PastryTexture.backgroundSlightInnerCorners),
-    SLIGHT_INSET(PastryTexture.backgroundSlightInset, PastryTexture.backgroundSlightInsetInnerCorners),
-    SLIGHT_ROUND(PastryTexture.backgroundSlightRound, PastryTexture.backgroundSlightRoundInnerCorners),
-    BLACK(PastryTexture.backgroundBlack, PastryTexture.backgroundBlackInnerCorners),
-    INPUT(PastryTexture.backgroundInput, PastryTexture.backgroundInputInnerCorners)
+/**
+ * A background for use in one of the pastry background layers.
+ */
+public interface IBackgroundStyle {
+    /**
+     * A simple square background configured with 9-slicing
+     */
+    public val background: Sprite
+
+    /**
+     * A CTM-esque sprite for the dynamic background. The contents should be a 4x8-unit grid, where a unit is the
+     * [edgeSize] pixels.
+     */
+    public val edges: Sprite
+
+    /**
+     * The size in pixels of the [edges]
+     */
+    public val edgeSize: Double
+}
+
+public enum class PastryBackgroundStyle(override val background: Sprite, override val edges: Sprite): IBackgroundStyle {
+    DEFAULT(PastryTexture.defaultBackground, PastryTexture.defaultBackgroundEdges),
+    LIGHT_ROUND(PastryTexture.lightRoundBackground, PastryTexture.lightRoundBackgroundEdges),
+    LIGHT_SQUARE(PastryTexture.lightSquareBackground, PastryTexture.lightSquareBackgroundEdges),
+    LIGHT_INSET(PastryTexture.lightInsetBackground, PastryTexture.lightInsetBackgroundEdges),
+    BLACK_ROUND(PastryTexture.blackRoundBackground, PastryTexture.blackRoundBackgroundEdges),
+    BLACK_SQUARE(PastryTexture.blackSquareBackground, PastryTexture.blackSquareBackgroundEdges),
+    BLACK_INSET(PastryTexture.blackInsetBackground, PastryTexture.blackInsetBackgroundEdges),
+    INPUT(PastryTexture.inputBackground, PastryTexture.inputBackgroundEdges);
+
+    override val edgeSize: Double = 2.0
 }

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.facade.layers
 
-import com.teamwizardry.librarianlib.math.Cardinal2d
+import com.teamwizardry.librarianlib.math.Direction2d
 import com.teamwizardry.librarianlib.mosaic.ISprite
 import com.teamwizardry.librarianlib.mosaic.Sprite
 import com.teamwizardry.librarianlib.mosaic.WrappedSprite
@@ -24,13 +24,13 @@ public class SpriteGaugeLayer: LinearGaugeLayer {
         override val wrapped: ISprite?
             get() = sprite
         override val pinTop: Boolean
-            get() = direction == Cardinal2d.DOWN
+            get() = direction == Direction2d.DOWN
         override val pinBottom: Boolean
-            get() = direction == Cardinal2d.UP
+            get() = direction == Direction2d.UP
         override val pinLeft: Boolean
-            get() = direction == Cardinal2d.RIGHT
+            get() = direction == Direction2d.RIGHT
         override val pinRight: Boolean
-            get() = direction == Cardinal2d.LEFT
+            get() = direction == Direction2d.LEFT
     }
     private val spriteLayer = SpriteLayer(pinnedSprite)
 

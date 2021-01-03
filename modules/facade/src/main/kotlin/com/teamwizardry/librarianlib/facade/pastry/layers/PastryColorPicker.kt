@@ -12,7 +12,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
-import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
+import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import net.minecraft.client.renderer.IRenderTypeBuffer
@@ -83,7 +83,7 @@ public class PastryColorPicker: GuiLayer() {
     }
 
     private inner class GradientLayer: GuiLayer(0, 0, 0, 0) {
-        val background = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
+        val background = PastryBackground(PastryBackgroundStyle.LIGHT_INSET, 0, 0, 0, 0)
         val square = ColorSquare()
         var draggingFromInside = false
 
@@ -155,7 +155,7 @@ public class PastryColorPicker: GuiLayer() {
     }
 
     private inner class HueLayer: GuiLayer(0, 0, 0, 0) {
-        private val background = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
+        private val background = PastryBackground(PastryBackgroundStyle.LIGHT_INSET, 0, 0, 0, 0)
         private val sprite = SpriteLayer(hueSprite)
 
         init {
@@ -184,7 +184,7 @@ public class PastryColorPicker: GuiLayer() {
     }
 
     private inner class ColorWellLayer: GuiLayer(0, 0, 0, 16) {
-        private val background = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
+        private val background = PastryBackground(PastryBackgroundStyle.LIGHT_INSET, 0, 0, 0, 0)
         val colorRect = RectLayer(Color.white, 0, 0, 0, 0)
 
         init {

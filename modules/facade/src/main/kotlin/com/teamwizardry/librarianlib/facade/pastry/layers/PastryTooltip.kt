@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
-import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
+import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.provided.VanillaTooltipRenderer
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.core.util.vec
@@ -18,7 +18,7 @@ import kotlin.math.max
 
 public abstract class PastryTooltip: GuiLayer() {
     public val contents: GuiLayer = GuiLayer()
-    public val background: PastryBackground = PastryBackground(BackgroundTexture.BLACK, 0, 0, 20, 20)
+    public val background: PastryBackground = PastryBackground(PastryBackgroundStyle.BLACK_ROUND, 0, 0, 20, 20)
 
     init {
         this.zIndex = TOOLTIP_Z

@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.facade.pastry.layers
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
-import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
+import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.math.clamp
 import com.teamwizardry.librarianlib.core.util.rect
@@ -32,7 +32,7 @@ public class PastryScrollPane(x: Int, y: Int, width: Int, height: Int): GuiLayer
 
     public val content: GuiLayer = scrollPane.content
 
-    private val background = PastryBackground(BackgroundTexture.SLIGHT_INSET)
+    private val background = PastryBackground(PastryBackgroundStyle.LIGHT_INSET)
     private val verticalBackground = SpriteLayer(PastryTexture.scrollbarTrack)
     private val horizontalBackground = SpriteLayer(PastryTexture.scrollbarTrack)
 

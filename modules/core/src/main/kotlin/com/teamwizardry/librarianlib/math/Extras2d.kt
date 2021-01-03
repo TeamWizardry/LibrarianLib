@@ -31,9 +31,9 @@ public enum class Axis2d(public val direction: Vec2d) {
 }
 
 /**
- * One of the four cardinal directions on a 2D plane
+ * One of the four directions on a 2D plane
  */
-public enum class Cardinal2d(
+public enum class Direction2d(
     public val direction: Vec2d,
     public val axis: Axis2d,
     public val sign: Int,
@@ -48,10 +48,28 @@ public enum class Cardinal2d(
     LEFT(vec(-1, 0), Axis2d.X, -1, 3),
     RIGHT(vec(1, 0), Axis2d.X, 1, 1);
 
-    public val opposite: Cardinal2d
+    public val opposite: Direction2d
         get() {
             return values()[(ordinal + 2) % values().size]
         }
+
+    public fun rotateCW(): Direction2d {
+        return when(this) {
+            UP -> RIGHT
+            DOWN -> LEFT
+            LEFT -> UP
+            RIGHT -> DOWN
+        }
+    }
+
+    public fun rotateCCW(): Direction2d {
+        return when(this) {
+            UP -> LEFT
+            DOWN -> RIGHT
+            LEFT -> DOWN
+            RIGHT -> UP
+        }
+    }
 }
 
 /**

@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.facade.layers
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
-import com.teamwizardry.librarianlib.math.Cardinal2d
+import com.teamwizardry.librarianlib.math.Direction2d
 import com.teamwizardry.librarianlib.core.util.rect
 import kotlin.math.roundToInt
 
@@ -25,12 +25,12 @@ public open class LinearGaugeLayer: GuiLayer {
     /**
      * @see direction
      */
-    public val direction_im: IMValue<Cardinal2d> = imValue(Cardinal2d.UP)
+    public val direction_im: IMValue<Direction2d> = imValue(Direction2d.UP)
 
     /**
-     * The direction to expand (e.g. [UP][Cardinal2d.UP] means the gauge will sit at the bottom and rise up)
+     * The direction to expand (e.g. [UP][Direction2d.UP] means the gauge will sit at the bottom and rise up)
      */
-    public var direction: Cardinal2d by direction_im
+    public var direction: Direction2d by direction_im
 
     /**
      * The contents of the gauge. This is the layer that is resized based on [fillFraction].
@@ -48,10 +48,10 @@ public open class LinearGaugeLayer: GuiLayer {
         val emptySize = (totalSize * (1 - fillFraction)).roundToInt()
 
         contents.frame = when (direction) {
-            Cardinal2d.UP -> rect(0, emptySize, width, fullSize)
-            Cardinal2d.DOWN -> rect(0, 0, width, fullSize)
-            Cardinal2d.LEFT -> rect(emptySize, 0, fullSize, height)
-            Cardinal2d.RIGHT -> rect(0, 0, fullSize, height)
+            Direction2d.UP -> rect(0, emptySize, width, fullSize)
+            Direction2d.DOWN -> rect(0, 0, width, fullSize)
+            Direction2d.LEFT -> rect(emptySize, 0, fullSize, height)
+            Direction2d.RIGHT -> rect(0, 0, fullSize, height)
         }
     }
 }

@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
 import net.minecraft.util.text.ITextComponent
 
 public open class GuiPastryBase(title: ITextComponent): FacadeScreen(title) {
-    public val bg: PastryBackground = PastryBackground(BackgroundTexture.DEFAULT, 0, 0, 0, 0)
+    public val bg: PastryBackground = PastryBackground(PastryBackgroundStyle.DEFAULT, 0, 0, 0, 0)
 
     init {
         bg.zIndex = GuiLayer.BACKGROUND_Z

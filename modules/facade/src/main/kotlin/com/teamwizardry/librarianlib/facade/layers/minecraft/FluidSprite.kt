@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.facade.layer.AnimationTimeListener
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValue
-import com.teamwizardry.librarianlib.math.Cardinal2d
+import com.teamwizardry.librarianlib.math.Direction2d
 import com.teamwizardry.librarianlib.mosaic.ISprite
 import com.teamwizardry.librarianlib.mosaic.LTextureAtlasSprite
 import com.teamwizardry.librarianlib.mosaic.WrappedSprite
@@ -27,16 +27,16 @@ public class FluidSprite(layer: GuiLayer): WrappedSprite(), AnimationTimeListene
     /**
      * The direction the fluid should appear to flow, if at all.
      */
-    public val flow_im: IMValue<Cardinal2d?> = layer.imValue()
+    public val flow_im: IMValue<Direction2d?> = layer.imValue()
 
     /**
      * The direction the fluid should appear to flow, if at all.
      */
-    public var flow: Cardinal2d? by flow_im
+    public var flow: Direction2d? by flow_im
 
     private var lastFluidSprite: ISprite? = null
     private var lastFluid: Fluid? = null
-    private var lastFlow: Cardinal2d? = null
+    private var lastFlow: Direction2d? = null
     override val wrapped: ISprite?
         get() {
             update()
@@ -45,7 +45,7 @@ public class FluidSprite(layer: GuiLayer): WrappedSprite(), AnimationTimeListene
     override val rotation: Int
         get() {
             update()
-            return (lastFlow ?: Cardinal2d.DOWN).rotation + 2
+            return (lastFlow ?: Direction2d.DOWN).rotation + 2
         }
 
     public fun update() {

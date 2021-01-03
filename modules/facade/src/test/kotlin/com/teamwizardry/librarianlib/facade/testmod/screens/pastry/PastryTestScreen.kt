@@ -4,20 +4,14 @@ import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
-import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
+import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.Pastry
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryLabel
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
-import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestButton
-import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestDropdown
-import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestProgress
-import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestScroll
-import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestSwitches
-import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestTabs
-import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestTooltips
 import com.teamwizardry.librarianlib.core.util.rect
 import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.*
 import net.minecraft.util.text.ITextComponent
 
 class PastryTestScreen(title: ITextComponent): FacadeScreen(title) {
@@ -29,8 +23,8 @@ class PastryTestScreen(title: ITextComponent): FacadeScreen(title) {
         PastryTestTooltips::class.java to "Tooltips",
         PastryTestScroll::class.java to "Scroll Pane",
         PastryTestTabs::class.java to "Tabs",
-        Any::class.java to "<Fix commas in git diffs>"
-    ).also { it.remove(Any::class.java) }
+        PastryTestDynamicBackground::class.java to "Dynamic Background"
+    )
 
     val selector = StackLayout.build()
         .vertical()
@@ -54,7 +48,7 @@ class PastryTestScreen(title: ITextComponent): FacadeScreen(title) {
         .build()
 
     val background = PastryBackground(0, 0, 1, 1)
-    val contentBackground = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
+    val contentBackground = PastryBackground(PastryBackgroundStyle.LIGHT_INSET, 0, 0, 0, 0)
     val contentArea = GuiLayer()
     val selectorArea = GuiLayer()
     val selectedTestLabel = PastryLabel(0, 1, "")

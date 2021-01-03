@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
-import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
+import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.core.util.rect
@@ -22,18 +22,17 @@ import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.util.text.ITextComponent
 import java.awt.Color
-import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
 internal class Rect2dUnionTestScreen(title: ITextComponent): FacadeScreen(title) {
     val background = PastryBackground(0, 0, 1, 1)
-    val contentBackground = PastryBackground(BackgroundTexture.SLIGHT_INSET, 0, 0, 0, 0)
+    val contentBackground = PastryBackground(PastryBackgroundStyle.LIGHT_INSET, 0, 0, 0, 0)
     val segmentViewer = SegmentViewerLayer()
 
     val steps = mutableListOf(
         "Merge Collinear" to { segmentViewer.rect2dUnion.mergeCollinear() },
-        "Compute Depths" to { segmentViewer.rect2dUnion.computeDepths() }
+        "Compute Depths" to { segmentViewer.rect2dUnion.computeDepths() },
     )
     var stepIndex = 0
     val nextStepButton: PastryButton = PastryButton(steps[stepIndex].first, 1, 1)
@@ -109,26 +108,29 @@ internal class Rect2dUnionTestScreen(title: ITextComponent): FacadeScreen(title)
         override fun draw(context: GuiDrawContext) {
             super.draw(context)
 
-            val startColor = Color.RED
-            val endColor = Color.BLUE
+            val startColor = Color.BLUE
+            val endColor = Color.RED
+            val arrowColor = Color.RED
 
             val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
             val vb = buffer.getBuffer(SimpleRenderTypes.flatLines)
 
-            for(segment in rect2dUnion.horizontalSegments) {
+            for(segment in rect2dUnion.horizontalSegments + rect2dUnion.verticalSegments) {
                 segment ?: continue
                 if(segment.depth != 0) continue
-                vb.pos2d(context.matrix, segment.start, segment.position).color(startColor).endVertex()
-                vb.pos2d(context.matrix, segment.start + segment.length, segment.position).color(endColor).endVertex()
-            }
-            for(segment in rect2dUnion.verticalSegments) {
-                segment ?: continue
-                if(segment.depth != 0) continue
-                vb.pos2d(context.matrix, segment.position, segment.start).color(startColor).endVertex()
-                vb.pos2d(context.matrix, segment.position, segment.start + segment.length).color(endColor).endVertex()
+                vb.pos2d(context.matrix, segment.startVec).color(startColor).endVertex()
+                vb.pos2d(context.matrix, segment.endVec).color(endColor).endVertex()
+                val sideOffset = segment.side.direction
+                val forwardOffset = segment.side.rotateCW().direction * 3
+
+                vb.pos2d(context.matrix, segment.endVec - forwardOffset + sideOffset).color(arrowColor).endVertex()
+                vb.pos2d(context.matrix, segment.endVec).color(arrowColor).endVertex()
+                vb.pos2d(context.matrix, segment.endVec).color(arrowColor).endVertex()
+                vb.pos2d(context.matrix, segment.endVec - forwardOffset - sideOffset).color(arrowColor).endVertex()
+
             }
 
-            RenderSystem.lineWidth(3f)
+            RenderSystem.lineWidth(2f)
             buffer.finish()
             RenderSystem.lineWidth(1f)
         }

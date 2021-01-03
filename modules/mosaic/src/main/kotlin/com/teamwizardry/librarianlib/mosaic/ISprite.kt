@@ -107,25 +107,37 @@ public interface ISprite {
      * The minimum U coordinate (0-1)
      */
     public fun minU(animFrames: Int): Float
-    public fun minU(): Float = minU(0) // JVM overload
+    public fun minU(): Float = minU(0)
 
     /**
      * The minimum V coordinate (0-1)
      */
     public fun minV(animFrames: Int): Float
-    public fun minV(): Float = minU(0) // JVM overload
+    public fun minV(): Float = minU(0)
 
     /**
      * The maximum U coordinate (0-1)
      */
     public fun maxU(animFrames: Int): Float
-    public fun maxU(): Float = minU(0) // JVM overload
+    public fun maxU(): Float = minU(0)
 
     /**
      * The maximum V coordinate (0-1)
      */
     public fun maxV(animFrames: Int): Float
-    public fun maxV(): Float = minU(0) // JVM overload
+    public fun maxV(): Float = minU(0)
+
+    /**
+     * Get the actual U coordinate for the specified U inside this sprite
+     */
+    public fun interpU(animFrames: Int, u: Float): Float = minU(animFrames) + uSize * u
+    public fun interpU(u: Float): Float = interpU(0, u)
+
+    /**
+     * Get the actval V coordinate for the specified V inside this sprite
+     */
+    public fun interpV(animFrames: Int, v: Float): Float = minV(animFrames) + vSize * v
+    public fun interpV(v: Float): Float = interpV(0, v)
 
     /**
      * Draws the sprite to the screen

@@ -1,18 +1,5 @@
 package com.teamwizardry.librarianlib.facade.pastry.layers
 
-import com.teamwizardry.librarianlib.facade.layer.GuiLayer
-import com.teamwizardry.librarianlib.facade.layers.RectLayer
-import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
-import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
-import com.teamwizardry.librarianlib.facade.pastry.ExperimentalPastryAPI
-import com.teamwizardry.librarianlib.facade.value.RMValueDouble
-import com.teamwizardry.librarianlib.math.Axis2d
-import com.teamwizardry.librarianlib.math.Cardinal2d
-import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.core.util.vec
-import kotlin.math.PI
-import kotlin.math.max
-
 /* TODO
 @ExperimentalPastryAPI
 class PastrySlider(posX: Int, posY: Int, length: Int, var pointed: Boolean, facing: Cardinal2d) : GuiLayer(
