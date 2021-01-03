@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.facade.text
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.facade.logger
 import dev.thecodewarrior.bitfont.data.Bitfont
 import net.minecraft.profiler.IProfiler

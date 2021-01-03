@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
+import com.teamwizardry.librarianlib.core.util.ivec
 import net.minecraft.util.math.Vec3i
 
 @JvmSynthetic

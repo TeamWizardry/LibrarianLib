@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.courier.testmod
 
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.core.util.sided.clientOnly
 import com.teamwizardry.librarianlib.courier.CourierChannel
 import com.teamwizardry.librarianlib.courier.CourierPacket

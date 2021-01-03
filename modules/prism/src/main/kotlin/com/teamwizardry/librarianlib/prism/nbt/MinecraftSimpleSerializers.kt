@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.prism.nbt
 
 import com.mojang.authlib.GameProfile
 import com.teamwizardry.librarianlib.core.util.kotlin.inconceivable
-import com.teamwizardry.librarianlib.math.block
+import com.teamwizardry.librarianlib.core.util.block
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.type.ClassMirror
 import dev.thecodewarrior.mirror.type.TypeMirror

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.foundation.block.*
 import com.teamwizardry.librarianlib.foundation.util.TagWrappers
 import net.minecraft.block.*

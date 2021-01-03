@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.facade.text.Fonts
 import com.teamwizardry.librarianlib.facade.text.BitfontFormatting
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.math.Rect2d
-import com.teamwizardry.librarianlib.math.rect
+import com.teamwizardry.librarianlib.core.util.rect
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
+import com.teamwizardry.librarianlib.core.util.vec
 import kotlin.math.max
 import kotlin.math.min
 

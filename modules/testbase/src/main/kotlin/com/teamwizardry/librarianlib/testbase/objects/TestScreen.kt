@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.math.MutableMatrix3d
 import com.teamwizardry.librarianlib.math.SimpleCoordinateSpace2D
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.item.ItemStack

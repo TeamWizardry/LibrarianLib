@@ -5,8 +5,8 @@ import com.teamwizardry.librarianlib.math.Align2d
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.ceilInt
 import com.teamwizardry.librarianlib.math.floorInt
-import com.teamwizardry.librarianlib.math.rect
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.rect
+import com.teamwizardry.librarianlib.core.util.vec
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max

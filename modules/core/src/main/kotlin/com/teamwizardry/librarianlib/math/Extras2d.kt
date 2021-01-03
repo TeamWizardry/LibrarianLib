@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.math
 
+import com.teamwizardry.librarianlib.core.util.vec
+
 /**
  * One of the 2D axes, [X] or [Y]
  */

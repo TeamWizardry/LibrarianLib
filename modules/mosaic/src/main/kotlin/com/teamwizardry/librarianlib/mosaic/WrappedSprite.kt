@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.math.Matrix3d
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType

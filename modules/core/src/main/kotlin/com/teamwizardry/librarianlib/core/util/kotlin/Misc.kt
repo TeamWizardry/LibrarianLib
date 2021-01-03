@@ -5,12 +5,6 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.util.LazyOptional
 import java.util.Optional
 
-@JvmSynthetic
-public fun loc(location: String): ResourceLocation = ResourceLocation(location)
-
-@JvmSynthetic
-public fun loc(namespace: String, path: String): ResourceLocation = ResourceLocation(namespace, path)
-
 /**
  * Creates a translation key in the format `type.namespace.path[.suffix]`, e.g. `item.minecraft.iron_ingot`
  */

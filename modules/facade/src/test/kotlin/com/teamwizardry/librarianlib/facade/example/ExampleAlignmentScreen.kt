@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.supporting.DisplaySpace
 import com.teamwizardry.librarianlib.facade.layer.supporting.ScreenSpace
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 

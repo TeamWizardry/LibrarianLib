@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.math
 
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
+import com.teamwizardry.librarianlib.core.util.vec
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.FieldMirror
 import net.minecraft.client.renderer.Matrix3f

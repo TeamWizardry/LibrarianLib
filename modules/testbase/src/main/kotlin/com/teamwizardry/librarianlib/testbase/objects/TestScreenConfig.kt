@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.testbase.objects
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.sided.ClientSupplier
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.AbstractGui
 import net.minecraft.client.gui.FontRenderer

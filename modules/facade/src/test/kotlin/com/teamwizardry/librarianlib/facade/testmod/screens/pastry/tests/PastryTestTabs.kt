@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.facade.pastry.layers.PastryTabPage
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryTabPane
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryToggle
 import com.teamwizardry.librarianlib.math.Align2d
-import com.teamwizardry.librarianlib.math.rect
+import com.teamwizardry.librarianlib.core.util.rect
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestBase
 
 @OptIn(ExperimentalPastryAPI::class)

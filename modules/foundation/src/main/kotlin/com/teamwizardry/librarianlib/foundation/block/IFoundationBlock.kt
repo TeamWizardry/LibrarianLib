@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.block
 
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.foundation.item.BaseBlockItem
 import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
 import net.minecraft.block.BlockState

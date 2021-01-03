@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
+import com.teamwizardry.librarianlib.core.util.vec
 import java.io.Serializable
 
 import net.minecraft.util.math.Vec3d

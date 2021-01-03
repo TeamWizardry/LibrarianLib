@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
 import com.teamwizardry.librarianlib.math.Cardinal2d
-import com.teamwizardry.librarianlib.math.rect
+import com.teamwizardry.librarianlib.core.util.rect
 import kotlin.math.roundToInt
 
 public open class LinearGaugeLayer: GuiLayer {

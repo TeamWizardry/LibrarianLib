@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.supporting.ContainerSpace
 import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.inventory.container.Slot
 

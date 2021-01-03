@@ -6,8 +6,8 @@ import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.BackgroundTexture
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.math.clamp
-import com.teamwizardry.librarianlib.math.rect
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.rect
+import com.teamwizardry.librarianlib.core.util.vec
 
 /**
  *

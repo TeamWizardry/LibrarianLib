@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.facade.value.RMValue
 import com.teamwizardry.librarianlib.facade.value.RMValueInt
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 

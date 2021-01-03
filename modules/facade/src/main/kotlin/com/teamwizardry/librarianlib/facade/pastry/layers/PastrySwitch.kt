@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.facade.pastry.layers
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 
 public class PastrySwitch(posX: Int, posY: Int): PastryToggle(posX, posY, 11, 7) {
     public constructor(): this(0, 0)

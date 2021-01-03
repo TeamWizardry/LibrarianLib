@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.foundation
 
 import com.teamwizardry.librarianlib.core.util.MiscUtil
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.courier.CourierChannel
 import com.teamwizardry.librarianlib.foundation.registration.RegistrationManager
 import com.teamwizardry.librarianlib.foundation.util.ModLogManager

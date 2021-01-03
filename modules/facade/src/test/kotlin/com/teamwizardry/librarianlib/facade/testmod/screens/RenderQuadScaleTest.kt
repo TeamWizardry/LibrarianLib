@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.facade.layers.ArcLayer
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
 import com.teamwizardry.librarianlib.math.Easing
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 import kotlin.math.PI

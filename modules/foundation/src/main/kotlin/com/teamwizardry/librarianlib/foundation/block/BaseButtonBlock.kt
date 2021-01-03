@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.block
 
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import net.minecraft.block.AbstractButtonBlock
 import net.minecraft.block.BlockState
 import net.minecraft.block.StairsBlock

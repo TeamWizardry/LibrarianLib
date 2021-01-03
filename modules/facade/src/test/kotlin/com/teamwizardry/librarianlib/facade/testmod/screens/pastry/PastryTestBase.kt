@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryLabel
-import com.teamwizardry.librarianlib.math.rect
+import com.teamwizardry.librarianlib.core.util.rect
 import java.awt.Color
 import kotlin.math.max
 

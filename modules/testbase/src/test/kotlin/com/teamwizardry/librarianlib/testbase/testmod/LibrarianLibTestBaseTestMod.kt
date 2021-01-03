@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.testbase.testmod
 
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.testbase.LibrarianLibTestBaseModule
 import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock

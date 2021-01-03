@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.facade.input
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager

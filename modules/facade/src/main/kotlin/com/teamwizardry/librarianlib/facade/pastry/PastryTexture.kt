@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.facade.pastry
 
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import com.teamwizardry.librarianlib.mosaic.Sprite
 import net.minecraft.util.ResourceLocation

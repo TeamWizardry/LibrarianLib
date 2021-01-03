@@ -9,8 +9,8 @@ import com.teamwizardry.librarianlib.facade.pastry.Pastry
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryActivatedControl
 import com.teamwizardry.librarianlib.facade.layer.supporting.ScreenSpace
-import com.teamwizardry.librarianlib.math.rect
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.rect
+import com.teamwizardry.librarianlib.core.util.vec
 import java.util.function.Consumer
 
 public class PastryDropdown<T> constructor(

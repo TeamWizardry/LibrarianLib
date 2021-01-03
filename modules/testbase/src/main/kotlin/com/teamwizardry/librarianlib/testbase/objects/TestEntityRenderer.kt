@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.testbase.objects
 
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.vertex.IVertexBuilder
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.Matrix3f
 import net.minecraft.client.renderer.Matrix4f

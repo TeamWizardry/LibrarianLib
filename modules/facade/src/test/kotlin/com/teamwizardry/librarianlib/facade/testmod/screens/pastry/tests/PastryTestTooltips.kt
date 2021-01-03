@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryTooltip
 import com.teamwizardry.librarianlib.facade.pastry.layers.VanillaTooltip
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestBase
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import java.awt.Color

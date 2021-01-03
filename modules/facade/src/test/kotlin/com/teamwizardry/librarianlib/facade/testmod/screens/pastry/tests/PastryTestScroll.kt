@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.facade.pastry.layers.dropdown.DropdownTextI
 import com.teamwizardry.librarianlib.facade.pastry.layers.dropdown.PastryDropdown
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestBase
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import net.minecraft.util.ResourceLocation
 

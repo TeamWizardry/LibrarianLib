@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.facade.layer.FacadeDebugOptions
 import com.teamwizardry.librarianlib.facade.provided.VanillaTooltipRenderer
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.gui.AbstractGui
 import org.lwjgl.glfw.GLFW
 import java.awt.Color

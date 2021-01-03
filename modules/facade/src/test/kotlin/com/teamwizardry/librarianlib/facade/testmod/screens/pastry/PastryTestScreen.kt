@@ -16,8 +16,8 @@ import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryT
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestSwitches
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestTabs
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.PastryTestTooltips
-import com.teamwizardry.librarianlib.math.rect
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.rect
+import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.util.text.ITextComponent
 
 class PastryTestScreen(title: ITextComponent): FacadeScreen(title) {

@@ -13,7 +13,7 @@ import com.teamwizardry.librarianlib.facade.text.BitfontFormatting
 import com.teamwizardry.librarianlib.facade.text.BitfontRenderer
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import dev.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import dev.thecodewarrior.bitfont.typesetting.TextAttribute
 import net.minecraft.client.renderer.IRenderTypeBuffer

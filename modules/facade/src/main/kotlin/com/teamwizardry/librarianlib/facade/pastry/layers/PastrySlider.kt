@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.facade.value.RMValueDouble
 import com.teamwizardry.librarianlib.math.Axis2d
 import com.teamwizardry.librarianlib.math.Cardinal2d
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import kotlin.math.PI
 import kotlin.math.max
 

@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
 import com.teamwizardry.librarianlib.math.clamp
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 
 public class PastryProgressBar(posX: Int, posY: Int, width: Int): GuiLayer(posX, posY, width, 6) {
     private val bg = SpriteLayer(PastryTexture.progressbar, 0, 0, 0, 0)

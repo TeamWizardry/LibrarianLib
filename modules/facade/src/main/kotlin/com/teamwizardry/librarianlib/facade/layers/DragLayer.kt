@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.facade.layers
 
+import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.value.IMValueBoolean
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.math.vec
 
 /**
  * A layer that will move the [targetLayer] when the mouse is dragged on it. If the target is null this layer will move

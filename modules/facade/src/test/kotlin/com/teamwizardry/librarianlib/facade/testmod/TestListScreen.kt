@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.facade.testmod
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.clamp
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.util.text.StringTextComponent
 import java.awt.Color

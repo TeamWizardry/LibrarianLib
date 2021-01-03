@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.block
 
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import net.minecraft.block.Block
 import net.minecraft.block.LeavesBlock
 import net.minecraft.block.SoundType

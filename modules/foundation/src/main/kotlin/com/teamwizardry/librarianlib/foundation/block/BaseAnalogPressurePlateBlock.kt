@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.block
 
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.math.clamp
 import net.minecraft.block.Block
 import net.minecraft.block.PressurePlateBlock

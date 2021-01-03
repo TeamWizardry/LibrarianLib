@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.mosaic
 import com.teamwizardry.librarianlib.core.util.AWTTextureUtil
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.NativeImage

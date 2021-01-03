@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.testmod.customtypes.client
 
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestEntity
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererManager

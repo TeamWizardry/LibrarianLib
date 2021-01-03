@@ -3,9 +3,9 @@
 package com.teamwizardry.librarianlib.mosaic.testmod
 
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.math.Matrix3d
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.mosaic.ISprite
 import com.teamwizardry.librarianlib.mosaic.LibrarianLibMosaicModule
 import com.teamwizardry.librarianlib.mosaic.Mosaic

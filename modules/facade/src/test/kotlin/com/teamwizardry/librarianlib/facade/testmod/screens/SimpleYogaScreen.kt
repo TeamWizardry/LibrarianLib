@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.facade.testmod.screens
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 

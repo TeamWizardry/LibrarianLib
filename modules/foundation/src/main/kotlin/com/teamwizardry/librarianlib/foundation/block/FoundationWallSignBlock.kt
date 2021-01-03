@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.block
 
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.foundation.bridge.FoundationSignTileEntityCreator
 import com.teamwizardry.librarianlib.foundation.bridge.ICustomSignMaterialBlock
 import com.teamwizardry.librarianlib.foundation.registration.LazyTileEntityType

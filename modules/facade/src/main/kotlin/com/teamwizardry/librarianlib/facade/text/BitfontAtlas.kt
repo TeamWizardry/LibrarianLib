@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.facade.text
 import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.math.Rect2d
-import com.teamwizardry.librarianlib.math.rect
+import com.teamwizardry.librarianlib.core.util.rect
 import dev.thecodewarrior.bitfont.data.BitGrid
 import dev.thecodewarrior.bitfont.utils.RectanglePacker
 import net.minecraft.client.renderer.texture.NativeImage

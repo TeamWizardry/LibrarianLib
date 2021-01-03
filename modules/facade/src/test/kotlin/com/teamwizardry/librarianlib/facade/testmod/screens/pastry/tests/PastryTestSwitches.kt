@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.facade.pastry.layers.PastryLabel
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryRadioButtonSet
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastrySwitch
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestBase
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 
 @OptIn(ExperimentalPastryAPI::class)
 class PastryTestSwitches: PastryTestBase() {

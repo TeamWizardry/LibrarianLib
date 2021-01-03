@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.math
 
 import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
+import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.renderer.Matrix3f
 import net.minecraft.util.math.Vec3d
 import kotlin.math.cos

@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.albedo.testmod
 
 import com.teamwizardry.librarianlib.albedo.LibrarianLibAlbedoModule
 import com.teamwizardry.librarianlib.albedo.testmod.shaders.*
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import net.minecraftforge.fml.common.Mod

@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.core.util
 import com.google.common.collect.Lists
 import com.teamwizardry.librarianlib.core.logger
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.vec
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.MainWindow
 import net.minecraft.client.Minecraft

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
+import com.teamwizardry.librarianlib.core.util.vec
 import java.util.Collections
 import java.util.IdentityHashMap
 import kotlin.math.max

@@ -2,7 +2,7 @@
 
 package com.teamwizardry.librarianlib.facade.testmod
 
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerType
 import com.teamwizardry.librarianlib.facade.example.*

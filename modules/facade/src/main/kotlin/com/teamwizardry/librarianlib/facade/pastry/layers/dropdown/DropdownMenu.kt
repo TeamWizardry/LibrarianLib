@@ -11,8 +11,8 @@ import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.math.Easing
 import com.teamwizardry.librarianlib.facade.layer.supporting.ScreenSpace
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.math.rect
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.rect
+import com.teamwizardry.librarianlib.core.util.vec
 import java.awt.Color
 import kotlin.math.max
 

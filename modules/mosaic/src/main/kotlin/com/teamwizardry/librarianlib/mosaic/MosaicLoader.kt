@@ -2,14 +2,14 @@ package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.inconceivable
-import com.teamwizardry.librarianlib.core.util.kotlin.loc
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.core.util.kotlin.tick
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.math.Vec2i
 import com.teamwizardry.librarianlib.math.ceilInt
 import com.teamwizardry.librarianlib.math.floorInt
-import com.teamwizardry.librarianlib.math.ivec
-import com.teamwizardry.librarianlib.math.vec
+import com.teamwizardry.librarianlib.core.util.ivec
+import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.resources.ReloadListener
 import net.minecraft.client.resources.data.AnimationMetadataSection
 import net.minecraft.profiler.IProfiler
