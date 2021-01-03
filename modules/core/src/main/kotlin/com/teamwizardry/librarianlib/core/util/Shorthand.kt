@@ -124,6 +124,12 @@ public fun block(vec: Vec3i): BlockPos = BlockPosPool.getPooled(vec.x, vec.y, ve
 public fun rect(x: Double, y: Double, width: Double, height: Double): Rect2d = Rect2d(x, y, width, height)
 
 /**
+ * Convenience method for creating a [Rect2d] instance. This does not do any pooling like the vectors do, but is
+ * more convenient than `new Rect2d(...)`
+ */
+public fun rect(pos: Vec2d, size: Vec2d): Rect2d = Rect2d(pos, size)
+
+/**
 * Convenience function for creating [Rect2d]s in Kotlin without needing to explicitly convert parameters to doubles.
 */
 @JvmSynthetic

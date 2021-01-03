@@ -81,6 +81,7 @@ public object SimpleRenderTypes {
             .alpha(DefaultRenderStates.DEFAULT_ALPHA)
             .depthTest(DefaultRenderStates.DEPTH_LEQUAL)
             .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
+            .shadeModel(DefaultRenderStates.SHADE_ENABLED)
         configure?.accept(renderState)
 
         return makeType(

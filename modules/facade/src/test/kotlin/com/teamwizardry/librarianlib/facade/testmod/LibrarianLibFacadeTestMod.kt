@@ -15,6 +15,7 @@ import com.teamwizardry.librarianlib.facade.testmod.containers.SimpleInventoryCo
 import com.teamwizardry.librarianlib.facade.testmod.containers.SimpleInventoryTile
 import com.teamwizardry.librarianlib.facade.testmod.screens.*
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestScreen
+import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.Rect2dUnionTestScreen
 import com.teamwizardry.librarianlib.facade.testmod.value.RMValueTests
 import com.teamwizardry.librarianlib.testbase.TestMod
 import com.teamwizardry.librarianlib.testbase.objects.TestBlock
@@ -62,7 +63,8 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
         "advanced" to FacadeTestGroup("Advanced", listOf(
             FacadeTest("Yoga Simple Flex", ::SimpleYogaScreen),
             FacadeTest("Yoga List", ::YogaListScreen),
-            FacadeTest("Pastry", ::PastryTestScreen)
+            FacadeTest("Pastry", ::PastryTestScreen),
+            FacadeTest("Rect2dUnion", ::Rect2dUnionTestScreen)
         )),
         "examples" to FacadeTestGroup("Examples", listOf(
             FacadeTest("Alignment", ::ExampleAlignmentScreen),
