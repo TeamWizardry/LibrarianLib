@@ -12,19 +12,38 @@ import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.Rect2dUnion
 import com.teamwizardry.librarianlib.math.Direction2d
 import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.min
 
-public class PastryDynamicBackground(public var style: IBackgroundStyle): GuiLayer() {
-    public constructor(): this(PastryBackgroundStyle.DEFAULT)
+public class PastryDynamicBackground(style: IBackgroundStyle, vararg shapeLayers: GuiLayer): GuiLayer() {
+    public constructor(vararg shapeLayers: GuiLayer): this(PastryBackgroundStyle.VANILLA, *shapeLayers)
+
+    public var style: IBackgroundStyle = style
+        set(value) {
+            if(field != value) {
+                field = value
+                markLayoutDirty()
+            }
+        }
+
+    public val shapeLayers: MutableList<GuiLayer> = mutableListOf(*shapeLayers)
 
     private val elements = mutableListOf<Element>()
+    private var frames = listOf<Rect2d>()
 
-    override fun layoutChildren() {
-        updateElements()
+    override fun prepareLayout() {
+        val newFrames = shapeLayers
+            .filter { it.root === this.root } // only related layers
+            .map { it.convertRectTo(it.bounds, this) }
+
+        if(newFrames != frames) {
+            frames = newFrames
+            updateElements()
+        }
     }
 
     override fun draw(context: GuiDrawContext) {
@@ -39,11 +58,11 @@ public class PastryDynamicBackground(public var style: IBackgroundStyle): GuiLay
     // yes this creates a lot of temporary Vec2d objects, but efficiency be damned this is hard enough as it is and
     // shouldn't be especially hot code
     private fun updateElements() {
-        val borderSize = style.edgeSize
+        val edgeSize = style.edgeSize
+        val edgeInset = style.edgeInset
+        val edgeOutset = edgeSize - edgeInset
 
         elements.clear()
-
-        val frames = children.filter { it.isVisible }.map { it.frame }
 
         for(frame in frames) {
             elements.add(Element(frame.pos, frame.size, 0, 2))
@@ -67,18 +86,19 @@ public class PastryDynamicBackground(public var style: IBackgroundStyle): GuiLay
             var edgeStart = segment.startVec
             var edgeEnd = segment.endVec
 
-            if(startIsInnerCorner) {
-                edgeStart += segment.direction.direction * borderSize
-            }
-            if(endIsInnerCorner) {
-                edgeEnd -= segment.direction.direction * borderSize
-            }
+            // shift the edge in
+            edgeStart -= segment.side.vector * edgeInset
+            edgeEnd -= segment.side.vector * edgeInset
+
+            // get out of the way of the top of an inner corner or the bottom of an outer corner
+            edgeStart += segment.direction.vector * if(startIsInnerCorner) edgeOutset else edgeInset
+            edgeEnd -= segment.direction.vector * if(endIsInnerCorner) edgeOutset else edgeInset
 
             var cornerStart = edgeEnd
-            var cornerEnd = edgeEnd + segment.direction.direction * borderSize
+            var cornerEnd = edgeEnd + segment.direction.vector * edgeSize
 
-            edgeEnd += segment.side.direction * borderSize
-            cornerEnd += segment.side.direction * borderSize
+            edgeEnd += segment.side.vector * edgeSize
+            cornerEnd += segment.side.vector * edgeSize
 
             val (edgeU: Int, edgeV: Int) = when(segment.side) {
                 Direction2d.UP -> 0 to 4
@@ -103,12 +123,16 @@ public class PastryDynamicBackground(public var style: IBackgroundStyle): GuiLay
                 }
             }
 
-            val edgePos = vec(min(edgeStart.x, edgeEnd.x), min(edgeStart.y, edgeEnd.y))
-            val edgeSize = vec(abs(edgeEnd.x - edgeStart.x), abs(edgeEnd.y - edgeStart.y))
-            val cornerPos = vec(min(cornerStart.x, cornerEnd.x), min(cornerStart.y, cornerEnd.y))
-
-            elements.add(Element(edgePos, edgeSize, edgeU, edgeV))
-            elements.add(Element(cornerPos, vec(borderSize, borderSize), cornerU, cornerV))
+            elements.add(Element(
+                vec(min(edgeStart.x, edgeEnd.x), min(edgeStart.y, edgeEnd.y)),
+                vec(abs(edgeEnd.x - edgeStart.x), abs(edgeEnd.y - edgeStart.y)),
+                edgeU, edgeV
+            ))
+            elements.add(Element(
+                vec(min(cornerStart.x, cornerEnd.x), min(cornerStart.y, cornerEnd.y)),
+                vec(edgeSize, edgeSize),
+                cornerU, cornerV
+            ))
         }
     }
 

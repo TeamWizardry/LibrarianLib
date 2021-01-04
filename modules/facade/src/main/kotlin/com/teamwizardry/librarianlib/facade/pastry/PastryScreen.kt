@@ -4,16 +4,14 @@ import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryDynamicBackground
 import net.minecraft.util.text.ITextComponent
 
-public open class GuiPastryBase(title: ITextComponent): FacadeScreen(title) {
-    public val bg: PastryBackground = PastryBackground(PastryBackgroundStyle.DEFAULT, 0, 0, 0, 0)
+public open class PastryScreen(title: ITextComponent): FacadeScreen(title) {
+    public val background: PastryDynamicBackground = PastryDynamicBackground(PastryBackgroundStyle.VANILLA, main)
 
     init {
-        bg.zIndex = GuiLayer.BACKGROUND_Z
-        main.BUS.hook<GuiLayerEvents.LayoutChildren> {
-            bg.frame = main.bounds.grow(4.0)
-        }
-        main.add(bg)
+        background.zIndex = GuiLayer.BACKGROUND_Z
+        main.add(background)
     }
 }

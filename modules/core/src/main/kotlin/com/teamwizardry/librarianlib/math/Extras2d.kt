@@ -34,7 +34,7 @@ public enum class Axis2d(public val direction: Vec2d) {
  * One of the four directions on a 2D plane
  */
 public enum class Direction2d(
-    public val direction: Vec2d,
+    public val vector: Vec2d,
     public val axis: Axis2d,
     public val sign: Int,
     /**

@@ -11,10 +11,11 @@ import com.teamwizardry.librarianlib.facade.pastry.layers.PastryLabel
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.core.util.rect
 import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.facade.pastry.PastryScreen
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.*
 import net.minecraft.util.text.ITextComponent
 
-class PastryTestScreen(title: ITextComponent): FacadeScreen(title) {
+class PastryTestScreen(title: ITextComponent): PastryScreen(title) {
     val tests: Map<Class<*>, String> = mutableMapOf(
         PastryTestButton::class.java to "Button",
         PastryTestDropdown::class.java to "Dropdown",
@@ -47,7 +48,6 @@ class PastryTestScreen(title: ITextComponent): FacadeScreen(title) {
         }
         .build()
 
-    val background = PastryBackground(0, 0, 1, 1)
     val contentBackground = PastryBackground(PastryBackgroundStyle.LIGHT_INSET, 0, 0, 0, 0)
     val contentArea = GuiLayer()
     val selectorArea = GuiLayer()
@@ -61,10 +61,9 @@ class PastryTestScreen(title: ITextComponent): FacadeScreen(title) {
     init {
         main.size = vec(200, 200)
 
-        main.add(background, contentBackground, contentArea, selectorArea, selectTestButton, selectedTestLabel)
+        main.add(contentBackground, contentArea, selectorArea, selectTestButton, selectedTestLabel)
 
         main.BUS.hook<GuiLayerEvents.LayoutChildren> {
-            background.frame = main.bounds.offset(-2, -2, 2, 2)
             contentBackground.frame = main.bounds.offset(0, selectTestButton.frame.maxY + 1, 0, 0)
 
             selectedTestLabel.frame = rect(

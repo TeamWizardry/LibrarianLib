@@ -18,8 +18,10 @@ internal object PastryTexture {
     val texture = Mosaic(Theme.NORMAL.location, 256, 256)
     val shadowTexture = Mosaic(loc("librarianlib:facade/textures/pastry/shadow.png"), 256, 256)
 
-    val defaultBackground: Sprite by texture.delegate
-    val defaultBackgroundEdges: Sprite by texture.delegate
+    val vanillaBackground: Sprite by texture.delegate
+    val vanillaBackgroundEdges: Sprite by texture.delegate
+    val thinVanillaBackground: Sprite by texture.delegate
+    val thinVanillaBackgroundEdges: Sprite by texture.delegate
     val lightRoundBackground: Sprite by texture.delegate
     val lightRoundBackgroundEdges: Sprite by texture.delegate
     val lightSquareBackground: Sprite by texture.delegate
@@ -88,8 +90,10 @@ public interface IBackgroundStyle {
     public val background: Sprite
 
     /**
-     * A CTM-esque sprite for the dynamic background. The contents should be a 4x8-unit grid, where a unit is the
-     * [edgeSize] pixels.
+     * A CTM-esque sprite for the dynamic background. The contents should be a 4x8 grid, where each cell is a square
+     * [edgeSize] pixels across.
+     *
+     * See the files in `assets/librarianlib/facade/textures/pastry` for examples of the sprite sheet
      */
     public val edges: Sprite
 
@@ -97,17 +101,40 @@ public interface IBackgroundStyle {
      * The size in pixels of the [edges]
      */
     public val edgeSize: Double
+
+    /**
+     * The number of pixels to inset the [edges] when rendering. Effectively reduces [edgeSize] by this amount.
+     */
+    public val edgeInset: Double
 }
 
-public enum class PastryBackgroundStyle(override val background: Sprite, override val edges: Sprite): IBackgroundStyle {
-    DEFAULT(PastryTexture.defaultBackground, PastryTexture.defaultBackgroundEdges),
-    LIGHT_ROUND(PastryTexture.lightRoundBackground, PastryTexture.lightRoundBackgroundEdges),
-    LIGHT_SQUARE(PastryTexture.lightSquareBackground, PastryTexture.lightSquareBackgroundEdges),
-    LIGHT_INSET(PastryTexture.lightInsetBackground, PastryTexture.lightInsetBackgroundEdges),
-    BLACK_ROUND(PastryTexture.blackRoundBackground, PastryTexture.blackRoundBackgroundEdges),
-    BLACK_SQUARE(PastryTexture.blackSquareBackground, PastryTexture.blackSquareBackgroundEdges),
-    BLACK_INSET(PastryTexture.blackInsetBackground, PastryTexture.blackInsetBackgroundEdges),
-    INPUT(PastryTexture.inputBackground, PastryTexture.inputBackgroundEdges);
+public enum class PastryBackgroundStyle(
+    override val background: Sprite,
+    override val edges: Sprite,
+    override val edgeSize: Double,
+    override val edgeInset: Double
+): IBackgroundStyle {
 
-    override val edgeSize: Double = 2.0
+    /**
+     * The background style used by vanilla Minecraft
+     */
+    VANILLA(PastryTexture.vanillaBackground, PastryTexture.vanillaBackgroundEdges, 4.0, 1.0),
+
+    /**
+     * Similar to [VANILLA] but thinner
+     */
+    THIN_VANILLA(PastryTexture.thinVanillaBackground, PastryTexture.thinVanillaBackgroundEdges, 2.0, 0.0),
+
+    LIGHT_ROUND(PastryTexture.lightRoundBackground, PastryTexture.lightRoundBackgroundEdges, 2.0, 0.0),
+    LIGHT_SQUARE(PastryTexture.lightSquareBackground, PastryTexture.lightSquareBackgroundEdges, 2.0, 0.0),
+    LIGHT_INSET(PastryTexture.lightInsetBackground, PastryTexture.lightInsetBackgroundEdges, 2.0, 0.0),
+    BLACK_ROUND(PastryTexture.blackRoundBackground, PastryTexture.blackRoundBackgroundEdges, 2.0, 0.0),
+    BLACK_SQUARE(PastryTexture.blackSquareBackground, PastryTexture.blackSquareBackgroundEdges, 2.0, 0.0),
+    BLACK_INSET(PastryTexture.blackInsetBackground, PastryTexture.blackInsetBackgroundEdges, 2.0, 0.0),
+
+    /**
+     * The background style used by vanilla input wells. e.g. slots and text fields.
+     */
+    INPUT(PastryTexture.inputBackground, PastryTexture.inputBackgroundEdges, 2.0, 0.0),
+    ;
 }

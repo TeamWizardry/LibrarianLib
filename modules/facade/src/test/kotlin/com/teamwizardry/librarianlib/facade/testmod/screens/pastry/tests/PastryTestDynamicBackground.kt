@@ -33,7 +33,7 @@ class PastryTestDynamicBackground: PastryTestBase() {
         dropdown.items.addAll(stacks.map {
             DropdownTextItem(it, it.name)
         })
-        dropdown.select(PastryBackgroundStyle.DEFAULT)
+        dropdown.select(PastryBackgroundStyle.VANILLA)
 
         this.stack.add(dropdown, PastryButton("Reset", 0, 0) { background.reset() }, background)
     }
@@ -50,6 +50,7 @@ class PastryTestDynamicBackground: PastryTestBase() {
 
         fun reset() {
             background.forEachChild { it.removeFromParent() }
+            background.shapeLayers.clear()
         }
 
         @Hook
@@ -70,6 +71,7 @@ class PastryTestDynamicBackground: PastryTestBase() {
                     layer.pos = dragMin
                     layer.size = dragSize
                     background.add(layer)
+                    background.shapeLayers.add(layer)
                 }
             }
             dragStart = null
