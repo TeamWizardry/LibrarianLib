@@ -11,6 +11,14 @@ minecraft {
     mappings channel: mc_mappings_channel, version: mc_mappings_version
 }
 
+ext.shadePackages = { String... packages ->
+    // nop
+}
+allmodules.each {
+    if(file("$it.projectDir/prebuild.gradle").exists()) {
+        apply from: "$it.projectDir/prebuild.gradle"
+    }
+}
 
 dependencies {
     minecraft("net.minecraftforge:forge:$mc_version-$forge_version") {
@@ -20,8 +28,7 @@ dependencies {
     mod rootProject.files('libs/Kottle-2.0.0.jar')
 
     allmodules.each {
-        mod project(path: it.path, configuration: "mod")
-        implementation project(path: it.path, configuration: 'devClasspath')
+        runtimeOnly project(path: it.path, configuration: 'devClasspath')
     }
 }
 
@@ -76,6 +83,10 @@ task copyLibModJars(type: Sync) {
     into project.file('run/mods')
     from project.file('mods')
     from configurations.mod
+
+    allmodules.each {
+        from it.configurations.mod
+    }
 }
 compileJava.dependsOn(copyLibModJars)
 compileJava.dependsOn(rootProject.updateReadmeVersions)

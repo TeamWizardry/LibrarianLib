@@ -19,10 +19,14 @@
 - Add at least a shred of support for Minecraft's anemic input system (mostly the "swallowed" boolean return)
 - Containers
   - Slot component
-  - JEI/etc. compatibility
-  - Research other things I need to do to make containers
-  - MouseTweaks: https://github.com/YaLTeR/MouseTweaks/blob/master/src/api/java/yalter/mousetweaks/api/IMTModGuiContainer3Ex.java
-    - MT_getSlots, MT_getSlotUnderMouse, MT_isCraftingOutput, MT_isIgnored
-  - InventorySorter: https://github.com/cpw/inventorysorter/blob/master/src/main/java/cpw/mods/inventorysorter/InventorySorter.java
-    - IMC: `"slotblacklist"` -> slot class name
-    - IMC: `"containerblacklist"` -> resourcelocation
+# Compatibility
+- Just Enough Items
+- MouseTweaks: https://github.com/YaLTeR/MouseTweaks/blob/master/src/api/java/yalter/mousetweaks/api/IMTModGuiContainer3Ex.java
+  - MT_getSlots, MT_getSlotUnderMouse, MT_isCraftingOutput, MT_isIgnored
+- InventorySorter: https://github.com/cpw/inventorysorter/blob/master/src/main/java/cpw/mods/inventorysorter/InventorySorter.java
+  - IMC: `"slotblacklist"` -> slot class name
+  - IMC: `"containerblacklist"` -> resourcelocation
+- Quark search bar?
+- Is inventory tweaks still a thing?
+-
+-

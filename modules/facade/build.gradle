@@ -47,4 +47,12 @@ dependencies {
     // `org.lwjgl` package (https://github.com/cpw/modlauncher/issues/27)
     devClasspath "org.lwjgl:lwjgl-yoga:$yoga_version:$lwjglNatives"
     devClasspath "org.lwjgl:lwjgl-yoga:$yoga_version"
+
+    // Compatibility:
+
+    compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
+    mod fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+    compileOnly "curse.maven:mouse-tweaks-60089:${mousetweaks_api_id}"
+    mod fg.deobf("curse.maven:mouse-tweaks-60089:${mousetweaks_jar_id}")
+    mod fg.deobf("curse.maven:inventory-sorter-240633:${inventorysorter_jar_id}")
 }

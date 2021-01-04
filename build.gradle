@@ -49,7 +49,12 @@ allprojects {
         jcenter()
         mavenCentral()
         maven { url = "https://jitpack.io" }
-        maven { url = "https://minecraft.curseforge.com/api/maven/" }
+        maven {
+            url = "https://www.cursemaven.com"
+            content {
+                includeGroup "curse.maven"
+            }
+        }
         maven { url = 'http://repo.spongepowered.org/maven' }
     }
 

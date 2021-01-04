@@ -47,15 +47,19 @@ allmodules.each {
     }
 }
 
+// adds
+// - shade: dependencies shaded into the jar
+// - internalApi: api libraries used internally only
+// - mod: a jar included in the runtime mods directory
+// - devClasspath: a jar included directly in the run configuration classpath
 configurations {
     compileOnly.extendsFrom(shade)
     testCompileOnly.extendsFrom(shade)
     // `internalApi` is automatically added to all project dependencies, allowing us to easily expose
     // some libraries as APIs internally without them appearing in the maven POM files.
     internalApi.extendsFrom(shade)
-    api.extendsFrom(mod)
-    testApi.extendsFrom(mod)
-    devClasspath // included in the run configuration classpath
+    mod
+    devClasspath
 }
 
 minecraft {
