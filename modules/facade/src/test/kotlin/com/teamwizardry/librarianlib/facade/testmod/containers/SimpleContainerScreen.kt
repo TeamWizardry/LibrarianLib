@@ -19,7 +19,6 @@ class SimpleContainerScreen(
     init {
         main.size = vec(90, 30)
 
-        val background = PastryBackground(0, 0, 90, 30)
         val button = PastryButton("Click me!", 0, 0)
         button.hook<PastryButton.ClickEvent> {
             val position = vec(button.mousePos.xi, button.mousePos.yi)
@@ -28,7 +27,6 @@ class SimpleContainerScreen(
         }
 
         main.add(
-            background,
             StackLayout.build(0, 0)
                 .align(Align2d.CENTER)
                 .size(main.size)

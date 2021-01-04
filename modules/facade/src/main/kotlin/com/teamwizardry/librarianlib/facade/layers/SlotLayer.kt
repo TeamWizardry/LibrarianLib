@@ -13,17 +13,21 @@ import net.minecraft.inventory.container.Slot
 /**
  * A layer that defines the position and visibility of a container slot
  */
-public class SlotLayer(public val slot: Slot, posX: Int, posY: Int): GuiLayer(posX, posY, 16, 16) {
+public class SlotLayer @JvmOverloads constructor(
+    public val slot: Slot,
+    posX: Int, posY: Int,
+    showBackground: Boolean = false
+): GuiLayer(posX, posY, 16, 16) {
     /**
      * Whether to show the default slot background.
      */
-    public var showBackground: Boolean = true
+    public var showBackground: Boolean = showBackground
 
     private val background: PastryBackground = PastryBackground(PastryBackgroundStyle.INPUT, -1, -1, 18, 18)
 
     init {
         add(background)
-        background.isVisible_im.set { showBackground }
+        background.isVisible_im.set { this.showBackground }
     }
 
     override fun draw(context: GuiDrawContext) {

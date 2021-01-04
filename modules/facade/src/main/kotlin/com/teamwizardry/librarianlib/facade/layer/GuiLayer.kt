@@ -1836,19 +1836,19 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         public val TOOLTIP_Z: Double = 1e11
 
         /**
-         * In order to make an overlay layer, add a layer to the [root] with this [zIndex].
+         * A Z index that should appear above every other layer.
          */
         @JvmStatic
         public val OVERLAY_Z: Double = 1e10
 
         /**
-         * In order to make a background layer, add a layer to the [root] with this [zIndex].
+         * A Z index that should appear below every other layer except [UNDERLAY_Z].
          */
         @JvmStatic
         public val BACKGROUND_Z: Double = -1e9
 
         /**
-         * In order to make an underlay layer, add a layer to the [root] with this [zIndex].
+         * A Z index that should appear below even background layers.
          */
         @JvmStatic
         public val UNDERLAY_Z: Double = -1e10

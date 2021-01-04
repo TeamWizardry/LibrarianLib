@@ -13,6 +13,9 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.supporting.ContainerSpace
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
+import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryDynamicBackground
 import net.minecraft.client.gui.screen.inventory.ContainerScreen
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.RenderState
@@ -43,7 +46,35 @@ public abstract class FacadeContainerScreen<T: Container>(
      */
     public val main: GuiLayer = facade.main
 
+    /**
+     * A fullscreen layer that appears above items
+     */
+    public val rootOverlay: GuiLayer = GuiLayer()
+
+    /**
+     * An equivalent to [main] that appears above items
+     */
+    public val mainOverlay: GuiLayer = GuiLayer()
+
+    public val background: PastryDynamicBackground = PastryDynamicBackground(PastryBackgroundStyle.VANILLA, main)
+
     private val messageEncoder = MessageEncoder(container.javaClass, container.windowId)
+
+    init {
+        background.zIndex = GuiLayer.BACKGROUND_Z
+        main.add(background)
+
+        rootOverlay.ignoreMouseOverBounds = true
+        rootOverlay.zIndex = 1000.0
+        mainOverlay.ignoreMouseOverBounds = true
+
+        facade.root.hook<GuiLayerEvents.LayoutChildren> {
+            rootOverlay.frame = facade.root.frame
+            mainOverlay.frame = main.frame
+        }
+        rootOverlay.add(mainOverlay)
+        facade.root.add(rootOverlay)
+    }
 
     /**
      * Sends a message to both the client and server containers. Most actions should be performed using this method,
