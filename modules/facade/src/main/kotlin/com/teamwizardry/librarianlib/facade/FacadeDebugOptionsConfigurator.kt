@@ -57,7 +57,12 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
                     doesn't touch the color buffer so it isn't visible, but it can be useful to see exactly the calls
                     that the mask is using.
                 """, "§2Enabled", "§cDisabled", options::makeStencilMasksVisible
-            )
+            ),
+            OptionRow.BooleanRow(
+                "Show GUI Scale Basis:", """
+                    Shows the 320x240 bounding box used by Minecraft to calculate automatic GUI scale.
+                """, "§2Enabled", "§cDisabled", options::showGuiScaleBasis
+            ),
         )
 
         height = itemHeight * rows.size

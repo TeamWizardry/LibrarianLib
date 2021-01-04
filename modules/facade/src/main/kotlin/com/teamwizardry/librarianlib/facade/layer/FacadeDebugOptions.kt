@@ -6,4 +6,5 @@ public class FacadeDebugOptions {
     public var highlightLayout: Boolean = false
     public var highlightFractionalScale: Boolean = false
     public var makeStencilMasksVisible: Boolean = false
+    public var showGuiScaleBasis: Boolean = false
 }

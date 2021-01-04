@@ -2,6 +2,8 @@ package com.teamwizardry.librarianlib.facade
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.facade.layer.supporting.StencilUtil
 import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.layer.FacadeDebugOptions
@@ -12,7 +14,9 @@ import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.renderer.IRenderTypeBuffer
 import org.lwjgl.glfw.GLFW
+import java.awt.Color
 import java.util.function.Predicate
 
 /**
@@ -271,6 +275,10 @@ public open class FacadeWidget(
             root.renderLayer(context)
             RenderSystem.popMatrix()
             StencilUtil.disable()
+
+            if(debugOptions.showGuiScaleBasis) {
+                renderGuiScaleBasis()
+            }
         }
         if(debugConfigurator.isOpen) {
             debugConfigurator.render()
@@ -287,6 +295,35 @@ public open class FacadeWidget(
                 it.skipRender = !filter.test(it)
             }
         }
+    }
+
+    private fun renderGuiScaleBasis() {
+        val color = Color(1f, 0f, 0f, 0.25f)
+        val basisWidth = 320
+        val basisHeight = 240
+
+        val windowWidth = Client.window.scaledWidth.toDouble()
+        val windowHeight = Client.window.scaledHeight.toDouble()
+
+        val minSafeX = (windowWidth - basisWidth) / 2
+        val minSafeY = (windowHeight - basisHeight) / 2
+
+        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(SimpleRenderTypes.flatQuads)
+
+        fun drawRect(minX: Double, minY: Double, maxX: Double, maxY: Double) {
+            vb.pos(minX, maxY, 0.0).color(color).endVertex()
+            vb.pos(maxX, maxY, 0.0).color(color).endVertex()
+            vb.pos(maxX, minY, 0.0).color(color).endVertex()
+            vb.pos(minX, minY, 0.0).color(color).endVertex()
+        }
+
+        drawRect(0.0, 0.0, windowWidth, minSafeY)
+        drawRect(0.0, minSafeY, minSafeX, minSafeY + basisHeight)
+        drawRect(minSafeX + basisWidth, minSafeY, windowWidth, minSafeY + basisHeight)
+        drawRect(0.0, minSafeY + basisHeight, windowWidth, windowHeight)
+
+        buffer.finish()
     }
 
     /**
