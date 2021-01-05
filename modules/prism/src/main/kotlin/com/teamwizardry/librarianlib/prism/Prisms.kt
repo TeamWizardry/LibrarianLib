@@ -11,6 +11,7 @@ public object Prisms {
             ArraySerializerFactory(prism),
             ListSerializerFactory(prism),
             ObjectSerializerFactory(prism),
+            EnumSerializerFactory(prism),
 
             // kotlin types
             PairSerializerFactory(prism),

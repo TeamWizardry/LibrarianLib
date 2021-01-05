@@ -11,7 +11,7 @@ import org.junit.jupiter.api.assertThrows
 
 internal class ListFactoryTests: NBTPrismTest() {
     @Test
-    fun `the serializer for an ArrayList should be an ArraySerializer`() {
+    fun `the serializer for an ArrayList should be a ListSerializer`() {
         val serializer = prism[Mirror.reflect<ArrayList<String>>()].value
         assertEquals(ListSerializerFactory.ListSerializer::class.java, serializer.javaClass)
         assertSame(Mirror.reflect<ArrayList<String>>(), serializer.type)

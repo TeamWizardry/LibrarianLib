@@ -13,6 +13,7 @@ object LibrarianLibPrismTestMod: TestMod(LibrarianLibPrismModule) {
         add<PrimitiveTests>()
         add<BoxedPrimitiveTests>()
         add<PrimitiveArrayTests>()
+        add<EnumFactoryTests>()
     }
     init {
         +primitiveTests
@@ -38,6 +39,7 @@ object LibrarianLibPrismTestMod: TestMod(LibrarianLibPrismModule) {
             add<PrimitiveTests>()
             add<BoxedPrimitiveTests>()
             add<PrimitiveArrayTests>()
+            add<EnumFactoryTests>()
             add<ArrayFactoryTests>()
             add<ListFactoryTests>()
             add<ObjectFactoryTests>()
