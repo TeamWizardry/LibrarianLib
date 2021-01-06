@@ -5,16 +5,8 @@ import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.core.util.MiscUtil
 import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
-import com.teamwizardry.librarianlib.testbase.objects.TestBlock
-import com.teamwizardry.librarianlib.testbase.objects.TestBlockItem
-import com.teamwizardry.librarianlib.testbase.objects.TestEntity
-import com.teamwizardry.librarianlib.testbase.objects.TestEntityConfig
-import com.teamwizardry.librarianlib.testbase.objects.TestEntityRenderer
-import com.teamwizardry.librarianlib.testbase.objects.TestItem
-import com.teamwizardry.librarianlib.testbase.objects.TestItemConfig
-import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import com.teamwizardry.librarianlib.mirage.Mirage
-import com.teamwizardry.librarianlib.testbase.objects.UnitTestSuite
+import com.teamwizardry.librarianlib.testbase.objects.*
 import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderType
@@ -218,7 +210,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
                         }
                     """.trimIndent()
                 )
-            } else if (item is TestItem) {
+            } else if (item is ITestItem) {
                 val name = item.registryName!!
                 Mirage.client.add(
                     ResourceLocation(name.namespace, "models/item/${name.path}.json"),
@@ -274,10 +266,10 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
         val keys = mutableMapOf<String, String>()
         keys[itemGroup.translationKey] = "${module.humanName} Test"
         items.forEach { item ->
-            if (item is TestItem) {
+            if (item is ITestItem) {
                 val registryName = item.registryName!!
-                keys[registryName.translationKey("item")] = item.config.name
-                item.config.description?.also {
+                keys[registryName.translationKey("item")] = item.itemName
+                item.itemDescription?.also {
                     keys[registryName.translationKey("item", "tooltip")] = it
                 }
             }
@@ -301,7 +293,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
             val item = stack.item
             if (tintIndex == 1 && item is TestBlockItem)
                 DistinctColors.forObject(item.block.registryName).rgb
-            else if (tintIndex == 1 && item is TestItem)
+            else if (tintIndex == 1 && item is ITestItem)
                 DistinctColors.forObject(item.registryName).rgb
             else
                 Color.WHITE.rgb

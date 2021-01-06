@@ -20,7 +20,7 @@ import net.minecraft.util.text.TranslationTextComponent
 import net.minecraft.world.World
 import net.minecraftforge.fml.ModLoadingContext
 
-public class TestItem(public val config: TestItemConfig): Item(config.properties) {
+public open class TestItem(public val config: TestItemConfig): Item(config.properties), ITestItem {
     init {
         this.registryName = ResourceLocation(ModLoadingContext.get().activeContainer.modId, config.id)
     }
@@ -101,7 +101,7 @@ public class TestItem(public val config: TestItemConfig): Item(config.properties
         val context = TestItemConfig.LeftClickBlockContext(itemstack, pos, player)
         config.leftClickBlock.run(player.world.isRemote, context)
 
-        return super.onBlockStartBreak(itemstack, pos, player)
+        return super<Item>.onBlockStartBreak(itemstack, pos, player)
     }
 
     override fun onLeftClickEntity(stack: ItemStack, player: PlayerEntity, entity: Entity): Boolean {
@@ -130,4 +130,9 @@ public class TestItem(public val config: TestItemConfig): Item(config.properties
             config.tickInHand.run(worldIn.isRemote, context)
         }
     }
+
+    override val itemName: String
+        get() = config.name
+    override val itemDescription: String?
+        get() = config.description
 }

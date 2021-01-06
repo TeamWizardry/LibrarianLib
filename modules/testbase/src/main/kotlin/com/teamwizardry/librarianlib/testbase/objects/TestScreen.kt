@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 
-public class TestScreen(public val config: TestScreenConfig): Screen(StringTextComponent(config.title)) {
+public open class TestScreen(public val config: TestScreenConfig): Screen(StringTextComponent(config.title)) {
 
     override fun shouldCloseOnEsc(): Boolean = config.closeOnEsc
     override fun isPauseScreen(): Boolean = config.pausesGame

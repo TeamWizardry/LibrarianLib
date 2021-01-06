@@ -4,15 +4,16 @@ package com.teamwizardry.librarianlib.facade.testmod
 
 import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
+import com.teamwizardry.librarianlib.facade.container.FacadeContainer
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerType
 import com.teamwizardry.librarianlib.facade.example.*
 import com.teamwizardry.librarianlib.facade.example.gettingstarted.*
 import com.teamwizardry.librarianlib.facade.example.transform.*
-import com.teamwizardry.librarianlib.facade.testmod.containers.SimpleContainer
-import com.teamwizardry.librarianlib.facade.testmod.containers.SimpleContainerScreen
-import com.teamwizardry.librarianlib.facade.testmod.containers.SimpleInventoryContainer
-import com.teamwizardry.librarianlib.facade.testmod.containers.SimpleInventoryContainerScreen
-import com.teamwizardry.librarianlib.facade.testmod.containers.SimpleInventoryTile
+import com.teamwizardry.librarianlib.facade.testmod.containers.*
+import com.teamwizardry.librarianlib.facade.testmod.containers.base.TestContainerSelectorContainer
+import com.teamwizardry.librarianlib.facade.testmod.containers.base.TestContainerSelectorScreen
+import com.teamwizardry.librarianlib.facade.testmod.containers.base.TestContainerSet
+import com.teamwizardry.librarianlib.facade.testmod.containers.base.TestContainerTile
 import com.teamwizardry.librarianlib.facade.testmod.screens.*
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestScreen
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.Rect2dUnionTestScreen
@@ -25,6 +26,7 @@ import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import net.minecraft.client.gui.ScreenManager
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.inventory.container.ContainerType
+import net.minecraft.item.Item
 import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -79,8 +81,18 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
         )),
     )
 
+    // note: the container and data classes are inferred from the screen
+    val containerSets: Map<String, TestContainerSet> = mapOf(
+        "basic" to TestContainerSet("Basic") {
+            container("Single Slot", ::SingleSlotScreen)
+        },
+    )
+
     val simpleContainerType: FacadeContainerType<SimpleContainer>
     val simpleInventoryContainerType: FacadeContainerType<SimpleInventoryContainer>
+    val testContainerSelectorContainerType: FacadeContainerType<TestContainerSelectorContainer>
+    val backpackContainerType: FacadeContainerType<BackpackContainer>
+    val backpackItem: Item
 
     init {
         groups.forEach { (id, group) ->
@@ -109,6 +121,24 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
             }
         })
 
+        testContainerSelectorContainerType = FacadeContainerType(TestContainerSelectorContainer::class.java)
+        testContainerSelectorContainerType.registryName = loc("librarianlib-facade-test", "container_selector")
+        containerSets.forEach { (id, containerSet) ->
+            +TestBlock(TestBlockConfig(id + "_container_set", "${containerSet.name} Container Set") {
+                tile<TestContainerTile> { TestContainerTile(it, containerSet) }
+
+                rightClick.server {
+                    testContainerSelectorContainerType.open(player as ServerPlayerEntity, StringTextComponent(containerSet.name), pos)
+                }
+            })
+        }
+
+        backpackContainerType = FacadeContainerType(BackpackContainer::class.java)
+        backpackContainerType.registryName = loc("librarianlib-facade-test", "backpack")
+        backpackItem = BackpackItem(itemGroup)
+        backpackItem.registryName = loc("librarianlib-facade-test", "backpack")
+        +backpackItem
+
         +UnitTestSuite("rmvalue") {
             add<RMValueTests>()
         }
@@ -118,12 +148,31 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
     fun registerContainers(e: RegistryEvent.Register<ContainerType<*>>) {
         e.registry.register(simpleContainerType)
         e.registry.register(simpleInventoryContainerType)
+        e.registry.register(testContainerSelectorContainerType)
+        e.registry.register(backpackContainerType)
+        for((_, containerSet) in containerSets) {
+            for(type in containerSet.types) {
+                e.registry.register(type.containerType)
+            }
+        }
     }
 
     override fun clientSetup(event: FMLClientSetupEvent) {
         super.clientSetup(event)
         ScreenManager.registerFactory(simpleContainerType, ::SimpleContainerScreen)
         ScreenManager.registerFactory(simpleInventoryContainerType, ::SimpleInventoryContainerScreen)
+        ScreenManager.registerFactory(testContainerSelectorContainerType, ::TestContainerSelectorScreen)
+        ScreenManager.registerFactory(backpackContainerType, ::BackpackContainerScreen)
+        for((_, containerSet) in containerSets) {
+            for(type in containerSet.types) {
+                @Suppress("UNCHECKED_CAST")
+                ScreenManager.registerFactory(
+                    type.containerType as ContainerType<FacadeContainer>
+                ) { container, inventory, title ->
+                    (type.screenFactory as TestContainerSet.ContainerScreenFactory<FacadeContainer>).create(container, inventory, title)
+                }
+            }
+        }
     }
 }
 

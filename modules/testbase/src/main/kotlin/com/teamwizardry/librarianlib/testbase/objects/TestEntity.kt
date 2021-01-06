@@ -19,7 +19,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.minecraftforge.fml.network.NetworkHooks
 
-public class TestEntity(public val config: TestEntityConfig, world: World): Entity(config.also { configHolder = it }.type, world) {
+public open class TestEntity(public val config: TestEntityConfig, world: World): Entity(config.also { configHolder = it }.type, world) {
 
     init {
         canUpdate(true)

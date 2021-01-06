@@ -13,7 +13,7 @@ import net.minecraft.util.text.TextFormatting
 import net.minecraft.util.text.TranslationTextComponent
 import net.minecraft.world.World
 
-public class TestBlockItem(block: TestBlock, builder: Properties): BlockItem(block, builder) {
+public open class TestBlockItem(block: TestBlock, builder: Properties): BlockItem(block, builder) {
     override fun getBlock(): TestBlock {
         return super.getBlock() as TestBlock
     }
