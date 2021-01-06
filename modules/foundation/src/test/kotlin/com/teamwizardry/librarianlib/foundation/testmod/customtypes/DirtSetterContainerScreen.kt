@@ -16,16 +16,15 @@ class DirtSetterContainerScreen(
 ): FacadeContainerScreen<DirtSetterContainer>(container, inventory, title) {
     init {
         main.size = vec(100, 50)
-        main.add(PastryBackground(0, 0, 100, 50))
 
         val plusOne = PastryButton("Set Y+1 to dirt") {
-            container.sendMessage("setToDirt", 1)
+            sendMessage("setToDirt", 1)
         }
         val zero = PastryButton("Set Y+0 to dirt") {
-            container.sendMessage("setToDirt", 0)
+            sendMessage("setToDirt", 0)
         }
         val minusOne = PastryButton("Set Y-1 to dirt") {
-            container.sendMessage("setToDirt", -1)
+            sendMessage("setToDirt", -1)
         }
 
         main.add(

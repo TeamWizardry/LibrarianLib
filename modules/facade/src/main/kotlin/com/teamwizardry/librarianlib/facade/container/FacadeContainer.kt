@@ -38,11 +38,35 @@ public abstract class FacadeContainer(
     private val decoder = MessageDecoder(this, windowId)
 
     /**
-     * Send a message to the opposite side's container. The server should message the client to update state, and the
-     * client screen should message the server when the player performs an action. Which side this container is on can
-     * be checked using [isClientContainer].
+     * Send a message to both this container and the opposite side's container. Which side this container is on can be
+     * checked using [isClientContainer].
      */
-    public fun sendMessage(name: String, vararg arguments: Any?) {
+    protected fun sendMessage(name: String, vararg arguments: Any?) {
+        LibrarianLibFacadeModule.channel.send(messageDirection, encoder.encode(name, arguments))
+        encoder.invoke(this, name, arguments)
+    }
+
+    /**
+     * Send a message to the client container, or print a warning if called on the client. Which side this container is
+     * on can be checked using [isClientContainer].
+     */
+    protected fun sendClientMessage(name: String, vararg arguments: Any?) {
+        if(isClientContainer) {
+            logger.warn("Tried to send a client message '$name' from the client.", RuntimeException())
+            return
+        }
+        LibrarianLibFacadeModule.channel.send(messageDirection, encoder.encode(name, arguments))
+    }
+
+    /**
+     * Send a message to the server container, or print a warning if called on the server. Which side this container is
+     * on can be checked using [isClientContainer].
+     */
+    protected fun sendServerMessage(name: String, vararg arguments: Any?) {
+        if(!isClientContainer) {
+            logger.warn("Tried to send a server message '$name' from the server.", RuntimeException())
+            return
+        }
         LibrarianLibFacadeModule.channel.send(messageDirection, encoder.encode(name, arguments))
     }
 
@@ -75,5 +99,9 @@ public abstract class FacadeContainer(
             return customClickResult
         }
         return super.slotClick(slotId, dragType, clickTypeIn, player)
+    }
+
+    public companion object {
+        private val logger = LibrarianLibFacadeModule.makeLogger<FacadeContainer>()
     }
 }

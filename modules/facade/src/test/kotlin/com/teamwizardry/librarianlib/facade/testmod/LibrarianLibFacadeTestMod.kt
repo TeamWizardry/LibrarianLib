@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
 import com.teamwizardry.librarianlib.facade.container.FacadeContainer
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerType
 import com.teamwizardry.librarianlib.facade.example.*
+import com.teamwizardry.librarianlib.facade.example.containers.DirtSetterItem
 import com.teamwizardry.librarianlib.facade.example.gettingstarted.*
 import com.teamwizardry.librarianlib.facade.example.transform.*
 import com.teamwizardry.librarianlib.facade.testmod.containers.*
@@ -142,6 +143,10 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
         +UnitTestSuite("rmvalue") {
             add<RMValueTests>()
         }
+
+        +DirtSetterItem(Item.Properties().group(itemGroup).maxStackSize(1)).also {
+            it.registryName = loc("librarianlib-facade-test", "dirt_setter")
+        }
     }
 
     @SubscribeEvent
@@ -155,6 +160,7 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
                 e.registry.register(type.containerType)
             }
         }
+        ExampleModContainers.registerContainers(e)
     }
 
     override fun clientSetup(event: FMLClientSetupEvent) {
@@ -173,6 +179,7 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
                 }
             }
         }
+        ExampleModContainers.clientSetup(event)
     }
 }
 

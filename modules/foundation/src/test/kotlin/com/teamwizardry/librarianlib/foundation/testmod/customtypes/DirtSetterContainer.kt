@@ -14,6 +14,9 @@ class DirtSetterContainer(
 ): FacadeContainer(ModContainers.dirtSetter.get(), windowId, player) {
     @Message
     private fun setToDirt(offset: Int) {
+        if(isClientContainer)
+            return
+
         player.world.setBlockState(
             pos.add(0, offset.clamp(-1, 1), 0),
             Blocks.DIRT.defaultState

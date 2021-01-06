@@ -1,27 +1,30 @@
-package com.teamwizardry.librarianlib.foundation.example;
+package com.teamwizardry.librarianlib.facade.example.containers;
 
 import com.teamwizardry.librarianlib.facade.container.FacadeContainer;
+import com.teamwizardry.librarianlib.facade.container.FacadeContainerType;
 import com.teamwizardry.librarianlib.facade.container.messaging.Message;
+import com.teamwizardry.librarianlib.facade.example.ExampleModContainers;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 
-public class CoolContainer extends FacadeContainer {
+public class DirtSetterContainer extends FacadeContainer {
     private final BlockPos pos;
 
-    public CoolContainer(
+    public DirtSetterContainer(
             int windowId, @NotNull PlayerEntity player,
             BlockPos pos
     ) {
-        super(ExampleModContainers.coolContainer.get(), windowId, player);
+        super(ExampleModContainers.dirtSetterContainerType, windowId, player);
         this.pos = pos;
     }
 
     @Message
-    private void setToDirt(int offset) {
+    private void setBlockPressed(int offset) {
         if(isClientContainer())
-            return;
+            return; // don't actually set the block on the client
+
         // NEVER trust the client
         if(offset > 1) offset = 1;
         if(offset < -1) offset = -1;
@@ -32,7 +35,5 @@ public class CoolContainer extends FacadeContainer {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
-        return true;
-    }
+    public boolean canInteractWith(PlayerEntity player) { return true; }
 }

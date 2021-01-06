@@ -61,7 +61,7 @@ class TestContainerSelectorScreen(
             stack.add(PastryButton(entry.name, 0, 0, 250) {
                 when(entry) {
                     is TestContainerSet.Entry.Container -> {
-                        container.sendMessage("selectType", entry.type.id)
+                        sendMessage("selectType", entry.type.id)
                     }
                     is TestContainerSet.Entry.Group -> {
                         selectGroup(entry)
