@@ -71,7 +71,7 @@ class PastryTestDynamicBackground: PastryTestBase() {
                     layer.pos = dragMin
                     layer.size = dragSize
                     background.add(layer)
-                    background.shapeLayers.add(layer)
+                    background.addShapeLayers(layer)
                 }
             }
             dragStart = null

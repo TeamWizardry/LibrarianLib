@@ -87,6 +87,9 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
         "basic" to TestContainerSet("Basic") {
             container("Single Slot", ::SingleSlotScreen)
         },
+        "jei_compat" to TestContainerSet("JEI Compat") {
+            container("Extra Areas", ::JeiExtraAreasScreen)
+        },
     )
 
     val simpleContainerType: FacadeContainerType<SimpleContainer>

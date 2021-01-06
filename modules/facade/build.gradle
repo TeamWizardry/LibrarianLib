@@ -49,13 +49,17 @@ dependencies {
     devClasspath "org.lwjgl:lwjgl-yoga:$yoga_version"
 
     // Compatibility:
+    // `fg.deobf` breaks source jars (MinecraftForge/ForgeGradle#736,727,637), so some dependencies aren't deobfuscated
 
-    compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
-    mod fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
-    // include the implementation so we can see the source code in the IDE. (in test to avoid accidental coupling)
-    // `fg.deobf` breaks source jars (MinecraftForge/ForgeGradle#736,727,637), so I don't deobfuscate here.
-    // sure, the jar and sources won't line up, but that shouldn't really matter since this code should never be used.
+    // The API doesn't seem to have anything that actually gets obfuscated and we want sources, so no `fg.deobf`
+    compileOnly "mezz.jei:jei-${mc_version}:${jei_version}:api"
+    // include the implementation somewhere so we can see the source code in the IDE. (We put it in test to avoid
+    // accidental coupling with the module.)
+    // sure, without `fg.deobf` the jar and sources won't line up, but that shouldn't really matter since this code
+    // should never actually get used.
     testCompileOnly "mezz.jei:jei-${mc_version}:${jei_version}"
+    // this is the part that actually gets used at runtime, so deobfuscate it
+    mod fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 
     compileOnly "curse.maven:mouse-tweaks-60089:${mousetweaks_api_id}"
     mod fg.deobf("curse.maven:mouse-tweaks-60089:${mousetweaks_jar_id}")

@@ -60,6 +60,8 @@ public abstract class FacadeContainerScreen<T: Container>(
 
     public val background: PastryDynamicBackground = PastryDynamicBackground(PastryBackgroundStyle.VANILLA, main)
 
+    public val jei: JeiInfo = JeiInfo()
+
     private val messageEncoder = MessageEncoder(container.javaClass, container.windowId)
 
     init {
@@ -231,6 +233,10 @@ public abstract class FacadeContainerScreen<T: Container>(
     override fun removed() {
         super.removed()
         facade.removed()
+    }
+
+    public class JeiInfo {
+        public val exclusionAreas: MutableList<GuiLayer> = mutableListOf()
     }
 
     private companion object {

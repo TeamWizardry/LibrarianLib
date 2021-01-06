@@ -35,6 +35,10 @@ public class PastryDynamicBackground(style: IBackgroundStyle, vararg shapeLayers
     private val elements = mutableListOf<Element>()
     private var frames = listOf<Rect2d>()
 
+    public fun addShapeLayers(vararg layers: GuiLayer) {
+        shapeLayers.addAll(layers)
+    }
+
     override fun prepareLayout() {
         val newFrames = shapeLayers
             .filter { it.root === this.root } // only related layers
