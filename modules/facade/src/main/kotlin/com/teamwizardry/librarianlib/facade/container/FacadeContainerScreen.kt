@@ -89,9 +89,12 @@ public abstract class FacadeContainerScreen<T: Container>(
 
     override fun render(p_render_1_: Int, p_render_2_: Int, p_render_3_: Float) {
         facade.update()
-        val frame = main.frame
-        width = frame.widthi
-        height = frame.heighti
+        var frame = main.frame
+        if(background.isVisible) {
+            frame = frame.grow(background.style.edgeSize - background.style.edgeInset)
+        }
+        xSize = frame.widthi
+        ySize = frame.heighti
         guiLeft = frame.xi
         guiTop = frame.yi
         ContainerSpace.guiLeft = guiLeft
