@@ -25,6 +25,8 @@ import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.inventory.container.Container
 import net.minecraft.inventory.container.Slot
 import net.minecraft.util.text.ITextComponent
+import net.minecraftforge.client.event.GuiScreenEvent
+import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.opengl.GL11
 
 /**
@@ -95,7 +97,10 @@ public abstract class FacadeContainerScreen<T: Container>(
         ContainerSpace.guiLeft = guiLeft
         ContainerSpace.guiTop = guiTop
 
+        this.renderBackground()
         super.render(p_render_1_, p_render_2_, p_render_3_)
+        if(!facade.hasTooltip)
+            this.renderHoveredToolTip(p_render_1_, p_render_2_)
     }
 
     override fun isMouseMasked(mouseX: Double, mouseY: Double): Boolean {

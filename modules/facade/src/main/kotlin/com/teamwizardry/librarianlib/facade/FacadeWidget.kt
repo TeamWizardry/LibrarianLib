@@ -33,6 +33,11 @@ public open class FacadeWidget(
     private var currentTooltip: GuiLayer? = null
 
     /**
+     * Whether a Facade tooltip is being shown
+     */
+    public val hasTooltip: Boolean get() = currentTooltip != null
+
+    /**
      * Whether F3 is currently pressed. Used to trigger F3+_ debug shortcuts
      */
     private var isF3Pressed: Boolean = false
