@@ -73,19 +73,20 @@ public abstract class PastryToggle(posX: Int, posY: Int, width: Int, height: Int
 
     @Hook
     private fun click(e: GuiLayerEvents.MouseClick) {
+        clickStarted = false
+        previewToggle = false
         val newState = !state
         if (!BUS.fire(StateWillChangeEvent(newState)).isCanceled()) {
             state = newState
             BUS.fire(StateChangedEvent())
+        } else {
+            updateVisualState()
         }
-        clickStarted = false
-        previewToggle = false
-        updateVisualState()
     }
 
     @Hook
     private fun mouseUp(e: GuiLayerEvents.MouseUp) {
-        if (mouseOver && clickStarted) {
+        if (!mouseOver && clickStarted) {
             clickStarted = false
             previewToggle = false
             updateVisualState()

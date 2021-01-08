@@ -14,10 +14,13 @@ public class PastryCheckbox(posX: Int, posY: Int, radioStyle: Boolean): PastryTo
 
     override fun visualStateChanged(visualState: Boolean) {
         val current = background.animationFrame
+        val toggleDuration = 2f
+        val maxFrame = sprite.frameCount - 1
+        val progress = current.toFloat() / maxFrame
         if (visualState) {
-            background.animationFrame_im.animate(sprite.frameCount - 1, abs(sprite.frameCount - current).toFloat(), Easing.easeOutQuart)
+            background.animationFrame_im.animate(maxFrame, (1-progress) * toggleDuration)
         } else {
-            background.animationFrame_im.animate(0, (current + 1).toFloat())
+            background.animationFrame_im.animate(0, progress * toggleDuration)
         }
     }
 
