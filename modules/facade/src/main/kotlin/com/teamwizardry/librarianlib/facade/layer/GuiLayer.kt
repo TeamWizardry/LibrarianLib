@@ -983,6 +983,13 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         return bounds
     }
 
+    /**
+     * Converts this layer's frame the _**smallest bounding rectangle**_ around it in the [other] coordinate space
+     */
+    public fun convertFrameTo(other: CoordinateSpace2D): Rect2d {
+        return convertRectTo(bounds, other)
+    }
+
     override val parentSpace: CoordinateSpace2D?
         get() = parent ?: ScreenSpace
 

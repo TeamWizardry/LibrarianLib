@@ -86,6 +86,7 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
     val containerSets: Map<String, TestContainerSet> = mapOf(
         "basic" to TestContainerSet("Basic") {
             container("Single Slot", ::SingleSlotScreen)
+            container("Slot Occlusion", ::OcclusionScreen)
         },
         "jei_compat" to TestContainerSet("JEI Compat") {
             container("Extra Areas", ::JeiExtraAreasScreen)

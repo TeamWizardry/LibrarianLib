@@ -1,14 +1,9 @@
 package com.teamwizardry.librarianlib.facade.container.slot
 
-import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.facade.container.builtin.PlayerInventorySlotManager
 import net.minecraft.inventory.IInventory
-import net.minecraft.inventory.container.Slot
 import net.minecraftforge.items.IItemHandler
-import net.minecraftforge.items.SlotItemHandler
 import net.minecraftforge.items.wrapper.InvWrapper
-import java.lang.IllegalStateException
-import java.lang.IndexOutOfBoundsException
 
 /**
  * A collection of slots, along with methods for easily manipulating them. Subclasses should pre-configure slot types as
@@ -21,6 +16,6 @@ public open class SlotManager(private val inventory: IItemHandler) {
     public constructor(inventory: IInventory): this(InvWrapper(inventory))
 
     public val slots: SlotRegion = SlotRegion((0 until inventory.slots).map {
-        FactorySlotReference(inventory, it) { inv, i -> SlotItemHandler(inv, i, 0, 0) }
+        FactorySlotReference(inventory, it) { inv, i -> FacadeSlot(inv, i, 0, 0) }
     })
 }
