@@ -127,7 +127,7 @@ public open class FacadeWidget(
         // todo
     }
 
-    public fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int) {
+    public fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
         when (keyCode) {
             GLFW.GLFW_KEY_F3 -> {
                 isF3Pressed = true
@@ -151,14 +151,18 @@ public open class FacadeWidget(
             }
         }
 
-        if (debugConfigurator.isOpen) return
+        if (debugConfigurator.isOpen)
+            return true
 
         safetyNet("firing a KeyDown event") {
-            root.triggerEvent(GuiLayerEvents.KeyDown(keyCode, scanCode, modifiers))
+            val event = GuiLayerEvents.KeyDown(keyCode, scanCode, modifiers)
+            root.triggerEvent(event)
+            return@keyPressed event.isCanceled()
         }
+        return false
     }
 
-    public fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int) {
+    public fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
         if (keyCode == GLFW.GLFW_KEY_F3) {
             isF3Pressed = false
             if(isOpeningDebugConfigurator) {
@@ -166,17 +170,27 @@ public open class FacadeWidget(
                 debugConfigurator.isOpen = true
             }
         }
-        if (debugConfigurator.isOpen) return
+        if (debugConfigurator.isOpen)
+            return true
+
         safetyNet("firing a KeyUp event") {
-            root.triggerEvent(GuiLayerEvents.KeyUp(keyCode, scanCode, modifiers))
+            val event = GuiLayerEvents.KeyUp(keyCode, scanCode, modifiers)
+            root.triggerEvent(event)
+            return@keyReleased event.isCanceled()
         }
+        return false
     }
 
-    public fun charTyped(codepoint: Char, modifiers: Int) {
-        if (debugConfigurator.isOpen) return
+    public fun charTyped(codepoint: Char, modifiers: Int): Boolean {
+        if (debugConfigurator.isOpen)
+            return true
+
         safetyNet("firing a CharTyped event") {
-            root.triggerEvent(GuiLayerEvents.CharTyped(codepoint, modifiers))
+            val event = GuiLayerEvents.CharTyped(codepoint, modifiers)
+            root.triggerEvent(event)
+            return@charTyped event.isCanceled()
         }
+        return false
     }
 
     public fun removed() {

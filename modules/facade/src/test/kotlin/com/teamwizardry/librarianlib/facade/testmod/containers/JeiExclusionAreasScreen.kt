@@ -9,11 +9,11 @@ import com.teamwizardry.librarianlib.math.Easing
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.util.text.ITextComponent
 
-class JeiExtraAreasScreen(
-    container: JeiExtraAreasContainer,
+class JeiExclusionAreasScreen(
+    container: JeiExclusionAreasContainer,
     inventory: PlayerInventory,
     title: ITextComponent
-): FacadeContainerScreen<JeiExtraAreasContainer>(container, inventory, title) {
+): FacadeContainerScreen<JeiExclusionAreasContainer>(container, inventory, title) {
 
     init {
         val stack = StackLayout.build(5, 5)
@@ -40,6 +40,6 @@ class JeiExtraAreasScreen(
             .repeat()
         main.add(exclusion)
         background.addShapeLayers(exclusion)
-        jei.exclusionAreas.add(exclusion)
+        jei.addExclusionArea(exclusion)
     }
 }

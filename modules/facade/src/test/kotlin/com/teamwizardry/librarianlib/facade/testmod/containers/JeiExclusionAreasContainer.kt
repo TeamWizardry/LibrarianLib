@@ -8,8 +8,8 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.items.ItemStackHandler
 
-class JeiExtraAreasContainer(windowId: Int, player: PlayerEntity, pos: BlockPos) :
-    TestContainer<JeiExtraAreasContainer.Data>(Data::class.java, windowId, player, pos) {
+class JeiExclusionAreasContainer(windowId: Int, player: PlayerEntity, pos: BlockPos) :
+    TestContainer<JeiExclusionAreasContainer.Data>(Data::class.java, windowId, player, pos) {
     val contentsSlots: SlotManager = SlotManager(data.inventory)
 
     init {

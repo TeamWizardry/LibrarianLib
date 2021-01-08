@@ -49,9 +49,7 @@ public object GuiLayerEvents {
      */
     public class PrepareLayout: Event()
 
-    public abstract class GuiInputEvent: Event()
-
-    public abstract class MouseEvent(public val rootPos: Vec2d): GuiInputEvent() {
+    public abstract class MouseEvent(public val rootPos: Vec2d): Event() {
         public val pos: Vec2d
             get() = stack.transform(rootPos)
 
@@ -129,9 +127,21 @@ public object GuiLayerEvents {
             get() = stack.transformDelta(rootDelta)
     }
 
-    public abstract class KeyEvent: GuiInputEvent()
+    /**
+     * Note: If you "consume" this event (whatever that may mean in your case), cancel it.
+     */
+    public abstract class KeyEvent: CancelableEvent()
+    /**
+     * Note: If you "consume" this event (whatever that may mean in your case), cancel it.
+     */
     public class KeyDown(public val keyCode: Int, public val scanCode: Int, public val modifiers: Int): KeyEvent()
+    /**
+     * Note: If you "consume" this event (whatever that may mean in your case), cancel it.
+     */
     public class KeyUp(public val keyCode: Int, public val scanCode: Int, public val modifiers: Int): KeyEvent()
+    /**
+     * Note: If you "consume" this event (whatever that may mean in your case), cancel it.
+     */
     public class CharTyped(public val codepoint: Char, public val modifiers: Int): KeyEvent()
 
     /**

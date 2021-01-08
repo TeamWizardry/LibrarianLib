@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
+import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.facade.FacadeMouseMask
 import com.teamwizardry.librarianlib.facade.FacadeWidget
 import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
@@ -161,9 +162,9 @@ public abstract class FacadeContainerScreen<T: Container>(
     }
 
     override fun charTyped(p_charTyped_1_: Char, p_charTyped_2_: Int): Boolean {
-        if(!super.charTyped(p_charTyped_1_, p_charTyped_2_))
-            facade.charTyped(p_charTyped_1_, p_charTyped_2_)
-        return true
+        if(super.charTyped(p_charTyped_1_, p_charTyped_2_))
+            return true
+        return facade.charTyped(p_charTyped_1_, p_charTyped_2_)
     }
 
 //    override fun func_212932_b(eventListener: IGuiEventListener?) {
@@ -175,15 +176,15 @@ public abstract class FacadeContainerScreen<T: Container>(
 //    }
 
     override fun keyPressed(p_keyPressed_1_: Int, p_keyPressed_2_: Int, p_keyPressed_3_: Int): Boolean {
-        if(!super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_))
-            facade.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)
-        return true
+        if(super.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_))
+            return true
+        return facade.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)
     }
 
     override fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        if(!super.keyReleased(keyCode, scanCode, modifiers))
-            facade.keyReleased(keyCode, scanCode, modifiers)
-        return true
+        if(super.keyReleased(keyCode, scanCode, modifiers))
+            return true
+        return facade.keyReleased(keyCode, scanCode, modifiers)
     }
 
     private val blockedDowns = mutableSetOf<Int>()
@@ -236,7 +237,16 @@ public abstract class FacadeContainerScreen<T: Container>(
     }
 
     public class JeiInfo {
-        public val exclusionAreas: MutableList<GuiLayer> = mutableListOf()
+        private val _exclusionAreas: MutableList<GuiLayer> = mutableListOf()
+        public val exclusionAreas: List<GuiLayer> = _exclusionAreas.unmodifiableView()
+
+        public fun addExclusionArea(layer: GuiLayer) {
+            _exclusionAreas.add(layer)
+        }
+
+        public fun removeExclusionArea(layer: GuiLayer) {
+            _exclusionAreas.remove(layer)
+        }
     }
 
     private companion object {

@@ -41,8 +41,7 @@ public open class FacadeScreen(title: ITextComponent): Screen(title /* todo beha
     }
 
     override fun charTyped(p_charTyped_1_: Char, p_charTyped_2_: Int): Boolean {
-        facade.charTyped(p_charTyped_1_, p_charTyped_2_)
-        return super.charTyped(p_charTyped_1_, p_charTyped_2_)
+        return facade.charTyped(p_charTyped_1_, p_charTyped_2_)
     }
 
 //    override fun func_212932_b(eventListener: IGuiEventListener?) {
@@ -53,13 +52,11 @@ public open class FacadeScreen(title: ITextComponent): Screen(title /* todo beha
 //        return facade.getEventListenerForPos(mouseX, mouseY)
 //    }
     override fun keyPressed(p_keyPressed_1_: Int, p_keyPressed_2_: Int, p_keyPressed_3_: Int): Boolean {
-        facade.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)
-        return true
+        return facade.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)
     }
 
     override fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        facade.keyReleased(keyCode, scanCode, modifiers)
-        return true
+        return facade.keyReleased(keyCode, scanCode, modifiers)
     }
 
     override fun mouseClicked(p_mouseClicked_1_: Double, p_mouseClicked_3_: Double, p_mouseClicked_5_: Int): Boolean {
