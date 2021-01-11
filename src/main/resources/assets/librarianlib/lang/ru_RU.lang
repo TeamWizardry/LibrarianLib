@@ -1,0 +1,25 @@
+librarianlib.shiftinfo=&7Удерживайте &bSHIFT&7 для большей информации
+librarianlib.subtitle.equip_bauble=Бижутерия надета
+librarianlib.bauble_tooltip=Нажмите &b%s&7, чтобы открыть меню бижутерии
+
+librarianlib.book.results.notfound=Результатов не найдено!
+librarianlib.book.results.nresults=Найдено %d результатов!
+librarianlib.book.results.oneresult=Найден один результат!
+librarianlib.book.results.toobroad=Поиск слишком широк! Найдено %d результатов с вашими ключевыми словами.
+librarianlib.book.results.kwds=%d подходящих ключевых слов
+librarianlib.book.results.kwd=1 подходящее ключевое слово
+librarianlib.book.results.match=%d%% подходят
+librarianlib.book.nav.previous=Предыдущий
+librarianlib.book.nav.next=Следующий
+librarianlib.book.nav.back=Назад
+
+librarianlib.error.nobook=Книга загрузилась неправильно...
+
+librarianlib.false_item.materials=Необходимые материалы
+
+librarianlib.command.liblib.usage=/liblib <subcommand> ...
+librarianlib.command.liblib.gui.usage=/liblib gui <subcommand> ...
+librarianlib.command.liblib.gui.reloadhud.usage=/liblib gui reloadhud
+librarianlib.command.liblib.option.nosuchoption=Опции '%s' не существует
+
+librarianlib.command.liblibadmin.usage=/liblibadmin <subcommand> ...
