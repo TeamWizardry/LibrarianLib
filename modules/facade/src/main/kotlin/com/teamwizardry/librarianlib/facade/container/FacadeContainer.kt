@@ -1,11 +1,9 @@
 package com.teamwizardry.librarianlib.facade.container
 
 import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
+import com.teamwizardry.librarianlib.facade.container.builtin.GhostSlot
 import com.teamwizardry.librarianlib.facade.container.builtin.PlayerInventorySlotManager
-import com.teamwizardry.librarianlib.facade.container.messaging.MessageDecoder
-import com.teamwizardry.librarianlib.facade.container.messaging.MessageEncoder
-import com.teamwizardry.librarianlib.facade.container.messaging.MessageHandler
-import com.teamwizardry.librarianlib.facade.container.messaging.MessagePacket
+import com.teamwizardry.librarianlib.facade.container.messaging.*
 import com.teamwizardry.librarianlib.facade.container.slot.CustomClickSlot
 import com.teamwizardry.librarianlib.facade.container.slot.SlotRegion
 import com.teamwizardry.librarianlib.facade.container.transfer.BasicTransferRule
@@ -23,7 +21,7 @@ public abstract class FacadeContainer(
     type: ContainerType<*>,
     windowId: Int,
     public val player: PlayerEntity
-): Container(type, windowId), MessageHandler {
+) : Container(type, windowId), MessageHandler {
     public val isClientContainer: Boolean = player !is ServerPlayerEntity
 
     public val transferManager: TransferManager = TransferManager()
@@ -51,7 +49,7 @@ public abstract class FacadeContainer(
      * on can be checked using [isClientContainer].
      */
     protected fun sendClientMessage(name: String, vararg arguments: Any?) {
-        if(isClientContainer) {
+        if (isClientContainer) {
             logger.warn("Tried to send a client message '$name' from the client.", RuntimeException())
             return
         }
@@ -63,7 +61,7 @@ public abstract class FacadeContainer(
      * on can be checked using [isClientContainer].
      */
     protected fun sendServerMessage(name: String, vararg arguments: Any?) {
-        if(!isClientContainer) {
+        if (!isClientContainer) {
             logger.warn("Tried to send a server message '$name' from the server.", RuntimeException())
             return
         }
@@ -80,7 +78,7 @@ public abstract class FacadeContainer(
         }
     }
 
-    public fun <T: TransferRule> addTransferRule(rule: T): T {
+    public fun <T : TransferRule> addTransferRule(rule: T): T {
         transferManager.add(rule)
         return rule
     }
@@ -93,12 +91,20 @@ public abstract class FacadeContainer(
         return transferManager.transferStackInSlot(inventorySlots[index])
     }
 
-    override fun slotClick(slotId: Int, dragType: Int, clickTypeIn: ClickType, player: PlayerEntity): ItemStack {
-        val customClickResult = (inventorySlots.getOrNull(slotId) as? CustomClickSlot?)?.handleClick(this, dragType, clickTypeIn, player)
+    override fun slotClick(slotId: Int, mouseButton: Int, clickTypeIn: ClickType, player: PlayerEntity): ItemStack {
+        val customClickResult =
+            (inventorySlots.getOrNull(slotId) as? CustomClickSlot?)?.handleClick(this, mouseButton, clickTypeIn, player)
         if (customClickResult != null) {
             return customClickResult
         }
-        return super.slotClick(slotId, dragType, clickTypeIn, player)
+        return super.slotClick(slotId, mouseButton, clickTypeIn, player)
+    }
+
+    @Message
+    private fun acceptJeiGhostStack(slotNumber: Int, stack: ItemStack) {
+        val slot = inventorySlots[slotNumber]
+        if(slot is GhostSlot && !slot.disableJeiGhostIntegration)
+            slot.acceptJeiGhostStack(stack)
     }
 
     public companion object {

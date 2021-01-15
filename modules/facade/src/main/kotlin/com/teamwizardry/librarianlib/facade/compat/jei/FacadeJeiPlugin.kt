@@ -16,5 +16,6 @@ internal class FacadeJeiPlugin: IModPlugin {
 
     override fun registerGuiHandlers(registration: IGuiHandlerRegistration) {
         registration.addGuiContainerHandler(FacadeContainerScreen::class.java, JeiFacadeContainerHandler)
+        registration.addGhostIngredientHandler(FacadeContainerScreen::class.java, JeiFacadeGhostIngredientHandler)
     }
 }

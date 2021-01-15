@@ -9,25 +9,23 @@ import com.teamwizardry.librarianlib.facade.FacadeMouseMask
 import com.teamwizardry.librarianlib.facade.FacadeWidget
 import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
 import com.teamwizardry.librarianlib.facade.bridge.FacadeContainerScreenHooks
+import com.teamwizardry.librarianlib.facade.container.builtin.GhostSlot
 import com.teamwizardry.librarianlib.facade.container.messaging.MessageEncoder
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.supporting.ContainerSpace
 import com.teamwizardry.librarianlib.math.Matrix3d
-import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryDynamicBackground
 import net.minecraft.client.gui.screen.inventory.ContainerScreen
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.RenderState
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.inventory.container.Container
 import net.minecraft.inventory.container.Slot
+import net.minecraft.item.ItemStack
 import net.minecraft.util.text.ITextComponent
-import net.minecraftforge.client.event.GuiScreenEvent
-import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.opengl.GL11
 
 /**
@@ -61,7 +59,7 @@ public abstract class FacadeContainerScreen<T: Container>(
 
     public val background: PastryDynamicBackground = PastryDynamicBackground(PastryBackgroundStyle.VANILLA, main)
 
-    public val jei: JeiInfo = JeiInfo()
+    public val jei: JeiIntegration = JeiIntegration()
 
     private val messageEncoder = MessageEncoder(container.javaClass, container.windowId)
 
@@ -153,7 +151,7 @@ public abstract class FacadeContainerScreen<T: Container>(
         facade.render()
         RenderSystem.translatef(guiLeft.toFloat(), guiTop.toFloat(), 0.0f)
 
-        RenderSystem.enableDepthTest()
+        RenderSystem.disableDepthTest()
     }
 
     override fun mouseMoved(xPos: Double, mouseY: Double) {
@@ -236,7 +234,7 @@ public abstract class FacadeContainerScreen<T: Container>(
         facade.removed()
     }
 
-    public class JeiInfo {
+    public inner class JeiIntegration {
         private val _exclusionAreas: MutableList<GuiLayer> = mutableListOf()
         public val exclusionAreas: List<GuiLayer> = _exclusionAreas.unmodifiableView()
 
@@ -246,6 +244,11 @@ public abstract class FacadeContainerScreen<T: Container>(
 
         public fun removeExclusionArea(layer: GuiLayer) {
             _exclusionAreas.remove(layer)
+        }
+
+        @JvmSynthetic
+        internal fun acceptJeiGhostStack(slot: GhostSlot, stack: ItemStack) {
+            sendMessage("acceptJeiGhostStack", slot.slotNumber, stack)
         }
     }
 

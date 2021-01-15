@@ -10,5 +10,10 @@ public interface CustomClickSlot {
      * Optionally override the default [slot click handling][Container.slotClick]. Returning a non-null value will
      * bypass the default click behavior, while returning null will fall through to the default click behavior.
      */
-    public fun handleClick(container: Container, dragType: Int, clickType: ClickType, player: PlayerEntity): ItemStack?
+    public fun handleClick(
+        container: Container,
+        mouseButton: Int,
+        clickType: ClickType,
+        player: PlayerEntity
+    ): ItemStack?
 }
