@@ -17,9 +17,9 @@ public class PlayerInventorySlotManager(inventory: PlayerInventory): SlotManager
     public val offhand: SlotRegion = slots[40]
 
     init {
-        head.set(0) { inv, i -> PlayerEquipmentSlot(inv, i, inventory.player, EquipmentSlotType.HEAD) }
-        chest.set(0) { inv, i -> PlayerEquipmentSlot(inv, i, inventory.player, EquipmentSlotType.CHEST) }
-        legs.set(0) { inv, i -> PlayerEquipmentSlot(inv, i, inventory.player, EquipmentSlotType.LEGS) }
-        feet.set(0) { inv, i -> PlayerEquipmentSlot(inv, i, inventory.player, EquipmentSlotType.FEET) }
+        head.setFactory { inv, i -> PlayerEquipmentSlot(inv, i, inventory.player, EquipmentSlotType.HEAD) }
+        chest.setFactory { inv, i -> PlayerEquipmentSlot(inv, i, inventory.player, EquipmentSlotType.CHEST) }
+        legs.setFactory { inv, i -> PlayerEquipmentSlot(inv, i, inventory.player, EquipmentSlotType.LEGS) }
+        feet.setFactory { inv, i -> PlayerEquipmentSlot(inv, i, inventory.player, EquipmentSlotType.FEET) }
     }
 }

@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.facade.layer.supporting.ContainerSpace
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.facade.container.slot.FacadeSlot
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.inventory.container.Slot
 
@@ -33,13 +34,9 @@ public class SlotLayer @JvmOverloads constructor(
     override fun draw(context: GuiDrawContext) {
         super.draw(context)
         val rootPos = ContainerSpace.convertPointFrom(vec(0, 0), this)
-        xPosMirror.set(slot, rootPos.xi)
-        yPosMirror.set(slot, rootPos.yi)
+        FacadeSlot.setSlotX(slot, rootPos.xi)
+        FacadeSlot.setSlotY(slot, rootPos.yi)
     }
 
-    private companion object {
-        private val xPosMirror = Mirror.reflectClass<Slot>().getDeclaredField(mapSrgName("field_75223_e"))
-        private val yPosMirror = Mirror.reflectClass<Slot>().getDeclaredField(mapSrgName("field_75221_f"))
-    }
 }
 

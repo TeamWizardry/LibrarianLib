@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.facade.container.builtin
 
 import com.mojang.datafixers.util.Pair
+import com.teamwizardry.librarianlib.facade.container.slot.FacadeSlot
 import net.minecraft.client.renderer.texture.AtlasTexture
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.player.PlayerEntity
@@ -13,7 +14,11 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.items.IItemHandler
 import net.minecraftforge.items.SlotItemHandler
 
-public class PlayerEquipmentSlot(itemHandler: IItemHandler, index: Int, public var player: PlayerEntity, public var type: EquipmentSlotType): SlotItemHandler(itemHandler, index, 0, 0) {
+public class PlayerEquipmentSlot(
+    itemHandler: IItemHandler, index: Int,
+    public var player: PlayerEntity, public var type: EquipmentSlotType
+) : FacadeSlot(itemHandler, index) {
+
     /**
      * Returns the maximum stack size for a given slot (usually the same as getInventoryStackLimit(), but 1 in
      * the case of armor slots)
@@ -34,7 +39,10 @@ public class PlayerEquipmentSlot(itemHandler: IItemHandler, index: Int, public v
      */
     override fun canTakeStack(playerIn: PlayerEntity): Boolean {
         val itemstack = this.stack
-        return if (!itemstack.isEmpty && !playerIn.isCreative && EnchantmentHelper.hasBindingCurse(itemstack)) false else super.canTakeStack(playerIn)
+        return if (!itemstack.isEmpty && !playerIn.isCreative && EnchantmentHelper.hasBindingCurse(itemstack))
+            false
+        else
+            super.canTakeStack(playerIn)
     }
 
     @OnlyIn(Dist.CLIENT)

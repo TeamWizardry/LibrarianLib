@@ -15,7 +15,5 @@ import net.minecraftforge.items.wrapper.InvWrapper
 public open class SlotManager(private val inventory: IItemHandler) {
     public constructor(inventory: IInventory): this(InvWrapper(inventory))
 
-    public val slots: SlotRegion = SlotRegion((0 until inventory.slots).map {
-        FactorySlotReference(inventory, it) { inv, i -> FacadeSlot(inv, i, 0, 0) }
-    })
+    public val slots: SlotRegion = SlotRegion.create(inventory)
 }

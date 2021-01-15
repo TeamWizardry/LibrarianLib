@@ -2,28 +2,35 @@ package com.teamwizardry.librarianlib.facade.container.slot
 
 import net.minecraft.inventory.container.Slot
 import net.minecraftforge.items.IItemHandler
+import net.minecraftforge.items.ItemStackHandler
+import java.lang.IllegalStateException
 
 public fun interface SlotFactory {
     public fun createSlot(inventory: IItemHandler, index: Int): Slot
 }
 
 /**
- * Provides access to a set of slots
+ * Provides lazy access to a set of slots
  */
-public class SlotRegion(private val slots: List<SlotReference>): Iterable<Slot> {
+public class SlotRegion private constructor(private val slots: List<LazySlot>) : Iterable<Slot> {
+
     /**
      * The number of slots in this region
      */
     public val size: Int = slots.size
 
     /**
-     * Returns the current list of slots. The returned list is *not* live, so changing the slots after this list is
-     * generated will lead to unexpected behavior.
+     * Returns the list of resolved slots. This forcibly resolves all the slots in this region, so trying to further
+     * configure any of them will throw an exception.
      */
     public fun toList(): List<Slot> {
         return slots.map { it.slot }
     }
 
+    /**
+     * Returns the an iterator over the resolved slots. This forcibly resolves the slots in this region, so trying to
+     * further configure any of them will throw an exception.
+     */
     override fun iterator(): Iterator<Slot> {
         return slots.asSequence().map { it.slot }.iterator()
     }
@@ -55,43 +62,68 @@ public class SlotRegion(private val slots: List<SlotReference>): Iterable<Slot> 
     }
 
     /**
-     * Replaces the slots in the specified range with slots generated using [factory].
-     *
-     * Take care that the given slots haven't already been accessed.
+     * Sets the factories of all the slots in this region. If any of the slots has already been resolved, this will
+     * throw an exception.
      */
-    public fun setRange(fromIndex: Int, toIndex: Int, factory: SlotFactory) {
-        if (fromIndex < 0 || fromIndex > slots.size || toIndex < 0 || toIndex > slots.size)
-            throw IndexOutOfBoundsException("Range: [$fromIndex, $toIndex), length: ${slots.size}")
-        for (i in fromIndex until toIndex) {
-            slots[i].set(factory)
+    public fun setFactory(factory: SlotFactory) {
+        for (slot in slots) {
+            slot.setFactory(factory)
         }
     }
 
     /**
-     * Replaces the slots in the specified [range] with slots generated using [factory].
-     *
-     * Take care that the given slots haven't already been accessed.
+     * Sets the factories of the slots in the given range. If any of the slots has already been resolved, this will
+     * throw an exception.
+     */
+    public fun setFactory(fromIndex: Int, toIndex: Int, factory: SlotFactory) {
+        if (fromIndex < 0 || fromIndex > slots.size || toIndex < 0 || toIndex > slots.size)
+            throw IndexOutOfBoundsException("Range: [$fromIndex, $toIndex), length: ${slots.size}")
+        for (i in fromIndex until toIndex) {
+            slots[i].setFactory(factory)
+        }
+    }
+
+    /**
+     * Sets the factories of the slots in the given range. If any of the slots has already been resolved, this will
+     * throw an exception.
      */
     @JvmSynthetic
-    public fun setRange(range: IntRange, factory: SlotFactory) {
-        setRange(range.first, range.last + 1, factory)
+    public fun setFactory(range: IntRange, factory: SlotFactory) {
+        setFactory(range.first, range.last + 1, factory)
     }
 
     /**
-     * Replaces the slot at [index] with a slot generated using [factory]. A factory is used so you don't have to
-     * keep track of inventories or slot indices.
-     *
-     * Take care that the given slot hasn't already been accessed.
+     * Sets the factory of the slot at the given index. If the slot has already been resolved, this will throw an
+     * exception.
      */
-    public fun set(index: Int, factory: SlotFactory) {
+    public fun setFactory(index: Int, factory: SlotFactory) {
         if (index < 0 || index >= size)
             throw IndexOutOfBoundsException("Index: $index, length: $size")
-        setRange(index, index + 1, factory)
+        slots[index].setFactory(factory)
     }
 
     /**
-     * Returns a region containing all the slots in this region and then all the slots in the given region. Any slots
-     * present in both regions will be excluded from the given region before merging.
+     * Directly sets the slot at the given index. If the slot has already been resolved, this will throw an exception.
+     */
+    public fun setDirect(index: Int, slot: Slot) {
+        if (index < 0 || index >= size)
+            throw IndexOutOfBoundsException("Index: $index, length: $size")
+        slots[index].setSlot(slot)
+    }
+
+    /**
+     * Resolves and returns the slot at the given index. Once a slot has been resolved, calling [setFactory] or
+     * [setDirect] with that slot will throw an exception.
+     */
+    public fun getDirect(index: Int): Slot {
+        if (index < 0 || index >= size)
+            throw IndexOutOfBoundsException("Index: $index, length: $size")
+        return slots[index].slot
+    }
+
+    /**
+     * Returns a region containing all the slots in this region and then all the slots in the given region. Duplicate
+     * slots will not be included.
      */
     @JvmName("union")
     public operator fun plus(other: SlotRegion): SlotRegion {
@@ -108,12 +140,56 @@ public class SlotRegion(private val slots: List<SlotReference>): Iterable<Slot> 
 
     public companion object {
         /**
-         * Create a region containing specific slot instances. Note: trying to call [set] or [setRange] on any of these
-         * slots will throw an [UnsupportedOperationException].
+         * Create a region containing specific slot instances. Note: trying to re-configure the slots in this region,
+         * either directly or using a factory, will throw an exception.
          */
         @JvmStatic
-        public fun createDirect(slots: List<Slot>): SlotRegion {
-            return SlotRegion(slots.map { DirectSlotReference(it) })
+        public fun create(slots: List<Slot>): SlotRegion {
+            return SlotRegion(slots.map { LazySlot(it) })
+        }
+
+        /**
+         * Create a region containing the slots in the given inventory.
+         */
+        @JvmStatic
+        public fun create(inventory: IItemHandler): SlotRegion {
+            return SlotRegion((0 until inventory.slots).map {
+                LazySlot(inventory, it) { inv, i -> FacadeSlot(inv, i) }
+            })
+        }
+    }
+
+    private class LazySlot(val inventory: IItemHandler, val index: Int, factory: SlotFactory) {
+        constructor(slot: Slot) : this(EMPTY_INVENTORY, 0, { _, _ -> slot }) {
+            _slot = slot
+        }
+
+        private var _factory: SlotFactory = factory
+        private var explicit: Boolean = false
+        private var _slot: Slot? = null
+
+        val slot: Slot
+            get() = _slot ?: _factory.createSlot(inventory, index).also { _slot = it }
+
+        fun setSlot(slot: Slot) {
+            throwIfResolved()
+            _slot = slot
+        }
+
+        public fun setFactory(factory: SlotFactory) {
+            throwIfResolved()
+            _factory = factory
+        }
+
+        private fun throwIfResolved() {
+            if (_slot != null)
+                throw IllegalStateException(
+                    "Slot $index has already been " + (if (explicit) "explicitly set" else "lazily generated")
+                )
+        }
+
+        companion object {
+            private val EMPTY_INVENTORY = ItemStackHandler(0)
         }
     }
 }
