@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.facade.testmod.containers
 
 import com.teamwizardry.librarianlib.core.util.kotlin.getOrNull
 import com.teamwizardry.librarianlib.facade.container.FacadeContainer
+import com.teamwizardry.librarianlib.facade.container.builtin.LockingSlot
 import com.teamwizardry.librarianlib.facade.container.slot.SlotManager
 import com.teamwizardry.librarianlib.facade.testmod.LibrarianLibFacadeTestMod
 import net.minecraft.entity.player.PlayerEntity
@@ -23,7 +24,9 @@ class BackpackContainer(
         val stackCap = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).getOrNull()
             ?: throw IllegalStateException("Held item doesn't have an item handler")
 
+        val lock = LockingSlot.ConsistencyLock({ player.getHeldItem(hand) }, isClientContainer)
         contentsSlots = SlotManager(stackCap)
+        contentsSlots.slots.setFactory { inv, index -> LockingSlot(inv, index, lock) }
 
         addSlots(playerSlots.hotbar)
         addSlots(playerSlots.main)
