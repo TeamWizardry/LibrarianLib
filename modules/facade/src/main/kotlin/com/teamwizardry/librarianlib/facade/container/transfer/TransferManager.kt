@@ -29,10 +29,16 @@ public class TransferManager {
      *
      * In vanilla, the result is empty unless the item partially fit, in which case it's the contents of the slot before
      * you clicked it. I'm going to emulate this here.
+     *
+     * ## Upon further consideration...
+     *
+     * On further inspection (and many, many deadlocks), it's even more irritating. This method will be called
+     * repeatedly until either it returns EMPTY or the slot's item (not stack, item) != the returned stack's item.
+     *
+     * I'm just going to return EMPTY, because fuck all that I'm gonna handle it myself.
      */
     public fun transferStackInSlot(slot: Slot): ItemStack {
         var stack = slot.stack.copy()
-        val preStack = stack.copy()
         for (rule in rules) {
             if (stack.isEmpty)
                 return ItemStack.EMPTY
@@ -44,13 +50,10 @@ public class TransferManager {
                 stack = result.remaining
                 if (result.successful) {
                     slot.putStack(stack)
-                    if(stack.isEmpty)
-                        return ItemStack.EMPTY // in vanilla if it entirely fit, it returns empty
-                    else
-                        return preStack // in vanilla if it partially fit, it returns the contents before it was clicked
+                    break
                 }
             }
         }
-        return ItemStack.EMPTY // in vanilla if nothing fit, it returns empty
+        return ItemStack.EMPTY
     }
 }
