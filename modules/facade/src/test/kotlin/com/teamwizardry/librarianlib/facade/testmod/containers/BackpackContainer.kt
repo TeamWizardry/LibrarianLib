@@ -24,7 +24,7 @@ class BackpackContainer(
         val stackCap = stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).getOrNull()
             ?: throw IllegalStateException("Held item doesn't have an item handler")
 
-        val lock = LockingSlot.ConsistencyLock({ player.getHeldItem(hand) }, isClientContainer)
+        val lock = LockingSlot.ConsistencyLock(isClientContainer) { player.getHeldItem(hand) }
         contentsSlots = SlotManager(stackCap)
         contentsSlots.slots.setFactory { inv, index -> LockingSlot(inv, index, lock) }
 

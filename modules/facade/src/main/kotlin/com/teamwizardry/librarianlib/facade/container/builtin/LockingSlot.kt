@@ -54,8 +54,8 @@ public class LockingSlot(
      * preserved on the client, so the check has to be disabled there.
      */
     public class ConsistencyLock(
-        private val verificationCallback: Supplier<Any>,
-        private val isClient: Boolean
+        private val isClient: Boolean,
+        private val verificationCallback: Supplier<Any>
     ): SlotLock {
 
         /**
@@ -70,7 +70,7 @@ public class LockingSlot(
             sourceInventory: IItemHandler,
             sourceSlot: Int,
             isClient: Boolean
-        ): this({ sourceInventory.getStackInSlot(sourceSlot) }, isClient)
+        ): this(isClient, { sourceInventory.getStackInSlot(sourceSlot) })
 
         /**
          * Create an instance backed by a particular inventory slot
@@ -84,7 +84,7 @@ public class LockingSlot(
             sourceInventory: IInventory,
             sourceSlot: Int,
             isClient: Boolean
-        ): this({ sourceInventory.getStackInSlot(sourceSlot) }, isClient)
+        ): this(isClient, { sourceInventory.getStackInSlot(sourceSlot) })
 
 
         private val verificationObject: Any = verificationCallback.get()
