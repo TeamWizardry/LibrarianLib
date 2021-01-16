@@ -358,7 +358,7 @@ public open class FacadeWidget(
          */
         val isOverVanilla: Boolean,
         /**
-         * The absolute position of the hit test in display pixels (not logical pixels)
+         * The absolute position of the hit test in logical pixels
          */
         val pos: Vec2d
     )

@@ -29,7 +29,7 @@
   - ~~exclusion areas~~
   - clickable recipe areas?
   - facade recipe category renderer?
-  - getIngredientUnderMouse
+  - ~~getIngredientUnderMouse~~
   - recipe transfer handler?
   - ~~fix focus (`a` to bookmark doesn't work) (maybe vanilla focus issue?)~~
   -

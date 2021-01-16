@@ -92,6 +92,7 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
         "jei_compat" to TestContainerSet("JEI Compat") {
             container("Exclusion Areas", ::JeiExclusionAreasScreen)
             container("Ghost Slots", ::GhostSlotScreen)
+            container("Ingredient Layers", ::JeiIngredientLayerScreen)
         },
     )
 

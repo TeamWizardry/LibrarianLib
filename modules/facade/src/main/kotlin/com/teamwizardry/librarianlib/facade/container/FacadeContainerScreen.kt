@@ -252,7 +252,7 @@ public abstract class FacadeContainerScreen<T: Container>(
         }
     }
 
-    private companion object {
+    public companion object {
         private val depthClobberRenderType = SimpleRenderTypes.flat(GL11.GL_QUADS) {
             it.depthTest(RenderState.DepthTestState(GL11.GL_ALWAYS))
         }

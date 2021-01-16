@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.facade.compat.jei
 
+import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
+import com.teamwizardry.librarianlib.facade.container.layers.JeiIngredientLayer
 import com.teamwizardry.librarianlib.facade.layer.supporting.ScreenSpace
 import mezz.jei.api.gui.handlers.IGuiClickableArea
 import mezz.jei.api.gui.handlers.IGuiContainerHandler
@@ -19,7 +21,12 @@ internal object JeiFacadeContainerHandler: IGuiContainerHandler<FacadeContainerS
         mouseX: Double,
         mouseY: Double
     ): Any? {
-        return super.getIngredientUnderMouse(containerScreen, mouseX, mouseY)
+        val hit = containerScreen.facade.hitTest(mouseX, mouseY)
+        if(containerScreen.isMouseMasked(mouseX, mouseY) && !hit.isOverVanilla)
+            return null
+        val layer = generateSequence(hit.layer) { it.parent }.find { it is JeiIngredientLayer } ?: return null
+        val pos = layer.convertPointFrom(vec(mouseX, mouseY), ScreenSpace)
+        return (layer as? JeiIngredientLayer)?.getJeiIngredient(pos)
     }
 
     override fun getGuiClickableAreas(
