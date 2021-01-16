@@ -15,5 +15,5 @@ import net.minecraftforge.items.wrapper.InvWrapper
 public open class SlotManager(private val inventory: IItemHandler) {
     public constructor(inventory: IInventory): this(InvWrapper(inventory))
 
-    public val slots: SlotRegion = SlotRegion.create(inventory)
+    public val all: SlotRegion = SlotRegion.create(inventory)
 }

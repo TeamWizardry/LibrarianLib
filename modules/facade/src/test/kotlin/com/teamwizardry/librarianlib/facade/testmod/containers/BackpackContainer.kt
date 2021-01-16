@@ -26,14 +26,14 @@ class BackpackContainer(
 
         val lock = LockingSlot.ConsistencyLock(isClientContainer) { player.getHeldItem(hand) }
         contentsSlots = SlotManager(stackCap)
-        contentsSlots.slots.setFactory { inv, index -> LockingSlot(inv, index, lock) }
+        contentsSlots.all.setFactory { inv, index -> LockingSlot(inv, index, lock) }
 
         addSlots(playerSlots.hotbar)
         addSlots(playerSlots.main)
-        addSlots(contentsSlots.slots)
+        addSlots(contentsSlots.all)
 
-        createTransferRule().from(playerSlots.hotbar).from(playerSlots.main).into(contentsSlots.slots)
-        createTransferRule().from(contentsSlots.slots).into(playerSlots.main).into(playerSlots.hotbar)
+        createTransferRule().from(playerSlots.hotbar).from(playerSlots.main).into(contentsSlots.all)
+        createTransferRule().from(contentsSlots.all).into(playerSlots.main).into(playerSlots.hotbar)
     }
 
     override fun canInteractWith(playerIn: PlayerEntity): Boolean {

@@ -6,15 +6,15 @@ import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.inventory.EquipmentSlotType
 
 public class PlayerInventorySlotManager(inventory: PlayerInventory): SlotManager(inventory) {
-    public val armor: SlotRegion = slots[36..39]
-    public val head: SlotRegion = slots[39]
-    public val chest: SlotRegion = slots[38]
-    public val legs: SlotRegion = slots[37]
-    public val feet: SlotRegion = slots[36]
+    public val armor: SlotRegion = all[36..39]
+    public val head: SlotRegion = all[39]
+    public val chest: SlotRegion = all[38]
+    public val legs: SlotRegion = all[37]
+    public val feet: SlotRegion = all[36]
 
-    public val hotbar: SlotRegion = slots[0..8]
-    public val main: SlotRegion = slots[9..35]
-    public val offhand: SlotRegion = slots[40]
+    public val hotbar: SlotRegion = all[0..8]
+    public val main: SlotRegion = all[9..35]
+    public val offhand: SlotRegion = all[40]
 
     init {
         head.setFactory { inv, i -> PlayerEquipmentSlot(inv, i, inventory.player, EquipmentSlotType.HEAD) }

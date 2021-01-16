@@ -1,8 +1,7 @@
-package com.teamwizardry.librarianlib.facade.layers
+package com.teamwizardry.librarianlib.facade.container.layers
 
 import com.teamwizardry.librarianlib.facade.container.slot.SlotRegion
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
-import com.teamwizardry.librarianlib.facade.value.RMValueDouble
 import com.teamwizardry.librarianlib.facade.value.RMValueInt
 import com.teamwizardry.librarianlib.math.ceilInt
 import com.teamwizardry.librarianlib.core.util.vec

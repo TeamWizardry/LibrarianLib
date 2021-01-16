@@ -19,10 +19,10 @@ class SimpleInventoryContainer(
 
         addSlots(playerSlots.hotbar)
         addSlots(playerSlots.main)
-        addSlots(contentsSlots.slots)
+        addSlots(contentsSlots.all)
 
-        createTransferRule().from(playerSlots.hotbar).from(playerSlots.main).into(contentsSlots.slots)
-        createTransferRule().from(contentsSlots.slots).into(playerSlots.main).into(playerSlots.hotbar)
+        createTransferRule().from(playerSlots.hotbar).from(playerSlots.main).into(contentsSlots.all)
+        createTransferRule().from(contentsSlots.all).into(playerSlots.main).into(playerSlots.hotbar)
     }
 
     override fun canInteractWith(playerIn: PlayerEntity): Boolean {

@@ -26,10 +26,10 @@ class FluidSlotContainer(windowId: Int, player: PlayerEntity, pos: BlockPos) :
 
         addSlots(playerSlots.hotbar)
         addSlots(playerSlots.main)
-        addSlots(ioSlots.slots)
+        addSlots(ioSlots.all)
 
-        createTransferRule().from(playerSlots.hotbar).from(playerSlots.main).into(ioSlots.slots)
-        createTransferRule().from(ioSlots.slots).into(playerSlots.main).into(playerSlots.hotbar)
+        createTransferRule().from(playerSlots.hotbar).from(playerSlots.main).into(ioSlots.all)
+        createTransferRule().from(ioSlots.all).into(playerSlots.main).into(playerSlots.hotbar)
     }
 
     class Data: TestContainerData() {

@@ -14,14 +14,14 @@ class GhostSlotContainer(windowId: Int, player: PlayerEntity, pos: BlockPos) :
     val contentsSlots: SlotManager = SlotManager(data.inventory)
 
     init {
-        contentsSlots.slots.setFactory(::GhostSlot)
+        contentsSlots.all.setFactory(::GhostSlot)
 
         addSlots(playerSlots.hotbar)
         addSlots(playerSlots.main)
-        addSlots(contentsSlots.slots)
+        addSlots(contentsSlots.all)
 
-        createTransferRule().from(playerSlots.hotbar).from(playerSlots.main).into(contentsSlots.slots)
-        createTransferRule().from(contentsSlots.slots).into(playerSlots.main).into(playerSlots.hotbar)
+        createTransferRule().from(playerSlots.hotbar).from(playerSlots.main).into(contentsSlots.all)
+        createTransferRule().from(contentsSlots.all).into(playerSlots.main).into(playerSlots.hotbar)
     }
 
     class Data: TestContainerData() {
