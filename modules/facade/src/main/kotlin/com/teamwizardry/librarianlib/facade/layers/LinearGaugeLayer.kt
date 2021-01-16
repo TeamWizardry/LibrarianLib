@@ -23,14 +23,9 @@ public open class LinearGaugeLayer: GuiLayer {
     public var fillFraction: Double by fillFraction_im
 
     /**
-     * @see direction
-     */
-    public val direction_im: IMValue<Direction2d> = imValue(Direction2d.UP)
-
-    /**
      * The direction to expand (e.g. [UP][Direction2d.UP] means the gauge will sit at the bottom and rise up)
      */
-    public var direction: Direction2d by direction_im
+    public var direction: Direction2d = Direction2d.UP
 
     /**
      * The contents of the gauge. This is the layer that is resized based on [fillFraction].
@@ -41,7 +36,7 @@ public open class LinearGaugeLayer: GuiLayer {
         this.add(contents)
     }
 
-    override fun update() { // todo yoga
+    override fun prepareLayout() {
         val fillFraction = fillFraction
         val totalSize = direction.axis.get(this.size)
         val fullSize = (totalSize * fillFraction).roundToInt()

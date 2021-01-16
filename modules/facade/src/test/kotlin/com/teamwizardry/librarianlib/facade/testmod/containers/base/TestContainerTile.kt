@@ -3,15 +3,20 @@ package com.teamwizardry.librarianlib.facade.testmod.containers.base
 import com.teamwizardry.librarianlib.prism.Save
 import com.teamwizardry.librarianlib.testbase.objects.TestTileEntity
 import net.minecraft.nbt.CompoundNBT
+import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.tileentity.TileEntityType
 import net.minecraftforge.common.util.INBTSerializable
 
-class TestContainerTile(tileEntityTypeIn: TileEntityType<*>, val containerSet: TestContainerSet) : TestTileEntity(tileEntityTypeIn) {
+class TestContainerTile(tileEntityTypeIn: TileEntityType<*>, val containerSet: TestContainerSet) : TestTileEntity(tileEntityTypeIn), ITickableTileEntity {
     @Save
     val data: ContainerDataSet = ContainerDataSet(containerSet)
 
     fun <T: TestContainerData> getData(dataType: Class<T>): T {
         return data.getData(dataType)
+    }
+
+    override fun tick() {
+        data.tick()
     }
 
     class ContainerDataSet(val containerSet: TestContainerSet) :
@@ -41,5 +46,10 @@ class TestContainerTile(tileEntityTypeIn: TileEntityType<*>, val containerSet: T
             }
         }
 
+        fun tick() {
+            for(data in dataByType.values) {
+                data.tick()
+            }
+        }
     }
 }

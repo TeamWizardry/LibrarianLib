@@ -25,9 +25,13 @@ public object MessageScanner {
     }
 
     public class MessageScan(public val method: MethodMirror) {
-        public val name: String = method.getDeclaredAnnotation<Message>()!!.name.let {
+        private val messageAnnotation = method.getDeclaredAnnotation<Message>()!!
+        public val name: String = messageAnnotation.name.let {
             if(it == "") method.name else it
         }
+
+        public val side: MessageSide = messageAnnotation.side
+
         public val parameterSerializers: List<NBTSerializer<*>> = method.parameters.map { parameter ->
             try {
                 Prisms.nbt[parameter.type].value

@@ -24,6 +24,9 @@ public class MessageDecoder(
         if(packet.windowId != windowId)
             return // message was meant for a different screen, just ignore it
         val message = messages[packet.name] ?: throw IllegalArgumentException("${targetType.simpleName} has no message named '${packet.name}'")
+        if(!message.side.isValid(packet.side)) {
+            throw IllegalStateException("Illegal side ${packet.side} for message ${packet.name} (side = ${packet.side})")
+        }
         message.method.call<Any?>(instance, *message.readArguments(packet.payload))
     }
 }

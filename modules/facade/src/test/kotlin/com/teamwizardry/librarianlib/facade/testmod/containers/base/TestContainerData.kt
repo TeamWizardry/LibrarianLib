@@ -15,4 +15,6 @@ abstract class TestContainerData: INBTSerializable<CompoundNBT> {
     override fun deserializeNBT(nbt: CompoundNBT) {
         serializer.applyTag(nbt, this, Save::class.java)
     }
+
+    open fun tick() {}
 }

@@ -19,14 +19,25 @@
 - Add at least a shred of support for Minecraft's anemic input system (mostly the "swallowed" boolean return)
 - Containers
   - Slot component
-# Compatibility
+    
+# Containers
+- slot visibility
+
+## Compatibility
 - Just Enough Items
+  - ~~ghost slots~~
+  - ~~exclusion areas~~
+  - clickable recipe areas?
+  - facade recipe category renderer?
+  - getIngredientUnderMouse
+  - recipe transfer handler?
+  - ~~fix focus (`a` to bookmark doesn't work) (maybe vanilla focus issue?)~~
+  -
 - MouseTweaks: https://github.com/YaLTeR/MouseTweaks/blob/master/src/api/java/yalter/mousetweaks/api/IMTModGuiContainer3Ex.java
   - MT_getSlots, MT_getSlotUnderMouse, MT_isCraftingOutput, MT_isIgnored
 - InventorySorter: https://github.com/cpw/inventorysorter/blob/master/src/main/java/cpw/mods/inventorysorter/InventorySorter.java
   - IMC: `"slotblacklist"` -> slot class name
   - IMC: `"containerblacklist"` -> resourcelocation
 - Quark search bar?
-- Is inventory tweaks still a thing?
 -
 -

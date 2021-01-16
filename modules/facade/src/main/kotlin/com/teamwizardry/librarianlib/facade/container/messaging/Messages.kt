@@ -1,29 +1,31 @@
 package com.teamwizardry.librarianlib.facade.container.messaging
 
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
+import com.teamwizardry.librarianlib.core.util.kotlin.inconceivable
 import com.teamwizardry.librarianlib.core.util.sided.clientOnly
 import com.teamwizardry.librarianlib.courier.PacketType
-import com.teamwizardry.librarianlib.facade.container.FacadeContainer
-import com.teamwizardry.librarianlib.prism.Prisms
-import dev.thecodewarrior.mirror.Mirror
-import dev.thecodewarrior.mirror.member.MethodMirror
-import dev.thecodewarrior.prism.PrismException
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.CompoundNBT
-import net.minecraft.nbt.ListNBT
 import net.minecraft.network.PacketBuffer
-import net.minecraftforge.common.util.Constants
 import net.minecraftforge.fml.network.NetworkDirection
 import net.minecraftforge.fml.network.NetworkEvent
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 import java.util.function.Supplier
 
 @Target(AnnotationTarget.FUNCTION)
-public annotation class Message(val name: String = "")
+public annotation class Message(val name: String = "", val side: MessageSide = MessageSide.BOTH) {
+}
 
-public data class MessagePacket(val windowId: Int, val name: String, val payload: CompoundNBT)
+public enum class MessageSide {
+    CLIENT, SERVER, BOTH;
+
+    public fun isValid(side: MessageSide): Boolean {
+        return this == BOTH || this == side
+    }
+}
+
+public data class MessagePacket(val windowId: Int, val name: String, val payload: CompoundNBT) {
+    var side: MessageSide = MessageSide.BOTH
+}
 
 internal object MessagePacketType: PacketType<MessagePacket>(MessagePacket::class.java) {
     override fun encode(packet: MessagePacket, buffer: PacketBuffer) {
@@ -44,6 +46,11 @@ internal object MessagePacketType: PacketType<MessagePacket>(MessagePacket::clas
             clientOnly { Client.minecraft.player }
         } else {
             context.get().sender
+        }
+        packet.side = when(context.get().direction) {
+            NetworkDirection.PLAY_TO_CLIENT -> MessageSide.CLIENT
+            NetworkDirection.PLAY_TO_SERVER -> MessageSide.SERVER
+            else -> inconceivable("Message packets should only be PLAY_TO_CLIENT or PLAY_TO_SERVER")
         }
         context.get().enqueueWork {
             (player?.openContainer as? MessageHandler)?.receiveMessage(packet)

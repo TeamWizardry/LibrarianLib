@@ -95,30 +95,51 @@ public class Rect2d(public val x: Double, public val y: Double, public val width
         )
     }
 
+    /**
+     * Offset the rect by adding the given offset to its position
+     */
     public fun offset(offset: Vec2d): Rect2d {
         return Rect2d(this.pos + offset, this.size)
     }
 
+    /**
+     * Expand the rect by adding the given offset to its size
+     */
     public fun expand(offset: Vec2d): Rect2d {
         return Rect2d(this.pos, this.size + offset)
     }
 
+    /**
+     * Grow the rect by offsetting all the sides by the given amount
+     */
     public fun grow(offset: Double): Rect2d {
         return Rect2d(this.pos - vec(offset, offset), this.size + vec(offset * 2, offset * 2))
     }
 
+    /**
+     * Grow the rect by offsetting all the sides by the given amount. Equivalent to `grow(-offset)`.
+     */
     public fun shrink(offset: Double): Rect2d {
         return Rect2d(this.pos + vec(offset, offset), this.size - vec(offset * 2, offset * 2))
     }
 
+    /**
+     * Shift each side by the given amount
+     */
     @Suppress("NOTHING_TO_INLINE")
     public inline fun offset(minX: Number, minY: Number, maxX: Number, maxY: Number): Rect2d =
         offset(minX.toDouble(), minY.toDouble(), maxX.toDouble(), maxY.toDouble())
 
+    /**
+     * Shift each side by the given amount
+     */
     public fun offset(minX: Double, minY: Double, maxX: Double, maxY: Double): Rect2d {
         return Rect2d(this.pos + vec(minX, minY), this.size + vec(maxX - minX, maxY - minY))
     }
 
+    /**
+     * Add the specified position and size to this rect's position and size
+     */
     public fun add(pos: Vec2d, size: Vec2d): Rect2d {
         return Rect2d(this.pos + pos, this.size + size)
     }

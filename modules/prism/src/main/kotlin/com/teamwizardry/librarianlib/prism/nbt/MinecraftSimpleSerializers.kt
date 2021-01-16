@@ -36,6 +36,7 @@ import net.minecraft.util.registry.Registry
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.world.dimension.DimensionType
 import net.minecraftforge.fluids.FluidStack
+import net.minecraftforge.fluids.capability.templates.FluidTank
 import net.minecraftforge.fml.common.registry.GameRegistry
 
 internal object ResourceLocationSerializer: NBTSerializer<ResourceLocation>() {
@@ -391,6 +392,22 @@ internal object EnchantmentDataSerializer: NBTSerializer<EnchantmentData>() {
         val tag = CompoundNBT()
         tag.put("Enchantment", StringNBT.valueOf(value.enchantment.registryName.toString()))
         tag.put("Level", IntNBT.valueOf(value.enchantmentLevel))
+        return tag
+    }
+}
+
+internal object FluidTankSerializer: NBTSerializer<FluidTank>() {
+    override fun deserialize(tag: INBT, existing: FluidTank?): FluidTank {
+        if(existing == null)
+            throw DeserializationException("FluidTank requires an existing value to deserialize")
+        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
+        existing.readFromNBT(tag)
+        return existing
+    }
+
+    override fun serialize(value: FluidTank): INBT {
+        val tag = CompoundNBT()
+        value.writeToNBT(tag)
         return tag
     }
 }

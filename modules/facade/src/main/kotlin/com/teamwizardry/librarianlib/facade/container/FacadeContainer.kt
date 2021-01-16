@@ -1,10 +1,12 @@
 package com.teamwizardry.librarianlib.facade.container
 
+import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
 import com.teamwizardry.librarianlib.facade.container.builtin.GhostSlot
 import com.teamwizardry.librarianlib.facade.container.builtin.PlayerInventorySlotManager
 import com.teamwizardry.librarianlib.facade.container.messaging.*
 import com.teamwizardry.librarianlib.facade.container.slot.CustomClickSlot
+import com.teamwizardry.librarianlib.facade.container.slot.FluidSlot
 import com.teamwizardry.librarianlib.facade.container.slot.SlotRegion
 import com.teamwizardry.librarianlib.facade.container.transfer.BasicTransferRule
 import com.teamwizardry.librarianlib.facade.container.transfer.TransferManager
@@ -15,6 +17,7 @@ import net.minecraft.inventory.container.ClickType
 import net.minecraft.inventory.container.Container
 import net.minecraft.inventory.container.ContainerType
 import net.minecraft.item.ItemStack
+import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fml.network.PacketDistributor
 
 public abstract class FacadeContainer(
@@ -31,6 +34,9 @@ public abstract class FacadeContainer(
         PacketDistributor.PLAYER.with { player }
     else
         PacketDistributor.SERVER.noArg()
+
+    private val _fluidSlots: MutableList<FluidSlot> = mutableListOf()
+    public val fluidSlots: List<FluidSlot> = _fluidSlots.unmodifiableView()
 
     private val encoder = MessageEncoder(javaClass, windowId)
     private val decoder = MessageDecoder(this, windowId)
@@ -78,6 +84,11 @@ public abstract class FacadeContainer(
         }
     }
 
+    public fun addSlot(fluidSlot: FluidSlot) {
+        fluidSlot.slotNumber = _fluidSlots.size
+        _fluidSlots.add(fluidSlot)
+    }
+
     public fun <T : TransferRule> addTransferRule(rule: T): T {
         transferManager.add(rule)
         return rule
@@ -98,6 +109,24 @@ public abstract class FacadeContainer(
             return customClickResult
         }
         return super.slotClick(slotId, mouseButton, clickTypeIn, player)
+    }
+
+    override fun detectAndSendChanges() {
+        super.detectAndSendChanges()
+
+        for(i in fluidSlots.indices) {
+            val slot = fluidSlots[i]
+            val actual = slot.getActualFluid()
+            if(!actual.isFluidStackIdentical(slot.fluid)) {
+                slot.setCachedContents(actual.copy())
+                sendClientMessage("syncFluidSlot", slot.slotNumber, slot.fluid)
+            }
+        }
+    }
+
+    @Message(side = MessageSide.CLIENT)
+    private fun syncFluidSlot(slotNumber: Int, stack: FluidStack) {
+        fluidSlots[slotNumber].setCachedContents(stack)
     }
 
     @Message

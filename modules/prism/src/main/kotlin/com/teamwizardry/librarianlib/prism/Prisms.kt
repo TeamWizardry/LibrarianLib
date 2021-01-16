@@ -83,6 +83,7 @@ public object Prisms {
             EffectInstanceSerializer,
             EnchantmentDataSerializer,
             DimensionTypeSerializer,
+            FluidTankSerializer,
 
             // liblib types
             Vec2dSerializer,

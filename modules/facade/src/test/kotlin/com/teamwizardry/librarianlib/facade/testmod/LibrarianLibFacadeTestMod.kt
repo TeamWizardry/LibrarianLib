@@ -87,6 +87,7 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
         "basic" to TestContainerSet("Basic") {
             container("Single Slot", ::SingleSlotScreen)
             container("Slot Occlusion", ::OcclusionScreen)
+            container("Fluid Slot", ::FluidSlotScreen)
         },
         "jei_compat" to TestContainerSet("JEI Compat") {
             container("Exclusion Areas", ::JeiExclusionAreasScreen)
