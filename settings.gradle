@@ -6,6 +6,7 @@ def includeModule(String name) {
 }
 
 include("runtime")
+includeModule("lieutenant")
 includeModule("core")
 includeModule("courier")
 includeModule("etcetera")

@@ -1,0 +1,2 @@
+The code for this module is largely a port of the [Cotton Client Commands](https://github.com/CottonMC/ClientCommands) 
+library for Fabric. Many thanks to the team at CottonMC publishing it under the MIT license.

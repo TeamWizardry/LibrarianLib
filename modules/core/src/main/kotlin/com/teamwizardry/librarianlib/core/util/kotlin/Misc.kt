@@ -1,4 +1,3 @@
-@file:JvmName("MiscUtils")
 package com.teamwizardry.librarianlib.core.util.kotlin
 
 import net.minecraft.util.ResourceLocation
@@ -10,12 +9,6 @@ import java.util.Optional
  */
 public fun ResourceLocation.translationKey(type: String, suffix: String? = null): String
     = "$type.$namespace.$path${suffix?.let { ".$it" } ?: ""}"
-
-/**
- * A method for casting objects without the IDE complaining about casts always failing
- */
-@Suppress("UNCHECKED_CAST")
-public fun<T> mixinCast(obj: Any): T = obj as T
 
 public fun<T> Optional<T>.getOrNull(): T? = this.orElse(null)
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")

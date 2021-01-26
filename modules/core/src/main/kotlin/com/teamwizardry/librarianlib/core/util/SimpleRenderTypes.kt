@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.core.util
 
 import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
-import com.teamwizardry.librarianlib.core.util.kotlin.mixinCast
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats

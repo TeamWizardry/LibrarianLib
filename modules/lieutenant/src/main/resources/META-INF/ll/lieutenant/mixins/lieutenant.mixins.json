@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "com.teamwizardry.librarianlib.lieutenant.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "ll-lieutenant.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "ClientSuggestionProviderMixin",
+    "ClientPlayNetHandlerMixin",
+    "ClientPlayerEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
