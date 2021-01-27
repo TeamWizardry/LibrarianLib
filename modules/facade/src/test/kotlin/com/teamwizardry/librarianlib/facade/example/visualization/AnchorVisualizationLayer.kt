@@ -45,10 +45,10 @@ class AnchorVisualizationLayer(val target: GuiLayer): GuiLayer() {
         // get into their parent space
         context.matrix *= parent.inverseTransform
 
-        vb.pos2d(context.matrix, target.pos.x - anchorSize, target.pos.y - anchorSize).color(color).endVertex()
-        vb.pos2d(context.matrix, target.pos.x + anchorSize, target.pos.y + anchorSize).color(color).endVertex()
-        vb.pos2d(context.matrix, target.pos.x + anchorSize, target.pos.y - anchorSize).color(color).endVertex()
-        vb.pos2d(context.matrix, target.pos.x - anchorSize, target.pos.y + anchorSize).color(color).endVertex()
+        vb.pos2d(context.transform, target.pos.x - anchorSize, target.pos.y - anchorSize).color(color).endVertex()
+        vb.pos2d(context.transform, target.pos.x + anchorSize, target.pos.y + anchorSize).color(color).endVertex()
+        vb.pos2d(context.transform, target.pos.x + anchorSize, target.pos.y - anchorSize).color(color).endVertex()
+        vb.pos2d(context.transform, target.pos.x - anchorSize, target.pos.y + anchorSize).color(color).endVertex()
 
         buffer.finish()
         RenderSystem.lineWidth(1f)

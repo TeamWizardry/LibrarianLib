@@ -118,15 +118,15 @@ internal class Rect2dUnionTestScreen(title: ITextComponent): FacadeScreen(title)
             for(segment in rect2dUnion.horizontalSegments + rect2dUnion.verticalSegments) {
                 segment ?: continue
                 if(segment.depth != 0) continue
-                vb.pos2d(context.matrix, segment.startVec).color(startColor).endVertex()
-                vb.pos2d(context.matrix, segment.endVec).color(endColor).endVertex()
+                vb.pos2d(context.transform, segment.startVec).color(startColor).endVertex()
+                vb.pos2d(context.transform, segment.endVec).color(endColor).endVertex()
                 val sideOffset = segment.side.vector
                 val forwardOffset = segment.side.rotateCW().vector * 3
 
-                vb.pos2d(context.matrix, segment.endVec - forwardOffset + sideOffset).color(arrowColor).endVertex()
-                vb.pos2d(context.matrix, segment.endVec).color(arrowColor).endVertex()
-                vb.pos2d(context.matrix, segment.endVec).color(arrowColor).endVertex()
-                vb.pos2d(context.matrix, segment.endVec - forwardOffset - sideOffset).color(arrowColor).endVertex()
+                vb.pos2d(context.transform, segment.endVec - forwardOffset + sideOffset).color(arrowColor).endVertex()
+                vb.pos2d(context.transform, segment.endVec).color(arrowColor).endVertex()
+                vb.pos2d(context.transform, segment.endVec).color(arrowColor).endVertex()
+                vb.pos2d(context.transform, segment.endVec - forwardOffset - sideOffset).color(arrowColor).endVertex()
 
             }
 

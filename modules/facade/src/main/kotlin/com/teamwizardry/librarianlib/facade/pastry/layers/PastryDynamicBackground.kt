@@ -10,10 +10,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.pastry.IBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.Rect2dUnion
-import com.teamwizardry.librarianlib.math.Direction2d
-import com.teamwizardry.librarianlib.math.Matrix3d
-import com.teamwizardry.librarianlib.math.Rect2d
-import com.teamwizardry.librarianlib.math.Vec2d
+import com.teamwizardry.librarianlib.math.*
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import java.awt.Color
 import kotlin.math.abs
@@ -54,7 +51,7 @@ public class PastryDynamicBackground(style: IBackgroundStyle, vararg shapeLayers
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(style.edges.renderType)
         for(element in elements) {
-            element.draw(context.matrix, vb)
+            element.draw(context.transform, vb)
         }
         buffer.finish()
     }
@@ -154,7 +151,7 @@ public class PastryDynamicBackground(style: IBackgroundStyle, vararg shapeLayers
         val maxX: Double get() = pos.x + size.x
         val maxY: Double get() = pos.y + size.y
 
-        fun draw(matrix: Matrix3d, vb: IVertexBuilder) {
+        fun draw(matrix: Matrix4d, vb: IVertexBuilder) {
             val tint = Color.WHITE
 
             vb.pos2d(matrix, minX, maxY).color(tint).tex(minU, maxV).endVertex()

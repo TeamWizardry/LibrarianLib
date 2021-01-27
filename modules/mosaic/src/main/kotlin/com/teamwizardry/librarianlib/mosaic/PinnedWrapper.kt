@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.renderer.RenderType
 import java.awt.Color
 
@@ -21,10 +22,10 @@ public class PinnedWrapper(
     override fun maxV(animFrames: Int): Float = wrapped.maxV(animFrames)
     override fun maxV(): Float = wrapped.maxV()
 
-    override fun draw(matrix: Matrix3d, x: Float, y: Float, animTicks: Int, tint: Color) {
+    override fun draw(matrix: Matrix4d, x: Float, y: Float, animTicks: Int, tint: Color) {
         wrapped.draw(matrix, x, y, animTicks, tint)
     }
-    override fun draw(matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float, animTicks: Int, tint: Color) {
+    override fun draw(matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animTicks: Int, tint: Color) {
         wrapped.draw(matrix, x, y, width, height, animTicks, tint)
     }
 

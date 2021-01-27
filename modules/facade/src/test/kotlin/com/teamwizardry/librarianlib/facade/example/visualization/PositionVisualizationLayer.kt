@@ -10,12 +10,8 @@ import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.text.BitfontFormatting
-import com.teamwizardry.librarianlib.facade.text.BitfontRenderer
-import com.teamwizardry.librarianlib.facade.value.IMValueDouble
-import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.core.util.vec
 import dev.thecodewarrior.bitfont.typesetting.MutableAttributedString
-import dev.thecodewarrior.bitfont.typesetting.TextAttribute
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import java.awt.Color
 
@@ -54,10 +50,10 @@ class PositionVisualizationLayer(val target: GuiLayer): GuiLayer() {
         val xDrawColor = Color(xColor.red, xColor.green, xColor.blue, 190)
         val yDrawColor = Color(yColor.red, yColor.green, yColor.blue, 190)
 
-        vb.pos2d(context.matrix, 0, target.pos.y).color(xDrawColor).endVertex()
-        vb.pos2d(context.matrix, target.pos.x, target.pos.y).color(xDrawColor).endVertex()
-        vb.pos2d(context.matrix, target.pos.x, 0).color(yDrawColor).endVertex()
-        vb.pos2d(context.matrix, target.pos.x, target.pos.y).color(yDrawColor).endVertex()
+        vb.pos2d(context.transform, 0, target.pos.y).color(xDrawColor).endVertex()
+        vb.pos2d(context.transform, target.pos.x, target.pos.y).color(xDrawColor).endVertex()
+        vb.pos2d(context.transform, target.pos.x, 0).color(yDrawColor).endVertex()
+        vb.pos2d(context.transform, target.pos.x, target.pos.y).color(yDrawColor).endVertex()
 
         buffer.finish()
         RenderSystem.lineWidth(1f)

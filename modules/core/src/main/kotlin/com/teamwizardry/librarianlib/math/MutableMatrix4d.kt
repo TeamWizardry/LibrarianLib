@@ -11,23 +11,63 @@ import kotlin.math.roundToLong
 
 // adapted from flow/math: https://github.com/flow/math
 public open class MutableMatrix4d(
-    override var m00: Double,
-    override var m01: Double,
-    override var m02: Double,
-    override var m03: Double,
-    override var m10: Double,
-    override var m11: Double,
-    override var m12: Double,
-    override var m13: Double,
-    override var m20: Double,
-    override var m21: Double,
-    override var m22: Double,
-    override var m23: Double,
-    override var m30: Double,
-    override var m31: Double,
-    override var m32: Double,
-    override var m33: Double
+    m00: Double,
+    m01: Double,
+    m02: Double,
+    m03: Double,
+    m10: Double,
+    m11: Double,
+    m12: Double,
+    m13: Double,
+    m20: Double,
+    m21: Double,
+    m22: Double,
+    m23: Double,
+    m30: Double,
+    m31: Double,
+    m32: Double,
+    m33: Double
 ): Matrix4d() {
+
+    override var m00: Double = m00
+        set(value) = recordMutation { field = value }
+    override var m01: Double = m01
+        set(value) = recordMutation { field = value }
+    override var m02: Double = m02
+        set(value) = recordMutation { field = value }
+    override var m03: Double = m03
+        set(value) = recordMutation { field = value }
+    override var m10: Double = m10
+        set(value) = recordMutation { field = value }
+    override var m11: Double = m11
+        set(value) = recordMutation { field = value }
+    override var m12: Double = m12
+        set(value) = recordMutation { field = value }
+    override var m13: Double = m13
+        set(value) = recordMutation { field = value }
+    override var m20: Double = m20
+        set(value) = recordMutation { field = value }
+    override var m21: Double = m21
+        set(value) = recordMutation { field = value }
+    override var m22: Double = m22
+        set(value) = recordMutation { field = value }
+    override var m23: Double = m23
+        set(value) = recordMutation { field = value }
+    override var m30: Double = m30
+        set(value) = recordMutation { field = value }
+    override var m31: Double = m31
+        set(value) = recordMutation { field = value }
+    override var m32: Double = m32
+        set(value) = recordMutation { field = value }
+    override var m33: Double = m33
+        set(value) = recordMutation { field = value }
+
+    /**
+     * This value is incremented every time the matrix is mutated, making it easy to detect changes for the purpose of
+     * caching.
+     */
+    public var cacheVersion: Int = 0
+        private set
 
     public constructor(m: Matrix4d): this(
         m.m00, m.m01, m.m02, m.m03,
@@ -601,6 +641,15 @@ public open class MutableMatrix4d(
     }
 
     override fun toImmutable(): Matrix4d = Matrix4d(this)
+
+    protected fun recordMutation() {
+        cacheVersion++
+    }
+
+    protected inline fun recordMutation(block: () -> Unit) {
+        block()
+        recordMutation()
+    }
 
     private companion object {
         private val DBL_EPSILON = Double.fromBits(0x3cb0000000000000L)

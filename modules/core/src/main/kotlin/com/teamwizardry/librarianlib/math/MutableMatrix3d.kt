@@ -12,16 +12,42 @@ import kotlin.math.round
 
 // adapted from flow/math: https://github.com/flow/math
 public open class MutableMatrix3d(
-    override var m00: Double,
-    override var m01: Double,
-    override var m02: Double,
-    override var m10: Double,
-    override var m11: Double,
-    override var m12: Double,
-    override var m20: Double,
-    override var m21: Double,
-    override var m22: Double
+    m00: Double,
+    m01: Double,
+    m02: Double,
+    m10: Double,
+    m11: Double,
+    m12: Double,
+    m20: Double,
+    m21: Double,
+    m22: Double
 ): Matrix3d() {
+
+    override var m00: Double = m00
+        set(value) = recordMutation { field = value }
+    override var m01: Double = m01
+        set(value) = recordMutation { field = value }
+    override var m02: Double = m02
+        set(value) = recordMutation { field = value }
+    override var m10: Double = m10
+        set(value) = recordMutation { field = value }
+    override var m11: Double = m11
+        set(value) = recordMutation { field = value }
+    override var m12: Double = m12
+        set(value) = recordMutation { field = value }
+    override var m20: Double = m20
+        set(value) = recordMutation { field = value }
+    override var m21: Double = m21
+        set(value) = recordMutation { field = value }
+    override var m22: Double = m22
+        set(value) = recordMutation { field = value }
+
+    /**
+     * This value is incremented every time the matrix is mutated, making it easy to detect changes for the purpose of
+     * caching.
+     */
+    public var cacheVersion: Int = 0
+        private set
 
     public constructor(m: Matrix3d): this(
         m.m00, m.m01, m.m02,
@@ -482,6 +508,15 @@ public open class MutableMatrix3d(
 
     override fun toImmutable(): Matrix3d {
         return Matrix3d(this)
+    }
+
+    protected fun recordMutation() {
+        cacheVersion++
+    }
+
+    protected inline fun recordMutation(block: () -> Unit) {
+        block()
+        recordMutation()
     }
 
     private companion object {

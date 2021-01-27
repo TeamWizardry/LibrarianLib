@@ -2,10 +2,7 @@ package com.teamwizardry.librarianlib.facade.layer
 
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.math.Matrix3d
-import com.teamwizardry.librarianlib.math.Matrix3dStack
-import com.teamwizardry.librarianlib.math.Matrix4d
-import com.teamwizardry.librarianlib.math.MutableMatrix4d
+import com.teamwizardry.librarianlib.math.*
 
 public class GuiDrawContext(
     rootStack: MatrixStack,
@@ -21,24 +18,27 @@ public class GuiDrawContext(
     private val combinedTransform = MutableMatrix4d()
     private val normal = Matrix3d(rootStack.last.normal) // this won't change, since our transforms are 2d
     private val managedStack = MatrixStack()
+    private var lastMatrixVersion = -1
 
     /**
      * The rendering transform matrix. A combination of the root GUI transform and the [matrix] transform.
      *
      * **Note:**
      * This property reuses the matrix instance, so its value is only stable until the next time [transform] is
-     * accessed. If this property is going to be used repeatedly it should be saved in a local variable to avoid
-     * recomputing the matrix every time.
+     * accessed.
      */
     public val transform: Matrix4d
         get() {
-            combinedTransform.set(rootTransform)
-            combinedTransform.mul(
-                matrix.m00, matrix.m01, 0.0, matrix.m02,
-                matrix.m10, matrix.m11, 0.0, matrix.m12,
-                0.0, 0.0, 1.0, 0.0,
-                0.0, 0.0, 0.0, 1.0
-            )
+            if(matrix.cacheVersion != lastMatrixVersion) {
+                combinedTransform.set(rootTransform)
+                combinedTransform.mul(
+                    matrix.m00, matrix.m01, 0.0, matrix.m02,
+                    matrix.m10, matrix.m11, 0.0, matrix.m12,
+                    0.0, 0.0, 1.0, 0.0,
+                    0.0, 0.0, 0.0, 1.0
+                )
+                lastMatrixVersion = matrix.cacheVersion
+            }
 
             return combinedTransform
         }
@@ -69,7 +69,7 @@ public class GuiDrawContext(
         if (glMatrixPushed) return
         glMatrixPushed = true
         RenderSystem.pushMatrix()
-        RenderSystem.multMatrix(create3dTransform(matrix).toMatrix4f())
+        RenderSystem.multMatrix(transform.toMatrix4f())
     }
 
     /**
@@ -79,16 +79,5 @@ public class GuiDrawContext(
         if (!glMatrixPushed) return
         glMatrixPushed = false
         RenderSystem.popMatrix()
-    }
-
-    private fun create3dTransform(m: Matrix3d): Matrix4d {
-        val m4d = MutableMatrix4d()
-        m4d.m00 = m.m00
-        m4d.m10 = m.m10
-        m4d.m01 = m.m01
-        m4d.m11 = m.m11
-        m4d.m03 = m.m02
-        m4d.m13 = m.m12
-        return m4d
     }
 }

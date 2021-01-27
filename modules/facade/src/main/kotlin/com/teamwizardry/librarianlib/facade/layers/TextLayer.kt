@@ -292,7 +292,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
 
     override fun draw(context: GuiDrawContext) {
         context.matrix.translate(textMargins.left, textMargins.top)
-        BitfontRenderer.draw(context.matrix, container, color)
+        BitfontRenderer.draw(context.transform, container, color)
     }
 
     public data class Margins(val left: Double, val top: Double, val right: Double, val bottom: Double) {

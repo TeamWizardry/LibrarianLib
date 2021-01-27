@@ -4,14 +4,13 @@ package com.teamwizardry.librarianlib.mosaic.testmod
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.loc
-import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.mosaic.ISprite
 import com.teamwizardry.librarianlib.mosaic.LibrarianLibMosaicModule
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import com.teamwizardry.librarianlib.testbase.TestMod
 import net.minecraftforge.fml.common.Mod
-import org.apache.logging.log4j.LogManager
 import java.awt.Color
 
 @Mod("librarianlib-mosaic-test")
@@ -27,8 +26,7 @@ object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
                     val sprite = tex.getSprite("")
 
                     draw {
-                        val m = Matrix3d.IDENTITY
-                        sprite.draw(m, 0f, 0f, 0, Color.WHITE)
+                        sprite.draw(Matrix4d(matrix), 0f, 0f, 0, Color.WHITE)
                     }
                 }
             }
@@ -47,7 +45,7 @@ object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
                     val bottomRightSprite = tex.getSprite("bottom_right")
 
                     draw {
-                        val m = Matrix3d.IDENTITY
+                        val m = Matrix4d(matrix)
                         bottomRightSprite.draw(m, 4f, 4f)
                         topLeftSprite.draw(m, 34f, 34f)
                     }
@@ -79,7 +77,7 @@ object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
                     val L_x_x_B = tex.getSprite("L_x_x_B")
 
                     draw {
-                        val m = Matrix3d.IDENTITY
+                        val m = Matrix4d(matrix)
 
                         background.draw(m, 0f, 0f)
                         none.draw(m, 3f, 3f)
@@ -130,7 +128,7 @@ object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
                     val y_bottom = tex.getSprite("y_bottom")
 
                     draw {
-                        val m = Matrix3d.IDENTITY
+                        val m = Matrix4d(matrix)
                         background.draw(m, 0f, 0f)
                         xy_plain.draw(m, 16f, 8f)
                         x_plain.draw(m, 81, 9)
@@ -176,7 +174,7 @@ object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
                     val bounce = tex.getSprite("bounce")
 
                     draw {
-                        val m = Matrix3d.IDENTITY
+                        val m = Matrix4d(matrix)
                         background.draw(m, 0f, 0f, Client.time.ticks, Color.WHITE)
                         simple.draw(m, 5f, 17f, Client.time.ticks, Color.WHITE)
                         marquee.draw(m, 13f, 22f, Client.time.ticks, Color.WHITE)
@@ -189,22 +187,22 @@ object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun ISprite.draw(matrix: Matrix3d, x: Number, y: Number, width: Number, height: Number, animTicks: Int, tint: Color) {
+    inline fun ISprite.draw(matrix: Matrix4d, x: Number, y: Number, width: Number, height: Number, animTicks: Int, tint: Color) {
         this.draw(matrix, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), animTicks, tint)
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun ISprite.draw(matrix: Matrix3d, x: Number, y: Number, width: Number, height: Number) {
+    inline fun ISprite.draw(matrix: Matrix4d, x: Number, y: Number, width: Number, height: Number) {
         this.draw(matrix, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun ISprite.draw(matrix: Matrix3d, x: Number, y: Number, animTicks: Int, tint: Color) {
+    inline fun ISprite.draw(matrix: Matrix4d, x: Number, y: Number, animTicks: Int, tint: Color) {
         this.draw(matrix, x.toFloat(), y.toFloat(), animTicks, tint)
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun ISprite.draw(matrix: Matrix3d, x: Number, y: Number) {
+    inline fun ISprite.draw(matrix: Matrix4d, x: Number, y: Number) {
         this.draw(matrix, x.toFloat(), y.toFloat())
     }
 }

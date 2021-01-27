@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.mosaic
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -33,10 +34,10 @@ public abstract class WrappedSprite: ISprite {
     override val pinRight: Boolean get() = wrapped?.pinRight ?: true
     override val rotation: Int get() = wrapped?.rotation ?: 0
 
-    override fun draw(matrix: Matrix3d, x: Float, y: Float, animTicks: Int, tint: Color) {
+    override fun draw(matrix: Matrix4d, x: Float, y: Float, animTicks: Int, tint: Color) {
         wrapped?.draw(matrix, x, y, animTicks, tint)
     }
-    override fun draw(matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float, animTicks: Int, tint: Color) {
+    override fun draw(matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animTicks: Int, tint: Color) {
         wrapped?.draw(matrix, x, y, width, height, animTicks, tint)
     }
 

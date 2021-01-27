@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import com.teamwizardry.librarianlib.core.util.mixinCast
@@ -78,6 +79,8 @@ public open class Matrix4d(
         (m as IMatrix4f).m32,
         (m as IMatrix4f).m33
     )
+
+    public constructor(stack: MatrixStack): this(stack.last.matrix)
 
     public operator fun get(row: Int, col: Int): Double {
         when (row) {

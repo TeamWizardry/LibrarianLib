@@ -84,7 +84,7 @@ public class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): Gu
 
         context.matrix.translate(size.x / 2, size.y / 2)
 
-        vb.pos2d(context.matrix, 0, 0).color(c).endVertex()
+        vb.pos2d(context.transform, 0, 0).color(c).endVertex()
 
         // we go from end to start because while the angles are measured clockwise, we need the vertices to be in
         // counterclockwise order
@@ -92,14 +92,14 @@ public class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): Gu
         while (a > start) {
             val cos = cos(a)
             val sin = sin(a)
-            vb.pos2d(context.matrix, rX * sin, rY * -cos).color(c).endVertex()
+            vb.pos2d(context.transform, rX * sin, rY * -cos).color(c).endVertex()
             a -= segmentSize
         }
 
         if (a != start) {
             val cos = cos(start)
             val sin = sin(start)
-            vb.pos2d(context.matrix, rX * sin, rY * -cos).color(c).endVertex()
+            vb.pos2d(context.transform, rX * sin, rY * -cos).color(c).endVertex()
         }
 
         buffer.finish()

@@ -49,14 +49,16 @@ public inline fun <reified T: IVertexBuilder> T.pos2d(pos: Vec2d): T = this.pos(
 public inline fun <reified T: IVertexBuilder> T.pos2d(x: Number, y: Number): T = this.pos(x.toDouble(), y.toDouble(), 0.0) as T
 
 /** Sets the position with Z = 0 */
-public inline fun <reified T: IVertexBuilder> T.pos2d(matrix: Matrix3d, pos: Vec2d): T = this.pos(
-    matrix.transformX(pos.x, pos.y),
-    matrix.transformY(pos.x, pos.y),
-    0.0
+public inline fun <reified T: IVertexBuilder> T.pos2d(matrix: Matrix4d, x: Number, y: Number): T = this.pos(
+    matrix.transformX(x.toDouble(), y.toDouble(), 0.0),
+    matrix.transformY(x.toDouble(), y.toDouble(), 0.0),
+    matrix.transformZ(x.toDouble(), y.toDouble(), 0.0)
 ) as T
+
+
 /** Sets the position with Z = 0 */
-public inline fun <reified T: IVertexBuilder> T.pos2d(matrix: Matrix3d, x: Number, y: Number): T = this.pos(
-    matrix.transformX(x.toDouble(), y.toDouble()),
-    matrix.transformY(x.toDouble(), y.toDouble()),
-    0.0
+public inline fun <reified T: IVertexBuilder> T.pos2d(matrix: Matrix4d, pos: Vec2d): T = this.pos(
+    matrix.transformX(pos.x, pos.y, 0.0),
+    matrix.transformY(pos.x, pos.y, 0.0),
+    matrix.transformZ(pos.x, pos.y, 0.0)
 ) as T

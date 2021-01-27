@@ -43,15 +43,15 @@ class ScaleVisualizationLayer(gridSize: Double): GuiLayer() {
 
         var x = gridSize
         while(x < width) {
-            vb.pos2d(context.matrix, x, 0).color(color).endVertex()
-            vb.pos2d(context.matrix, x, height).color(color).endVertex()
+            vb.pos2d(context.transform, x, 0).color(color).endVertex()
+            vb.pos2d(context.transform, x, height).color(color).endVertex()
             x += gridSize
         }
 
         var y = gridSize
         while(y < height) {
-            vb.pos2d(context.matrix, 0, y).color(color).endVertex()
-            vb.pos2d(context.matrix, width, y).color(color).endVertex()
+            vb.pos2d(context.transform, 0, y).color(color).endVertex()
+            vb.pos2d(context.transform, width, y).color(color).endVertex()
             y += gridSize
         }
 

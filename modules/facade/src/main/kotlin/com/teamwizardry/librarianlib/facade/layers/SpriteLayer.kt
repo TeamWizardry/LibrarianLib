@@ -23,6 +23,6 @@ public class SpriteLayer(public var sprite: ISprite?, x: Int, y: Int, width: Int
     override fun draw(context: GuiDrawContext) {
         val sp = sprite ?: return
 
-        sp.draw(context.matrix, 0f, 0f, size.xi.toFloat(), size.yi.toFloat(), animationFrame, tint)
+        sp.draw(context.transform, 0f, 0f, size.xi.toFloat(), size.yi.toFloat(), animationFrame, tint)
     }
 }

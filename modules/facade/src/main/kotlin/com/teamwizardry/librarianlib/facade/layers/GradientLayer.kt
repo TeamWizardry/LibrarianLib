@@ -45,33 +45,33 @@ public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width:
 
             if (axis == Axis2d.X) {
                 if (stops.first().location != 0.0) {
-                    vb.pos2d(context.matrix, minX, minY).color(stops.first().color).endVertex()
-                    vb.pos2d(context.matrix, minX, maxY).color(stops.first().color).endVertex()
+                    vb.pos2d(context.transform, minX, minY).color(stops.first().color).endVertex()
+                    vb.pos2d(context.transform, minX, maxY).color(stops.first().color).endVertex()
                 }
 
                 stops.forEach { stop ->
-                    vb.pos2d(context.matrix, minX + (maxX - minX) * stop.location, minY).color(stop.color).endVertex()
-                    vb.pos2d(context.matrix, minX + (maxX - minX) * stop.location, maxY).color(stop.color).endVertex()
+                    vb.pos2d(context.transform, minX + (maxX - minX) * stop.location, minY).color(stop.color).endVertex()
+                    vb.pos2d(context.transform, minX + (maxX - minX) * stop.location, maxY).color(stop.color).endVertex()
                 }
 
                 if (stops.last().location != 1.0) {
-                    vb.pos2d(context.matrix, maxX, minY).color(stops.last().color).endVertex()
-                    vb.pos2d(context.matrix, maxX, maxY).color(stops.last().color).endVertex()
+                    vb.pos2d(context.transform, maxX, minY).color(stops.last().color).endVertex()
+                    vb.pos2d(context.transform, maxX, maxY).color(stops.last().color).endVertex()
                 }
             } else {
                 if (stops.first().location != 0.0) {
-                    vb.pos2d(context.matrix, minX, minY).color(stops.first().color).endVertex()
-                    vb.pos2d(context.matrix, maxX, minY).color(stops.first().color).endVertex()
+                    vb.pos2d(context.transform, minX, minY).color(stops.first().color).endVertex()
+                    vb.pos2d(context.transform, maxX, minY).color(stops.first().color).endVertex()
                 }
 
                 stops.forEach { stop ->
-                    vb.pos2d(context.matrix, minX, minY + (maxY - minY) * stop.location).color(stop.color).endVertex()
-                    vb.pos2d(context.matrix, maxX, minY + (maxY - minY) * stop.location).color(stop.color).endVertex()
+                    vb.pos2d(context.transform, minX, minY + (maxY - minY) * stop.location).color(stop.color).endVertex()
+                    vb.pos2d(context.transform, maxX, minY + (maxY - minY) * stop.location).color(stop.color).endVertex()
                 }
 
                 if (stops.last().location != 1.0) {
-                    vb.pos2d(context.matrix, minX, maxY).color(stops.last().color).endVertex()
-                    vb.pos2d(context.matrix, maxX, maxY).color(stops.last().color).endVertex()
+                    vb.pos2d(context.transform, minX, maxY).color(stops.last().color).endVertex()
+                    vb.pos2d(context.transform, maxX, maxY).color(stops.last().color).endVertex()
                 }
             }
 

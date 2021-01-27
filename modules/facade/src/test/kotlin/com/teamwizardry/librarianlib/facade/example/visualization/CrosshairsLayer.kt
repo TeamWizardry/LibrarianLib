@@ -8,12 +8,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
-import com.teamwizardry.librarianlib.facade.value.IMValueDouble
-import com.teamwizardry.librarianlib.math.Ray2d
-import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.renderer.IRenderTypeBuffer
-import net.minecraft.client.renderer.RenderType
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 class CrosshairsLayer(val color: Color = DistinctColors.blue, val length: Double = 1000.0): GuiLayer() {
@@ -21,10 +16,10 @@ class CrosshairsLayer(val color: Color = DistinctColors.blue, val length: Double
         RenderSystem.lineWidth(2f)
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(SimpleRenderTypes.flatLines)
-        vb.pos2d(context.matrix, -length, 0).color(color).endVertex()
-        vb.pos2d(context.matrix, length, 0).color(color).endVertex()
-        vb.pos2d(context.matrix, 0, -length).color(color).endVertex()
-        vb.pos2d(context.matrix, 0, length).color(color).endVertex()
+        vb.pos2d(context.transform, -length, 0).color(color).endVertex()
+        vb.pos2d(context.transform, length, 0).color(color).endVertex()
+        vb.pos2d(context.transform, 0, -length).color(color).endVertex()
+        vb.pos2d(context.transform, 0, length).color(color).endVertex()
         buffer.finish()
     }
 }

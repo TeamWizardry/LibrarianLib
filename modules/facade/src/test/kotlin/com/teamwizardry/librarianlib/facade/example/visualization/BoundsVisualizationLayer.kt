@@ -35,7 +35,7 @@ class BoundsVisualizationLayer: GuiLayer() {
         val vb = buffer.getBuffer(SimpleRenderTypes.flatLineStrip)
 
         getBoundingBoxPoints().forEach {
-            vb.pos2d(context.matrix, it.x, it.y).color(color).endVertex()
+            vb.pos2d(context.transform, it.x, it.y).color(color).endVertex()
         }
 
         buffer.finish()

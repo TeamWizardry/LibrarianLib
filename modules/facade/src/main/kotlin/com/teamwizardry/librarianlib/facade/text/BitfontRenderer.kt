@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.core.util.kotlin.tex
 import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.Matrix4d
 import dev.thecodewarrior.bitfont.data.Glyph
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TypesetGlyph
@@ -15,7 +16,7 @@ import java.awt.Color
 
 public object BitfontRenderer {
     @JvmStatic
-    public fun draw(matrix: Matrix3d, container: TextContainer, defaultColor: Color) {
+    public fun draw(matrix: Matrix4d, container: TextContainer, defaultColor: Color) {
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
@@ -52,7 +53,7 @@ public object BitfontRenderer {
 
     private class DeferredTextEmbed(val glyph: TypesetGlyph, val embed: FacadeTextEmbed, val posX: Int, val posY: Int)
 
-    private fun drawGlyph(matrix: Matrix3d, vb: IVertexBuilder, typesetGlyph: TypesetGlyph, textObject: Glyph, posX: Int, posY: Int, defaultColor: Color) {
+    private fun drawGlyph(matrix: Matrix4d, vb: IVertexBuilder, typesetGlyph: TypesetGlyph, textObject: Glyph, posX: Int, posY: Int, defaultColor: Color) {
         val solid = BitfontAtlas.solidTex()
         val font = textObject.font
         val obf = typesetGlyph[BitfontFormatting.obfuscated] == true

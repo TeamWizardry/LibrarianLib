@@ -8,7 +8,6 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import net.minecraft.client.renderer.IRenderTypeBuffer
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 public class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
@@ -31,10 +30,10 @@ public class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): G
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(SimpleRenderTypes.flatQuads)
 
-        vb.pos2d(context.matrix, minX, maxY).color(c).endVertex()
-        vb.pos2d(context.matrix, maxX, maxY).color(c).endVertex()
-        vb.pos2d(context.matrix, maxX, minY).color(c).endVertex()
-        vb.pos2d(context.matrix, minX, minY).color(c).endVertex()
+        vb.pos2d(context.transform, minX, maxY).color(c).endVertex()
+        vb.pos2d(context.transform, maxX, maxY).color(c).endVertex()
+        vb.pos2d(context.transform, maxX, minY).color(c).endVertex()
+        vb.pos2d(context.transform, minX, minY).color(c).endVertex()
 
         buffer.finish()
     }

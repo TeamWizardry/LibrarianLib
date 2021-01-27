@@ -19,6 +19,7 @@ import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryDynamicBackground
+import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.gui.screen.inventory.ContainerScreen
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.RenderState
@@ -140,10 +141,10 @@ public abstract class FacadeContainerScreen<T: Container>(
 
         val windowHeight = Client.window.scaledHeight
         val windowWidth = Client.window.scaledWidth
-        vb.pos2d(Matrix3d.IDENTITY, 0, windowHeight).color(1f, 0f, 1f, 0.5f).endVertex()
-        vb.pos2d(Matrix3d.IDENTITY, windowWidth, windowHeight).color(1f, 0f, 1f, 0.5f).endVertex()
-        vb.pos2d(Matrix3d.IDENTITY, windowWidth, 0).color(1f, 0f, 1f, 0.5f).endVertex()
-        vb.pos2d(Matrix3d.IDENTITY, 0, 0).color(1f, 0f, 1f, 0.5f).endVertex()
+        vb.pos2d(Matrix4d.IDENTITY, 0, windowHeight).color(1f, 0f, 1f, 0.5f).endVertex()
+        vb.pos2d(Matrix4d.IDENTITY, windowWidth, windowHeight).color(1f, 0f, 1f, 0.5f).endVertex()
+        vb.pos2d(Matrix4d.IDENTITY, windowWidth, 0).color(1f, 0f, 1f, 0.5f).endVertex()
+        vb.pos2d(Matrix4d.IDENTITY, 0, 0).color(1f, 0f, 1f, 0.5f).endVertex()
 
         buffer.finish()
         RenderSystem.depthFunc(GL11.GL_LEQUAL)

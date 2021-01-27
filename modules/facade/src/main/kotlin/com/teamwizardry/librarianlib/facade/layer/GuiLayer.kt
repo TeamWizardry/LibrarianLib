@@ -1189,10 +1189,10 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
                 val vb = buffer.getBuffer(flatLayerRenderType)
                 // why 1-maxV?
-                vb.pos2d(context.matrix, 0, size.y).tex(0f, 1 - maxV).endVertex()
-                vb.pos2d(context.matrix, size.x, size.y).tex(maxU, 1 - maxV).endVertex()
-                vb.pos2d(context.matrix, size.x, 0).tex(maxU, 1f).endVertex()
-                vb.pos2d(context.matrix, 0, 0).tex(0f, 1f).endVertex()
+                vb.pos2d(context.transform, 0, size.y).tex(0f, 1 - maxV).endVertex()
+                vb.pos2d(context.transform, size.x, size.y).tex(maxU, 1 - maxV).endVertex()
+                vb.pos2d(context.transform, size.x, 0).tex(maxU, 1f).endVertex()
+                vb.pos2d(context.transform, 0, 0).tex(0f, 1f).endVertex()
                 buffer.finish()
                 GlStateManager.activeTexture(GL13.GL_TEXTURE0)
                 GlStateManager.disableTexture()
@@ -1241,17 +1241,17 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     private fun clearBounds(context: GuiDrawContext) {
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(clearBufferRenderType)
-        vb.pos2d(context.matrix, 0, size.y).endVertex()
-        vb.pos2d(context.matrix, size.x, size.y).endVertex()
-        vb.pos2d(context.matrix, size.x, 0).endVertex()
-        vb.pos2d(context.matrix, 0, 0).endVertex()
+        vb.pos2d(context.transform, 0, size.y).endVertex()
+        vb.pos2d(context.transform, size.x, size.y).endVertex()
+        vb.pos2d(context.transform, size.x, 0).endVertex()
+        vb.pos2d(context.transform, 0, 0).endVertex()
         buffer.finish()
     }
 
     private fun stencil(context: GuiDrawContext) {
         val sp = clippingSprite
         if (sp != null) {
-            sp.draw(context.matrix, 0f, 0f, widthf, heightf, animationTime.toInt(), Color.WHITE)
+            sp.draw(context.transform, 0f, 0f, widthf, heightf, animationTime.toInt(), Color.WHITE)
             return
         }
 
@@ -1261,9 +1261,9 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         val vb = buffer.getBuffer(flatColorFanRenderType)
 
         val points = getBoundingBoxPoints()
-        vb.pos2d(context.matrix, size.x / 2, size.y / 2).color(color).endVertex()
+        vb.pos2d(context.transform, size.x / 2, size.y / 2).color(color).endVertex()
         points.reversed().forEach {
-            vb.pos2d(context.matrix, it.x, it.y).color(color).endVertex()
+            vb.pos2d(context.transform, it.x, it.y).color(color).endVertex()
         }
 
         buffer.finish()
@@ -1320,9 +1320,9 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         val vb = buffer.getBuffer(flatColorFanRenderType)
 
         val points = getBoundingBoxPoints()
-        vb.pos2d(context.matrix, size.x / 2, size.y / 2).color(color).endVertex()
+        vb.pos2d(context.transform, size.x / 2, size.y / 2).color(color).endVertex()
         points.reversed().forEach {
-            vb.pos2d(context.matrix, it.x, it.y).color(color).endVertex()
+            vb.pos2d(context.transform, it.x, it.y).color(color).endVertex()
         }
 
         buffer.finish()
@@ -1338,7 +1338,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         val vb = buffer.getBuffer(debugBoundingBoxRenderType)
 
         points.forEach {
-            vb.pos2d(context.matrix, it.x, it.y).color(color).endVertex()
+            vb.pos2d(context.transform, it.x, it.y).color(color).endVertex()
         }
 
         buffer.finish()

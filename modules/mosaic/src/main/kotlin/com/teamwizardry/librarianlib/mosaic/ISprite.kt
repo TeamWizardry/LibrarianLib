@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -144,7 +145,7 @@ public interface ISprite {
      * @param x The x position to draw at
      * @param y The y position to draw at
      */
-    public fun draw(matrix: Matrix3d, x: Float, y: Float) {
+    public fun draw(matrix: Matrix4d, x: Float, y: Float) {
         draw(matrix, x, y, width.toFloat(), height.toFloat(), 0, Color.WHITE)
     }
 
@@ -153,7 +154,7 @@ public interface ISprite {
      * @param x The x position to draw at
      * @param y The y position to draw at
      */
-    public fun draw(matrix: Matrix3d, x: Float, y: Float, animTicks: Int, tint: Color) {
+    public fun draw(matrix: Matrix4d, x: Float, y: Float, animTicks: Int, tint: Color) {
         draw(matrix, x, y, width.toFloat(), height.toFloat(), animTicks, tint)
     }
 
@@ -162,7 +163,7 @@ public interface ISprite {
      * @param x The x position to draw at
      * @param y The y position to draw at
      */
-    public fun draw(matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float) {
+    public fun draw(matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float) {
         draw(matrix, x, y, width, height, 0, Color.WHITE)
     }
 
@@ -173,7 +174,7 @@ public interface ISprite {
      * @param width The width to draw the sprite
      * @param height The height to draw the sprite
      */
-    public fun draw(matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float, animTicks: Int, tint: Color) {
+    public fun draw(matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animTicks: Int, tint: Color) {
         val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
         val builder = buffer.getBuffer(renderType)
         DrawingUtil.draw(this, builder, matrix, x, y, width, height, animTicks, tint)

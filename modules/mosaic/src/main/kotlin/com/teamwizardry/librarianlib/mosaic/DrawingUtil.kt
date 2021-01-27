@@ -5,10 +5,11 @@ import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.core.util.kotlin.tex
 import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.Matrix4d
 import java.awt.Color
 
 internal object DrawingUtil {
-    fun draw(sprite: ISprite, vb: IVertexBuilder, matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
+    fun draw(sprite: ISprite, vb: IVertexBuilder, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
         if(sprite.pinTop && sprite.pinBottom && sprite.pinLeft && sprite.pinRight &&
             sprite.minUCap == 0f && sprite.minVCap == 0f && sprite.maxUCap == 0f && sprite.maxVCap == 0f) {
             drawSimple(sprite, vb, matrix, x, y, width, height, animFrames, tint)
@@ -17,7 +18,7 @@ internal object DrawingUtil {
         }
     }
 
-    private fun drawSimple(sprite: ISprite, vb: IVertexBuilder, matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
+    private fun drawSimple(sprite: ISprite, vb: IVertexBuilder, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
         val minX = x
         val minY = y
         val maxX = x + width
@@ -34,7 +35,7 @@ internal object DrawingUtil {
         vb.pos2d(matrix, minX, minY).color(tint).tex(minU, minV).endVertex()
     }
 
-    private fun drawComplex(sprite: ISprite, vb: IVertexBuilder, matrix: Matrix3d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
+    private fun drawComplex(sprite: ISprite, vb: IVertexBuilder, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
 
         val xSections = getSections(
             logicalSize = sprite.width.toFloat(),
