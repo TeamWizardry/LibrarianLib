@@ -22,21 +22,22 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.inventory.container.ContainerType
 import net.minecraft.item.*
-import net.minecraft.tags.Tag
+import net.minecraft.loot.LootParameterSet
+import net.minecraft.loot.LootTable
+import net.minecraft.loot.LootTableManager
+import net.minecraft.loot.ValidationTracker
+import net.minecraft.tags.ITag
 import net.minecraft.tileentity.SignTileEntity
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityType
 import net.minecraft.util.ResourceLocation
-import net.minecraft.world.storage.loot.LootParameterSet
-import net.minecraft.world.storage.loot.LootTable
-import net.minecraft.world.storage.loot.LootTableManager
-import net.minecraft.world.storage.loot.ValidationTracker
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.TextureStitchEvent
 import net.minecraftforge.client.model.generators.BlockStateProvider
 import net.minecraftforge.common.capabilities.CapabilityInject
 import net.minecraftforge.common.capabilities.CapabilityManager
+import net.minecraftforge.common.data.ExistingFileHelper
 import net.minecraftforge.common.data.LanguageProvider
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.IEventBus
@@ -63,7 +64,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     /**
      * The default item group for items registered with this registration manager.
      */
-    public val itemGroup: ItemGroup = object: ItemGroup(modid) {
+    public val itemGroup: ItemGroup = object : ItemGroup(modid) {
         @OnlyIn(Dist.CLIENT)
         override fun createIcon(): ItemStack {
             return ItemStack(itemGroupIcon?.get() ?: Items.AIR)
@@ -115,7 +116,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     /**
      * Adds a tile entity type to this registration manager and returns a lazy reference to it
      */
-    public fun <T: TileEntity> add(spec: TileEntitySpec<T>): LazyTileEntityType<T> {
+    public fun <T : TileEntity> add(spec: TileEntitySpec<T>): LazyTileEntityType<T> {
         spec.modid = modid
         tileEntities.add(spec)
         return spec.lazy
@@ -124,7 +125,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     /**
      * Adds an entity type to this registration manager and returns a lazy reference to it
      */
-    public fun <T: Entity> add(spec: EntitySpec<T>): LazyEntityType<T> {
+    public fun <T : Entity> add(spec: EntitySpec<T>): LazyEntityType<T> {
         spec.modid = modid
         entities.add(spec)
         return spec.lazy
@@ -141,7 +142,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     /**
      * Adds a container type to this registration manager and returns a lazy reference to it
      */
-    public fun <T: FacadeContainer> add(spec: ContainerSpec<T>): LazyContainerType<T> {
+    public fun <T : FacadeContainer> add(spec: ContainerSpec<T>): LazyContainerType<T> {
         spec.modid = modid
         containers.add(spec)
         return spec.lazy
@@ -156,7 +157,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
      */
     @get:JvmSynthetic
     internal val foundationSignTileEntityType: LazyTileEntityType<SignTileEntity> by lazy {
-        if(tileEntities.any { it.id == "sign" })
+        if (tileEntities.any { it.id == "sign" })
             throw IllegalStateException("Tile entity type `$modid:sign` already configured")
         this.add(
             TileEntitySpec("sign") { FoundationSignTileEntityCreator.create(foundationSignTileEntityType.get()) }
@@ -167,7 +168,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun registerBlocks(e: RegistryEvent.Register<Block>) {
-        for(block in blocks) {
+        for (block in blocks) {
             logger.debug("Registering block ${block.registryName}")
             e.registry.register(block.blockInstance)
         }
@@ -176,13 +177,13 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun registerItems(e: RegistryEvent.Register<Item>) {
-        for(block in blocks) {
+        for (block in blocks) {
             if (block.hasItem) {
                 logger.debug("Registering blockitem ${block.registryName}")
                 e.registry.register(block.itemInstance)
             }
         }
-        for(item in items) {
+        for (item in items) {
             logger.debug("Registering item ${item.registryName}")
             e.registry.register(item.itemInstance)
         }
@@ -191,7 +192,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun registerTileEntities(e: RegistryEvent.Register<TileEntityType<*>>) {
-        for(te in tileEntities) {
+        for (te in tileEntities) {
             logger.debug("Registering TileEntityType ${te.registryName}")
             e.registry.register(te.typeInstance)
         }
@@ -200,7 +201,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun registerEntities(e: RegistryEvent.Register<EntityType<*>>) {
-        for(type in entities) {
+        for (type in entities) {
             logger.debug("Registering EntityType ${type.registryName}")
             e.registry.register(type.typeInstance)
         }
@@ -209,7 +210,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun registerContainers(e: RegistryEvent.Register<ContainerType<*>>) {
-        for(type in containers) {
+        for (type in containers) {
             logger.debug("Registering FacadeContainerType ${type.registryName}")
             e.registry.register(type.typeInstance)
         }
@@ -218,7 +219,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun commonSetup(e: FMLCommonSetupEvent) {
-        for(cap in capabilities) {
+        for (cap in capabilities) {
             @Suppress("UNCHECKED_CAST")
             cap as CapabilitySpec<Any> // appease the type checking gods
             CapabilityManager.INSTANCE.register(cap.type, cap.storage, cap.defaultImpl)
@@ -247,7 +248,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
                 factory.applyClient(it) as EntityRenderer<Entity>
             }
         }
-        for(spec in containers) {
+        for (spec in containers) {
             val factory = spec.screenFactory
             logger.debug("Registering ContainerScreen factory for ${spec.registryName}")
             @Suppress("UNCHECKED_CAST")
@@ -273,7 +274,8 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     @SubscribeEvent
     @JvmSynthetic
     internal fun gatherData(e: GatherDataEvent) {
-        e.generator.addProvider(BlockStateGeneration(e.generator, FoundationExistingFileHelper(e.existingFileHelper)))
+        val existingFileHelper = FoundationExistingFileHelper(e.existingFileHelper)
+        e.generator.addProvider(BlockStateGeneration(e.generator, existingFileHelper))
 
         val locales = mutableSetOf<String>()
         for (spec in blocks) {
@@ -286,8 +288,9 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
             e.generator.addProvider(LanguageGeneration(e.generator, locale))
         }
 
-        e.generator.addProvider(BlockTagsGeneration(e.generator))
-        e.generator.addProvider(ItemTagsGeneration(e.generator))
+        val blockTags = BlockTagsGeneration(e.generator, existingFileHelper)
+        e.generator.addProvider(blockTags)
+        e.generator.addProvider(ItemTagsGeneration(e.generator, blockTags, existingFileHelper))
 
         e.generator.addProvider(LootTableGeneration(e.generator))
     }
@@ -305,18 +308,18 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
         public class BlockTagGen {
             @get:JvmSynthetic
-            internal val metaTags = mutableMapOf<Tag<Block>, MutableList<Tag<Block>>>()
+            internal val metaTags = mutableMapOf<ITag.INamedTag<Block>, MutableList<ITag.INamedTag<Block>>>()
 
             @get:JvmSynthetic
-            internal val valueTags = mutableMapOf<Tag<Block>, MutableList<Block>>()
+            internal val valueTags = mutableMapOf<ITag.INamedTag<Block>, MutableList<Block>>()
 
             @get:JvmSynthetic
-            internal val itemForms = mutableMapOf<Tag<Block>, MutableList<Tag<Item>>>()
+            internal val itemForms = mutableMapOf<ITag.INamedTag<Block>, MutableList<ITag.INamedTag<Item>>>()
 
             /**
              * Add values to the given tag
              */
-            public fun add(tag: Tag<Block>, vararg values: Block): BlockTagGen {
+            public fun add(tag: ITag.INamedTag<Block>, vararg values: Block): BlockTagGen {
                 valueTags.getOrPut(tag) { mutableListOf() }.addAll(values)
                 return this
             }
@@ -324,7 +327,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
             /**
              * Add tags to the given tag
              */
-            public fun meta(tag: Tag<Block>, vararg tags: Tag<Block>): BlockTagGen {
+            public fun meta(tag: ITag.INamedTag<Block>, vararg tags: ITag.INamedTag<Block>): BlockTagGen {
                 metaTags.getOrPut(tag) { mutableListOf() }.addAll(tags)
                 return this
             }
@@ -332,7 +335,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
             /**
              * Copies the contents of the given block tag into the specified item tag
              */
-            public fun addItemForm(blockTag: Tag<Block>, itemForm: Tag<Item>): BlockTagGen {
+            public fun addItemForm(blockTag: ITag.INamedTag<Block>, itemForm: ITag.INamedTag<Item>): BlockTagGen {
                 itemForms.getOrPut(blockTag) { mutableListOf() }.add(itemForm)
                 return this
             }
@@ -340,15 +343,15 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
         public class ItemTagGen {
             @get:JvmSynthetic
-            internal val metaTags = mutableMapOf<Tag<Item>, MutableList<Tag<Item>>>()
+            internal val metaTags = mutableMapOf<ITag.INamedTag<Item>, MutableList<ITag.INamedTag<Item>>>()
 
             @get:JvmSynthetic
-            internal val valueTags = mutableMapOf<Tag<Item>, MutableList<Item>>()
+            internal val valueTags = mutableMapOf<ITag.INamedTag<Item>, MutableList<Item>>()
 
             /**
              * Add values to the given tag
              */
-            public fun add(tag: Tag<Item>, vararg values: Item): ItemTagGen {
+            public fun add(tag: ITag.INamedTag<Item>, vararg values: Item): ItemTagGen {
                 valueTags.getOrPut(tag) { mutableListOf() }.addAll(values)
                 return this
             }
@@ -356,7 +359,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
             /**
              * Add tags to the given tag
              */
-            public fun meta(tag: Tag<Item>, vararg tags: Tag<Item>): ItemTagGen {
+            public fun meta(tag: ITag.INamedTag<Item>, vararg tags: ITag.INamedTag<Item>): ItemTagGen {
                 metaTags.getOrPut(tag) { mutableListOf() }.addAll(tags)
                 return this
             }
@@ -366,7 +369,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     private inner class BlockStateGeneration(
         gen: DataGenerator,
         existingFileHelper: FoundationExistingFileHelper
-    ): BlockStateProvider(gen, modid, existingFileHelper) {
+    ) : BlockStateProvider(gen, modid, existingFileHelper) {
         init {
             existingFileHelper.modelProviders.add(models())
             existingFileHelper.modelProviders.add(itemModels())
@@ -410,7 +413,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         }
     }
 
-    private inner class LanguageGeneration(gen: DataGenerator, val locale: String):
+    private inner class LanguageGeneration(gen: DataGenerator, val locale: String) :
         LanguageProvider(gen, modid, locale) {
         override fun addTranslations() {
             logger.debug("Generating $locale language")
@@ -432,57 +435,65 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         }
     }
 
-    private inner class BlockTagsGeneration(gen: DataGenerator): BlockTagsProvider(gen) {
+    private inner class BlockTagsGeneration(gen: DataGenerator, existingFileHelper: ExistingFileHelper) :
+        BlockTagsProvider(gen, modid, existingFileHelper) {
         override fun registerTags() {
             logger.debug("Generating tags")
             for (spec in blocks) {
-                for(tag in spec.datagen.tags) {
-                    getBuilder(tag).add(spec.blockInstance)
+                for (tag in spec.datagen.tags) {
+                    getOrCreateBuilder(tag).add(spec.blockInstance)
                 }
             }
 
             datagen.blockTags.valueTags.forEach { (tag, values) ->
-                getBuilder(tag).add(*values.toTypedArray())
+                getOrCreateBuilder(tag).add(*values.toTypedArray())
             }
 
             datagen.blockTags.metaTags.forEach { (tag, values) ->
-                getBuilder(tag).add(*values.toTypedArray())
+                val builder = getOrCreateBuilder(tag)
+                values.forEach { builder.addTag(it) }
             }
         }
     }
 
-    private inner class ItemTagsGeneration(gen: DataGenerator): ItemTagsProvider(gen) {
+    private inner class ItemTagsGeneration(
+        gen: DataGenerator,
+        blockTags: BlockTagsProvider,
+        existingFileHelper: ExistingFileHelper
+    ) : ItemTagsProvider(gen, blockTags, modid, existingFileHelper) {
+
         override fun registerTags() {
             for (spec in blocks) {
                 val item = spec.itemInstance ?: continue
-                for(tag in spec.datagen.itemTags) {
-                    getBuilder(tag).add(item)
+                for (tag in spec.datagen.itemTags) {
+                    getOrCreateBuilder(tag).add(item)
                 }
             }
 
             for (spec in items) {
-                for(tag in spec.datagen.tags) {
-                    getBuilder(tag).add(spec.itemInstance)
+                for (tag in spec.datagen.tags) {
+                    getOrCreateBuilder(tag).add(spec.itemInstance)
                 }
             }
 
             datagen.itemTags.valueTags.forEach { (tag, values) ->
-                getBuilder(tag).add(*values.toTypedArray())
+                getOrCreateBuilder(tag).add(*values.toTypedArray())
             }
 
-            for((blockTag, itemTags) in datagen.blockTags.itemForms) {
-                for(itemTag in itemTags) {
+            for ((blockTag, itemTags) in datagen.blockTags.itemForms) {
+                for (itemTag in itemTags) {
                     this.copy(blockTag, itemTag)
                 }
             }
 
             datagen.itemTags.metaTags.forEach { (tag, values) ->
-                getBuilder(tag).add(*values.toTypedArray())
+                val builder = getOrCreateBuilder(tag)
+                values.forEach { builder.addTag(it) }
             }
         }
     }
 
-    private inner class LootTableGeneration(gen: DataGenerator): LootTableProvider(gen) {
+    private inner class LootTableGeneration(gen: DataGenerator) : LootTableProvider(gen) {
         override fun getTables(): List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> {
 
             val blockTableGenerator = BlockLootTableGenerator()
@@ -505,7 +516,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
         override fun validate(map: MutableMap<ResourceLocation, LootTable>, validationtracker: ValidationTracker) {
             for ((name, table) in map) {
-                LootTableManager.func_227508_a_(validationtracker, name, table)
+                LootTableManager.validateLootTable(validationtracker, name, table)
             }
         }
     }

@@ -21,7 +21,7 @@ class TestTileBlock(properties: FoundationBlockProperties): BaseBlock(properties
     override fun onBlockActivated(state: BlockState, worldIn: World, pos: BlockPos, player: PlayerEntity, handIn: Hand, hit: BlockRayTraceResult): ActionResultType {
         val prefix = if(worldIn.isRemote) "[Client]" else "[Server]"
         val tile = worldIn.getTileEntity(pos) as? TestTileEntity ?: return ActionResultType.CONSUME
-        player.sendMessage(StringTextComponent("$prefix totalFallDistance: ${tile.totalFallDistance} lastFallDistance: ${tile.lastFallDistance}"))
+        player.sendStatusMessage(StringTextComponent("$prefix totalFallDistance: ${tile.totalFallDistance} lastFallDistance: ${tile.lastFallDistance}"), false)
 
         return ActionResultType.CONSUME
     }

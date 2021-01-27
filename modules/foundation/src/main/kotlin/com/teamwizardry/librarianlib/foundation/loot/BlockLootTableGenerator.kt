@@ -5,11 +5,11 @@ import net.minecraft.block.Block
 import net.minecraft.block.SlabBlock
 import net.minecraft.state.properties.SlabType
 import net.minecraft.util.IItemProvider
-import net.minecraft.world.storage.loot.*
-import net.minecraft.world.storage.loot.conditions.BlockStateProperty
-import net.minecraft.world.storage.loot.conditions.SurvivesExplosion
-import net.minecraft.world.storage.loot.functions.ExplosionDecay
-import net.minecraft.world.storage.loot.functions.SetCount
+import net.minecraft.loot.*
+import net.minecraft.loot.conditions.BlockStateProperty
+import net.minecraft.loot.conditions.SurvivesExplosion
+import net.minecraft.loot.functions.ExplosionDecay
+import net.minecraft.loot.functions.SetCount
 
 public open class BlockLootTableGenerator: LootTableGenerator(LootParameterSets.BLOCK) {
     public fun setLootTable(block: Block, table: LootTable.Builder) {

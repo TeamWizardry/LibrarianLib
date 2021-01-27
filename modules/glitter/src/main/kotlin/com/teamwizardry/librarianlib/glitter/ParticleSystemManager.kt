@@ -6,8 +6,8 @@ import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
 import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.MutableMatrix4d
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.Vector3f
-import net.minecraft.client.renderer.Vector4f
+import net.minecraft.util.math.vector.Vector3f
+import net.minecraft.util.math.vector.Vector4f
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
 import net.minecraftforge.api.distmarker.Dist

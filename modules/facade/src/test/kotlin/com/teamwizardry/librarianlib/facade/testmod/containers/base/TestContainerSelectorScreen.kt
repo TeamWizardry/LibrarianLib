@@ -46,7 +46,7 @@ class TestContainerSelectorScreen(
         val button = PastryButton("Click me!", 0, 0)
         button.hook<PastryButton.ClickEvent> {
             val position = vec(button.mousePos.xi, button.mousePos.yi)
-            player.sendMessage(StringTextComponent("[GUI] mouse click event: $position"))
+            player.sendStatusMessage(StringTextComponent("[GUI] mouse click event: $position"), false)
             sendMessage("buttonClick", position)
         }
 

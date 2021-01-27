@@ -18,7 +18,7 @@ import net.minecraft.util.Direction
 import net.minecraft.util.Hand
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Rotations
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Vector3d
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.world.World
 import kotlin.reflect.KProperty
@@ -90,7 +90,7 @@ public class TestEntityConfig(public val id: String, public val name: String, sp
      */
     public val attack: SidedAction<AttackContext> = SidedAction()
 
-    public data class RightClickContext(val target: TestEntity, val player: PlayerEntity, val hand: Hand, val hitPos: Vec3d): PlayerTestContext(player) {
+    public data class RightClickContext(val target: TestEntity, val player: PlayerEntity, val hand: Hand, val hitPos: Vector3d): PlayerTestContext(player) {
         val world: World = target.world
         val stack: ItemStack = player.getHeldItem(hand)
     }

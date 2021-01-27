@@ -2,9 +2,10 @@ package com.teamwizardry.librarianlib.math
 
 import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
+import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.client.renderer.Matrix3f
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Matrix3f
+import net.minecraft.util.math.vector.Vector3d
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.pow
@@ -185,7 +186,7 @@ public open class Matrix3d(
         return scale(scale, scale, scale)
     }
 
-    public open fun scale(v: Vec3d): Matrix3d {
+    public open fun scale(v: Vector3d): Matrix3d {
         return scale(v.getX(), v.getY(), v.getZ())
     }
 
@@ -201,7 +202,7 @@ public open class Matrix3d(
         return this.mul(createRotation(rot))
     }
 
-    public open fun rotate(axis: Vec3d, angle: Double): Matrix3d {
+    public open fun rotate(axis: Vector3d, angle: Double): Matrix3d {
         return this.mul(createRotation(axis, angle))
     }
 
@@ -284,21 +285,21 @@ public open class Matrix3d(
     /**
      * Transforms the passed vector using this matrix.
      */
-    public fun transform(v: Vec3d): Vec3d {
+    public fun transform(v: Vector3d): Vector3d {
         return transform(v.getX(), v.getY(), v.getZ())
     }
 
     /**
      * Transforms the passed vector using this matrix.
      */
-    public fun transform(x: Float, y: Float, z: Float): Vec3d {
+    public fun transform(x: Float, y: Float, z: Float): Vector3d {
         return transform(x.toDouble(), y.toDouble(), z.toDouble())
     }
 
     /**
      * Transforms the passed vector using this matrix.
      */
-    public fun transform(x: Double, y: Double, z: Double): Vec3d {
+    public fun transform(x: Double, y: Double, z: Double): Vector3d {
         return vec(
             m00 * x + m01 * y + m02 * z,
             m10 * x + m11 * y + m12 * z,
@@ -348,7 +349,7 @@ public open class Matrix3d(
 
     /** Transforms the vector using this matrix. */
     @JvmSynthetic
-    public operator fun times(v: Vec3d): Vec3d = transform(v)
+    public operator fun times(v: Vector3d): Vector3d = transform(v)
 
     /** Transforms the vector using this augmented matrix. */
     @JvmSynthetic
@@ -436,7 +437,15 @@ public open class Matrix3d(
 
     public fun toMatrix3f(): Matrix3f {
         val matrix = Matrix3f()
-        @Suppress("CAST_NEVER_SUCCEEDS") val m = matrix as IMatrix3f
+        copyToMatrix3f(matrix)
+        return matrix
+    }
+
+    /**
+     * Copies the contents of this LibrarianLib matrix into the provided Minecraft matrix
+     */
+    public fun copyToMatrix3f(matrix: Matrix3f) {
+        val m: IMatrix3f = mixinCast(matrix)
         m.m00 = m00.toFloat()
         m.m01 = m01.toFloat()
         m.m02 = m02.toFloat()
@@ -446,7 +455,6 @@ public open class Matrix3d(
         m.m20 = m20.toFloat()
         m.m21 = m21.toFloat()
         m.m22 = m22.toFloat()
-        return matrix
     }
 
     public companion object {
@@ -490,7 +498,7 @@ public open class Matrix3d(
                 1 - 2 * rot.x * rot.x - 2 * rot.y * rot.y)
         }
 
-        internal fun createRotation(axis: Vec3d, angle: Double): MutableMatrix3d {
+        internal fun createRotation(axis: Vector3d, angle: Double): MutableMatrix3d {
             // https://en.wikipedia.org/wiki/Rotation_matrix#Conversion_from_and_to_axis%E2%80%93angle
             val len = axis.length()
             val x = axis.x / len

@@ -10,10 +10,10 @@ import com.teamwizardry.librarianlib.glitter.ParticleRenderModule
 import com.teamwizardry.librarianlib.glitter.ParticleUpdateModule
 import com.teamwizardry.librarianlib.glitter.ReadParticleBinding
 import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
-import net.minecraft.client.renderer.Matrix4f
+import net.minecraft.util.math.vector.Matrix4f
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.Vector4f
+import net.minecraft.util.math.vector.Vector4f
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper

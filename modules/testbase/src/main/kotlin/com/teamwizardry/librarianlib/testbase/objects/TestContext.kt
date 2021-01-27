@@ -27,7 +27,7 @@ public abstract class PlayerTestContext(player: PlayerEntity): TestContext() {
     }
 
     public fun chat(text: String) {
-        _player.sendMessage(StringTextComponent(text))
+        _player.sendStatusMessage(StringTextComponent(text), false)
     }
 
     public fun status(text: String) {

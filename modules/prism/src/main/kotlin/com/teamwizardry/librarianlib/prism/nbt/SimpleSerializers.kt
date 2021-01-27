@@ -116,7 +116,7 @@ internal object UUIDSerializer: NBTSerializer<UUID>() {
     }
 
     override fun serialize(value: UUID): INBT {
-        return NBTUtil.writeUniqueId(value)
+        return NBTUtil.func_240626_a_(value)
     }
 }
 

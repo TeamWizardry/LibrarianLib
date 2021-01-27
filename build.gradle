@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_gradle_version"
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
         // rolled back from 4.0.4 to 4.0.1 due to #425: https://github.com/johnrengelman/shadow/issues/425
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.1'
@@ -54,6 +54,10 @@ allprojects {
             content {
                 includeGroup "curse.maven"
             }
+        }
+        maven {
+            name = 'kotlinforforge'
+            url = 'https://thedarkcolour.github.io/KotlinForForge/'
         }
         maven { url = 'http://repo.spongepowered.org/maven' }
     }

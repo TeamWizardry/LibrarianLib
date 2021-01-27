@@ -19,7 +19,7 @@ import net.minecraft.resources.IReloadableResourceManager
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Timer
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Vector3d
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.common.MinecraftForge
@@ -82,7 +82,7 @@ public object Client {
     @JvmStatic
     public val time: Time = object: Time() {
         override val ticks: Int
-            get() = globalTicks
+            get() = globalTicks.toInt()
         override val partialTicks: Float
             get() = timer.renderPartialTicks
     }
@@ -93,7 +93,7 @@ public object Client {
     @JvmStatic
     public val worldTime: Time = object: Time() {
         override val ticks: Int
-            get() = worldTicks
+            get() = worldTicks.toInt()
         override val partialTicks: Float
             get() = if (minecraft.isGamePaused)
                 renderPartialTicksPaused.get(minecraft) as Float
@@ -284,7 +284,7 @@ public object Client {
             return vec(interp(previous.x, current.x), interp(previous.y, current.y))
         }
 
-        public fun interp(previous: Vec3d, current: Vec3d): Vec3d {
+        public fun interp(previous: Vector3d, current: Vector3d): Vector3d {
             return vec(interp(previous.x, current.x), interp(previous.y, current.y), interp(previous.z, current.z))
         }
     }
@@ -296,8 +296,8 @@ public object Client {
 
     private val renderPartialTicksPaused = Mirror.reflectClass<Minecraft>().getField(mapSrgName("field_193996_ah"))
 
-    private var worldTicks: Int = 0
-    private var globalTicks: Int = 0
+    private var worldTicks: Float = 0f
+    private var globalTicks: Float = 0f
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
@@ -309,8 +309,8 @@ public object Client {
         if (event.phase == TickEvent.Phase.END) {
             val mc = Minecraft.getInstance()
             if (!mc.isGamePaused)
-                worldTicks += timer.elapsedTicks
-            globalTicks += timer.elapsedTicks
+                worldTicks += timer.elapsedPartialTicks
+            globalTicks += timer.elapsedPartialTicks
         }
     }
 }

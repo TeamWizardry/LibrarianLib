@@ -10,8 +10,10 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.entity.projectile.ProjectileEntity
 import net.minecraft.item.BlockItemUseContext
 import net.minecraft.item.ItemStack
+import net.minecraft.loot.LootContext
 import net.minecraft.state.DirectionProperty
 import net.minecraft.state.StateContainer
 import net.minecraft.state.properties.BlockStateProperties
@@ -30,7 +32,6 @@ import net.minecraft.world.IWorld
 import net.minecraft.world.IWorldReader
 import net.minecraft.world.World
 import net.minecraft.world.server.ServerWorld
-import net.minecraft.world.storage.loot.LootContext
 import net.minecraftforge.fml.ModLoadingContext
 import java.util.Random
 
@@ -96,10 +97,6 @@ public open class TestBlock(public val config: TestBlockConfig): Block(config.al
     }
 
     // ticks ===========================================================================================================
-    override fun tickRate(worldIn: IWorldReader): Int {
-        return config.tickRate
-    }
-
     override fun animateTick(stateIn: BlockState, worldIn: World, pos: BlockPos, rand: Random) {
         super.animateTick(stateIn, worldIn, pos, rand)
     }
@@ -175,7 +172,7 @@ public open class TestBlock(public val config: TestBlockConfig): Block(config.al
         super.onFallenUpon(worldIn, pos, entityIn, fallDistance)
     }
 
-    override fun onProjectileCollision(worldIn: World, state: BlockState, hit: BlockRayTraceResult, projectile: Entity) {
+    override fun onProjectileCollision(worldIn: World, state: BlockState, hit: BlockRayTraceResult, projectile: ProjectileEntity) {
         super.onProjectileCollision(worldIn, state, hit, projectile)
     }
 

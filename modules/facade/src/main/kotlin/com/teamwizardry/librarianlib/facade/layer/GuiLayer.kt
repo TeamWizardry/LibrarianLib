@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade.layer
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
@@ -1150,7 +1151,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             renderDirect(context)
         } else {
             val flatContext = if (renderMode == RenderMode.RENDER_TO_QUAD) {
-                GuiDrawContext(Matrix3dStack(), context.debugOptions, context.isInMask).also {
+                GuiDrawContext(MatrixStack(), Matrix3dStack(), context.debugOptions, context.isInMask).also {
                     it.matrix.scale(max(1, rasterizationScale).toDouble())
                 }
             } else {
@@ -1175,8 +1176,8 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
 //                layerFilter?.filter(this.layer, layerFBO, maskFBO) TODO: add back filters?
 
-                FlatLayerShader.layerImage.set(layerFBO.framebufferTexture)
-                FlatLayerShader.maskImage.set(maskFBO?.framebufferTexture ?: 0)
+                FlatLayerShader.layerImage.set(layerFBO.func_242996_f()) // func_242996_f = getFramebufferTexture
+                FlatLayerShader.maskImage.set(maskFBO?.func_242996_f() ?: 0)
                 FlatLayerShader.alphaMultiply.set(opacity.toFloat())
                 FlatLayerShader.maskMode.set(maskMode.ordinal)
                 FlatLayerShader.renderMode.set(renderMode.ordinal)

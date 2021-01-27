@@ -10,7 +10,7 @@ import net.minecraft.item.ItemUseContext
 import net.minecraft.util.Direction
 import net.minecraft.util.Hand
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Vector3d
 import net.minecraft.world.World
 import net.minecraftforge.event.world.BlockEvent
 
@@ -141,7 +141,7 @@ public class TestItemConfig(public val id: String, public val name: String, grou
         val hand: Hand = context.hand
         val side: Direction = context.face
         val block: BlockPos = context.pos
-        val hitVec: Vec3d = context.hitVec
+        val hitVec: Vector3d = context.hitVec
     }
 
     public data class RightClickHoldContext(val stack: ItemStack, val player: PlayerEntity, val count: Int): PlayerTestContext(player)

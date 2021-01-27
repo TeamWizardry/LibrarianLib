@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.foundation.loot
 
 import net.minecraft.util.ResourceLocation
-import net.minecraft.world.storage.loot.LootParameterSet
-import net.minecraft.world.storage.loot.LootPool
-import net.minecraft.world.storage.loot.LootTable
+import net.minecraft.loot.LootParameterSet
+import net.minecraft.loot.LootPool
+import net.minecraft.loot.LootTable
 import java.lang.IllegalArgumentException
 import java.util.function.BiConsumer
 import java.util.function.Consumer

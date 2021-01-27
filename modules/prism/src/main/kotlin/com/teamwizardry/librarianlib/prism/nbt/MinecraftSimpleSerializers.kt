@@ -30,11 +30,10 @@ import net.minecraft.util.math.GlobalPos
 import net.minecraft.util.math.MutableBoundingBox
 import net.minecraft.util.math.Rotations
 import net.minecraft.util.math.SectionPos
-import net.minecraft.util.math.Vec2f
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Vector2f
+import net.minecraft.util.math.vector.Vector3d
 import net.minecraft.util.registry.Registry
 import net.minecraft.util.text.ITextComponent
-import net.minecraft.world.dimension.DimensionType
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fluids.capability.templates.FluidTank
 import net.minecraftforge.fml.common.registry.GameRegistry
@@ -51,17 +50,17 @@ internal object ResourceLocationSerializer: NBTSerializer<ResourceLocation>() {
 
 //region Math stuff
 
-internal object Vec3dSerializer: NBTSerializer<Vec3d>() {
-    override fun deserialize(tag: INBT, existing: Vec3d?): Vec3d {
+internal object Vector3dSerializer: NBTSerializer<Vector3d>() {
+    override fun deserialize(tag: INBT, existing: Vector3d?): Vector3d {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
-        return Vec3d(
+        return Vector3d(
             tag.expect<NumberNBT>("X").double,
             tag.expect<NumberNBT>("Y").double,
             tag.expect<NumberNBT>("Z").double
         )
     }
 
-    override fun serialize(value: Vec3d): INBT {
+    override fun serialize(value: Vector3d): INBT {
         val tag = CompoundNBT()
         tag.put("X", DoubleNBT.valueOf(value.x))
         tag.put("Y", DoubleNBT.valueOf(value.y))
@@ -70,16 +69,16 @@ internal object Vec3dSerializer: NBTSerializer<Vec3d>() {
     }
 }
 
-internal object Vec2fSerializer: NBTSerializer<Vec2f>() {
-    override fun deserialize(tag: INBT, existing: Vec2f?): Vec2f {
+internal object Vector2fSerializer: NBTSerializer<Vector2f>() {
+    override fun deserialize(tag: INBT, existing: Vector2f?): Vector2f {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
-        return Vec2f(
+        return Vector2f(
             tag.expect<NumberNBT>("X").float,
             tag.expect<NumberNBT>("Y").float
         )
     }
 
-    override fun serialize(value: Vec2f): INBT {
+    override fun serialize(value: Vector2f): INBT {
         val tag = CompoundNBT()
         tag.put("X", FloatNBT.valueOf(value.x))
         tag.put("Y", FloatNBT.valueOf(value.y))
@@ -153,29 +152,30 @@ internal object SectionPosSerializer: NBTSerializer<SectionPos>() {
     }
 }
 
-internal object GlobalPosSerializer: NBTSerializer<GlobalPos>() {
-    override fun deserialize(tag: INBT, existing: GlobalPos?): GlobalPos {
-        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
-        val dimensionName = ResourceLocation(tag.expect<StringNBT>("Dimension").string)
-        return GlobalPos.of(
-            DimensionType.byName(dimensionName)!!, // `!!` because the dimension type registry has a default value
-            block(
-                tag.expect<NumberNBT>("X").int,
-                tag.expect<NumberNBT>("Y").int,
-                tag.expect<NumberNBT>("Z").int
-            )
-        )
-    }
-
-    override fun serialize(value: GlobalPos): INBT {
-        val tag = CompoundNBT()
-        tag.put("Dimension", StringNBT.valueOf(value.dimension.registryName.toString()))
-        tag.put("X", IntNBT.valueOf(value.pos.x))
-        tag.put("Y", IntNBT.valueOf(value.pos.y))
-        tag.put("Z", IntNBT.valueOf(value.pos.z))
-        return tag
-    }
-}
+// Dimension types seem to be "dynamic registry entries" now, which means you need to get them from a World instance.
+//internal object GlobalPosSerializer: NBTSerializer<GlobalPos>() {
+//    override fun deserialize(tag: INBT, existing: GlobalPos?): GlobalPos {
+//        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
+//        val dimensionName = ResourceLocation(tag.expect<StringNBT>("Dimension").string)
+//        return GlobalPos.of(
+//            DimensionType.byName(dimensionName)!!, // `!!` because the dimension type registry has a default value
+//            block(
+//                tag.expect<NumberNBT>("X").int,
+//                tag.expect<NumberNBT>("Y").int,
+//                tag.expect<NumberNBT>("Z").int
+//            )
+//        )
+//    }
+//
+//    override fun serialize(value: GlobalPos): INBT {
+//        val tag = CompoundNBT()
+//        tag.put("Dimension", StringNBT.valueOf(value.dimension.registryName.toString()))
+//        tag.put("X", IntNBT.valueOf(value.pos.x))
+//        tag.put("Y", IntNBT.valueOf(value.pos.y))
+//        tag.put("Z", IntNBT.valueOf(value.pos.z))
+//        return tag
+//    }
+//}
 
 internal object RotationsSerializer: NBTSerializer<Rotations>() {
     override fun deserialize(tag: INBT, existing: Rotations?): Rotations {
@@ -305,7 +305,7 @@ internal class ITextComponentSerializerFactory(prism: NBTPrism): NBTSerializerFa
         private val componentClass = type.erasure
 
         override fun deserialize(tag: INBT, existing: ITextComponent?): ITextComponent {
-            val component = ITextComponent.Serializer.fromJson(tag.expectType<StringNBT>("tag").string)
+            val component = ITextComponent.Serializer.getComponentFromJson(tag.expectType<StringNBT>("tag").string)
                 ?: inconceivable("ITextComponent.Serializer.fromJson doesn't seem to ever return null")
             if(!componentClass.isAssignableFrom(component.javaClass))
                 throw DeserializationException("Wrong ITextComponent type. Expected ${componentClass.simpleName}, " +

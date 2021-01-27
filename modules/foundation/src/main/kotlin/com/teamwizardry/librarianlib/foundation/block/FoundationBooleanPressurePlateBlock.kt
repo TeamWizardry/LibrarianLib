@@ -31,7 +31,7 @@ public class FoundationBooleanPressurePlateBlock(
         textureName: String
     ): this(properties, { true }, resetTime, textureName)
 
-    override fun tickRate(worldIn: IWorldReader): Int {
+    override fun getPoweredDuration(): Int {
         return resetTime
     }
 

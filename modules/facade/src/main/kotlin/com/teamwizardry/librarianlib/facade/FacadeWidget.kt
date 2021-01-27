@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
@@ -193,7 +194,7 @@ public open class FacadeWidget(
         return false
     }
 
-    public fun removed() {
+    public fun onClose() {
         Cursor.setCursor(null)
     }
     //endregion
@@ -285,12 +286,12 @@ public open class FacadeWidget(
     /**
      * The second step in rendering a frame. This can be split up into multiple passes using [filterRendering].
      */
-    public fun render() {
+    public fun render(matrixStack: MatrixStack) {
         safetyNet("rendering") {
             StencilUtil.clear()
             StencilUtil.enable()
             RenderSystem.pushMatrix()
-            val context = GuiDrawContext(Matrix3dStack(), debugOptions, false)
+            val context = GuiDrawContext(matrixStack, Matrix3dStack(), debugOptions, false)
             root.renderLayer(context)
             RenderSystem.popMatrix()
             StencilUtil.disable()
@@ -300,7 +301,7 @@ public open class FacadeWidget(
             }
         }
         if(debugConfigurator.isOpen) {
-            debugConfigurator.render()
+            debugConfigurator.render(matrixStack)
         }
     }
 

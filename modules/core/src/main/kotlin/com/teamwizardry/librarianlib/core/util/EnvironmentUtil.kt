@@ -5,11 +5,11 @@ import com.teamwizardry.librarianlib.core.util.kotlin.getOrNull
 import cpw.mods.modlauncher.Launcher
 import cpw.mods.modlauncher.api.IEnvironment
 import cpw.mods.modlauncher.api.INameMappingService
-import net.minecraft.util.math.Vec3i
+import net.minecraft.util.math.vector.Vector3i
 import java.util.function.BiFunction
 import kotlin.reflect.jvm.javaMethod
 
-private val obfTest = Vec3i::getX.javaMethod!! // has to be a separate field, otherwise it gets optimized away
+private val obfTest = Vector3i::getX.javaMethod!! // has to be a separate field, otherwise it gets optimized away
 
 /**
  * True if the current environment is obfuscated

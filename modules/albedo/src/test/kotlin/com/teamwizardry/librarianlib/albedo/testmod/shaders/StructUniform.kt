@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.testmod.shaders
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.GLSLStruct
 import com.teamwizardry.librarianlib.albedo.Shader
@@ -15,7 +16,7 @@ import java.awt.Color
 
 internal object StructUniform: ShaderTest<StructUniform.Test>() {
 
-    override fun doDraw() {
+    override fun doDraw(matrixStack: MatrixStack) {
         val minX = -32.0
         val minY = 0.0
         val maxX = 160.0

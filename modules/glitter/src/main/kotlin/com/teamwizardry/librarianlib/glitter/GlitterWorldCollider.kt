@@ -10,7 +10,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.block.Blocks
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Vector3d
 import net.minecraft.util.math.shapes.VoxelShape
 import net.minecraft.world.chunk.ChunkSection
 import net.minecraft.world.chunk.ChunkStatus
@@ -25,7 +25,7 @@ import kotlin.math.min
 
 /**
  * A class designed to efficiently raytrace collisions with the world. This class uses custom raytracing code to
- * eliminate short-lived objects such as [Vec3d]s.
+ * eliminate short-lived objects such as [Vector3d]s.
  *
  * This class makes two main sacrifices in the name of speed:
  *
@@ -184,7 +184,7 @@ public object GlitterWorldCollider {
         val world = Client.minecraft.world ?: return emptyList()
 
         // blocks outside the world never have collision
-        if (y < 0 || y > world.actualHeight)
+        if (y < 0 || y > world.height)
             return emptyList()
 
         // check if the sub-chunk is known to be empty

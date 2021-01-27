@@ -29,6 +29,6 @@ public abstract class ClientSuggestionProviderMixin implements ClientCommandSour
 
     @Override
     public void sendErrorMessage(@NotNull ITextComponent text) {
-        mc.player.sendStatusMessage(new StringTextComponent("").appendSibling(text).applyTextStyle(TextFormatting.RED), false);
+        mc.player.sendStatusMessage(new StringTextComponent("").append(text).mergeStyle(TextFormatting.RED), false);
     }
 }

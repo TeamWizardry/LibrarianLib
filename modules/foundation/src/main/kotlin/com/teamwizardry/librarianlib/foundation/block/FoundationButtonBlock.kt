@@ -25,15 +25,11 @@ import java.util.*
 public class FoundationButtonBlock(
     properties: FoundationBlockProperties,
     private val canBePressedByArrows: Boolean,
-    private val pressDuration: Int,
+    public override val pressDuration: Int,
     private val pressSoundEvent: SoundEvent,
     private val unpressSoundEvent: SoundEvent,
     textureName: String
 ) : BaseButtonBlock(properties, textureName) {
-
-    override fun tickRate(world: IWorldReader?): Int {
-        return pressDuration
-    }
 
     override fun getSoundEvent(isOn: Boolean): SoundEvent {
         return if(isOn) pressSoundEvent else unpressSoundEvent
@@ -42,16 +38,16 @@ public class FoundationButtonBlock(
     override fun tick(state: BlockState, world: ServerWorld, pos: BlockPos, rand: Random?) {
         if (state.get(POWERED)) {
             if (canBePressedByArrows) {
-                setPressed(state, world, pos, isPressedByArrow(state, world, pos))
+                setPressed(state, world, pos, isPressedByArrow(state, world, pos), playSound = true)
             } else {
-                setPressed(state, world, pos, false)
+                setPressed(state, world, pos, false, playSound = true)
             }
         }
     }
 
     override fun onEntityCollision(state: BlockState, world: World, pos: BlockPos, entityIn: Entity) {
         if (!world.isRemote && canBePressedByArrows && !state.get(POWERED)) {
-            setPressed(state, world, pos, isPressedByArrow(state, world, pos))
+            setPressed(state, world, pos, isPressedByArrow(state, world, pos), playSound = true)
         }
     }
 

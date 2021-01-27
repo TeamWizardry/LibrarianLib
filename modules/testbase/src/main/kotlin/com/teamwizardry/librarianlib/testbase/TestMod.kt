@@ -7,7 +7,6 @@ import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.mirage.Mirage
 import com.teamwizardry.librarianlib.testbase.objects.*
-import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.RenderTypeLookup
@@ -20,6 +19,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityType
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.text.TranslationTextComponent
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.ColorHandlerEvent
@@ -32,6 +32,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import thedarkcolour.kotlinforforge.forge.MOD_BUS
+import thedarkcolour.kotlinforforge.forge.MOD_CONTEXT
 import java.awt.Color
 
 public abstract class TestMod(public val module: LibrarianLibModule) {
@@ -142,18 +144,18 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
     }
 
     init {
-        FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLCommonSetupEvent> {
+        MOD_BUS.addListener<FMLCommonSetupEvent> {
             this.testSetup(it)
             this.setup(it)
         }
-        FMLKotlinModLoadingContext.get().modEventBus.addListener<FMLClientSetupEvent> {
+        MOD_BUS.addListener<FMLClientSetupEvent> {
             this.clientTestSetup(it)
             this.clientSetup(it)
         }
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this)
-        FMLKotlinModLoadingContext.get().modEventBus.register(this)
+        MOD_BUS.register(this)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -264,7 +266,8 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
 
     private fun languageKeys(): Map<String, String> {
         val keys = mutableMapOf<String, String>()
-        keys[itemGroup.translationKey] = "${module.humanName} Test"
+        val groupKey = (itemGroup.groupName as TranslationTextComponent).key
+        keys[groupKey] = "${module.humanName} Test"
         items.forEach { item ->
             if (item is ITestItem) {
                 val registryName = item.registryName!!

@@ -12,7 +12,6 @@ import com.teamwizardry.librarianlib.prism.nbt.EffectInstanceSerializer
 import com.teamwizardry.librarianlib.prism.nbt.EnchantmentDataSerializer
 import com.teamwizardry.librarianlib.prism.nbt.FluidStackSerializer
 import com.teamwizardry.librarianlib.prism.nbt.GameProfileSerializer
-import com.teamwizardry.librarianlib.prism.nbt.GlobalPosSerializer
 import com.teamwizardry.librarianlib.prism.nbt.INBTPassthroughSerializerFactory
 import com.teamwizardry.librarianlib.prism.nbt.INBTSerializableSerializerFactory
 import com.teamwizardry.librarianlib.prism.nbt.ITextComponentSerializerFactory
@@ -22,8 +21,8 @@ import com.teamwizardry.librarianlib.prism.nbt.ResourceLocationSerializer
 import com.teamwizardry.librarianlib.prism.nbt.RotationsSerializer
 import com.teamwizardry.librarianlib.prism.nbt.SectionPosSerializer
 import com.teamwizardry.librarianlib.prism.nbt.TupleSerializerFactory
-import com.teamwizardry.librarianlib.prism.nbt.Vec2fSerializer
-import com.teamwizardry.librarianlib.prism.nbt.Vec3dSerializer
+import com.teamwizardry.librarianlib.prism.nbt.Vector2fSerializer
+import com.teamwizardry.librarianlib.prism.nbt.Vector3dSerializer
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.prism.DeserializationException
 import net.minecraft.block.BlockState
@@ -54,11 +53,10 @@ import net.minecraft.util.math.GlobalPos
 import net.minecraft.util.math.MutableBoundingBox
 import net.minecraft.util.math.Rotations
 import net.minecraft.util.math.SectionPos
-import net.minecraft.util.math.Vec2f
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Vector2f
+import net.minecraft.util.math.vector.Vector3d
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
-import net.minecraft.world.dimension.DimensionType
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -78,8 +76,8 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
         = simpleRead<ResourceLocation, ResourceLocationSerializer>(ResourceLocation("minecraft:name"), NBTBuilder.string("name"))
 
     @Test
-    fun `read+write for Vec3d should be symmetrical`() {
-        simple<Vec3d, Vec3dSerializer>(Vec3d(1.0, 2.0, 3.0), NBTBuilder.compound {
+    fun `read+write for Vector3d should be symmetrical`() {
+        simple<Vector3d, Vector3dSerializer>(Vector3d(1.0, 2.0, 3.0), NBTBuilder.compound {
             "X" *= double(1.0)
             "Y" *= double(2.0)
             "Z" *= double(3.0)
@@ -87,8 +85,8 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
     }
 
     @Test
-    fun `read+write for Vec2f should be symmetrical`() {
-        simple<Vec2f, Vec2fSerializer>(Vec2f(1f, 2f), NBTBuilder.compound {
+    fun `read+write for Vector2f should be symmetrical`() {
+        simple<Vector2f, Vector2fSerializer>(Vector2f(1f, 2f), NBTBuilder.compound {
             "X" *= float(1f)
             "Y" *= float(2f)
         }, { a, b -> a.x == b.x && a.y == b.y })
@@ -122,19 +120,6 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
     @Test
     fun `read+write for SectionPos should be symmetrical`() {
         simple<SectionPos, SectionPosSerializer>(SectionPos.from(ChunkPos(1, 3), 2), NBTBuilder.compound {
-            "X" *= int(1)
-            "Y" *= int(2)
-            "Z" *= int(3)
-        })
-    }
-
-    @Test
-    fun `read+write for GlobalPos should be symmetrical`() {
-        simple<GlobalPos, GlobalPosSerializer>(GlobalPos.of(
-            DimensionType.THE_END,
-            BlockPos(1, 2, 3)
-        ), NBTBuilder.compound {
-            "Dimension" *= string("minecraft:the_end")
             "X" *= int(1)
             "Y" *= int(2)
             "Z" *= int(3)

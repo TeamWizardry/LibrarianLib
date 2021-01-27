@@ -4,11 +4,7 @@ import net.minecraft.block.Block
 import net.minecraft.entity.EntityType
 import net.minecraft.fluid.Fluid
 import net.minecraft.item.Item
-import net.minecraft.tags.BlockTags
-import net.minecraft.tags.EntityTypeTags
-import net.minecraft.tags.FluidTags
-import net.minecraft.tags.ItemTags
-import net.minecraft.tags.Tag
+import net.minecraft.tags.*
 import net.minecraft.util.ResourceLocation
 
 /**
@@ -23,41 +19,41 @@ public object TagWrappers {
      * Creates a tag for the item form of the given block. i.e. creates an item tag with the same ID as the block tag.
      */
     @JvmStatic
-    public fun itemFormOf(blockTag: Tag<Block>): Tag<Item> = item(blockTag.id)
+    public fun itemFormOf(blockTag: ITag.INamedTag<Block>): ITag.INamedTag<Item> = item(blockTag.name)
 
     @JvmStatic
-    public fun block(name: String): Tag<Block> = BlockTags.Wrapper(ResourceLocation(name))
+    public fun block(name: String): ITag.INamedTag<Block> = BlockTags.makeWrapperTag(name)
 
     @JvmStatic
-    public fun entityType(name: String): Tag<EntityType<*>> = EntityTypeTags.Wrapper(ResourceLocation(name))
+    public fun entityType(name: String): ITag.INamedTag<EntityType<*>> = EntityTypeTags.getTagById(name)
 
     @JvmStatic
-    public fun fluid(name: String): Tag<Fluid> = FluidTags.Wrapper(ResourceLocation(name))
+    public fun fluid(name: String): ITag.INamedTag<Fluid> = FluidTags.makeWrapperTag(name)
 
     @JvmStatic
-    public fun item(name: String): Tag<Item> = ItemTags.Wrapper(ResourceLocation(name))
+    public fun item(name: String): ITag.INamedTag<Item> = ItemTags.makeWrapperTag(name)
 
     @JvmStatic
-    public fun block(modid: String, name: String): Tag<Block> = block(ResourceLocation(modid, name))
+    public fun block(modid: String, name: String): ITag.INamedTag<Block> = block(ResourceLocation(modid, name))
 
     @JvmStatic
-    public fun entityType(modid: String, name: String): Tag<EntityType<*>> = entityType(ResourceLocation(modid, name))
+    public fun entityType(modid: String, name: String): ITag.INamedTag<EntityType<*>> = entityType(ResourceLocation(modid, name))
 
     @JvmStatic
-    public fun fluid(modid: String, name: String): Tag<Fluid> = fluid(ResourceLocation(modid, name))
+    public fun fluid(modid: String, name: String): ITag.INamedTag<Fluid> = fluid(ResourceLocation(modid, name))
 
     @JvmStatic
-    public fun item(modid: String, name: String): Tag<Item> = item(ResourceLocation(modid, name))
+    public fun item(modid: String, name: String): ITag.INamedTag<Item> = item(ResourceLocation(modid, name))
 
     @JvmStatic
-    public fun block(name: ResourceLocation): Tag<Block> = BlockTags.Wrapper(name)
+    public fun block(name: ResourceLocation): ITag.INamedTag<Block> = BlockTags.makeWrapperTag(name.toString())
 
     @JvmStatic
-    public fun entityType(name: ResourceLocation): Tag<EntityType<*>> = EntityTypeTags.Wrapper(name)
+    public fun entityType(name: ResourceLocation): ITag.INamedTag<EntityType<*>> = EntityTypeTags.getTagById(name.toString())
 
     @JvmStatic
-    public fun fluid(name: ResourceLocation): Tag<Fluid> = FluidTags.Wrapper(name)
+    public fun fluid(name: ResourceLocation): ITag.INamedTag<Fluid> = FluidTags.makeWrapperTag(name.toString())
 
     @JvmStatic
-    public fun item(name: ResourceLocation): Tag<Item> = ItemTags.Wrapper(name)
+    public fun item(name: ResourceLocation): ITag.INamedTag<Item> = ItemTags.makeWrapperTag(name.toString())
 }

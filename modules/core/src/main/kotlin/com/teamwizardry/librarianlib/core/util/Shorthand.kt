@@ -14,8 +14,8 @@ import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.Vec2i
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
-import net.minecraft.util.math.Vec3i
+import net.minecraft.util.math.vector.Vector3d
+import net.minecraft.util.math.vector.Vector3i
 
 /**
 * Shorthand for `new ResourceLocation(location)`
@@ -56,41 +56,41 @@ public inline fun vec(x: Number, y: Number): Vec2d = vec(x.toDouble(), y.toDoubl
 */
 public fun ivec(x: Int, y: Int): Vec2i = Vec2i.getPooled(x, y)
 
-// Vec3d:
+// Vector3d:
 
 /**
-* Get [Vec3d] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
-* number of Vec3d allocations when they are used as intermediates, e.g. when adding one Vec3d to another to offset
+* Get [Vector3d] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+* number of Vector3d allocations when they are used as intermediates, e.g. when adding one Vector3d to another to offset
 * it, this allocates no objects: `Shorthand.vec(1, 0, 0)`
 */
-public fun vec(x: Double, y: Double, z: Double): Vec3d = Vec3dPool.getPooled(x, y, z)
+public fun vec(x: Double, y: Double, z: Double): Vector3d = Vector3dPool.getPooled(x, y, z)
 
 /**
-* Get [Vec3d] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
-* number of Vec3d allocations when they are used as intermediates, e.g. when adding one Vec3d to another to offset
+* Get [Vector3d] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+* number of Vector3d allocations when they are used as intermediates, e.g. when adding one Vector3d to another to offset
 * it, this allocates no objects: `Shorthand.vec(1, 0, 0)`
 */
-public fun vec(pos: BlockPos): Vec3d = vec(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())
+public fun vec(pos: BlockPos): Vector3d = vec(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())
 
 /**
-* Get [Vec3d] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
-* number of Vec3d allocations when they are used as intermediates, e.g. when adding one Vec3d to another to offset it,
+* Get [Vector3d] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+* number of Vector3d allocations when they are used as intermediates, e.g. when adding one Vector3d to another to offset it,
 * this allocates no objects: `vec(1, 0, 0)`
 *
 * This method exists for ease of use in kotlin, where numbers aren't implicitly coerced.
 */
 @JvmSynthetic
 @Suppress("NOTHING_TO_INLINE")
-public inline fun vec(x: Number, y: Number, z: Number): Vec3d = vec(x.toDouble(), y.toDouble(), z.toDouble())
+public inline fun vec(x: Number, y: Number, z: Number): Vector3d = vec(x.toDouble(), y.toDouble(), z.toDouble())
 
-// Vec3i:
+// Vector3i:
 
 /**
-* Get [Vec3i] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
-* number of Vec3i allocations when they are used as intermediates, e.g. when adding one Vec3i to another to offset
+* Get [Vector3i] instances, selecting from a pool of small integer instances when possible. This can vastly reduce the
+* number of Vector3i allocations when they are used as intermediates, e.g. when adding one Vector3i to another to offset
 * it, this allocates no objects: `Shorthand.ivec(1, 0, 0)`
 */
-public fun ivec(x: Int, y: Int, z: Int): Vec3i = Vec3iPool.getPooled(x, y, z)
+public fun ivec(x: Int, y: Int, z: Int): Vector3i = Vector3iPool.getPooled(x, y, z)
 
 // BlockPos:
 
@@ -106,14 +106,14 @@ public fun block(x: Int, y: Int, z: Int): BlockPos = BlockPosPool.getPooled(x, y
 * the number of BlockPos allocations when they are used as intermediates, e.g. when adding one BlockPos to another
 * to offset it, this allocates no objects: `Shorthand.block(1, 0, 0)`
 */
-public fun block(vec: Vec3d): BlockPos = BlockPosPool.getPooled(vec.x.toInt(), vec.y.toInt(), vec.z.toInt())
+public fun block(vec: Vector3d): BlockPos = BlockPosPool.getPooled(vec.x.toInt(), vec.y.toInt(), vec.z.toInt())
 
 /**
 * Get [BlockPos] instances, selecting from a pool of small integer instances when possible. This can vastly reduce
 * the number of BlockPos allocations when they are used as intermediates, e.g. when adding one BlockPos to another
 * to offset it, this allocates no objects: `Shorthand.block(1, 0, 0)`
 */
-public fun block(vec: Vec3i): BlockPos = BlockPosPool.getPooled(vec.x, vec.y, vec.z)
+public fun block(vec: Vector3i): BlockPos = BlockPosPool.getPooled(vec.x, vec.y, vec.z)
 
 // Rect2d:
 
@@ -138,7 +138,7 @@ public inline fun rect(x: Number, y: Number, width: Number, height: Number): Rec
 
 // Internal:
 
-private object Vec3dPool {
+private object Vector3dPool {
     private val poolBits = 5
     private val poolMask = (1 shl poolBits) - 1
     private val poolMax = (1 shl poolBits - 1) - 1
@@ -147,11 +147,11 @@ private object Vec3dPool {
         val x = (it shr poolBits * 2) + poolMin
         val y = (it shr poolBits and poolMask) + poolMin
         val z = (it and poolMask) + poolMin
-        Vec3d(x.toDouble(), y.toDouble(), z.toDouble())
+        Vector3d(x.toDouble(), y.toDouble(), z.toDouble())
     }
 
     @JvmStatic
-    fun getPooled(x: Double, y: Double, z: Double): Vec3d {
+    fun getPooled(x: Double, y: Double, z: Double): Vector3d {
         val xi = x.toInt()
         val yi = y.toInt()
         val zi = z.toInt()
@@ -162,11 +162,11 @@ private object Vec3dPool {
                     ((xi - poolMin) shl poolBits * 2) or ((yi - poolMin) shl poolBits) or (zi - poolMin)
             ]
         }
-        return Vec3d(x, y, z)
+        return Vector3d(x, y, z)
     }
 }
 
-private object Vec3iPool {
+private object Vector3iPool {
     private val poolBits = 5
     private val poolMask = (1 shl poolBits) - 1
     private val poolMax = (1 shl poolBits - 1) - 1
@@ -175,11 +175,11 @@ private object Vec3iPool {
         val x = (it shr poolBits * 2) + poolMin
         val y = (it shr poolBits and poolMask) + poolMin
         val z = (it and poolMask) + poolMin
-        Vec3i(x, y, z)
+        Vector3i(x, y, z)
     }
 
     @JvmStatic
-    fun getPooled(x: Int, y: Int, z: Int): Vec3i {
+    fun getPooled(x: Int, y: Int, z: Int): Vector3i {
         if (x in poolMin..poolMax &&
             y in poolMin..poolMax &&
             z in poolMin..poolMax) {
@@ -187,7 +187,7 @@ private object Vec3iPool {
                     ((x - poolMin) shl poolBits * 2) or ((y - poolMin) shl poolBits) or (z - poolMin)
             ]
         }
-        return Vec3i(x, y, z)
+        return Vector3i(x, y, z)
     }
 }
 

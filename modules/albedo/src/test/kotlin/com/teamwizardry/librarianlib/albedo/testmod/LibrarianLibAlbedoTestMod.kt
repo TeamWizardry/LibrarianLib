@@ -75,7 +75,7 @@ object LibrarianLibAlbedoTestMod: TestMod(LibrarianLibAlbedoModule) {
                     draw {
                         if(crashed) return@draw
                         try {
-                            shader().draw()
+                            shader().draw(matrix)
                         } catch(e: Exception) {
                             logger.error("", e)
                             crashed = true

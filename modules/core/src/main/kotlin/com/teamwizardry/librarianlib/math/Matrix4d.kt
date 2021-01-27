@@ -2,12 +2,10 @@ package com.teamwizardry.librarianlib.math
 
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
+import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.core.util.vec
-import dev.thecodewarrior.mirror.Mirror
-import dev.thecodewarrior.mirror.member.FieldMirror
-import net.minecraft.client.renderer.Matrix3f
-import net.minecraft.client.renderer.Matrix4f
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Matrix4f
+import net.minecraft.util.math.vector.Vector3d
 import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.abs
@@ -213,7 +211,7 @@ public open class Matrix4d(
             m30.pow(pow), m31.pow(pow), m32.pow(pow), m33.pow(pow))
     }
 
-    public open fun translate(v: Vec3d): Matrix4d {
+    public open fun translate(v: Vector3d): Matrix4d {
         return translate(v.x, v.y, v.z)
     }
 
@@ -245,21 +243,21 @@ public open class Matrix4d(
         return this.mul(createRotation(rot))
     }
 
-    public open fun rotate(axis: Vec3d, angle: Double): Matrix4d {
+    public open fun rotate(axis: Vector3d, angle: Double): Matrix4d {
         return this.mul(createRotation(axis, angle))
     }
 
     /**
      * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
      */
-    public fun transform(v: Vec3d): Vec3d {
+    public fun transform(v: Vector3d): Vector3d {
         return transform(v.x, v.y, v.z)
     }
 
     /**
      * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
      */
-    public fun transform(x: Double, y: Double, z: Double): Vec3d {
+    public fun transform(x: Double, y: Double, z: Double): Vector3d {
         return vec(
             m00 * x + m01 * y + m02 * z + m03 * 1,
             m10 * x + m11 * y + m12 * z + m13 * 1,
@@ -269,7 +267,7 @@ public open class Matrix4d(
     /**
      * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix),
      * returning the X axis of the result. This method, along with [transformY] and [transformZ], allow applying
-     * transforms without creating new [Vec3d] objects.
+     * transforms without creating new [Vector3d] objects.
      */
     public fun transformX(x: Double, y: Double, z: Double): Double {
         return m00 * x + m01 * y + m02 * z + m03 * 1
@@ -278,7 +276,7 @@ public open class Matrix4d(
     /**
      * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix),
      * returning the Y axis of the result. This method, along with [transformX] and [transformZ], allow applying
-     * transforms without creating new [Vec3d] objects.
+     * transforms without creating new [Vector3d] objects.
      */
     public fun transformY(x: Double, y: Double, z: Double): Double {
         return m10 * x + m11 * y + m12 * z + m13 * 1
@@ -287,7 +285,7 @@ public open class Matrix4d(
     /**
      * Transforms the passed vector using this [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix),
      * returning the Z axis of the result. This method, along with [transformX] and [transformY], allow applying
-     * transforms without creating new [Vec3d] objects.
+     * transforms without creating new [Vector3d] objects.
      */
     public fun transformZ(x: Double, y: Double, z: Double): Double {
         return m20 * x + m21 * y + m22 * z + m23 * 1
@@ -297,7 +295,7 @@ public open class Matrix4d(
      * Transforms the passed delta vector, ignoring the translation component of this
      * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
      */
-    public fun transformDelta(v: Vec3d): Vec3d {
+    public fun transformDelta(v: Vector3d): Vector3d {
         return transformDelta(v.x, v.y, v.z)
     }
 
@@ -305,7 +303,7 @@ public open class Matrix4d(
      * Transforms the passed delta vector, ignoring the translation component of this
      * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix).
      */
-    public fun transformDelta(x: Double, y: Double, z: Double): Vec3d {
+    public fun transformDelta(x: Double, y: Double, z: Double): Vector3d {
         return vec(
             m00 * x + m01 * y + m02 * z + m03 * 0,
             m10 * x + m11 * y + m12 * z + m13 * 0,
@@ -316,7 +314,7 @@ public open class Matrix4d(
      * Transforms the passed delta vector, ignoring the translation component of this
      * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix), returning the X axis
      * of the result. This method, along with [transformDeltaY] and [transformDeltaZ], allow applying transforms
-     * without creating new [Vec3d] objects.
+     * without creating new [Vector3d] objects.
      */
     public fun transformDeltaX(x: Double, y: Double, z: Double): Double {
         return m00 * x + m01 * y + m02 * z + m03 * 0
@@ -326,7 +324,7 @@ public open class Matrix4d(
      * Transforms the passed delta vector, ignoring the translation component of this
      * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix), returning the Y axis
      * of the result. This method, along with [transformDeltaX] and [transformDeltaZ], allow applying transforms
-     * without creating new [Vec3d] objects.
+     * without creating new [Vector3d] objects.
      */
     public fun transformDeltaY(x: Double, y: Double, z: Double): Double {
         return m10 * x + m11 * y + m12 * z + m13 * 0
@@ -336,7 +334,7 @@ public open class Matrix4d(
      * Transforms the passed delta vector, ignoring the translation component of this
      * [augmented matrix](https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix), returning the Z axis
      * of the result. This method, along with [transformDeltaX] and [transformDeltaY], allow applying transforms
-     * without creating new [Vec3d] objects.
+     * without creating new [Vector3d] objects.
      */
     public fun transformDeltaZ(x: Double, y: Double, z: Double): Double {
         return m20 * x + m21 * y + m22 * z + m23 * 0
@@ -389,7 +387,7 @@ public open class Matrix4d(
 
     /** Transforms the vector using this matrix */
     @JvmSynthetic
-    public operator fun times(v: Vec3d): Vec3d = transform(v)
+    public operator fun times(v: Vector3d): Vector3d = transform(v)
 
     public open fun transpose(): Matrix4d {
         return Matrix4d(
@@ -436,12 +434,32 @@ public open class Matrix4d(
     }
 
     public fun toMatrix4f(): Matrix4f {
-        return Matrix4f(floatArrayOf(
-            m00.toFloat(), m01.toFloat(), m02.toFloat(), m03.toFloat(),
-            m10.toFloat(), m11.toFloat(), m12.toFloat(), m13.toFloat(),
-            m20.toFloat(), m21.toFloat(), m22.toFloat(), m23.toFloat(),
-            m30.toFloat(), m31.toFloat(), m32.toFloat(), m33.toFloat()
-        ))
+        val matrix = Matrix4f()
+        copyToMatrix4f(matrix)
+        return matrix
+    }
+
+    /**
+     * Copies the contents of this LibrarianLib matrix into the provided Minecraft matrix
+     */
+    public fun copyToMatrix4f(matrix: Matrix4f) {
+        val m: IMatrix4f = mixinCast(matrix)
+        m.m00 = m00.toFloat()
+        m.m01 = m01.toFloat()
+        m.m02 = m02.toFloat()
+        m.m03 = m03.toFloat()
+        m.m10 = m10.toFloat()
+        m.m11 = m11.toFloat()
+        m.m12 = m12.toFloat()
+        m.m13 = m13.toFloat()
+        m.m20 = m20.toFloat()
+        m.m21 = m21.toFloat()
+        m.m22 = m22.toFloat()
+        m.m23 = m23.toFloat()
+        m.m30 = m30.toFloat()
+        m.m31 = m31.toFloat()
+        m.m32 = m32.toFloat()
+        m.m33 = m33.toFloat()
     }
 
     override fun toString(): String {
@@ -536,7 +554,7 @@ public open class Matrix4d(
                 0.0, 0.0, 0.0, 1.0)
         }
 
-        internal fun createRotation(axis: Vec3d, angle: Double): MutableMatrix4d {
+        internal fun createRotation(axis: Vector3d, angle: Double): MutableMatrix4d {
             // https://en.wikipedia.org/wiki/Rotation_matrix#Conversion_from_and_to_axis%E2%80%93angle
             val len = axis.length()
             val x = axis.x / len
@@ -561,7 +579,7 @@ public open class Matrix4d(
          * @param up The "up" vector
          * @return A rotational transform that corresponds to a camera looking at the given point
          */
-        public fun createLookAt(eye: Vec3d, at: Vec3d, up: Vec3d): Matrix4d {
+        public fun createLookAt(eye: Vector3d, at: Vector3d, up: Vector3d): Matrix4d {
             val f = (at - eye).normalize()
             val s = (f cross up).normalize()
             val u = s cross f

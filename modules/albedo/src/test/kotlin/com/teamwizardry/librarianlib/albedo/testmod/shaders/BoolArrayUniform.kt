@@ -2,6 +2,7 @@
 
 package com.teamwizardry.librarianlib.albedo.testmod.shaders
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
@@ -16,7 +17,7 @@ import java.awt.Color
 
 internal object BoolArrayUniform: ShaderTest<BoolArrayUniform.Test>() {
 
-    override fun doDraw() {
+    override fun doDraw(matrixStack: MatrixStack) {
         val minX = 0.0
         val minY = 0.0
         val maxX = 128.0
@@ -48,7 +49,7 @@ internal object BoolArrayUniform: ShaderTest<BoolArrayUniform.Test>() {
         shader.unbind()
 
         val fr = Client.minecraft.fontRenderer
-        fr.drawString("$index",
+        fr.drawString(matrixStack, "$index",
             (maxX - 2 - fr.getStringWidth("$index")).toInt().toFloat(),
             minY.toFloat() + 11,
             Color.WHITE.rgb

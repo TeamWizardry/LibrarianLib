@@ -29,7 +29,7 @@ public open class TestItem(public val config: TestItemConfig): Item(config.prope
         super.addInformation(stack, worldIn, tooltip, flagIn)
         if (config.description != null) {
             val description = TranslationTextComponent(registryName!!.translationKey("item", "tooltip"))
-            description.style.color = TextFormatting.GRAY
+            description.style.applyFormatting(TextFormatting.GRAY)
             tooltip.add(description)
         }
     }
@@ -110,14 +110,14 @@ public open class TestItem(public val config: TestItemConfig): Item(config.prope
         return config.leftClickEntity.exists
     }
 
-    override fun itemInteractionForEntity(stack: ItemStack, playerIn: PlayerEntity, target: LivingEntity, hand: Hand): Boolean {
+    override fun itemInteractionForEntity(stack: ItemStack, playerIn: PlayerEntity, target: LivingEntity, hand: Hand): ActionResultType {
         val context = TestItemConfig.RightClickEntityContext(stack, playerIn, target, hand)
         val clickContext = TestItemConfig.RightClickContext(playerIn.world, playerIn, hand)
 
         config.rightClickEntity.run(playerIn.world.isRemote, context)
         config.rightClick.run(playerIn.world.isRemote, clickContext)
 
-        return config.rightClickEntity.exists
+        return if(config.rightClickEntity.exists) ActionResultType.SUCCESS else ActionResultType.PASS
     }
 
     override fun inventoryTick(stack: ItemStack, worldIn: World, entityIn: Entity, itemSlot: Int, isSelected: Boolean) {

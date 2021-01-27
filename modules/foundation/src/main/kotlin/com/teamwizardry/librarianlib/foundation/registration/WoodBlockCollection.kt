@@ -8,7 +8,9 @@ import net.minecraft.block.material.Material
 import net.minecraft.block.material.MaterialColor
 import net.minecraft.item.Item
 import net.minecraft.tags.BlockTags
+import net.minecraft.tags.ITag
 import net.minecraft.tags.Tag
+import net.minecraft.util.Direction
 import net.minecraft.util.SoundEvents
 
 /**
@@ -107,12 +109,12 @@ public class WoodBlockCollection @JvmOverloads constructor(
         planksCollection.fenceGate
     }
 
-    public val logTag: Tag<Block> by lazy {
+    public val logTag: ITag.INamedTag<Block> by lazy {
         val tag = TagWrappers.block(registrationManager.modid, woodName + "_logs")
         registrationManager.datagen.blockTags.meta(BlockTags.LOGS, tag)
         tag
     }
-    public val logItemTag: Tag<Item> by lazy {
+    public val logItemTag: ITag.INamedTag<Item> by lazy {
         val tag = TagWrappers.itemFormOf(logTag)
         registrationManager.datagen.blockTags.addItemForm(logTag, tag)
         tag
@@ -120,28 +122,38 @@ public class WoodBlockCollection @JvmOverloads constructor(
 
     public val log: BlockSpec by lazy {
         BlockSpec(woodName + "_log")
-            .withProperties(logProperties)
-            .mapColor(barkColor)
+            .applyFrom(logProperties)
+            .mapColor { state ->
+                if(state.get(RotatedPillarBlock.AXIS) == Direction.Axis.Y)
+                    woodColor
+                else
+                    barkColor
+            }
             .renderLayer(renderLayer)
             .itemGroup(itemGroup)
             .datagen {
                 tags(logTag)
                 logItemTag // create and register it
             }
-            .block { BaseLogBlock(woodColor, it.blockProperties) }
+            .block { BaseRotatedPillarBlock(it.blockProperties) }
     }
 
     public val strippedLog: BlockSpec by lazy {
         BlockSpec("stripped_" + woodName + "_log")
-            .withProperties(logProperties)
-            .mapColor(woodColor)
+            .applyFrom(logProperties)
+            .mapColor { state ->
+                if(state.get(RotatedPillarBlock.AXIS) == Direction.Axis.Y)
+                    woodColor
+                else
+                    barkColor
+            }
             .renderLayer(renderLayer)
             .itemGroup(itemGroup)
             .datagen {
                 tags(logTag)
                 logItemTag // create and register it
             }
-            .block { BaseLogBlock(woodColor, it.blockProperties) }
+            .block { BaseRotatedPillarBlock(it.blockProperties) }
     }
 
     /**
@@ -155,7 +167,7 @@ public class WoodBlockCollection @JvmOverloads constructor(
      */
     public val strippedWood: BlockSpec by lazy {
         BlockSpec("stripped_$bareWoodName")
-            .withProperties(logProperties)
+            .applyFrom(logProperties)
             .mapColor(woodColor)
             .renderLayer(renderLayer)
             .itemGroup(itemGroup)
@@ -177,7 +189,7 @@ public class WoodBlockCollection @JvmOverloads constructor(
      */
     public val wood: BlockSpec by lazy {
         BlockSpec(bareWoodName)
-            .withProperties(logProperties)
+            .applyFrom(logProperties)
             .mapColor(barkColor)
             .renderLayer(renderLayer)
             .itemGroup(itemGroup)
@@ -196,7 +208,7 @@ public class WoodBlockCollection @JvmOverloads constructor(
 
     public val leaves: BlockSpec by lazy {
         BlockSpec(woodName + "_leaves")
-            .withProperties(BaseLeavesBlock.defaultProperties)
+            .applyFrom(BaseLeavesBlock.defaultProperties)
             .renderLayer(RenderLayerSpec.CUTOUT_MIPPED)
             .block {
                 BaseLeavesBlock(it.blockProperties)

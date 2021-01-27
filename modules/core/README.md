@@ -10,7 +10,7 @@ current state.
 - `Animation`/`SimpleAnimation`/`KeyframeAnimation` – easy to use, abstract animations.
 - `Vec2d`/`Vec2i` – 2d vectors
 - `MathUtils.vec`/`MathUtils.ivec`/`MathUtils.block` – Constructors for vectors and block positions that cache and reuse 
-a set of small integer instances. For example, getting any `Vec3d` with integer x, y, and z coordinates in the range 
+a set of small integer instances. For example, getting any `Vector3d` with integer x, y, and z coordinates in the range 
 `[-8, 8)` will returned a cached instance. 
 - `SidedRunnable`/`ClientRunnable`/`ServerRunnable` – `Runnable`, `Consumer`, `Supplier`, and `Function` interfaces that
 easily allow client-only/server-only/separate code.

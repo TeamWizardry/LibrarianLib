@@ -28,14 +28,14 @@ object LibrarianLibCourierTestMod: TestMod(LibrarianLibCourierModule) {
 
     init {
         channel.registerCourierPacket<TestPacket>(NetworkDirection.PLAY_TO_CLIENT) { packet, context ->
-            Client.player?.sendMessage(StringTextComponent("Register handler: $packet"))
+            Client.player?.sendStatusMessage(StringTextComponent("Register handler: $packet"), false)
         }
 
         +TestItem(TestItemConfig("server_to_client", "Server to client packet") {
             rightClick.server {
                 val packet = TestPacket(Blocks.DIRT, 42)
                 packet.manual = 100
-                player.sendMessage(StringTextComponent("Server sending: $packet"))
+                player.sendStatusMessage(StringTextComponent("Server sending: $packet"), false)
                 channel.send(PacketDistributor.PLAYER.with { player as ServerPlayerEntity }, packet)
             }
         })
@@ -56,7 +56,7 @@ data class TestPacket @RefractConstructor constructor(@Refract val block: Block,
 
     override fun handle(context: NetworkEvent.Context) {
         clientOnly {
-            Client.player?.sendMessage(StringTextComponent("CourierPacket handler: $this"))
+            Client.player?.sendStatusMessage(StringTextComponent("CourierPacket handler: $this"), false)
         }
     }
 }

@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.math.minus
 import com.teamwizardry.librarianlib.math.plus
 import com.teamwizardry.librarianlib.math.times
 import dev.thecodewarrior.mirror.Mirror
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Vector3d
 import java.awt.Color
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
@@ -54,8 +54,8 @@ public object Vec2dLerper: Lerper<Vec2d>() {
     override fun lerp(from: Vec2d, to: Vec2d, fraction: Float): Vec2d = from + (to - from) * fraction
 }
 
-public object Vec3dLerper: Lerper<Vec3d>() {
-    override fun lerp(from: Vec3d, to: Vec3d, fraction: Float): Vec3d = from + (to - from) * fraction
+public object Vector3dLerper: Lerper<Vector3d>() {
+    override fun lerp(from: Vector3d, to: Vector3d, fraction: Float): Vector3d = from + (to - from) * fraction
 }
 
 public object Rect2dLerper: Lerper<Rect2d>() {

@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.testbase.objects
 import com.teamwizardry.librarianlib.prism.Save
 import com.teamwizardry.librarianlib.prism.SimpleSerializer
 import com.teamwizardry.librarianlib.prism.Sync
+import net.minecraft.block.BlockState
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.play.server.SUpdateTileEntityPacket
@@ -18,8 +19,8 @@ public abstract class TestTileEntity(tileEntityTypeIn: TileEntityType<*>): TileE
         return compound
     }
 
-    override fun read(compound: CompoundNBT) {
-        super.read(compound)
+    override fun read(state: BlockState, compound: CompoundNBT) {
+        super.read(state, compound)
         serializer.applyTag(compound.getCompound("ll"), this, Save::class.java)
     }
 
@@ -29,8 +30,8 @@ public abstract class TestTileEntity(tileEntityTypeIn: TileEntityType<*>): TileE
         return tag
     }
 
-    override fun handleUpdateTag(tag: CompoundNBT) {
-        super.handleUpdateTag(tag)
+    override fun handleUpdateTag(state: BlockState?, tag: CompoundNBT) {
+        super.handleUpdateTag(state, tag)
         serializer.applyTag(tag.getCompound("ll"), this, Sync::class.java)
     }
 

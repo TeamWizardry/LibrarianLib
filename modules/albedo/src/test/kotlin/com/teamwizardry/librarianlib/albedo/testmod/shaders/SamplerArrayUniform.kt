@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.testmod.shaders
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.GLSL
@@ -27,7 +28,7 @@ internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
     private val successLocation1 = ResourceLocation("librarianlib-albedo-test:textures/sampler_success1.png")
     private val successLocation2 = ResourceLocation("librarianlib-albedo-test:textures/sampler_success2.png")
 
-    override fun doDraw() {
+    override fun doDraw(matrixStack: MatrixStack) {
         val minX = 0.0
         val minY = 0.0
         val maxX = 128.0

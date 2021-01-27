@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding
 import com.teamwizardry.librarianlib.glitter.bindings.VariableBinding
 import com.teamwizardry.librarianlib.glitter.modules.DepthSortModule
-import net.minecraft.client.renderer.Matrix4f
+import net.minecraft.util.math.vector.Matrix4f
 import net.minecraft.client.settings.ParticleStatus
 import org.magicwerk.brownies.collections.GapList
 import java.lang.RuntimeException
@@ -180,7 +180,7 @@ public abstract class ParticleSystem {
      * An example based on the aforementioned particle would be:
      *
      * ```kotlin
-     * double[] spawn(double lifetime, Vec3d position, Color color, double size) {
+     * double[] spawn(double lifetime, Vector3d position, Color color, double size) {
      *     return this.addParticle(lifetime,
      *             position.x, position.y, position.z,
      *             color.red/255.0, color.green/255.0, color.blue/255.0, color.alpha/255.0,

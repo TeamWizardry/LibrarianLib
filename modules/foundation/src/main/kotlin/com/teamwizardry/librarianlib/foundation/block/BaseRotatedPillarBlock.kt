@@ -1,10 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.block
 
-import net.minecraft.block.LogBlock
 import net.minecraft.block.RotatedPillarBlock
-import net.minecraft.block.SoundType
-import net.minecraft.block.material.Material
-import net.minecraft.block.material.MaterialColor
 import net.minecraftforge.client.model.generators.BlockStateProvider
 
 /**

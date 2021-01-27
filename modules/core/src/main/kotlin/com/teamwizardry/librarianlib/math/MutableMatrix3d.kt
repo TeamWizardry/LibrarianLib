@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.math
 
 import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
-import net.minecraft.client.renderer.Matrix3f
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Matrix3f
+import net.minecraft.util.math.vector.Vector3d
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -448,7 +448,7 @@ public open class MutableMatrix3d(
         return scale(scale, scale, scale)
     }
 
-    override fun scale(v: Vec3d): MutableMatrix3d {
+    override fun scale(v: Vector3d): MutableMatrix3d {
         return scale(v.getX(), v.getY(), v.getZ())
     }
 
@@ -464,7 +464,7 @@ public open class MutableMatrix3d(
         return this.mul(createRotation(rot))
     }
 
-    override fun rotate(axis: Vec3d, angle: Double): Matrix3d {
+    override fun rotate(axis: Vector3d, angle: Double): Matrix3d {
         return this.mul(createRotation(axis, angle))
     }
 

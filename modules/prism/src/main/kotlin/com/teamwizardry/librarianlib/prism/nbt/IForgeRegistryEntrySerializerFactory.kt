@@ -8,7 +8,7 @@ import net.minecraft.nbt.INBT
 import net.minecraft.nbt.StringNBT
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.registry.Registry
-import net.minecraft.world.dimension.DimensionType
+import net.minecraft.world.DimensionType
 import net.minecraftforge.fml.common.registry.GameRegistry
 import net.minecraftforge.registries.IForgeRegistry
 import net.minecraftforge.registries.IForgeRegistryEntry
@@ -54,18 +54,19 @@ internal open class IForgeRegistryEntrySerializerFactory(prism: NBTPrism): NBTSe
     }
 }
 
-/**
- * For some reason [DimensionType] is an [IForgeRegistryEntry], yet the DimensionType registry isn't an
- * [IForgeRegistry], and thus isn't present in [GameRegistry.findRegistry]
- */
-internal object DimensionTypeSerializer: NBTSerializer<DimensionType>() {
-    override fun deserialize(tag: INBT, existing: DimensionType?): DimensionType {
-        val entryName = ResourceLocation(tag.expectType<StringNBT>("tag").string)
-        @Suppress("DEPRECATION")
-        return Registry.DIMENSION_TYPE.getValue(entryName).get() // DIMENSION_TYPE has a default value
-    }
-
-    override fun serialize(value: DimensionType): INBT {
-        return StringNBT.valueOf(value.registryName.toString())
-    }
-}
+// Dimension types seem to be "dynamic registry entries" now, which means you need to get them from a World instance.
+///**
+// * For some reason [DimensionType] is an [IForgeRegistryEntry], yet the DimensionType registry isn't an
+// * [IForgeRegistry], and thus isn't present in [GameRegistry.findRegistry]
+// */
+//internal object DimensionTypeSerializer: NBTSerializer<DimensionType>() {
+//    override fun deserialize(tag: INBT, existing: DimensionType?): DimensionType {
+//        val entryName = ResourceLocation(tag.expectType<StringNBT>("tag").string)
+//        @Suppress("DEPRECATION")
+//        return Registry.DIMENSION_TYPE_KEY.getValue(entryName).get() // DIMENSION_TYPE has a default value
+//    }
+//
+//    override fun serialize(value: DimensionType): INBT {
+//        return StringNBT.valueOf(value.registryName.toString())
+//    }
+//}

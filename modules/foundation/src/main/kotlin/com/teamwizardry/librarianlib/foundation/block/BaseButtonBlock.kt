@@ -17,6 +17,7 @@ public abstract class BaseButtonBlock(
     override val properties: FoundationBlockProperties,
     protected val textureName: String
 ) : AbstractButtonBlock(false, properties.vanillaProperties), IFoundationBlock {
+    public abstract val pressDuration: Int
 
     override fun generateBlockState(gen: BlockStateProvider) {
         val texture = gen.modLoc("block/$textureName")
@@ -36,21 +37,23 @@ public abstract class BaseButtonBlock(
         return "block/${registryName!!.path}_inventory"
     }
 
-    override fun func_226910_d_(state: BlockState, world: World, pos: BlockPos) {
-        setPressed(state, world, pos, true)
+    override fun powerBlock(state: BlockState, world: World, pos: BlockPos) {
+        setPressed(state, world, pos, true, playSound = false)
     }
 
     override fun tick(state: BlockState, world: ServerWorld, pos: BlockPos, rand: Random?) {
-        setPressed(state, world, pos, false)
+        setPressed(state, world, pos, false, playSound = true)
     }
 
-    protected fun setPressed(state: BlockState, world: World, pos: BlockPos, pressed: Boolean) {
+    protected fun setPressed(state: BlockState, world: World, pos: BlockPos, pressed: Boolean, playSound: Boolean) {
         if (pressed != state.get(POWERED)) {
             world.setBlockState(pos, state.with(POWERED, pressed), 3)
             this.updateNeighbors(state, world, pos)
-            playSound(null, world, pos, pressed)
             if (pressed) {
-                world.pendingBlockTicks.scheduleTick(BlockPos(pos), this, tickRate(world))
+                world.pendingBlockTicks.scheduleTick(BlockPos(pos), this, pressDuration)
+            }
+            if(playSound) {
+                playSound(null, world, pos, pressed)
             }
         }
     }

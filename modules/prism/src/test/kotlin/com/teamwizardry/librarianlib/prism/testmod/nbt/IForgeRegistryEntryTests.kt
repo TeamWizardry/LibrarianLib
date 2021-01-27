@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.prism.testmod.nbt
 
 import com.teamwizardry.librarianlib.core.util.kotlin.NBTBuilder
-import com.teamwizardry.librarianlib.prism.nbt.DimensionTypeSerializer
 import com.teamwizardry.librarianlib.prism.nbt.IForgeRegistryEntrySerializerFactory
 import com.teamwizardry.librarianlib.prism.testmod.LibrarianLibPrismTestMod
 import com.teamwizardry.librarianlib.testbase.LibrarianLibTestBaseModule
@@ -13,7 +12,6 @@ import net.minecraft.block.Blocks
 import net.minecraft.entity.EntityType
 import net.minecraft.item.Item
 import net.minecraft.item.Items
-import net.minecraft.world.dimension.DimensionType
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -63,13 +61,5 @@ internal class IForgeRegistryEntryTests: NBTPrismTest() {
         assertThrows<DeserializationException> {
             prism[Mirror.reflect<UnitTestSuite>()].value.read(NBTBuilder.string("oops:oops"), null)
         }
-    }
-
-    @Test
-    fun `read+write with a dimension type should be symmetrical`() {
-        simple<DimensionType, DimensionTypeSerializer>(
-            DimensionType.OVERWORLD,
-            NBTBuilder.string("minecraft:overworld")
-        )
     }
 }

@@ -9,7 +9,7 @@ import net.minecraft.block.StandingSignBlock
 import net.minecraft.block.WallSignBlock
 import net.minecraft.block.WoodType
 import net.minecraft.client.renderer.Atlases
-import net.minecraft.client.renderer.model.Material
+import net.minecraft.client.renderer.model.RenderMaterial
 import net.minecraft.tileentity.SignTileEntity
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.world.IBlockReader
@@ -28,8 +28,8 @@ public open class FoundationWallSignBlock(
     protected val tileEntityType: LazyTileEntityType<SignTileEntity>
 ): WallSignBlock(properties.vanillaProperties, WoodType.OAK), IFoundationBlock, ICustomSignMaterialBlock {
 
-    override fun signMaterial(): Material {
-        return Material(Atlases.SIGN_ATLAS, loc(registryName!!.namespace, "entity/signs/$materialName"))
+    override fun signMaterial(): RenderMaterial {
+        return RenderMaterial(Atlases.SIGN_ATLAS, loc(registryName!!.namespace, "entity/signs/$materialName"))
     }
 
     override fun generateBlockState(gen: BlockStateProvider) {

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.sided.ClientSupplier
 import com.teamwizardry.librarianlib.math.Vec2d
@@ -71,12 +72,6 @@ public class TestScreenConfig(public val id: String, public val name: String, ac
     public val onClose: ClientAction<ScreenContext> = ClientAction<ScreenContext>()
 
     /**
-     * Called before the screen has been removed from the [Minecraft] instance. Similar to [onClose] except it runs
-     * even when the screen is being replaced by another screen
-     */
-    public val onRemoved: ClientAction<ScreenContext> = ClientAction<ScreenContext>()
-
-    /**
      * Called each frame to draw the screen
      */
     public val draw: ClientAction<DrawContext> = ClientAction<DrawContext>()
@@ -113,74 +108,75 @@ public class TestScreenConfig(public val id: String, public val name: String, ac
 
     @Suppress("NOTHING_TO_INLINE")
     @OnlyIn(Dist.CLIENT)
-    public data class DrawContext(val screen: TestScreen, val mousePos: Vec2d, val partialTicks: Float): TestContext() {
+    public data class DrawContext(val screen: TestScreen, val matrix: MatrixStack, val mousePos: Vec2d, val partialTicks: Float): TestContext() {
         public fun hLine(left: Int, right: Int, y: Int, color: Int) {
-            screen.hLine(left, right, y, color)
+            screen.hLine(matrix, left, right, y, color)
         }
         public inline fun hLine(left: Int, right: Int, y: Int, color: UInt) {
             hLine(left, right, y, color.toInt())
         }
 
         public fun vLine(x: Int, top: Int, bottom: Int, color: Int) {
-            screen.vLine(x,  top, bottom, color)
+            screen.vLine(matrix, x,  top, bottom, color)
         }
         public inline fun vLine(x: Int, top: Int, bottom: Int, color: UInt) {
             vLine(x,  top, bottom, color.toInt())
         }
 
         public fun fillGradient(minX: Int, minY: Int, maxX: Int, maxY: Int, topColor: Int, bottomColor: Int) {
-            screen.fillGradient(minX, minY, maxX, maxY, topColor, bottomColor)
+            screen.fillGradient(matrix, minX, minY, maxX, maxY, topColor, bottomColor)
         }
         public inline fun fillGradient(minX: Int, minY: Int, maxX: Int, maxY: Int, topColor: Int, bottomColor: UInt) {
             fillGradient(minX, minY, maxX, maxY, topColor, bottomColor.toInt())
         }
 
         public fun fill(minX: Int, minY: Int, maxX: Int, maxY: Int, color: Int) {
-            AbstractGui.fill(minX, minY, maxX, maxY, color)
+            AbstractGui.fill(matrix, minX, minY, maxX, maxY, color)
         }
         public inline fun fill(minX: Int, minY: Int, maxX: Int, maxY: Int, color: UInt) {
             fill(minX, minY, maxX, maxY, color.toInt())
         }
 
-        public fun drawCenteredString(fr: FontRenderer, text: String, x: Int, y: Int, color: Int) {
-            screen.drawCenteredString(fr, text, x, y, color)
-        }
-        public inline fun drawCenteredString(fr: FontRenderer, text: String, x: Int, y: Int, color: UInt) {
-            drawCenteredString(fr, text, x, y, color.toInt())
-        }
-
-        public fun drawRightAlignedString(fr: FontRenderer, text: String, x: Int, y: Int, color: Int) {
-            screen.drawRightAlignedString(fr, text, x, y, color)
-        }
-        public inline fun drawRightAlignedString(fr: FontRenderer, text: String, x: Int, y: Int, color: UInt) {
-            drawRightAlignedString(fr, text, x, y, color.toInt())
-        }
-
-        public fun drawString(fr: FontRenderer, text: String, x: Int, y: Int, color: Int) {
-            screen.drawString(fr, text, x, y, color)
-        }
-        public inline fun drawString(fr: FontRenderer, text: String, x: Int, y: Int, color: UInt) {
-            drawString(fr, text, x, y, color.toInt())
-        }
+        // method no longer exists in Screen
+//        public fun drawCenteredString(fr: FontRenderer, text: String, x: Int, y: Int, color: Int) {
+//            screen.drawCenteredString(matrix, fr, text, x, y, color)
+//        }
+//        public inline fun drawCenteredString(fr: FontRenderer, text: String, x: Int, y: Int, color: UInt) {
+//            drawCenteredString(fr, text, x, y, color.toInt())
+//        }
+//
+//        public fun drawRightAlignedString(fr: FontRenderer, text: String, x: Int, y: Int, color: Int) {
+//            screen.drawRightAlignedString(fr, text, x, y, color)
+//        }
+//        public inline fun drawRightAlignedString(fr: FontRenderer, text: String, x: Int, y: Int, color: UInt) {
+//            drawRightAlignedString(fr, text, x, y, color.toInt())
+//        }
+//
+//        public fun drawString(fr: FontRenderer, text: String, x: Int, y: Int, color: Int) {
+//            screen.drawString(fr, text, x, y, color)
+//        }
+//        public inline fun drawString(fr: FontRenderer, text: String, x: Int, y: Int, color: UInt) {
+//            drawString(fr, text, x, y, color.toInt())
+//        }
 
         public fun blit(x: Int, y: Int, z: Int, width: Int, height: Int, sprite: TextureAtlasSprite) {
-            AbstractGui.blit(x, y, z, width, height, sprite)
+            AbstractGui.blit(matrix, x, y, z, width, height, sprite)
         }
 
         public fun blit(p_blit_1_: Int, p_blit_2_: Int, p_blit_3_: Int, p_blit_4_: Int, p_blit_5_: Int, p_blit_6_: Int) {
-            screen.blit(p_blit_1_, p_blit_2_, p_blit_3_, p_blit_4_, p_blit_5_, p_blit_6_)
+            screen.blit(matrix, p_blit_1_, p_blit_2_, p_blit_3_, p_blit_4_, p_blit_5_, p_blit_6_)
         }
 
         public fun blit(x: Int, y: Int, z: Int, p_blit_3_: Float, p_blit_4_: Float, width: Int, height: Int, p_blit_7_: Int, p_blit_8_: Int) {
-            AbstractGui.blit(x, y, z, p_blit_3_, p_blit_4_, width, height, p_blit_7_, p_blit_8_)
+            AbstractGui.blit(matrix, x, y, z, p_blit_3_, p_blit_4_, width, height, p_blit_7_, p_blit_8_)
         }
 
         public fun blit(p_blit_0_: Int, p_blit_1_: Int, p_blit_2_: Int, p_blit_3_: Int, p_blit_4_: Float, p_blit_5_: Float, p_blit_6_: Int, p_blit_7_: Int, p_blit_8_: Int, p_blit_9_: Int) {
-            AbstractGui.blit(p_blit_0_, p_blit_1_, p_blit_2_, p_blit_3_, p_blit_4_, p_blit_5_, p_blit_6_, p_blit_7_, p_blit_8_, p_blit_9_)
+            AbstractGui.blit(matrix, p_blit_0_, p_blit_1_, p_blit_2_, p_blit_3_, p_blit_4_, p_blit_5_, p_blit_6_, p_blit_7_, p_blit_8_, p_blit_9_)
         }
 
         public fun blit(p_blit_0_: Int, p_blit_1_: Int, p_blit_2_: Float, p_blit_3_: Float, p_blit_4_: Int, p_blit_5_: Int, p_blit_6_: Int, p_blit_7_: Int) {
-            AbstractGui.blit(p_blit_0_, p_blit_1_, p_blit_2_, p_blit_3_, p_blit_4_, p_blit_5_, p_blit_6_, p_blit_7_)
+            AbstractGui.blit(matrix, p_blit_0_, p_blit_1_, p_blit_2_, p_blit_3_, p_blit_4_, p_blit_5_, p_blit_6_, p_blit_7_)
         }
 
     }

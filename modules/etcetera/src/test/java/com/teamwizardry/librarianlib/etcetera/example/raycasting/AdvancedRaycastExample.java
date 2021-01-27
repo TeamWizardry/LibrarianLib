@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.etcetera.Raycaster;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.function.Predicate;
 
@@ -17,9 +17,9 @@ public class AdvancedRaycastExample {
 
     public void advancedRaycast(Entity entity) {
         double rayLength = 100;
-        Vec3d start = entity.getEyePosition(0);
-        Vec3d look = entity.getLookVec();
-        look = new Vec3d(
+        Vector3d start = entity.getEyePosition(0);
+        Vector3d look = entity.getLookVec();
+        look = new Vector3d(
                 look.getX() * rayLength,
                 look.getY() * rayLength,
                 look.getZ() * rayLength
@@ -46,12 +46,12 @@ public class AdvancedRaycastExample {
         double distance = raycaster.getFraction() * rayLength;
 
         // normal and hit position apply to all the hit types
-        Vec3d normal = new Vec3d(
+        Vector3d normal = new Vector3d(
                 raycaster.getNormalX(),
                 raycaster.getNormalY(),
                 raycaster.getNormalZ()
         );
-        Vec3d hitPos = new Vec3d(
+        Vector3d hitPos = new Vector3d(
                 raycaster.getHitX(),
                 raycaster.getHitY(),
                 raycaster.getHitZ()

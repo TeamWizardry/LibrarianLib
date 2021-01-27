@@ -48,13 +48,13 @@ public abstract class ClientPlayerEntityMixin {
                 // Prevent sending the message
                 cancel = true;
         } catch (CommandException e) {
-            sendStatusMessage(e.getComponent().applyTextStyle(TextFormatting.RED), false);
+            sendStatusMessage(e.getComponent().deepCopy().mergeStyle(TextFormatting.RED), false);
             cancel = true;
         } catch (CommandSyntaxException e) {
-            sendStatusMessage(new StringTextComponent(e.getMessage()).applyTextStyle(TextFormatting.RED), false);
+            sendStatusMessage(new StringTextComponent(e.getMessage()).mergeStyle(TextFormatting.RED), false);
             cancel = true;
         } catch (Exception e) {
-            sendStatusMessage(new TranslationTextComponent("command.failed").applyTextStyle(TextFormatting.RED), false);
+            sendStatusMessage(new TranslationTextComponent("command.failed").mergeStyle(TextFormatting.RED), false);
             cancel = true;
         }
 

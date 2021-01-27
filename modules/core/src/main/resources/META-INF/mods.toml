@@ -1,5 +1,5 @@
-modLoader="kotlinfml"
-loaderVersion="[2,)"
+modLoader="kotlinforforge"
+loaderVersion="[1,)"
 issueTrackerURL="https://github.com/LibrarianLib/LibrarianLib/issues"
 [[mods]]
 modId="librarianlib"
@@ -18,8 +18,8 @@ A collection of libraries designed to make creating great Minecraft mods easier.
 [[dependencies.librarianlib]]
     modId="forge"
     mandatory=true
-    versionRange="[31,)"
+    versionRange="[35,)"
 [[dependencies.librarianlib]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.2]"
+    versionRange="[1.16.4]"

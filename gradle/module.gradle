@@ -8,7 +8,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_gradle_version"
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
         // rolled back from 4.0.4 to 4.0.1 due to #425: https://github.com/johnrengelman/shadow/issues/425
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.1'
@@ -70,12 +70,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
     annotationProcessor "org.spongepowered:mixin:$mixin_version:processor"
     testAnnotationProcessor "org.spongepowered:mixin:$mixin_version:processor"
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$kotlin_coroutines_version"
-    api "org.jetbrains:annotations:$jetbrains_annotations_version"
-    api rootProject.files('libs/Kottle-2.0.0-slim.jar')
-//    api "kottle:Kottle:$kottle_version:slim"
+    implementation "thedarkcolour:kotlinforforge:$kotlinforforge_version"
 }
 
 // go through each configuration and add an `internalApi` dependency alongside each project dependency
@@ -219,7 +214,7 @@ task generateFiles {
             |""".stripMargin()
 
             def tomlString = """\
-                   |modLoader="kotlinfml"
+                   |modLoader="kotlinforforge"
                    |loaderVersion="[1,)"
                    |[[mods]]
                    |modId="$modid"
@@ -310,7 +305,7 @@ task generateTestFiles {
             |""".stripMargin()
 
         def tomlString = """\
-               |modLoader="kotlinfml"
+               |modLoader="kotlinforforge"
                |loaderVersion="[1,)"
                |[[mods]]
                |modId="$modid_test"

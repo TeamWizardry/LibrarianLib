@@ -8,6 +8,7 @@ import net.minecraft.item.BlockItem
 import net.minecraft.item.BlockItemUseContext
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ActionResultType
+import net.minecraft.util.text.Color
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextFormatting
 import net.minecraft.util.text.TranslationTextComponent
@@ -30,7 +31,7 @@ public open class TestBlockItem(block: TestBlock, builder: Properties): BlockIte
         super.addInformation(stack, worldIn, tooltip, flagIn)
         if (block.config.description != null) {
             val description = TranslationTextComponent(registryName!!.translationKey("block", "tooltip"))
-            description.style.color = TextFormatting.GRAY
+            description.style.applyFormatting(TextFormatting.GRAY)
             tooltip.add(description)
         }
     }

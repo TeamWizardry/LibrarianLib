@@ -90,7 +90,7 @@ public class ItemStackTooltip: GuiLayer() {
         val rootMousePos = root.mousePos
 
         stack?.also { stack ->
-            VanillaTooltipRenderer.renderTooltip(stack, rootMousePos.xi, rootMousePos.yi)
+            VanillaTooltipRenderer.renderTooltip(context.transformStack, stack, rootMousePos.xi, rootMousePos.yi)
         }
     }
 }
@@ -109,7 +109,7 @@ public class VanillaTooltip: GuiLayer() {
         val rootMousePos = root.mousePos
 
         (lines ?: text?.let { listOf(it) })?.also { lines ->
-            VanillaTooltipRenderer.renderTooltip(lines, rootMousePos.xi, rootMousePos.yi, font)
+            VanillaTooltipRenderer.renderTooltip(context.transformStack, lines, rootMousePos.xi, rootMousePos.yi, font)
         }
     }
 }

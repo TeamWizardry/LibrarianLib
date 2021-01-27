@@ -30,7 +30,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
 
     public val full: BlockSpec by lazy {
         BlockSpec(fullName)
-            .withProperties(blockProperties)
+            .applyFrom(blockProperties)
             .renderLayer(renderLayer)
             .itemGroup(itemGroup)
             .block { BaseBlock(it.blockProperties) }
@@ -38,7 +38,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
 
     public val slab: BlockSpec by lazy {
         BlockSpec(specialName + "_slab")
-            .withProperties(blockProperties)
+            .applyFrom(blockProperties)
             .renderLayer(renderLayer)
             .itemGroup(itemGroup)
             .block { BaseSlabBlock(it.blockProperties, fullName) }
@@ -49,7 +49,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
 
     public val stairs: BlockSpec by lazy {
         BlockSpec(specialName + "_stairs")
-            .withProperties(blockProperties)
+            .applyFrom(blockProperties)
             .renderLayer(renderLayer)
             .itemGroup(itemGroup)
             .block { BaseStairsBlock({ full.lazy.get().defaultState }, it.blockProperties, fullName) }
@@ -60,7 +60,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
 
     public val fence: BlockSpec by lazy {
         BlockSpec(specialName + "_fence")
-            .withProperties(blockProperties)
+            .applyFrom(blockProperties)
             .renderLayer(renderLayer)
             .itemGroup(itemGroup)
             .block { BaseFenceBlock(it.blockProperties, fullName) }
@@ -71,7 +71,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
 
     public val fenceGate: BlockSpec by lazy {
         BlockSpec(specialName + "_fence_gate")
-            .withProperties(blockProperties)
+            .applyFrom(blockProperties)
             .renderLayer(renderLayer)
             .itemGroup(itemGroup)
             .block { BaseFenceGateBlock(it.blockProperties, fullName) }
@@ -79,7 +79,7 @@ public class BuildingBlockCollection(private val fullName: String, private val s
 
     public val wall: BlockSpec by lazy {
         BlockSpec(specialName + "_wall")
-            .withProperties(blockProperties)
+            .applyFrom(blockProperties)
             .renderLayer(renderLayer)
             .itemGroup(itemGroup)
             .block { BaseWallBlock(it.blockProperties, fullName) }

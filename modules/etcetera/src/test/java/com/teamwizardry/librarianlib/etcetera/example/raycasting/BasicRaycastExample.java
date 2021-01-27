@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.etcetera.example.raycasting;
 import com.teamwizardry.librarianlib.etcetera.Raycaster;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import org.jetbrains.annotations.Nullable;
 
 public class BasicRaycastExample {
@@ -13,9 +13,9 @@ public class BasicRaycastExample {
 
     @Nullable
     public BlockPos basicBlockRaycast(Entity entity) {
-        Vec3d start = entity.getEyePosition(0);
-        Vec3d look = entity.getLookVec();
-        look = new Vec3d(
+        Vector3d start = entity.getEyePosition(0);
+        Vector3d look = entity.getLookVec();
+        look = new Vector3d(
                 look.getX() * 100,
                 look.getY() * 100,
                 look.getZ() * 100

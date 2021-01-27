@@ -13,6 +13,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.ColorHandlerEvent
+import net.minecraftforge.event.RegisterCommandsEvent
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -80,8 +81,8 @@ public object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", "Test 
     }
 
     @SubscribeEvent
-    internal fun serverStarting(e: FMLServerStartingEvent) {
-        UnitTestCommand.register(e.commandDispatcher)
+    internal fun registerCommands(e: RegisterCommandsEvent) {
+        UnitTestCommand.register(e.dispatcher)
     }
 }
 

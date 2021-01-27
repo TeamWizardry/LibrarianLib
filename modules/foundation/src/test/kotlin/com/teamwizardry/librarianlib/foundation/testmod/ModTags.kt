@@ -5,11 +5,12 @@ import com.teamwizardry.librarianlib.foundation.registration.RegistrationManager
 import net.minecraft.block.Block
 import net.minecraft.item.Item
 import net.minecraft.tags.BlockTags
+import net.minecraft.tags.ITag
 import net.minecraft.tags.Tag
 
 object ModTags {
-    val STRANGE_BLOCK: Tag<Block> = TagWrappers.block(LibrarianLibFoundationTestMod.modid, "strange")
-    val STRANGE_ITEM: Tag<Item> = TagWrappers.itemFormOf(STRANGE_BLOCK)
+    val STRANGE_BLOCK: ITag.INamedTag<Block> = TagWrappers.block(LibrarianLibFoundationTestMod.modid, "strange")
+    val STRANGE_ITEM: ITag.INamedTag<Item> = TagWrappers.itemFormOf(STRANGE_BLOCK)
 
     internal fun registerTagsDatagen(registrationManager: RegistrationManager) {
         // add contents of STRANGE_TAG to WOOL

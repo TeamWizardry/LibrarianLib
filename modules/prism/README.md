@@ -61,7 +61,7 @@
 - `net.minecraft.util.math.Rotations`
 - `net.minecraft.util.math.SectionPos`
 - `net.minecraft.util.math.Vec2f`
-- `net.minecraft.util.math.Vec3d`
+- `net.minecraft.util.math.Vector3d`
 - `net.minecraft.util.ResourceLocation`
 - `net.minecraftforge.fluids.FluidStack`
 #### LibLib types

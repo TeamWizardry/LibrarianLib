@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.glitter.modules.GlLineBeamRenderModule
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Vector3d
 import net.minecraft.util.math.MathHelper
 
 object SpawnCountAdjustmentSystem: TestSystem("spawn_count_adjustment") {
@@ -57,7 +57,7 @@ object SpawnCountAdjustmentSystem: TestSystem("spawn_count_adjustment") {
         }
     }
 
-    fun doSpawn(pos: Vec3d, pitch: Float, yaw: Float) {
+    fun doSpawn(pos: Vector3d, pitch: Float, yaw: Float) {
         val look = getVectorForRotation(pitch, yaw)
 
         val spawnDistance = 2
@@ -84,13 +84,13 @@ object SpawnCountAdjustmentSystem: TestSystem("spawn_count_adjustment") {
         )
     }
 
-    fun getVectorForRotation(pitch: Float, yaw: Float): Vec3d {
+    fun getVectorForRotation(pitch: Float, yaw: Float): Vector3d {
         val f = pitch * (Math.PI.toFloat() / 180f)
         val f1 = -yaw * (Math.PI.toFloat() / 180f)
         val f2 = MathHelper.cos(f1)
         val f3 = MathHelper.sin(f1)
         val f4 = MathHelper.cos(f)
         val f5 = MathHelper.sin(f)
-        return Vec3d((f3 * f4).toDouble(), (-f5).toDouble(), (f2 * f4).toDouble())
+        return Vector3d((f3 * f4).toDouble(), (-f5).toDouble(), (f2 * f4).toDouble())
     }
 }

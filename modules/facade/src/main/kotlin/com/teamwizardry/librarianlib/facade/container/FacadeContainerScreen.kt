@@ -1,7 +1,9 @@
 package com.teamwizardry.librarianlib.facade.container
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
@@ -88,7 +90,7 @@ public abstract class FacadeContainerScreen<T: Container>(
         messageEncoder.invoke(container, name, arguments)
     }
 
-    override fun render(p_render_1_: Int, p_render_2_: Int, p_render_3_: Float) {
+    override fun render(matrixStack: MatrixStack, p_render_1_: Int, p_render_2_: Int, p_render_3_: Float) {
         facade.update()
         var frame = main.frame
         if(background.isVisible) {
@@ -101,10 +103,10 @@ public abstract class FacadeContainerScreen<T: Container>(
         ContainerSpace.guiLeft = guiLeft
         ContainerSpace.guiTop = guiTop
 
-        this.renderBackground()
-        super.render(p_render_1_, p_render_2_, p_render_3_)
+        this.renderBackground(matrixStack)
+        super.render(matrixStack, p_render_1_, p_render_2_, p_render_3_)
         if(!facade.hasTooltip)
-            this.renderHoveredToolTip(p_render_1_, p_render_2_)
+            this.renderHoveredTooltip(matrixStack, p_render_1_, p_render_2_)
     }
 
     override fun isMouseMasked(mouseX: Double, mouseY: Double): Boolean {
@@ -121,12 +123,12 @@ public abstract class FacadeContainerScreen<T: Container>(
         return facade.hitTest(mouseX, mouseY).layer == null
     }
 
-    override fun drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) {
+    override fun drawGuiContainerBackgroundLayer(matrixStack: MatrixStack, partialTicks: Float, mouseX: Int, mouseY: Int) {
         facade.filterRendering { it.zIndex < 1000 }
-        facade.render()
+        facade.render(matrixStack)
     }
 
-    override fun drawGuiContainerForegroundLayer(mouseX: Int, mouseY: Int) {
+    override fun drawGuiContainerForegroundLayer(matrixStack: MatrixStack, mouseX: Int, mouseY: Int) {
         RenderSystem.enableDepthTest() // depth testing is disabled because... logic?
 
         RenderSystem.translatef(-guiLeft.toFloat(), -guiTop.toFloat(), 0.0f)
@@ -148,7 +150,7 @@ public abstract class FacadeContainerScreen<T: Container>(
         RenderSystem.colorMask(true, true, true, true)
 
         facade.filterRendering { it.zIndex >= 1000 }
-        facade.render()
+        facade.render(matrixStack)
         RenderSystem.translatef(guiLeft.toFloat(), guiTop.toFloat(), 0.0f)
 
         RenderSystem.disableDepthTest()
@@ -229,9 +231,9 @@ public abstract class FacadeContainerScreen<T: Container>(
         return true
     }
 
-    override fun removed() {
-        super.removed()
-        facade.removed()
+    override fun onClose() {
+        super.onClose()
+        facade.onClose()
     }
 
     public inner class JeiIntegration {
@@ -254,7 +256,7 @@ public abstract class FacadeContainerScreen<T: Container>(
 
     public companion object {
         private val depthClobberRenderType = SimpleRenderTypes.flat(GL11.GL_QUADS) {
-            it.depthTest(RenderState.DepthTestState(GL11.GL_ALWAYS))
+            it.depthTest(DefaultRenderStates.DEPTH_ALWAYS)
         }
     }
 }

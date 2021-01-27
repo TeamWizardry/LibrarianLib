@@ -7,13 +7,12 @@ import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.Vec2d
-import net.minecraft.client.renderer.BufferBuilder
-import net.minecraft.client.renderer.Matrix4f
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Matrix4f
+import net.minecraft.util.math.vector.Vector3d
 import java.awt.Color
 
-public inline fun <reified T: IVertexBuilder> T.pos(pos: Vec3d): T = this.pos(pos.x, pos.y, pos.z) as T
-public inline fun <reified T: IVertexBuilder> T.normal(normal: Vec3d): T = this.normal(normal.x, normal.y, normal.z)
+public inline fun <reified T: IVertexBuilder> T.pos(pos: Vector3d): T = this.pos(pos.x, pos.y, pos.z) as T
+public inline fun <reified T: IVertexBuilder> T.normal(normal: Vector3d): T = this.normal(normal.x, normal.y, normal.z)
 public inline fun <reified T: IVertexBuilder> T.tex(uv: Vec2d): T = this.tex(uv.x, uv.y)
 
 public inline fun <reified T: IVertexBuilder> T.pos(x: Number, y: Number, z: Number): T = this.pos(x.toDouble(), y.toDouble(), z.toDouble()) as T
@@ -22,7 +21,7 @@ public inline fun <reified T: IVertexBuilder> T.tex(u: Number, v: Number): T = t
 
 public inline fun <reified T: IVertexBuilder> T.color(color: Color): T = this.color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f) as T
 
-public inline fun <reified T: IVertexBuilder> T.pos(matrix: Matrix4d, pos: Vec3d): T = this.pos(
+public inline fun <reified T: IVertexBuilder> T.pos(matrix: Matrix4d, pos: Vector3d): T = this.pos(
     matrix.transformX(pos.x, pos.y, pos.z),
     matrix.transformY(pos.x, pos.y, pos.z),
     matrix.transformZ(pos.x, pos.y, pos.z)

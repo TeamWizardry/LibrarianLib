@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.testmod.shaders
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
@@ -13,7 +14,7 @@ import java.awt.Color
 
 object SimpleFrag: ShaderTest<SimpleFrag.Test>() {
 
-    override fun doDraw() {
+    override fun doDraw(matrixStack: MatrixStack) {
         val minX = 0.0
         val minY = 0.0
         val maxX = 120.0

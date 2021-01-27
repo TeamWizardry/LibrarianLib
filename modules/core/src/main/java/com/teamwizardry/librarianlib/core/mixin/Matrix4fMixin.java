@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.core.mixin;
 
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Matrix4f;
+import net.minecraft.util.math.vector.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

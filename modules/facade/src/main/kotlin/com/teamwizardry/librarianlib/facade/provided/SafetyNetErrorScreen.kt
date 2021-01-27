@@ -1,11 +1,13 @@
 package com.teamwizardry.librarianlib.facade.provided
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
 import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.util.IReorderingProcessor
 import net.minecraft.util.text.StringTextComponent
 import java.awt.Color
 import kotlin.math.min
@@ -22,7 +24,7 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
     init {
         val maxWidth = 300
 
-        parts.add(TextScreenPart(title.formattedText, maxWidth))
+        parts.add(TextScreenPart(title.unformattedComponentText, maxWidth))
         parts.add(TextScreenPart("§1§l${e.javaClass.simpleName}"))
         parts.add(TextScreenPart("Exception caught while $message", maxWidth))
         e.message?.also { exceptionMessage ->
@@ -42,13 +44,13 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
         }
     }
 
-    override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        this.renderBackground()
+    override fun render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
+        this.renderBackground(matrixStack)
 
         val topLeft = vec(width - guiWidth, height - guiHeight) / 2
         val border = 8
 
-        fill(
+        fill(matrixStack,
             topLeft.xi - border, topLeft.yi - border,
             topLeft.xi + guiWidth + border, topLeft.yi + guiHeight + border,
             Color.lightGray.rgb
@@ -59,63 +61,66 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
 
         var y = 0
         parts.forEach { part ->
-            part.render(y)
+            part.render(matrixStack, y)
             y += part.height + gap
         }
 
         RenderSystem.popMatrix()
     }
 
-    private fun drawCenteredStringNoShadow(fontRenderer: FontRenderer, text: String, x: Int, y: Int, color: Int) {
-        fontRenderer.drawString(text, x - fontRenderer.getStringWidth(text) / 2f, y.toFloat(), color)
+    private fun drawCenteredStringNoShadow(matrixStack: MatrixStack, fontRenderer: FontRenderer, text: String, x: Int, y: Int, color: Int) {
+        fontRenderer.drawString(matrixStack, text, x - fontRenderer.getStringWidth(text) / 2f, y.toFloat(), color)
     }
 
     private abstract class ScreenPart {
         abstract val height: Int
         abstract val width: Int
-        abstract fun render(yPos: Int)
+        abstract fun render(matrixStack: MatrixStack, yPos: Int)
     }
 
     private inner class DividerScreenPart(override val height: Int): ScreenPart() {
         override val width: Int = 0
-        override fun render(yPos: Int) {
-            fill(-guiWidth / 2, yPos, guiWidth / 2, yPos + height, Color.darkGray.rgb)
+        override fun render(matrixStack: MatrixStack, yPos: Int) {
+            fill(matrixStack, -guiWidth / 2, yPos, guiWidth / 2, yPos + height, Color.darkGray.rgb)
         }
     }
 
     private inner class TextScreenPart(val text: String, maxWidth: Int? = null): ScreenPart() {
         override val height: Int
         override val width: Int
-        val lines: List<String>
+        val lines: List<IReorderingProcessor>
 
         init {
             val fontRenderer = Client.minecraft.fontRenderer
             if (maxWidth == null) {
-                lines = listOf(text)
+                lines = listOf(StringTextComponent(text).func_241878_f())
             } else {
-                lines = fontRenderer.listFormattedStringToWidth(text, maxWidth)
+                lines = fontRenderer.trimStringToWidth(StringTextComponent(text), maxWidth)
             }
 
             height = lines.size * fontRenderer.FONT_HEIGHT + // line height
                 (lines.size - 1) // 1px between lines
 
-            width = (lines.map { fontRenderer.getStringWidth(it) }.maxOrNull() ?: 0) / 2 * 2
+            // TODO: text is a nightmare now
+            width = 300 //(lines.map { fontRenderer.getStringWidth(it.accept()) }.maxOrNull() ?: 0) / 2 * 2
         }
 
-        override fun render(yPos: Int) {
+        override fun render(matrixStack: MatrixStack, yPos: Int) {
             var y = yPos
             val fontRenderer = Client.minecraft.fontRenderer
-            if (lines.isNotEmpty()) {
-                if (lines.size == 1) {
-                    drawCenteredStringNoShadow(fontRenderer, lines[0], 0, y, 0)
-                    y += fontRenderer.FONT_HEIGHT + 1
-                } else {
-                    lines.forEach { line ->
-                        fontRenderer.drawString(line, -guiWidth / 2f, y.toFloat(), 0)
-                        y += fontRenderer.FONT_HEIGHT + 1
-                    }
-                }
-            }
+
+            // TODO: text is a nightmare now
+//            if (lines.isNotEmpty()) {
+//                if (lines.size == 1) {
+//                    drawCenteredStringNoShadow(matrixStack, fontRenderer, lines[0], 0, y, 0)
+//                    y += fontRenderer.FONT_HEIGHT + 1
+//                } else {
+//                    lines.forEach { line ->
+//                        fontRenderer.drawString(matrixStack, line, -guiWidth / 2f, y.toFloat(), 0)
+//                        y += fontRenderer.FONT_HEIGHT + 1
+//                    }
+//                }
+//            }
         }
     }
 

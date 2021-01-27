@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.sided.ClientFunction
+import net.minecraft.block.AbstractBlock
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.material.Material
@@ -23,7 +24,7 @@ public class TestBlockConfig(public val id: String, public val name: String): Te
         this.config()
     }
 
-    public val properties: Block.Properties = Block.Properties.create(testMaterial)
+    public val properties: AbstractBlock.Properties = AbstractBlock.Properties.create(testMaterial)
 
     init {
         properties.notSolid()
@@ -38,11 +39,6 @@ public class TestBlockConfig(public val id: String, public val name: String): Te
      * Whether the block should have a facing property
      */
     public var directional: Boolean = false
-
-    /**
-     * @see Block.tickRate
-     */
-    public var tickRate: Int = 10
 
     public val rightClick: SidedAction<RightClickContext> = SidedAction()
     public val leftClick: SidedAction<LeftClickContext> = SidedAction()
@@ -89,7 +85,6 @@ public class TestBlockConfig(public val id: String, public val name: String): Te
             false, // solid
             true, // doesBlockMovement
             false, // opaque
-            true, // requiresNoToolIn
             false, // canBurnIn
             false, // replaceableIn
             PushReaction.NORMAL // mobilityFlag

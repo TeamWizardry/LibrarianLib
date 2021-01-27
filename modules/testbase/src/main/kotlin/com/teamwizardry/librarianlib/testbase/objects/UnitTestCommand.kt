@@ -60,33 +60,34 @@ public object UnitTestCommand {
             key.isTest && (value.result as? TestResult.Finished)?.result?.status == TestExecutionResult.Status.FAILED
         }
 
-        val passedStyle = Style().apply {
-            color = TextFormatting.GREEN
-            hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                StringTextComponent("${passed.size} tests passed\n").applyTextStyle(TextFormatting.GREEN)
-                    .appendSibling(StringTextComponent(passed.values.joinToString("\n") { it.displayPath.joinToString(" > ") }))
+        val passedStyle = Style.EMPTY
+            .applyFormatting(TextFormatting.GREEN)
+            .setHoverEvent(
+                HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    StringTextComponent("${passed.size} tests passed\n").mergeStyle(TextFormatting.GREEN)
+                        .append(StringTextComponent(passed.values.joinToString("\n") { it.displayPath.joinToString(" > ") }))
+                )
             )
-        }
-        val failedStyle = Style().apply {
-            color = TextFormatting.RED
-            hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                StringTextComponent("${failed.size} tests failed\n").applyTextStyle(TextFormatting.RED)
-                    .appendSibling(StringTextComponent(failed.values.joinToString("\n") { it.displayPath.joinToString(" > ") }))
+        val failedStyle = Style.EMPTY
+            .applyFormatting(TextFormatting.RED)
+            .setHoverEvent(
+                HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    StringTextComponent("${failed.size} tests failed\n").mergeStyle(TextFormatting.RED)
+                        .append(StringTextComponent(failed.values.joinToString("\n") { it.displayPath.joinToString(" > ") }))
+                )
             )
-        }
-        val rerunStyle = Style().apply {
-            color = TextFormatting.BLUE
-            underlined = true
-            clickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, input)
-        }
+        val rerunStyle = Style.EMPTY
+            .applyFormatting(TextFormatting.BLUE)
+            .setUnderlined(true)
+            .setClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND, input))
 
-        return StringTextComponent("[ $fullCount tests found | ").appendSibling(
+        return StringTextComponent("[ $fullCount tests found | ").append(
                 StringTextComponent("${passed.size} tests passed").setStyle(passedStyle)
-            ).appendText(" | ")
-            .appendSibling(
+            ).appendString(" | ")
+            .append(
                 StringTextComponent("${failed.size} tests failed").setStyle(failedStyle)
-            ).appendText(" ] ")
-            .appendSibling(
+            ).appendString(" ] ")
+            .append(
                 StringTextComponent("(Rerun)").setStyle(rerunStyle)
             )
     }

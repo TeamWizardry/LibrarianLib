@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.testmod.shaders
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
@@ -10,14 +11,14 @@ import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.renderer.IRenderTypeBuffer
-import net.minecraft.client.renderer.Matrix4f
+import net.minecraft.util.math.vector.Matrix4f
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 internal object MatrixUniform: ShaderTest<MatrixUniform.Test>() {
 
-    override fun doDraw() {
+    override fun doDraw(matrixStack: MatrixStack) {
         val minX = -8.0
         val minY = -8.0
         val maxX = 136.0
@@ -136,12 +137,12 @@ internal object MatrixUniform: ShaderTest<MatrixUniform.Test>() {
 
         val fr = Client.minecraft.fontRenderer
         val cellSize = 16
-        fr.drawString(mat4Label,
+        fr.drawString(matrixStack, mat4Label,
             (minX + cellSize * 2 - fr.getStringWidth(mat4Label)/2).toInt().toFloat(),
             (minY + cellSize * 2 - 4).toInt().toFloat(),
             Color.WHITE.rgb
         )
-        fr.drawString(mat3Label,
+        fr.drawString(matrixStack, mat3Label,
             (minX + cellSize * 5.5 - fr.getStringWidth(mat3Label)/2).toInt().toFloat(),
             (minY + cellSize * 5.5 - 4).toInt().toFloat(),
             Color.WHITE.rgb

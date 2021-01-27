@@ -66,12 +66,12 @@ public object Prisms {
 
             // minecraft types
             BlockPosSerializer,
-            Vec3dSerializer,
-            Vec2fSerializer,
+            Vector3dSerializer,
+            Vector2fSerializer,
             ChunkPosSerializer,
             ColumnPosSerializer,
             SectionPosSerializer,
-            GlobalPosSerializer,
+//            GlobalPosSerializer, // DimensionType serialization issues
             RotationsSerializer,
             AxisAlignedBBSerializer,
             MutableBoundingBoxSerializer,
@@ -82,7 +82,7 @@ public object Prisms {
             FluidStackSerializer,
             EffectInstanceSerializer,
             EnchantmentDataSerializer,
-            DimensionTypeSerializer,
+//            DimensionTypeSerializer, // DimensionType serialization issues
             FluidTankSerializer,
 
             // liblib types

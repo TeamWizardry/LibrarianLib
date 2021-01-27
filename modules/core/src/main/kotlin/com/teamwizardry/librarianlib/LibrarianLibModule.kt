@@ -1,17 +1,5 @@
 package com.teamwizardry.librarianlib
 
-import net.alexwells.kottle.FMLKotlinModLoadingContext
-import net.minecraft.block.Block
-import net.minecraft.entity.EntityType
-import net.minecraft.item.Item
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.event.RegistryEvent
-import net.minecraftforge.eventbus.api.IEventBus
-import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger

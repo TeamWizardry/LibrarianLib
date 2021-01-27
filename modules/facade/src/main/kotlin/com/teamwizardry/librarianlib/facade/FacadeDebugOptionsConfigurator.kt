@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.facade.layer.FacadeDebugOptions
 import com.teamwizardry.librarianlib.facade.provided.VanillaTooltipRenderer
@@ -94,19 +95,19 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
         }
     }
 
-    fun render() {
+    fun render(matrixStack: MatrixStack) {
         rows.forEach { it.computeStateText() }
         width = rows.maxOf { it.labelWidth + 2 + it.stateWidth }
         val left = (Client.window.scaledWidth - width) / 2
         val top = (Client.window.scaledHeight - height) / 2
         val maxLabelWidth = rows.maxOf { it.labelWidth }
 
-        AbstractGui.fill(
+        AbstractGui.fill(matrixStack,
             left - 6, top - 6,
             left + width + 6, top + height + 6,
             Color.lightGray.rgb
         )
-        AbstractGui.fill(
+        AbstractGui.fill(matrixStack,
             left - 5, top - 5,
             left + width + 5, top + height + 5,
             Color.black.rgb
@@ -121,21 +122,21 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
             val row = rows[i]
             val rowY = top + i * itemHeight
             if (i == hoveredIndex) {
-                AbstractGui.fill(
+                AbstractGui.fill(matrixStack,
                     left - 1, rowY - 1,
                     left + width + 1, rowY + Client.fontRenderer.FONT_HEIGHT,
                     Color.darkGray.rgb
                 )
             }
 
-            Client.fontRenderer.drawStringWithShadow(
+            Client.fontRenderer.drawStringWithShadow(matrixStack,
                 row.label,
                 left.toFloat() + (maxLabelWidth - row.labelWidth),
                 rowY.toFloat(),
                 Color.WHITE.rgb
             )
 
-            Client.fontRenderer.drawStringWithShadow(
+            Client.fontRenderer.drawStringWithShadow(matrixStack,
                 row.stateText,
                 left.toFloat() + maxLabelWidth + 2,
                 rowY.toFloat(),
@@ -145,6 +146,7 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
 
         rows.getOrNull(hoveredIndex)?.also { row ->
             VanillaTooltipRenderer.renderTooltip(
+                matrixStack,
                 row.tooltip,
                 left - 12,
                 top + hoveredIndex * itemHeight + Client.fontRenderer.FONT_HEIGHT + 16

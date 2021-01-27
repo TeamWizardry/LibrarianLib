@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade.testmod
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.clamp
@@ -24,10 +25,10 @@ class TestListScreen(name: String, val tests: List<FacadeTestEntry>): Screen(Str
         guiPos = (vec(width, height) - this.size) / 2
     }
 
-    override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        super.render(mouseX, mouseY, partialTicks)
+    override fun render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
+        super.render(matrixStack, mouseX, mouseY, partialTicks)
 
-        fill(
+        fill(matrixStack,
             guiPos.xi - border, guiPos.yi - border,
             guiPos.xi + size.xi + border, guiPos.yi + size.yi + border,
             Color.lightGray.rgb
@@ -41,14 +42,14 @@ class TestListScreen(name: String, val tests: List<FacadeTestEntry>): Screen(Str
 
         for(i in scrollCount until tests.size) {
             if(i == hoveredIndex) {
-                fill(
+                fill(matrixStack,
                     guiPos.xi, guiPos.yi + i * itemHeight,
                     guiPos.xi + size.xi, guiPos.yi + i * itemHeight + Client.fontRenderer.FONT_HEIGHT,
                     Color.gray.rgb
                 )
             }
 
-            Client.fontRenderer.drawString(tests[i].name, guiPos.xf, guiPos.yf + i * itemHeight, Color(0, 0, 0, 0).rgb)
+            Client.fontRenderer.drawString(matrixStack, tests[i].name, guiPos.xf, guiPos.yf + i * itemHeight, Color(0, 0, 0, 0).rgb)
         }
     }
 

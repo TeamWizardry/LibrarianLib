@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.inventory.ContainerScreen
@@ -29,11 +30,11 @@ public open class FacadeScreen(title: ITextComponent): Screen(title /* todo beha
      */
     public val main: GuiLayer = facade.main
 
-    override fun render(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        this.renderBackground()
-        super.render(mouseX, mouseY, partialTicks)
+    override fun render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
+        this.renderBackground(matrixStack)
+        super.render(matrixStack, mouseX, mouseY, partialTicks)
         this.facade.update()
-        this.facade.render()
+        this.facade.render(matrixStack)
     }
 
     override fun mouseMoved(xPos: Double, p_212927_3_: Double) {
@@ -88,8 +89,8 @@ public open class FacadeScreen(title: ITextComponent): Screen(title /* todo beha
         return true
     }
 
-    override fun removed() {
-        super.removed()
-        facade.removed()
+    override fun onClose() {
+        super.onClose()
+        facade.onClose()
     }
 }

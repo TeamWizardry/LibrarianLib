@@ -18,6 +18,6 @@ class SimpleContainer(windowId: Int, player: PlayerEntity): FacadeContainer(Libr
     @Message
     private fun buttonClick(position: Vec2d) {
         val prefix = if(isClientContainer) "[Client Container]" else "[Server Container]"
-        player.sendMessage(StringTextComponent("$prefix button click: $position"))
+        player.sendStatusMessage(StringTextComponent("$prefix button click: $position"), false)
     }
 }

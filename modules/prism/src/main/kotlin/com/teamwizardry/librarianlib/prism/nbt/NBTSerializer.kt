@@ -45,7 +45,7 @@ public abstract class NBTSerializer<T: Any>: Serializer<T> {
         if(tag == null)
             throw DeserializationException("Missing $name")
         if(!type.isAssignableFrom(tag.javaClass))
-            throw DeserializationException("Unexpected type ${tag.type.func_225648_a_()} for $name")
+            throw DeserializationException("Unexpected type ${tag.type.name} for $name")
         @Suppress("UNCHECKED_CAST")
         return tag as T
     }
@@ -66,7 +66,7 @@ public abstract class NBTSerializer<T: Any>: Serializer<T> {
     public fun<T: INBT> expect(compound: CompoundNBT, key: String, type: Class<T>): T {
         val tag = compound[key] ?: throw DeserializationException("Missing `$key`")
         if(!type.isAssignableFrom(tag.javaClass))
-            throw DeserializationException("Unexpected type ${tag.type.func_225648_a_()} for `$key`")
+            throw DeserializationException("Unexpected type ${tag.type.name} for `$key`")
         @Suppress("UNCHECKED_CAST")
         return tag as T
     }

@@ -1,11 +1,12 @@
 package com.teamwizardry.librarianlib.albedo.testmod
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.albedo.Shader
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.ConstructorMirror
 
 abstract class ShaderTest<T: Shader> {
-    protected abstract fun doDraw()
+    protected abstract fun doDraw(matrixStack: MatrixStack)
 
     private var _shader: Shader? = null
     @Suppress("UNCHECKED_CAST")
@@ -17,11 +18,11 @@ abstract class ShaderTest<T: Shader> {
         .typeParameters[0].asClassMirror()
         .getDeclaredConstructor()
 
-    fun draw() {
+    fun draw(matrixStack: MatrixStack) {
         if(_shader == null) {
             _shader = shaderConstructor()
         }
-        doDraw()
+        doDraw(matrixStack)
     }
 
     fun delete() {

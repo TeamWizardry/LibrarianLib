@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.math
 
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
-import net.minecraft.client.renderer.Matrix4f
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Matrix4f
+import net.minecraft.util.math.vector.Vector3d
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -142,6 +142,9 @@ public open class MutableMatrix4d(
         return this
     }
 
+    /**
+     * Set the contents of this matrix to the contents of the other matrix
+     */
     public fun set(other: Matrix4d): MutableMatrix4d {
         this.m00 = other.m00
         this.m01 = other.m01
@@ -162,6 +165,9 @@ public open class MutableMatrix4d(
         return this
     }
 
+    /**
+     * Set the contents of this matrix to the contents of the other matrix
+     */
     public fun set(m: Matrix4f): MutableMatrix4d {
         @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix4f
         this.m00 = imatrix.m00.toDouble()
@@ -263,40 +269,56 @@ public open class MutableMatrix4d(
         return mul(a)
     }
 
-    override fun mul(m: Matrix4d): MutableMatrix4d {
-        val _m00 = m00;
-        val _m01 = m01;
-        val _m02 = m02;
-        val _m03 = m03
-        val _m10 = m10;
-        val _m11 = m11;
-        val _m12 = m12;
-        val _m13 = m13
-        val _m20 = m20;
-        val _m21 = m21;
-        val _m22 = m22;
-        val _m23 = m23
-        val _m30 = m30;
-        val _m31 = m31;
-        val _m32 = m32;
-        val _m33 = m33
+    override fun mul(
+        m: Matrix4d
+    ): MutableMatrix4d {
+        return mul(
+            m.m00, m.m01, m.m02, m.m03,
+            m.m10, m.m11, m.m12, m.m13,
+            m.m20, m.m21, m.m22, m.m23,
+            m.m30, m.m31, m.m32, m.m33
+        )
+    }
 
-        m00 = _m00 * m.m00 + _m01 * m.m10 + _m02 * m.m20 + _m03 * m.m30
-        m01 = _m00 * m.m01 + _m01 * m.m11 + _m02 * m.m21 + _m03 * m.m31
-        m02 = _m00 * m.m02 + _m01 * m.m12 + _m02 * m.m22 + _m03 * m.m32
-        m03 = _m00 * m.m03 + _m01 * m.m13 + _m02 * m.m23 + _m03 * m.m33
-        m10 = _m10 * m.m00 + _m11 * m.m10 + _m12 * m.m20 + _m13 * m.m30
-        m11 = _m10 * m.m01 + _m11 * m.m11 + _m12 * m.m21 + _m13 * m.m31
-        m12 = _m10 * m.m02 + _m11 * m.m12 + _m12 * m.m22 + _m13 * m.m32
-        m13 = _m10 * m.m03 + _m11 * m.m13 + _m12 * m.m23 + _m13 * m.m33
-        m20 = _m20 * m.m00 + _m21 * m.m10 + _m22 * m.m20 + _m23 * m.m30
-        m21 = _m20 * m.m01 + _m21 * m.m11 + _m22 * m.m21 + _m23 * m.m31
-        m22 = _m20 * m.m02 + _m21 * m.m12 + _m22 * m.m22 + _m23 * m.m32
-        m23 = _m20 * m.m03 + _m21 * m.m13 + _m22 * m.m23 + _m23 * m.m33
-        m30 = _m30 * m.m00 + _m31 * m.m10 + _m32 * m.m20 + _m33 * m.m30
-        m31 = _m30 * m.m01 + _m31 * m.m11 + _m32 * m.m21 + _m33 * m.m31
-        m32 = _m30 * m.m02 + _m31 * m.m12 + _m32 * m.m22 + _m33 * m.m32
-        m33 = _m30 * m.m03 + _m31 * m.m13 + _m32 * m.m23 + _m33 * m.m33
+    public fun mul(
+        m00: Double, m01: Double, m02: Double, m03: Double,
+        m10: Double, m11: Double, m12: Double, m13: Double,
+        m20: Double, m21: Double, m22: Double, m23: Double,
+        m30: Double, m31: Double, m32: Double, m33: Double
+    ): MutableMatrix4d {
+        val _m00 = this.m00
+        val _m01 = this.m01
+        val _m02 = this.m02
+        val _m03 = this.m03
+        val _m10 = this.m10
+        val _m11 = this.m11
+        val _m12 = this.m12
+        val _m13 = this.m13
+        val _m20 = this.m20
+        val _m21 = this.m21
+        val _m22 = this.m22
+        val _m23 = this.m23
+        val _m30 = this.m30
+        val _m31 = this.m31
+        val _m32 = this.m32
+        val _m33 = this.m33
+
+        this.m00 = _m00 * m00 + _m01 * m10 + _m02 * m20 + _m03 * m30
+        this.m01 = _m00 * m01 + _m01 * m11 + _m02 * m21 + _m03 * m31
+        this.m02 = _m00 * m02 + _m01 * m12 + _m02 * m22 + _m03 * m32
+        this.m03 = _m00 * m03 + _m01 * m13 + _m02 * m23 + _m03 * m33
+        this.m10 = _m10 * m00 + _m11 * m10 + _m12 * m20 + _m13 * m30
+        this.m11 = _m10 * m01 + _m11 * m11 + _m12 * m21 + _m13 * m31
+        this.m12 = _m10 * m02 + _m11 * m12 + _m12 * m22 + _m13 * m32
+        this.m13 = _m10 * m03 + _m11 * m13 + _m12 * m23 + _m13 * m33
+        this.m20 = _m20 * m00 + _m21 * m10 + _m22 * m20 + _m23 * m30
+        this.m21 = _m20 * m01 + _m21 * m11 + _m22 * m21 + _m23 * m31
+        this.m22 = _m20 * m02 + _m21 * m12 + _m22 * m22 + _m23 * m32
+        this.m23 = _m20 * m03 + _m21 * m13 + _m22 * m23 + _m23 * m33
+        this.m30 = _m30 * m00 + _m31 * m10 + _m32 * m20 + _m33 * m30
+        this.m31 = _m30 * m01 + _m31 * m11 + _m32 * m21 + _m33 * m31
+        this.m32 = _m30 * m02 + _m31 * m12 + _m32 * m22 + _m33 * m32
+        this.m33 = _m30 * m03 + _m31 * m13 + _m32 * m23 + _m33 * m33
         return this
     }
 
@@ -356,7 +378,7 @@ public open class MutableMatrix4d(
         return this
     }
 
-    override fun translate(v: Vec3d): MutableMatrix4d {
+    override fun translate(v: Vector3d): MutableMatrix4d {
         return translate(v.x, v.y, v.z)
     }
 
@@ -388,7 +410,7 @@ public open class MutableMatrix4d(
         return this.mul(createRotation(rot))
     }
 
-    override fun rotate(axis: Vec3d, angle: Double): Matrix4d {
+    override fun rotate(axis: Vector3d, angle: Double): Matrix4d {
         return this.mul(createRotation(axis, angle))
     }
 

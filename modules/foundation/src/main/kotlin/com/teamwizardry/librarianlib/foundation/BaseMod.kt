@@ -5,7 +5,6 @@ import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.courier.CourierChannel
 import com.teamwizardry.librarianlib.foundation.registration.RegistrationManager
 import com.teamwizardry.librarianlib.foundation.util.ModLogManager
-import net.alexwells.kottle.FMLKotlinModLoadingContext
 import net.minecraft.block.Block
 import net.minecraft.entity.EntityType
 import net.minecraft.fluid.Fluid
@@ -25,8 +24,8 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import net.minecraftforge.registries.IForgeRegistry
-import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import thedarkcolour.kotlinforforge.forge.MOD_BUS
 
 /**
  *
@@ -41,10 +40,10 @@ import org.apache.logging.log4j.Logger
  * - [interModCommsProcess]
  *
  * @constructor
- * @param kottleContext Pass a value of true if your mod uses Kottle's kotlin language provider
+ * @param kotlinContext Pass a value of true if your mod uses the Kotlin for Forge language provider
  */
 @Suppress("LeakingThis")
-public abstract class BaseMod @JvmOverloads constructor(private val kottleContext: Boolean = false) {
+public abstract class BaseMod @JvmOverloads constructor(private val kotlinContext: Boolean = false) {
     public val modid: String = MiscUtil.getModId(this.javaClass)
     public val version: String = ModLoadingContext.get().activeContainer.modInfo.version.toString()
     public val registrationManager: RegistrationManager
@@ -100,13 +99,13 @@ public abstract class BaseMod @JvmOverloads constructor(private val kottleContex
     protected open fun interModCommsProcess(e: InterModProcessEvent) { }
 
     /**
-     * Gets the mod loading event bus. Override this if your mod uses a non-standard mod loader. Mods using the Kottle
-     * mod language provider should pass true to the `kottleContext` constructor parameter instead of overriding this
-     * method.
+     * Gets the mod loading event bus. Override this if your mod uses a non-standard mod loader. Mods using the
+     * Kotlin for Forge mod language provider should pass true to the `kotlinContext` constructor parameter instead of
+     * overriding this method.
      */
     protected open fun modLoadingContextEventBus(): IEventBus {
-        return if(kottleContext) {
-            FMLKotlinModLoadingContext.get().modEventBus
+        return if(kotlinContext) {
+            MOD_BUS
         } else {
             FMLJavaModLoadingContext.get().modEventBus
         }

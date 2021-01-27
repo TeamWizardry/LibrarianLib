@@ -15,7 +15,7 @@ import net.minecraft.util.DamageSource
 import net.minecraft.util.Hand
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.RayTraceResult
-import net.minecraft.util.math.Vec3d
+import net.minecraft.util.math.vector.Vector3d
 import net.minecraft.world.World
 import net.minecraftforge.fml.network.NetworkHooks
 
@@ -78,7 +78,7 @@ public open class TestEntity(public val config: TestEntityConfig, world: World):
         super.onRemovedFromWorld()
     }
 
-    override fun applyPlayerInteraction(player: PlayerEntity, vec: Vec3d, hand: Hand): ActionResultType {
+    override fun applyPlayerInteraction(player: PlayerEntity, vec: Vector3d, hand: Hand): ActionResultType {
         config.rightClick.run(this.world.isRemote, TestEntityConfig.RightClickContext(this, player, hand, vec))
         if (config.rightClick.exists)
             return ActionResultType.SUCCESS

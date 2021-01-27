@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.glitter.ParticleRenderModule
 import com.teamwizardry.librarianlib.glitter.ParticleUpdateModule
 import com.teamwizardry.librarianlib.glitter.ReadParticleBinding
-import net.minecraft.client.renderer.Matrix4f
+import net.minecraft.util.math.vector.Matrix4f
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11

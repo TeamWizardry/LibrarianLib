@@ -110,12 +110,12 @@ object LibrarianLibTestBaseTestMod: TestMod(LibrarianLibTestBaseModule) {
 
             rightClick.client {
                 val tile = world.getTileEntity(pos) as? Tile ?: return@client
-                player.sendMessage(StringTextComponent("[Client] ${tile.ticks} ticks"))
+                player.sendStatusMessage(StringTextComponent("[Client] ${tile.ticks} ticks"), false)
             }
 
             rightClick.server {
                 val tile = world.getTileEntity(pos) as? Tile ?: return@server
-                player.sendMessage(StringTextComponent("[Server] ${tile.ticks} ticks"))
+                player.sendStatusMessage(StringTextComponent("[Server] ${tile.ticks} ticks"), false)
             }
         })
 

@@ -1,10 +1,13 @@
 package com.teamwizardry.librarianlib.facade.provided
 
+import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.item.ItemStack
+import net.minecraft.util.IReorderingProcessor
+import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 
 /**
@@ -12,23 +15,19 @@ import net.minecraft.util.text.StringTextComponent
  */
 public object VanillaTooltipRenderer {
     @JvmStatic
-    public fun renderTooltip(text: String, mouseX: Int, mouseY: Int) {
-        TooltipProvider.renderTooltip(text, mouseX, mouseY)
+    public fun renderTooltip(matrixStack: MatrixStack, text: String, mouseX: Int, mouseY: Int) {
+        TooltipProvider.renderTooltip(matrixStack, StringTextComponent(text), mouseX, mouseY)
     }
 
     @JvmStatic
-    public fun renderTooltip(lines: List<String>, mouseX: Int, mouseY: Int) {
-        TooltipProvider.renderTooltip(lines, mouseX, mouseY)
+    public fun renderTooltip(matrixStack: MatrixStack, text: List<String>, mouseX: Int, mouseY: Int, font: FontRenderer) {
+        TODO("Drawing wrapped lines is hard now")
+//        TooltipProvider.renderTooltip(matrixStack, text, mouseX, mouseY, font)
     }
 
     @JvmStatic
-    public fun renderTooltip(text: List<String>, mouseX: Int, mouseY: Int, font: FontRenderer) {
-        TooltipProvider.renderTooltip(text, mouseX, mouseY, font)
-    }
-
-    @JvmStatic
-    public fun renderTooltip(stack: ItemStack, mouseX: Int, mouseY: Int) {
-        TooltipProvider.renderTooltip(stack, mouseX, mouseY)
+    public fun renderTooltip(matrixStack: MatrixStack, stack: ItemStack, mouseX: Int, mouseY: Int) {
+        TooltipProvider.renderTooltip(matrixStack, stack, mouseX, mouseY)
     }
 
     private object TooltipProvider: Screen(StringTextComponent("")) {
@@ -42,40 +41,44 @@ public object VanillaTooltipRenderer {
         }
 
         public override fun renderTooltip(
-            p_renderTooltip_1_: String,
+            matrixStack: MatrixStack,
+            text: ITextComponent,
             p_renderTooltip_2_: Int,
             p_renderTooltip_3_: Int
         ) {
             initIfNeeded()
-            super.renderTooltip(p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_)
+            super.renderTooltip(matrixStack, text, p_renderTooltip_2_, p_renderTooltip_3_)
         }
 
         public override fun renderTooltip(
-            p_renderTooltip_1_: List<String>,
+            matrixStack: MatrixStack,
+            tooltips: MutableList<out IReorderingProcessor>,
             p_renderTooltip_2_: Int,
             p_renderTooltip_3_: Int
         ) {
             initIfNeeded()
-            super.renderTooltip(p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_)
+            super.renderTooltip(matrixStack, tooltips, p_renderTooltip_2_, p_renderTooltip_3_)
         }
 
-        public override fun renderTooltip(
-            p_renderTooltip_1_: List<String>,
+        public override fun renderToolTip(
+            matrixStack: MatrixStack,
+            tooltips: MutableList<out IReorderingProcessor>,
             p_renderTooltip_2_: Int,
             p_renderTooltip_3_: Int,
             font: FontRenderer
         ) {
             initIfNeeded()
-            super.renderTooltip(p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_, font)
+            super.renderToolTip(matrixStack, tooltips, p_renderTooltip_2_, p_renderTooltip_3_, font)
         }
 
         public override fun renderTooltip(
+            matrixStack: MatrixStack,
             p_renderTooltip_1_: ItemStack,
             p_renderTooltip_2_: Int,
             p_renderTooltip_3_: Int
         ) {
             initIfNeeded()
-            super.renderTooltip(p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_)
+            super.renderTooltip(matrixStack, p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_)
         }
     }
 }

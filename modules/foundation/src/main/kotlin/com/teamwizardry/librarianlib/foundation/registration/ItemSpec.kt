@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer
 import net.minecraft.item.Food
 import net.minecraft.item.Item
 import net.minecraft.item.Rarity
+import net.minecraft.tags.ITag
 import net.minecraft.tags.Tag
 import net.minecraft.util.IItemProvider
 import net.minecraft.util.ResourceLocation
@@ -150,7 +151,7 @@ public class ItemSpec(
         internal val names: MutableMap<String, String> = mutableMapOf()
 
         @get:JvmSynthetic
-        internal val tags: MutableList<Tag<Item>> = mutableListOf()
+        internal val tags: MutableList<ITag.INamedTag<Item>> = mutableListOf()
 
         /**
          * Sets the model generation function. Note: this will override [IFoundationItem.generateItemModel].
@@ -187,7 +188,7 @@ public class ItemSpec(
         /**
          * Adds the passed tags to this block
          */
-        public fun tags(vararg tags: Tag<Item>): DataGen {
+        public fun tags(vararg tags: ITag.INamedTag<Item>): DataGen {
             this.tags.addAll(tags)
             return this
         }
