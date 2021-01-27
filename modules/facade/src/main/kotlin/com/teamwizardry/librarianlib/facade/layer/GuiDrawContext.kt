@@ -29,7 +29,7 @@ public class GuiDrawContext(
      */
     public val transform: Matrix4d
         get() {
-            if(matrix.cacheVersion != lastMatrixVersion) {
+            if(matrix.mutationCount != lastMatrixVersion) {
                 combinedTransform.set(rootTransform)
                 combinedTransform.mul(
                     matrix.m00, matrix.m01, 0.0, matrix.m02,
@@ -37,7 +37,7 @@ public class GuiDrawContext(
                     0.0, 0.0, 1.0, 0.0,
                     0.0, 0.0, 0.0, 1.0
                 )
-                lastMatrixVersion = matrix.cacheVersion
+                lastMatrixVersion = matrix.mutationCount
             }
 
             return combinedTransform

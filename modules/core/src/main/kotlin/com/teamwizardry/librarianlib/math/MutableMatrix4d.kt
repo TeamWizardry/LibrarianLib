@@ -66,7 +66,7 @@ public open class MutableMatrix4d(
      * This value is incremented every time the matrix is mutated, making it easy to detect changes for the purpose of
      * caching.
      */
-    public var cacheVersion: Int = 0
+    public var mutationCount: Int = 0
         private set
 
     public constructor(m: Matrix4d): this(
@@ -643,7 +643,7 @@ public open class MutableMatrix4d(
     override fun toImmutable(): Matrix4d = Matrix4d(this)
 
     protected fun recordMutation() {
-        cacheVersion++
+        mutationCount++
     }
 
     protected inline fun recordMutation(block: () -> Unit) {
