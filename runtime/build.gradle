@@ -5,6 +5,9 @@ apply plugin: 'net.minecraftforge.gradle'
 
 configurations {
     mod
+    clientMod.extendsFrom(mod)
+    serverMod.extendsFrom(mod)
+    dataMod.extendsFrom(mod)
 }
 
 minecraft {
@@ -78,16 +81,6 @@ task(createDataGenSymlinks).doLast {
     }
 }
 
-task copyLibModJars(type: Sync) {
-    into project.file('run/mods')
-    from project.file('mods')
-    from configurations.mod
-
-    allmodules.each {
-        from it.configurations.mod
-    }
-}
-compileJava.dependsOn(copyLibModJars)
 compileJava.dependsOn(rootProject.updateReadmeVersions)
 
 minecraft {
@@ -141,10 +134,47 @@ minecraft {
     }
 }
 
+task copyClientModJars(type: Sync) {
+    into project.file('run/mods')
+    from project.file('mods')
+    from configurations.clientMod
+
+    allmodules.each {
+        from it.configurations.clientMod
+    }
+}
+task copyServerModJars(type: Sync) {
+    into project.file('run/mods')
+    from project.file('mods')
+    from configurations.serverMod
+
+    allmodules.each {
+        from it.configurations.serverMod
+    }
+}
+task copyDataModJars(type: Sync) {
+    into project.file('run/mods')
+    from project.file('mods')
+    from configurations.dataMod
+
+    allmodules.each {
+        from it.configurations.dataMod
+    }
+}
+
 // I have to create the directories at the last moment, otherwise for some reason something else ends up deleting them
 tasks.whenTaskAdded { task ->
-    if(["prepareClient", "prepareServer", "prepareData"].contains(task.name))
+    if(["prepareClient", "prepareServer", "prepareData"].contains(task.name)) {
         task.finalizedBy(createEmptyOutputDirs)
-    if(task.name == "prepareData")
+    }
+    if(task.name == "prepareClient") {
+        task.finalizedBy(copyClientModJars)
+    }
+    if(task.name == "prepareServer") {
+        task.finalizedBy(copyServerModJars)
+    }
+    if(task.name == "prepareData") {
         task.finalizedBy(createDataGenSymlinks)
+        task.finalizedBy(copyDataModJars)
+    }
 }

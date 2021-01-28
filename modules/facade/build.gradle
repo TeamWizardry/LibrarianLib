@@ -62,6 +62,7 @@ dependencies {
     mod fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 
     compileOnly "curse.maven:mouse-tweaks-60089:${mousetweaks_api_id}"
-    mod fg.deobf("curse.maven:mouse-tweaks-60089:${mousetweaks_jar_id}")
+    clientMod fg.deobf("curse.maven:mouse-tweaks-60089:${mousetweaks_jar_id}") // mouse tweaks crashes datagen
+    serverMod fg.deobf("curse.maven:mouse-tweaks-60089:${mousetweaks_jar_id}")
     mod fg.deobf("curse.maven:inventory-sorter-240633:${inventorysorter_jar_id}")
 }

@@ -1183,8 +1183,8 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 FlatLayerShader.renderMode.set(renderMode.ordinal)
                 FlatLayerShader.blendMode = blendMode
 
-                val maxU = (size.xf * rasterizationScale) / Client.window.framebufferWidth
-                val maxV = (size.yf * rasterizationScale) / Client.window.framebufferHeight
+                val maxU = (size.xf * rasterizationScale * Client.guiScaleFactor.toFloat()) / Client.window.framebufferWidth
+                val maxV = (size.yf * rasterizationScale * Client.guiScaleFactor.toFloat()) / Client.window.framebufferHeight
 
                 val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
                 val vb = buffer.getBuffer(flatLayerRenderType)

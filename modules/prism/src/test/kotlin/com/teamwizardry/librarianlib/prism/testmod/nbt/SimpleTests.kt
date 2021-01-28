@@ -75,9 +75,11 @@ internal class SimpleTests: NBTPrismTest() {
     @Test
     fun `read+write for UUID should be symmetrical`() {
         val uuid = UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5")
-        simple<UUID, UUIDSerializer>(uuid, NBTBuilder.compound {
-            "L" *= long(uuid.leastSignificantBits)
-            "M" *= long(uuid.mostSignificantBits)
-        })
+        val most = uuid.mostSignificantBits
+        val least = uuid.leastSignificantBits
+        simple<UUID, UUIDSerializer>(uuid, NBTBuilder.intArray(
+            (most shr 32).toInt(), most.toInt(),
+            (least shr 32).toInt(), least.toInt()
+        ))
     }
 }

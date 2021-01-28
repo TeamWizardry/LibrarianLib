@@ -23,7 +23,7 @@ public class PastryDynamicBackground(style: IBackgroundStyle, vararg shapeLayers
         set(value) {
             if(field != value) {
                 field = value
-                markLayoutDirty()
+                updateElements()
             }
         }
 

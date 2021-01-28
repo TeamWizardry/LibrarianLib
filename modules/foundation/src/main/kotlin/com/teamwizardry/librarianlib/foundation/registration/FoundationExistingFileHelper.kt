@@ -14,6 +14,8 @@ internal class FoundationExistingFileHelper(val wrapped: ExistingFileHelper): Ex
     }
 
     override fun exists(loc: ResourceLocation?, type: IResourceType?): Boolean {
+        if(type?.suffix == ".png")
+            return true
         return wrapped.exists(loc, type)
     }
 

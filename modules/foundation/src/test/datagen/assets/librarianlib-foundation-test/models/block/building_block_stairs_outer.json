@@ -1,5 +1,5 @@
 {
-  "parent": "block/outer_stairs",
+  "parent": "minecraft:block/outer_stairs",
   "textures": {
     "side": "librarianlib-foundation-test:block/building_block",
     "bottom": "librarianlib-foundation-test:block/building_block",

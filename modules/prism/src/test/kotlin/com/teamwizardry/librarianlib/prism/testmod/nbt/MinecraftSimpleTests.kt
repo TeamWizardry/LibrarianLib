@@ -271,10 +271,17 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
 
     @Test
     fun `read+write for GameProfile should be symmetrical`() {
+        val uuid = UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5")
+        val most = uuid.mostSignificantBits
+        val least = uuid.leastSignificantBits
+
         simple<GameProfile, GameProfileSerializer>(
-            GameProfile(UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5"), "Notch"),
+            GameProfile(uuid, "Notch"),
             NBTBuilder.compound {
-                "Id" *= string("069a79f4-44e9-4726-a5be-fca90e38aaf5")
+                "Id" *= intArray(
+                    (most shr 32).toInt(), most.toInt(),
+                    (least shr 32).toInt(), least.toInt()
+                )
                 "Name" *= string("Notch")
             }
         )

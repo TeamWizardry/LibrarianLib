@@ -142,7 +142,10 @@ public open class FacadeWidget(
                 if (debugConfigurator.isOpen) {
                     debugConfigurator.isOpen = false
                 } else {
-                    screen.onClose()
+                    if (screen.shouldCloseOnEsc()) {
+                        screen.closeScreen()
+                        return true
+                    }
                 }
             }
         }

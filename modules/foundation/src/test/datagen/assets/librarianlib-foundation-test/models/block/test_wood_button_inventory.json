@@ -1,5 +1,5 @@
 {
-  "parent": "block/button_inventory",
+  "parent": "minecraft:block/button_inventory",
   "textures": {
     "texture": "librarianlib-foundation-test:block/test_wood_planks"
   }

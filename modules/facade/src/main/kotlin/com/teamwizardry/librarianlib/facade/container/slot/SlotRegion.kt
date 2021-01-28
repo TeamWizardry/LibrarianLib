@@ -139,6 +139,9 @@ public class SlotRegion private constructor(private val slots: List<LazySlot>) :
     }
 
     public companion object {
+        @JvmField
+        public val EMPTY: SlotRegion = SlotRegion(emptyList())
+
         /**
          * Create a region containing specific slot instances. Note: trying to re-configure the slots in this region,
          * either directly or using a factory, will throw an exception.

@@ -309,8 +309,8 @@ public object Client {
         if (event.phase == TickEvent.Phase.END) {
             val mc = Minecraft.getInstance()
             if (!mc.isGamePaused)
-                worldTicks += timer.elapsedPartialTicks
-            globalTicks += timer.elapsedPartialTicks
+                worldTicks++
+            globalTicks++
         }
     }
 }

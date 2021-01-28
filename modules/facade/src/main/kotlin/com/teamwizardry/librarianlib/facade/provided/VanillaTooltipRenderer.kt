@@ -8,6 +8,8 @@ import net.minecraft.client.gui.screen.Screen
 import net.minecraft.item.ItemStack
 import net.minecraft.util.IReorderingProcessor
 import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.text.ITextProperties
+import net.minecraft.util.text.LanguageMap
 import net.minecraft.util.text.StringTextComponent
 
 /**
@@ -20,9 +22,20 @@ public object VanillaTooltipRenderer {
     }
 
     @JvmStatic
-    public fun renderTooltip(matrixStack: MatrixStack, text: List<String>, mouseX: Int, mouseY: Int, font: FontRenderer) {
-        TODO("Drawing wrapped lines is hard now")
-//        TooltipProvider.renderTooltip(matrixStack, text, mouseX, mouseY, font)
+    public fun renderTooltip(
+        matrixStack: MatrixStack,
+        text: List<String>,
+        mouseX: Int,
+        mouseY: Int,
+        font: FontRenderer
+    ) {
+        TooltipProvider.renderToolTip(
+            matrixStack,
+            LanguageMap.getInstance().func_244260_a(text.map { ITextProperties.func_240652_a_(it) }),
+            mouseX,
+            mouseY,
+            font
+        )
     }
 
     @JvmStatic
@@ -30,7 +43,7 @@ public object VanillaTooltipRenderer {
         TooltipProvider.renderTooltip(matrixStack, stack, mouseX, mouseY)
     }
 
-    private object TooltipProvider: Screen(StringTextComponent("")) {
+    private object TooltipProvider : Screen(StringTextComponent("")) {
         init {
             this.init(Client.minecraft, Client.window.scaledWidth, Client.window.scaledHeight)
         }
@@ -52,7 +65,7 @@ public object VanillaTooltipRenderer {
 
         public override fun renderTooltip(
             matrixStack: MatrixStack,
-            tooltips: MutableList<out IReorderingProcessor>,
+            tooltips: List<IReorderingProcessor>,
             p_renderTooltip_2_: Int,
             p_renderTooltip_3_: Int
         ) {
@@ -62,7 +75,7 @@ public object VanillaTooltipRenderer {
 
         public override fun renderToolTip(
             matrixStack: MatrixStack,
-            tooltips: MutableList<out IReorderingProcessor>,
+            tooltips: List<IReorderingProcessor>,
             p_renderTooltip_2_: Int,
             p_renderTooltip_3_: Int,
             font: FontRenderer

@@ -1,5 +1,5 @@
 {
-  "parent": "block/fence_inventory",
+  "parent": "minecraft:block/fence_inventory",
   "textures": {
     "texture": "librarianlib-foundation-test:block/test_wood_planks"
   }

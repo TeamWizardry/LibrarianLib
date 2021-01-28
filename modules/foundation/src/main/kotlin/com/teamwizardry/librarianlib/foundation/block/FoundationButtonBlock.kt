@@ -38,7 +38,11 @@ public class FoundationButtonBlock(
     override fun tick(state: BlockState, world: ServerWorld, pos: BlockPos, rand: Random?) {
         if (state.get(POWERED)) {
             if (canBePressedByArrows) {
-                setPressed(state, world, pos, isPressedByArrow(state, world, pos), playSound = true)
+                val isPressedByArrow = isPressedByArrow(state, world, pos)
+                setPressed(state, world, pos, isPressedByArrow, playSound = true)
+                if(isPressedByArrow) {
+                    world.pendingBlockTicks.scheduleTick(BlockPos(pos), this, pressDuration)
+                }
             } else {
                 setPressed(state, world, pos, false, playSound = true)
             }

@@ -22,6 +22,7 @@ class OcclusionScreen(
         val checkboxRow = StackLayout.build(5, 5)
             .horizontal()
             .alignLeft()
+            .alignCenterY()
             .add(checkbox)
             .add(PastryLabel("Show occluder"))
             .fit()

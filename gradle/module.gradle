@@ -51,6 +51,9 @@ allmodules.each {
 // - shade: dependencies shaded into the jar
 // - internalApi: api libraries used internally only
 // - mod: a jar included in the runtime mods directory
+// - clientMod: a jar included in the runtime mods directory when running the client
+// - serverMod: a jar included in the runtime mods directory when running the server
+// - dataMod: a jar included in the runtime mods directory when running datagen
 // - devClasspath: a jar included directly in the run configuration classpath
 configurations {
     compileOnly.extendsFrom(shade)
@@ -59,6 +62,9 @@ configurations {
     // some libraries as APIs internally without them appearing in the maven POM files.
     internalApi.extendsFrom(shade)
     mod
+    clientMod.extendsFrom(mod)
+    serverMod.extendsFrom(mod)
+    dataMod.extendsFrom(mod)
     devClasspath
 }
 

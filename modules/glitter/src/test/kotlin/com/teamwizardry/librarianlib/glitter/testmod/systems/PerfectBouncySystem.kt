@@ -34,7 +34,7 @@ object PerfectBouncySystem: TestSystem("perfect_bouncy") {
             previousPosition = position,
             position = position,
             color = color,
-            size = ConstantBinding(0.05)
+            size = ConstantBinding(0.15)
         ))
         renderModules.add(VelocityRenderModule(
             blend = true,

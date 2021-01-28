@@ -1,5 +1,5 @@
 {
-  "parent": "block/leaves",
+  "parent": "minecraft:block/leaves",
   "textures": {
     "all": "librarianlib-foundation-test:block/test_wood_leaves"
   }

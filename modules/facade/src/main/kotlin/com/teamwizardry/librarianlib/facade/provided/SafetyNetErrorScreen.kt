@@ -89,6 +89,7 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
         override val height: Int
         override val width: Int
         val lines: List<IReorderingProcessor>
+        val widths: List<Int>
 
         init {
             val fontRenderer = Client.minecraft.fontRenderer
@@ -97,30 +98,29 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
             } else {
                 lines = fontRenderer.trimStringToWidth(StringTextComponent(text), maxWidth)
             }
+            widths = lines.map { fontRenderer.func_243245_a(it) }
 
             height = lines.size * fontRenderer.FONT_HEIGHT + // line height
                 (lines.size - 1) // 1px between lines
 
-            // TODO: text is a nightmare now
-            width = 300 //(lines.map { fontRenderer.getStringWidth(it.accept()) }.maxOrNull() ?: 0) / 2 * 2
+            width = (widths.maxOrNull() ?: 0) / 2 * 2
         }
 
         override fun render(matrixStack: MatrixStack, yPos: Int) {
             var y = yPos
             val fontRenderer = Client.minecraft.fontRenderer
 
-            // TODO: text is a nightmare now
-//            if (lines.isNotEmpty()) {
-//                if (lines.size == 1) {
-//                    drawCenteredStringNoShadow(matrixStack, fontRenderer, lines[0], 0, y, 0)
-//                    y += fontRenderer.FONT_HEIGHT + 1
-//                } else {
-//                    lines.forEach { line ->
-//                        fontRenderer.drawString(matrixStack, line, -guiWidth / 2f, y.toFloat(), 0)
-//                        y += fontRenderer.FONT_HEIGHT + 1
-//                    }
-//                }
-//            }
+            if (lines.isNotEmpty()) {
+                if (lines.size == 1) {
+                    fontRenderer.func_238422_b_(matrixStack, lines[0], -widths[0] / 2f, y.toFloat(), 0)
+                    y += fontRenderer.FONT_HEIGHT + 1
+                } else {
+                    lines.forEach { line ->
+                        fontRenderer.func_238422_b_(matrixStack, line, -guiWidth / 2f, y.toFloat(), 0)
+                        y += fontRenderer.FONT_HEIGHT + 1
+                    }
+                }
+            }
         }
     }
 
