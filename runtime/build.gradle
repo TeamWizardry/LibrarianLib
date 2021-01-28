@@ -24,8 +24,7 @@ dependencies {
     minecraft("net.minecraftforge:forge:$mc_version-$forge_version")
     configurations.findByName("minecraft").exclude(group: 'com.ibm.icu', module: 'icu4j-core-mojang')
 
-//    mod "kottle:Kottle:$kottle_version"
-    mod rootProject.files('libs/Kottle-2.0.0.jar')
+    implementation "thedarkcolour:kotlinforforge:$kotlinforforge_version"
 
     allmodules.each {
         runtimeOnly project(path: it.path, configuration: 'devClasspath')

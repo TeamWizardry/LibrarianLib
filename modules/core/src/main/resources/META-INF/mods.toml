@@ -1,6 +1,7 @@
 modLoader="kotlinforforge"
 loaderVersion="[1,)"
 issueTrackerURL="https://github.com/LibrarianLib/LibrarianLib/issues"
+license="LGPL-3.0"
 [[mods]]
 modId="librarianlib"
 version="@version@"

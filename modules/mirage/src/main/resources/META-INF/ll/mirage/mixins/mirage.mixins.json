@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "com.teamwizardry.librarianlib.mirage.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "ll-mirage.refmap.json",
+  "mixins": [
+    "FallbackResourceManagerMixin",
+    "LanguageMapMixin",
+    "SimpleReloadableResourceManagerMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

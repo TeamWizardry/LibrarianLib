@@ -216,6 +216,7 @@ task generateFiles {
             def tomlString = """\
                    |modLoader="kotlinforforge"
                    |loaderVersion="[1,)"
+                   |license="LGPL-3.0"
                    |[[mods]]
                    |modId="$modid"
                    |version="$mod_version"
@@ -307,6 +308,7 @@ task generateTestFiles {
         def tomlString = """\
                |modLoader="kotlinforforge"
                |loaderVersion="[1,)"
+               |license="LGPL-3.0"
                |[[mods]]
                |modId="$modid_test"
                |version="$mod_version"

@@ -33,7 +33,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
-import thedarkcolour.kotlinforforge.forge.MOD_CONTEXT
 import java.awt.Color
 
 public abstract class TestMod(public val module: LibrarianLibModule) {
@@ -204,7 +203,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
         items.forEach { item ->
             if (item is TestBlockItem) {
                 val name = item.registryName!!
-                Mirage.client.add(
+                Mirage.clientResources.add(
                     ResourceLocation(name.namespace, "models/item/${name.path}.json"),
                     """
                         {
@@ -214,7 +213,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
                 )
             } else if (item is ITestItem) {
                 val name = item.registryName!!
-                Mirage.client.add(
+                Mirage.clientResources.add(
                     ResourceLocation(name.namespace, "models/item/${name.path}.json"),
                     """
                         {
@@ -230,7 +229,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
         blocks.filterIsInstance<TestBlock>().forEach { block ->
             val name = block.registryName!!
             val model = "block/test_block/${block.modelName}"
-            Mirage.client.add(
+            Mirage.clientResources.add(
                 ResourceLocation(name.namespace, "blockstates/${name.path}.json"),
                 if (block.config.directional) {
                     """
@@ -260,7 +259,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
 
     private fun generateLanguageAssets() {
         languageKeys().forEach { (key, value) ->
-            Mirage.client.addLanguageKey(key, value)
+            Mirage.languageMap.add(key, value)
         }
     }
 
