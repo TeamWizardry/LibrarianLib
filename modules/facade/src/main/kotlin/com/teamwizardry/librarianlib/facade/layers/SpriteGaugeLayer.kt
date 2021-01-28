@@ -38,7 +38,7 @@ public class SpriteGaugeLayer: LinearGaugeLayer {
         contents.add(spriteLayer)
     }
 
-    override fun update() { // todo yoga
+    override fun update() {
         super.update()
         spriteLayer.frame = contents.bounds
     }

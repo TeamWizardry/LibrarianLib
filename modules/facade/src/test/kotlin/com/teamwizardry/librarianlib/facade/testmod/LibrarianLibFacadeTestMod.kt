@@ -64,8 +64,6 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
             FacadeTest("Render to Quad Scale", ::RenderQuadScaleTest),
         )),
         "advanced" to FacadeTestGroup("Advanced", listOf(
-            FacadeTest("Yoga Simple Flex", ::SimpleYogaScreen),
-            FacadeTest("Yoga List", ::YogaListScreen),
             FacadeTest("Pastry", ::PastryTestScreen),
             FacadeTest("Rect2dUnion", ::Rect2dUnionTestScreen),
         )),

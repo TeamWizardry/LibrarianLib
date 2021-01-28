@@ -12,8 +12,7 @@ import kotlin.math.floor
 import kotlin.math.max
 
 /**
- * A simple stack layout, useful for lists, which Yoga layout is less than elegant at handling (for example, Yoga has no
- * spacing property).
+ * A layer that positions its children in a horizontal or vertical stack.
  *
  * The layout goes like this:
  * - if [horizontal] is true, line up the children of this layer along the x axis going left-to-right

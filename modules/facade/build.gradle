@@ -26,27 +26,8 @@ dependencies {
     shade 'com.ibm.icu:icu4j:63.1'
     shade 'org.msgpack:msgpack-core:0.8.16'
 
-    // LibLib won't work in production until https://github.com/cpw/modlauncher/issues/27 is resolved, but by
-    // including yoga as a normal maven dependency at least it'll work in dev until that issue is fixed
-    api("org.lwjgl:lwjgl-yoga:$yoga_version:natives-linux") {
-        exclude group: 'org.lwjgl', module: 'lwjgl'
-    }
-    api("org.lwjgl:lwjgl-yoga:$yoga_version:natives-macos") {
-        exclude group: 'org.lwjgl', module: 'lwjgl'
-    }
-    api("org.lwjgl:lwjgl-yoga:$yoga_version:natives-windows") {
-        exclude group: 'org.lwjgl', module: 'lwjgl'
-    }
-    api("org.lwjgl:lwjgl-yoga:$yoga_version") {
-        exclude group: 'org.lwjgl', module: 'lwjgl'
-    }
-
     // we have to include ICU in the classpath so it overrides Mojang's stripped down copy
     devClasspath 'com.ibm.icu:icu4j:63.1'
-    // we have to include yoga in the classpath because forge bypasses mod classloaders when getting anything under the
-    // `org.lwjgl` package (https://github.com/cpw/modlauncher/issues/27)
-    devClasspath "org.lwjgl:lwjgl-yoga:$yoga_version:$lwjglNatives"
-    devClasspath "org.lwjgl:lwjgl-yoga:$yoga_version"
 
     // Compatibility:
     // `fg.deobf` breaks source jars (MinecraftForge/ForgeGradle#736,727,637), so some dependencies aren't deobfuscated

@@ -17,7 +17,6 @@ import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
  * * Fires [Update]
  * * **Layout phase:**
  * * Fires [PrepareLayout]
- * * Updates yoga layout‡
  * * Calls [GuiLayer.layoutChildren][GuiLayer.layoutChildren] and fires [LayoutChildren] for all dirty layers
  * * **Draw phase:**
  *

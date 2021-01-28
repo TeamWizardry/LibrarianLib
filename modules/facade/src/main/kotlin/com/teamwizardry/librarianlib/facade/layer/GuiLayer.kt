@@ -49,10 +49,8 @@ import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
-import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
-import org.lwjgl.util.yoga.Yoga.*
 import java.awt.Color
 import java.lang.Exception
 import java.util.ConcurrentModificationException
@@ -121,8 +119,6 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * The idea behind this method is that self-contained layers can lay out their children dynamically themselves.
      * Examples of such a layer would be a self-contained list item, a layer that spaces out its children equally
      * along its length, or simply a layer that needs to resize its background layer to fit its dimensions.
-     *
-     * This is called *after* Yoga layout has been applied.
      */
     public open fun layoutChildren() {}
 
@@ -1716,7 +1712,6 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * Run a layout pass for this layer and its children.
      */
     public fun runLayout() {
-        this.updateYogaLayout()
         this.updateDirtyLayout(GuiLayerEvents.LayoutChildren())
     }
 
@@ -1752,86 +1747,6 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     }
     //endregion
 
-    //region Yoga
-
-    public var useYoga: Boolean = false
-    private val yogaNode: Long by GlResourceGc.track(this, YGNodeNewWithConfig(config)) { YGNodeFree(it) }
-    public val yogaStyle: YogaStyle = YogaStyle(yogaNode)
-    private val _yogaStyler: YogaStyler by lazy { YogaStyler(this) }
-
-    /**
-     * Enables Yoga layout on this layer and returns the yoga styler. If yoga was previously disabled, this method also
-     * copies the current layer size into the width/height yoga styles.
-     */
-    public fun yoga(): YogaStyler {
-        if (!useYoga) {
-            useYoga = true
-            _yogaStyler.sizeFromCurrent()
-        }
-        return _yogaStyler
-    }
-
-    private var yogaChildren = listOf<GuiLayer>()
-    private fun updateYogaChildren() {
-        if (!useYoga) {
-            YGNodeRemoveAllChildren(yogaNode)
-            return
-        }
-        val newYogaChildren = _children.filter { it.useYoga }
-        if (yogaChildren != newYogaChildren) {
-            val childrenBuffer = BufferUtils.createPointerBuffer(newYogaChildren.size)
-            newYogaChildren.forEach {
-                childrenBuffer.put(it.yogaNode)
-            }
-            childrenBuffer.rewind()
-            YGNodeSetChildren(yogaNode, childrenBuffer)
-            yogaChildren = newYogaChildren
-        }
-    }
-
-    private fun updateYogaLayout() {
-        this.prepareYogaLayout()
-        this.computeYogaLayout()
-        this.applyYogaLayout()
-    }
-
-    private fun prepareYogaLayout() {
-        updateYogaChildren()
-        if (useYoga) {
-            if (yogaStyle.lockWidth) {
-                yogaStyle.minWidth.px = widthf
-                yogaStyle.width.px = widthf
-                yogaStyle.maxWidth.px = widthf
-            }
-            if (yogaStyle.lockHeight) {
-                yogaStyle.minHeight.px = heightf
-                yogaStyle.height.px = heightf
-                yogaStyle.maxHeight.px = heightf
-            }
-        }
-        forEachChild { it.prepareYogaLayout() }
-    }
-
-    private fun computeYogaLayout() {
-        if (useYoga && parent?.useYoga != true) {
-            YGNodeCalculateLayout(yogaNode, YGUndefined, YGUndefined, YGDirectionLTR)
-        }
-        forEachChild { it.computeYogaLayout() }
-    }
-
-    private fun applyYogaLayout() {
-        // only set the pos/size of layers that use yoga and aren't roots
-        if (useYoga && parent?.useYoga == true && YGNodeGetHasNewLayout(yogaNode)) {
-            this.pos = vec(YGNodeLayoutGetLeft(yogaNode), YGNodeLayoutGetTop(yogaNode))
-            this.size = vec(YGNodeLayoutGetWidth(yogaNode), YGNodeLayoutGetHeight(yogaNode))
-        }
-        YGNodeSetHasNewLayout(yogaNode, false)
-
-        forEachChild { it.applyYogaLayout() }
-    }
-
-    //endregion
-
     public companion object {
 
         @JvmStatic
@@ -1860,12 +1775,6 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
          */
         @JvmStatic
         public val UNDERLAY_Z: Double = -1e10
-
-        private val config = YGConfigNew()
-
-        init {
-            YGConfigSetUseWebDefaults(config, true)
-        }
 
         private val debugBoundingBoxRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_LINE_LOOP)
         private val flatColorFanRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_TRIANGLE_FAN)
