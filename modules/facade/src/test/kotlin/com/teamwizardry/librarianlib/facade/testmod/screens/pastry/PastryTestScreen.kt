@@ -24,7 +24,8 @@ class PastryTestScreen(title: ITextComponent): PastryScreen(title) {
         PastryTestTooltips::class.java to "Tooltips",
         PastryTestScroll::class.java to "Scroll Pane",
         PastryTestTabs::class.java to "Tabs",
-        PastryTestDynamicBackground::class.java to "Dynamic Background"
+        PastryTestDynamicBackground::class.java to "Dynamic Background",
+        PastryTestColorPicker::class.java to "Color Picker",
     )
 
     val selector = StackLayout.build()

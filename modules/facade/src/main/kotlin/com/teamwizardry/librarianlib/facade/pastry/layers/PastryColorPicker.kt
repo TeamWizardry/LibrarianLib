@@ -1,11 +1,13 @@
 package com.teamwizardry.librarianlib.facade.pastry.layers
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
+import com.teamwizardry.librarianlib.albedo.GLSL
+import com.teamwizardry.librarianlib.albedo.Shader
+import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
+import com.teamwizardry.librarianlib.core.util.*
 import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
+import com.teamwizardry.librarianlib.core.util.kotlin.tex
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
@@ -13,14 +15,18 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
-import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.math.clamp
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.util.ResourceLocation
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import kotlin.math.max
 
-public class PastryColorPicker: GuiLayer() {
+public class PastryColorPicker : GuiLayer(0, 0, 80, 50) {
     private val gradient = GradientLayer()
     private val hueLayer = HueLayer()
     private val colorWell = ColorWellLayer()
@@ -31,7 +37,7 @@ public class PastryColorPicker: GuiLayer() {
         set(value) {
             _hue = value
             _color = Color(Color.HSBtoRGB(hue, saturation, brightness))
-            BUS.fire(ColorChangeEvent())
+            BUS.fire(ColorChangeEvent(color))
         }
 
     private var _saturation: Float = 0f
@@ -40,7 +46,7 @@ public class PastryColorPicker: GuiLayer() {
         set(value) {
             _saturation = value
             _color = Color(Color.HSBtoRGB(hue, saturation, brightness))
-            BUS.fire(ColorChangeEvent())
+            BUS.fire(ColorChangeEvent(color))
         }
 
     private var _brightness: Float = 0f
@@ -49,7 +55,7 @@ public class PastryColorPicker: GuiLayer() {
         set(value) {
             _brightness = value
             _color = Color(Color.HSBtoRGB(hue, saturation, brightness))
-            BUS.fire(ColorChangeEvent())
+            BUS.fire(ColorChangeEvent(color))
         }
 
     private var _color: Color = Color.white
@@ -63,70 +69,63 @@ public class PastryColorPicker: GuiLayer() {
             _brightness = hsb[2]
         }
 
-    public class ColorChangeEvent(): Event()
+    public class ColorChangeEvent(public val color: Color) : Event()
 
     init {
-        this.yoga()
-        gradient.yoga()
-            .flexGrow(3)
-            .minWidth.px(4)
-            .marginRight.px(2)
-        hueLayer.yoga()
-            .flex(0, 0)
-            .flexBasis.px(10)
-            .marginRight.px(2)
-        colorWell.yoga()
-            .flex(0, 0)
-            .flexBasis.px(32)
-            .alignSelf.start()
         this.add(gradient, hueLayer, colorWell)
     }
 
-    private inner class GradientLayer: GuiLayer(0, 0, 0, 0) {
+    override fun layoutChildren() {
+        colorWell.size = vec(16, 16)
+        colorWell.pos = vec(this.width - colorWell.width, 0)
+        hueLayer.size = vec(10, this.height)
+        hueLayer.pos = vec(colorWell.x - hueLayer.width - 2, 0)
+        gradient.pos = vec(0, 0)
+        gradient.size = vec(max(4.0, hueLayer.x - 2), this.height)
+    }
+
+    private inner class GradientLayer : GuiLayer(0, 0, 0, 0) {
         val background = PastryBackground(PastryBackgroundStyle.LIGHT_INSET, 0, 0, 0, 0)
         val square = ColorSquare()
-        var draggingFromInside = false
+        var dragging = false
 
         init {
             add(background, square)
             square.BUS.hook<GuiLayerEvents.MouseDown> {
                 if (square.mouseOver && it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-                    draggingFromInside = true
+                    dragging = true
                     updateSB()
                 }
             }
-            square.BUS.hook<GuiLayerEvents.MouseDown> {
-                if (it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-                    draggingFromInside = false
+            square.BUS.hook<GuiLayerEvents.MouseUp> {
+                if(it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                    dragging = false
                 }
             }
-            square.BUS.hook<GuiLayerEvents.MouseDrag> {
-                if (draggingFromInside && it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            square.BUS.hook<GuiLayerEvents.MouseMove> {
+                if (dragging) {
                     updateSB()
                 }
             }
         }
 
         private fun updateSB() {
-            if (square.width == 0.0 || square.height == 0.0 || !square.mouseOver) return
+            if (square.width == 0.0 || square.height == 0.0) return
             val fraction = square.mousePos / square.size
-            if (fraction.x in 0.0..1.0) saturation = fraction.x.toFloat()
-            if (fraction.y in 0.0..1.0) brightness = 1 - fraction.y.toFloat()
+            saturation = fraction.x.clamp(0.0, 1.0).toFloat()
+            brightness = (1 - fraction.y).clamp(0.0, 1.0).toFloat()
         }
 
         override fun layoutChildren() {
-            super.layoutChildren()
             background.frame = bounds
             square.frame = bounds
             square.pos += vec(1, 1)
             square.size -= vec(2, 2)
         }
 
-        inner class ColorSquare: GuiLayer(0, 0, 0, 0) {
+        inner class ColorSquare : GuiLayer(0, 0, 0, 0) {
             override fun draw(context: GuiDrawContext) {
                 super.draw(context)
-
-                val color = Color(Color.HSBtoRGB(hue, 1f, 1f))
 
                 val minX = 0.0
                 val minY = 0.0
@@ -134,29 +133,24 @@ public class PastryColorPicker: GuiLayer() {
                 val maxY = size.yi.toDouble()
 
                 val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
-                val vb = buffer.getBuffer(flatRenderType)
 
-                vb.pos2d(context.transform, minX, minY).color(Color.WHITE).endVertex()
-                vb.pos2d(context.transform, minX, maxY).color(Color.WHITE).endVertex()
-                vb.pos2d(context.transform, maxX, maxY).color(color).endVertex()
-                vb.pos2d(context.transform, maxX, minY).color(color).endVertex()
+                ColorPickerShader.hue.set(hue)
+
+                val vb = buffer.getBuffer(colorPickerRenderType)
+                // u/v is saturation/brightness
+                vb.pos2d(context.transform, minX, minY).tex(0, 1).endVertex()
+                vb.pos2d(context.transform, minX, maxY).tex(0, 0).endVertex()
+                vb.pos2d(context.transform, maxX, maxY).tex(1, 0).endVertex()
+                vb.pos2d(context.transform, maxX, minY).tex(1, 1).endVertex()
                 buffer.finish()
-
-                RenderSystem.blendFunc(GL11.GL_DST_COLOR, GL11.GL_ZERO)
-                vb.pos2d(context.transform, minX, minY).color(Color.WHITE).endVertex()
-                vb.pos2d(context.transform, minX, maxY).color(Color.BLACK).endVertex()
-                vb.pos2d(context.transform, maxX, maxY).color(Color.BLACK).endVertex()
-                vb.pos2d(context.transform, maxX, minY).color(Color.WHITE).endVertex()
-                buffer.finish()
-
-                RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             }
         }
     }
 
-    private inner class HueLayer: GuiLayer(0, 0, 0, 0) {
+    private inner class HueLayer : GuiLayer(0, 0, 0, 0) {
         private val background = PastryBackground(PastryBackgroundStyle.LIGHT_INSET, 0, 0, 0, 0)
         private val sprite = SpriteLayer(hueSprite)
+        private var dragging = false
 
         init {
             Client.minecraft.textureManager.bindTexture(hueLoc)
@@ -164,18 +158,31 @@ public class PastryColorPicker: GuiLayer() {
 
             add(background, sprite)
 
-            sprite.BUS.hook<GuiLayerEvents.MouseDown> { updateH() }
-            sprite.BUS.hook<GuiLayerEvents.MouseDrag> { updateH() }
+            sprite.BUS.hook<GuiLayerEvents.MouseDown> {
+                if(sprite.mouseOver && it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                    dragging = true
+                    updateH()
+                }
+            }
+            sprite.BUS.hook<GuiLayerEvents.MouseUp> {
+                if(it.button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+                    dragging = false
+                }
+            }
+            sprite.BUS.hook<GuiLayerEvents.MouseMove> {
+                if(dragging) {
+                    updateH()
+                }
+            }
         }
 
         fun updateH() {
-            if (sprite.height == 0.0 || !sprite.mouseOver) return
+            if (sprite.height == 0.0) return
             val fraction = sprite.mousePos.y / sprite.height
-            if (fraction in 0.0..1.0) hue = 1 - fraction.toFloat()
+            hue = (1 - fraction).clamp(0.0, 1.0).toFloat()
         }
 
         override fun layoutChildren() {
-            super.layoutChildren()
             background.frame = bounds
             sprite.frame = bounds
             sprite.pos += vec(1, 1)
@@ -183,7 +190,7 @@ public class PastryColorPicker: GuiLayer() {
         }
     }
 
-    private inner class ColorWellLayer: GuiLayer(0, 0, 0, 16) {
+    private inner class ColorWellLayer : GuiLayer(0, 0, 0, 0) {
         private val background = PastryBackground(PastryBackgroundStyle.LIGHT_INSET, 0, 0, 0, 0)
         val colorRect = RectLayer(Color.white, 0, 0, 0, 0)
 
@@ -193,15 +200,40 @@ public class PastryColorPicker: GuiLayer() {
         }
 
         override fun layoutChildren() {
-            super.layoutChildren()
             background.frame = this.bounds
             colorRect.frame = this.bounds.shrink(1.0)
+        }
+    }
+
+    /**
+     * draws the saturation/brightness box
+     */
+    private object ColorPickerShader :
+        Shader("color_picker", null, ResourceLocation("librarianlib:facade/shaders/color_picker.frag")) {
+        val hue = GLSL.glFloat()
+
+        override fun setupState() {
+            RenderSystem.enableBlend()
+        }
+
+        override fun teardownState() {
+            RenderSystem.disableBlend()
         }
     }
 
     private companion object {
         val hueLoc = loc("librarianlib:facade/textures/pastry/colorpicker_hue.png")
         val hueSprite = Mosaic(hueLoc, 8, 256).getSprite("")
-        val flatRenderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
+
+        private val colorPickerRenderType: RenderType = run {
+            val renderState = RenderType.State.getBuilder()
+                .build(false)
+
+            mixinCast<IMutableRenderTypeState>(renderState).addState(ColorPickerShader.renderState)
+
+            SimpleRenderTypes.makeType("librarianlib.facade.color_picker",
+                DefaultVertexFormats.POSITION_TEX, GL11.GL_QUADS, 256, false, false, renderState
+            )
+        }
     }
 }

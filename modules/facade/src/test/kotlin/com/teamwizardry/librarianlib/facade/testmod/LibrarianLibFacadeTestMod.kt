@@ -48,12 +48,12 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
             FacadeTest("Simple Sprite", ::SimpleSpriteTestScreen),
             FacadeTest("Simple Text", ::SimpleTextTestScreen),
             FacadeTest("Text Embeds", ::TextEmbedsTestScreen),
-            FacadeTest("DragLayer", ::DragLayerTestScreen)
+            FacadeTest("DragLayer", ::DragLayerTestScreen),
         )),
         "animations" to FacadeTestGroup("Animations/Time", listOf(
             FacadeTest("Animations", ::AnimationTestScreen),
             FacadeTest("Scheduled Callbacks", ::ScheduledCallbacksTestScreen),
-            FacadeTest("Scheduled Repeated Callbacks", ::ScheduledRepeatedCallbacksTestScreen)
+            FacadeTest("Scheduled Repeated Callbacks", ::ScheduledRepeatedCallbacksTestScreen),
         )),
         "clipping_compositing" to FacadeTestGroup("Clipping/Compositing", listOf(
             FacadeTest("Clip to Bounds", ::ClipToBoundsTestScreen),
@@ -61,13 +61,13 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
             FacadeTest("Opacity", ::OpacityTestScreen),
             FacadeTest("Blending", ::BlendingTestScreen),
             FacadeTest("Render to FBO Scale", ::RenderFBOScaleTest),
-            FacadeTest("Render to Quad Scale", ::RenderQuadScaleTest)
+            FacadeTest("Render to Quad Scale", ::RenderQuadScaleTest),
         )),
         "advanced" to FacadeTestGroup("Advanced", listOf(
             FacadeTest("Yoga Simple Flex", ::SimpleYogaScreen),
             FacadeTest("Yoga List", ::YogaListScreen),
             FacadeTest("Pastry", ::PastryTestScreen),
-            FacadeTest("Rect2dUnion", ::Rect2dUnionTestScreen)
+            FacadeTest("Rect2dUnion", ::Rect2dUnionTestScreen),
         )),
         "examples" to FacadeTestGroup("Examples", listOf(
             FacadeTest("Alignment", ::ExampleAlignmentScreen),

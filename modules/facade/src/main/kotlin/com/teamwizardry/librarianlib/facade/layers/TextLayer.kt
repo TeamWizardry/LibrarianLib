@@ -37,7 +37,12 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
      * The text to be drawn using MC formatting codes. If this is set to any non-null value it will overwrite
      * [attributedText], but if [attributedText] is manually set to a new value, this property will be reset to null.
      */
-    public var text: String? by text_im
+    public var text: String?
+        get() = text_im.get()
+        set(value) {
+            text_im.setValue(value)
+            markTextDirty()
+        }
 
     /**
      * The string to be drawn. If [text] is non-null, this will be reset based on that, and if this is explicitly set to
