@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.prism.testmod.nbt
 
 import com.mojang.authlib.GameProfile
 import com.teamwizardry.librarianlib.core.util.kotlin.NBTBuilder
-import com.teamwizardry.librarianlib.core.util.kotlin.getOrNull
 import com.teamwizardry.librarianlib.prism.nbt.AxisAlignedBBSerializer
 import com.teamwizardry.librarianlib.prism.nbt.BlockPosSerializer
 import com.teamwizardry.librarianlib.prism.nbt.BlockStateSerializer
@@ -13,7 +12,6 @@ import com.teamwizardry.librarianlib.prism.nbt.EnchantmentDataSerializer
 import com.teamwizardry.librarianlib.prism.nbt.FluidStackSerializer
 import com.teamwizardry.librarianlib.prism.nbt.GameProfileSerializer
 import com.teamwizardry.librarianlib.prism.nbt.INBTPassthroughSerializerFactory
-import com.teamwizardry.librarianlib.prism.nbt.INBTSerializableSerializerFactory
 import com.teamwizardry.librarianlib.prism.nbt.ITextComponentSerializerFactory
 import com.teamwizardry.librarianlib.prism.nbt.ItemStackSerializer
 import com.teamwizardry.librarianlib.prism.nbt.MutableBoundingBoxSerializer
@@ -33,7 +31,6 @@ import net.minecraft.fluid.Fluids
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.nbt.ByteNBT
-import net.minecraft.nbt.CompoundNBT
 import net.minecraft.nbt.DoubleNBT
 import net.minecraft.nbt.FloatNBT
 import net.minecraft.nbt.INBT
@@ -49,7 +46,6 @@ import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.ColumnPos
-import net.minecraft.util.math.GlobalPos
 import net.minecraft.util.math.MutableBoundingBox
 import net.minecraft.util.math.Rotations
 import net.minecraft.util.math.SectionPos
@@ -58,7 +54,6 @@ import net.minecraft.util.math.vector.Vector3d
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.fluids.FluidStack
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotSame
 import org.junit.jupiter.api.Assertions.assertSame
@@ -220,7 +215,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
         = nbtPassthroughTest(NBTBuilder.compound { "Foo" *= string("bar") }, true)
     @Test
     fun `read+write for ListNBT should return a copy of the tag`()
-        = nbtPassthroughTest(NBTBuilder.list { n+ string("foo") }, true)
+        = nbtPassthroughTest(NBTBuilder.list { +string("foo") }, true)
     @Test
     fun `read+write for LongArrayNBT should return a copy of the tag`()
         = nbtPassthroughTest(NBTBuilder.longArray(1, 2, 3), true)
@@ -377,7 +372,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
                 "ShowParticles" *= byte(1)
                 "ShowIcon" *= byte(1)
                 "CurativeItems" *= list {
-                    n+ compound {
+                    +compound {
                         "id" *= string("minecraft:milk_bucket")
                         "Count" *= byte(1)
                     }

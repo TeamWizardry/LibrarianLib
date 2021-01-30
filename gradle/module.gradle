@@ -103,7 +103,8 @@ kotlin {
                 "-java-parameters",
                 "-Xjvm-default=all",
                 "-Xuse-experimental=kotlin.Experimental",
-                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes"
+                "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes",
+                "-Xinline-classes"
         ]
     }
 }

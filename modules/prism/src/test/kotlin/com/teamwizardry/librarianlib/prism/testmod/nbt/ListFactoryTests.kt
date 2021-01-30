@@ -22,10 +22,10 @@ internal class ListFactoryTests: NBTPrismTest() {
         simple<ArrayList<String?>, ListSerializerFactory.ListSerializer>(
             arrayListOf("first", "second", null, "fourth"),
             NBTBuilder.list {
-                n+ compound { "V" *= string("first") }
-                n+ compound { "V" *= string("second") }
-                n+ compound {}
-                n+ compound { "V" *= string("fourth") }
+                +compound { "V" *= string("first") }
+                +compound { "V" *= string("second") }
+                +compound {}
+                +compound { "V" *= string("fourth") }
             }
         )
     }
@@ -36,7 +36,7 @@ internal class ListFactoryTests: NBTPrismTest() {
 
         val theList = arrayListOf<String?>("junk")
         val theTag = NBTBuilder.list {
-            n+ compound { "V" *= string("value") }
+            +compound { "V" *= string("value") }
         }
         val deserialized = prism[Mirror.reflect<ArrayList<String?>>()].value.read(theTag, theList)
 
@@ -49,7 +49,7 @@ internal class ListFactoryTests: NBTPrismTest() {
         val targetList = arrayListOf("value")
 
         val theTag = NBTBuilder.list {
-            n+ compound { "V" *= string("value") }
+            +compound { "V" *= string("value") }
         }
         val deserialized = prism[Mirror.reflect<ArrayList<String?>>()].value.read(theTag, null)
 
@@ -67,7 +67,7 @@ internal class ListFactoryTests: NBTPrismTest() {
     @Test
     fun `reading an ArrayList with the wrong ListNBT element type should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<ArrayList<String?>>()].value.read(NBTBuilder.list { n+ string("oops!") }, null)
+            prism[Mirror.reflect<ArrayList<String?>>()].value.read(NBTBuilder.list { +string("oops!") }, null)
         }
     }
 
@@ -87,17 +87,17 @@ internal class ListFactoryTests: NBTPrismTest() {
         }
 
         val targetTag = NBTBuilder.list {
-            n+ compound {
+            +compound {
                 "V" *= list {
-                    n+ compound { "V" *= list {} }
-                    n+ compound { "V" *= list {} }
+                    +compound { "V" *= list {} }
+                    +compound { "V" *= list {} }
                 }
             }
-            n+ compound {
+            +compound {
                 "V" *= list {
-                    n+ compound { "V" *= list {} }
-                    n+ compound { "V" *= list {} }
-                    n+ compound { "V" *= list {} }
+                    +compound { "V" *= list {} }
+                    +compound { "V" *= list {} }
+                    +compound { "V" *= list {} }
                 }
             }
         }

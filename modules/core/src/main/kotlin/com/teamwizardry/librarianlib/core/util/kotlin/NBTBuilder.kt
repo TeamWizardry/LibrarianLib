@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package com.teamwizardry.librarianlib.core.util.kotlin
 
 import net.minecraft.nbt.ByteArrayNBT
@@ -17,44 +19,41 @@ import net.minecraft.nbt.StringNBT
 @DslMarker
 internal annotation class NBTBuilderDslMarker
 
+/**
+ * A Kotlin DSL for creating NBT tags.
+ *
+ * ```kotlin
+ * NBTBuilder.compound {
+ *     "key" *= string("value")
+ *     "key" *= list {
+ *         +int(3)
+ *         +int(4)
+ *     }
+ * }
+ * ```
+ */
 @NBTBuilderDslMarker
-public open class NBTBuilder @PublishedApi internal constructor() {
-    public inline fun compound(block: CompoundNBTBuilder.() -> Unit): CompoundNBT {
-        val builder = CompoundNBTBuilder()
-        builder.block()
-        return builder.tag
-    }
+public object NBTBuilder {
+    public inline fun compound(block: CompoundNBTBuilder.() -> Unit): CompoundNBT =
+        CompoundNBTBuilder(CompoundNBT()).also { it.block() }.tag
 
-    public inline fun list(block: ListNBTBuilder.() -> Unit): ListNBT {
-        val builder = ListNBTBuilder()
-        builder.block()
-        return builder.tag
-    }
+    public inline fun list(block: ListNBTBuilder.() -> Unit): ListNBT =
+        ListNBTBuilder(ListNBT()).also { it.block() }.tag
 
-    public inline fun list(vararg elements: INBT, block: ListNBTBuilder.() -> Unit): ListNBT {
-        val builder = ListNBTBuilder()
-        builder.addAll(elements.toList())
-        builder.block()
-        return builder.tag
-    }
+    public inline fun list(vararg elements: INBT, block: ListNBTBuilder.() -> Unit): ListNBT =
+        ListNBTBuilder(ListNBT()).also {
+            it.addAll(elements.toList())
+            it.block()
+        }.tag
 
-    public fun list(vararg elements: INBT): ListNBT {
-        val tag = ListNBT()
-        tag.addAll(elements)
-        return tag
-    }
+    public inline fun list(vararg elements: INBT): ListNBT = ListNBT().also { it.addAll(elements) }
 
-    public fun double(value: Int): DoubleNBT = DoubleNBT.valueOf(value.toDouble())
-    public fun double(value: Double): DoubleNBT = DoubleNBT.valueOf(value)
-    public fun float(value: Int): FloatNBT = FloatNBT.valueOf(value.toFloat())
-    public fun float(value: Float): FloatNBT = FloatNBT.valueOf(value)
-    public fun long(value: Int): LongNBT = LongNBT.valueOf(value.toLong())
-    public fun long(value: Long): LongNBT = LongNBT.valueOf(value)
-    public fun int(value: Int): IntNBT = IntNBT.valueOf(value)
-    public fun short(value: Int): ShortNBT = ShortNBT.valueOf(value.toShort())
-    public fun short(value: Short): ShortNBT = ShortNBT.valueOf(value)
-    public fun byte(value: Int): ByteNBT = ByteNBT.valueOf(value.toByte())
-    public fun byte(value: Byte): ByteNBT = ByteNBT.valueOf(value)
+    public inline fun double(value: Number): DoubleNBT = DoubleNBT.valueOf(value.toDouble())
+    public inline fun float(value: Number): FloatNBT = FloatNBT.valueOf(value.toFloat())
+    public inline fun long(value: Number): LongNBT = LongNBT.valueOf(value.toLong())
+    public inline fun int(value: Number): IntNBT = IntNBT.valueOf(value.toInt())
+    public inline fun short(value: Number): ShortNBT = ShortNBT.valueOf(value.toShort())
+    public inline fun byte(value: Number): ByteNBT = ByteNBT.valueOf(value.toByte())
 
     public fun string(value: String): StringNBT = StringNBT.valueOf(value)
 
@@ -65,54 +64,116 @@ public open class NBTBuilder @PublishedApi internal constructor() {
     public fun longArray(vararg value: Long): LongArrayNBT = LongArrayNBT(value)
     public fun longArray(): LongArrayNBT = LongArrayNBT(longArrayOf()) // avoiding overload ambiguity
     public fun intArray(vararg value: Int): IntArrayNBT = IntArrayNBT(value)
-
-    public companion object: NBTBuilder()
 }
 
-public class CompoundNBTBuilder @PublishedApi internal constructor(): NBTBuilder() {
-    public val tag: CompoundNBT = CompoundNBT()
+@NBTBuilderDslMarker
+public inline class CompoundNBTBuilder(public val tag: CompoundNBT) {
+    // configuring this tag
 
     public operator fun String.timesAssign(nbt: INBT) {
         tag.put(this, nbt)
     }
+
+    // creating new tags
+
+    public inline fun compound(block: CompoundNBTBuilder.() -> Unit): CompoundNBT =
+        CompoundNBTBuilder(CompoundNBT()).also { it.block() }.tag
+
+    public inline fun list(block: ListNBTBuilder.() -> Unit): ListNBT =
+        ListNBTBuilder(ListNBT()).also { it.block() }.tag
+
+    public inline fun list(vararg elements: INBT, block: ListNBTBuilder.() -> Unit): ListNBT =
+        ListNBTBuilder(ListNBT()).also {
+            it.addAll(elements.toList())
+            it.block()
+        }.tag
+
+    public inline fun list(vararg elements: INBT): ListNBT = ListNBT().also { it.addAll(elements) }
+
+    public inline fun double(value: Number): DoubleNBT = DoubleNBT.valueOf(value.toDouble())
+    public inline fun float(value: Number): FloatNBT = FloatNBT.valueOf(value.toFloat())
+    public inline fun long(value: Number): LongNBT = LongNBT.valueOf(value.toLong())
+    public inline fun int(value: Number): IntNBT = IntNBT.valueOf(value.toInt())
+    public inline fun short(value: Number): ShortNBT = ShortNBT.valueOf(value.toShort())
+    public inline fun byte(value: Number): ByteNBT = ByteNBT.valueOf(value.toByte())
+
+    public fun string(value: String): StringNBT = StringNBT.valueOf(value)
+
+    public fun byteArray(vararg value: Int): ByteArrayNBT = ByteArrayNBT(value.map { it.toByte() }.toByteArray())
+    public fun byteArray(vararg value: Byte): ByteArrayNBT = ByteArrayNBT(value)
+    public fun byteArray(): ByteArrayNBT = ByteArrayNBT(byteArrayOf()) // avoiding overload ambiguity
+    public fun longArray(vararg value: Int): LongArrayNBT = LongArrayNBT(value.map { it.toLong() }.toLongArray())
+    public fun longArray(vararg value: Long): LongArrayNBT = LongArrayNBT(value)
+    public fun longArray(): LongArrayNBT = LongArrayNBT(longArrayOf()) // avoiding overload ambiguity
+    public fun intArray(vararg value: Int): IntArrayNBT = IntArrayNBT(value)
 }
 
-public class ListNBTBuilder @PublishedApi internal constructor(): NBTBuilder() {
-    public val tag: ListNBT = ListNBT()
-
-    /**
-     * A short alias for `this` which, in combination with [plus], allows syntax like `n+ SomeTag()`
-     */
-    public val n: ListNBTBuilder = this
+@NBTBuilderDslMarker
+public inline class ListNBTBuilder(public val tag: ListNBT) {
+    // configuring this tag
 
     /**
      * Add the given NBT tag to this list
      */
-    public operator fun plus(nbt: INBT) {
-        this.tag.add(nbt)
+    public operator fun INBT.unaryPlus() {
+        tag.add(this)
     }
 
     /**
      * Add the given NBT tags to this list
      */
-    public operator fun plus(nbt: Collection<INBT>) {
-        this.tag.addAll(nbt)
+    public operator fun Collection<INBT>.unaryPlus() {
+        tag.addAll(this)
     }
 
     /**
      * Add the given NBT tag to this list. This is explicitly defined for [ListNBT] because otherwise there is overload
      * ambiguity between the [INBT] and [Collection]<[INBT]> methods.
      */
-    public operator fun plus(nbt: ListNBT) {
-        this.tag.add(nbt)
+    public operator fun ListNBT.unaryPlus() {
+        tag.add(this)
     }
 
     public fun addAll(nbt: Collection<INBT>) {
         this.tag.addAll(nbt)
     }
+
     public fun add(nbt: INBT) {
         this.tag.add(nbt)
     }
+
+    // creating new tags
+
+    public inline fun compound(block: CompoundNBTBuilder.() -> Unit): CompoundNBT =
+        CompoundNBTBuilder(CompoundNBT()).also { it.block() }.tag
+
+    public inline fun list(block: ListNBTBuilder.() -> Unit): ListNBT =
+        ListNBTBuilder(ListNBT()).also { it.block() }.tag
+
+    public inline fun list(vararg elements: INBT, block: ListNBTBuilder.() -> Unit): ListNBT =
+        ListNBTBuilder(ListNBT()).also {
+            it.addAll(elements.toList())
+            it.block()
+        }.tag
+
+    public inline fun list(vararg elements: INBT): ListNBT = ListNBT().also { it.addAll(elements) }
+
+    public inline fun double(value: Number): DoubleNBT = DoubleNBT.valueOf(value.toDouble())
+    public inline fun float(value: Number): FloatNBT = FloatNBT.valueOf(value.toFloat())
+    public inline fun long(value: Number): LongNBT = LongNBT.valueOf(value.toLong())
+    public inline fun int(value: Number): IntNBT = IntNBT.valueOf(value.toInt())
+    public inline fun short(value: Number): ShortNBT = ShortNBT.valueOf(value.toShort())
+    public inline fun byte(value: Number): ByteNBT = ByteNBT.valueOf(value.toByte())
+
+    public fun string(value: String): StringNBT = StringNBT.valueOf(value)
+
+    public fun byteArray(vararg value: Int): ByteArrayNBT = ByteArrayNBT(value.map { it.toByte() }.toByteArray())
+    public fun byteArray(vararg value: Byte): ByteArrayNBT = ByteArrayNBT(value)
+    public fun byteArray(): ByteArrayNBT = ByteArrayNBT(byteArrayOf()) // avoiding overload ambiguity
+    public fun longArray(vararg value: Int): LongArrayNBT = LongArrayNBT(value.map { it.toLong() }.toLongArray())
+    public fun longArray(vararg value: Long): LongArrayNBT = LongArrayNBT(value)
+    public fun longArray(): LongArrayNBT = LongArrayNBT(longArrayOf()) // avoiding overload ambiguity
+    public fun intArray(vararg value: Int): IntArrayNBT = IntArrayNBT(value)
 
     public fun doubles(vararg value: Int): List<DoubleNBT> = value.map { DoubleNBT.valueOf(it.toDouble()) }
     public fun doubles(vararg value: Double): List<DoubleNBT> = value.map { DoubleNBT.valueOf(it) }

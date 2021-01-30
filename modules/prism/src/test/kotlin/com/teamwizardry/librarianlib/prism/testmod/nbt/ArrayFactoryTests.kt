@@ -24,10 +24,10 @@ internal class ArrayFactoryTests: NBTPrismTest() {
         simple<Array<String?>, ArraySerializerFactory.ArraySerializer>(
             arrayOf("first", "second", null, "fourth"),
             NBTBuilder.list {
-                n + compound { "V" *= string("first") }
-                n + compound { "V" *= string("second") }
-                n + compound {}
-                n + compound { "V" *= string("fourth") }
+                +compound { "V" *= string("first") }
+                +compound { "V" *= string("second") }
+                +compound {}
+                +compound { "V" *= string("fourth") }
             }
         )
     }
@@ -38,7 +38,7 @@ internal class ArrayFactoryTests: NBTPrismTest() {
 
         val theArray = arrayOf<String?>(null)
         val theNode = NBTBuilder.list {
-            n+ compound { "V" *= string("value") }
+            +compound { "V" *= string("value") }
         }
         val deserialized = prism[Mirror.reflect<Array<String?>>()].value.read(theNode, theArray)
 
@@ -55,7 +55,7 @@ internal class ArrayFactoryTests: NBTPrismTest() {
 
         val theArray = arrayOf<String?>(null, null)
         val theNode = NBTBuilder.list {
-            n+ compound { "V" *= string("value") }
+            +compound { "V" *= string("value") }
         }
         val deserialized = prism[Mirror.reflect<Array<String?>>()].value.read(theNode, theArray)
 
@@ -70,7 +70,7 @@ internal class ArrayFactoryTests: NBTPrismTest() {
         val targetArray = arrayOf("value")
 
         val theNode = NBTBuilder.list {
-            n+ compound { "V" *= string("value") }
+            +compound { "V" *= string("value") }
         }
         val deserialized = prism[Mirror.reflect<Array<String?>>()].value.read(theNode, null)
 
@@ -89,7 +89,7 @@ internal class ArrayFactoryTests: NBTPrismTest() {
     @Test
     fun `reading an array with the wrong ListNBT element type should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<Array<String?>>()].value.read(NBTBuilder.list { n+ string("oops!") }, null)
+            prism[Mirror.reflect<Array<String?>>()].value.read(NBTBuilder.list { +string("oops!") }, null)
         }
     }
 }

@@ -39,10 +39,10 @@ internal class PrimitiveArrayTests: NBTPrismTest() {
 
     @Test
     fun `read+write for a double array should be symmetrical`()
-        = simple<DoubleArray, PrimitiveDoubleArraySerializer>(doubleArrayOf(1.0, 2.0, 3.0), NBTBuilder.list() { n+ doubles(1.0, 2.0, 3.0) })
+        = simple<DoubleArray, PrimitiveDoubleArraySerializer>(doubleArrayOf(1.0, 2.0, 3.0), NBTBuilder.list() { +doubles(1.0, 2.0, 3.0) })
     @Test
     fun `read+write for a float array should be symmetrical`()
-        = simple<FloatArray, PrimitiveFloatArraySerializer>(floatArrayOf(1f, 2f, 3f), NBTBuilder.list() { n+ floats(1f, 2f, 3f) })
+        = simple<FloatArray, PrimitiveFloatArraySerializer>(floatArrayOf(1f, 2f, 3f), NBTBuilder.list() { +floats(1f, 2f, 3f) })
     @Test
     fun `read+write for a long array should be symmetrical`()
         = simple<LongArray, PrimitiveLongArraySerializer>(longArrayOf(1, 2, 3), NBTBuilder.longArray(1, 2, 3))
@@ -64,14 +64,14 @@ internal class PrimitiveArrayTests: NBTPrismTest() {
 
     @Test
     fun `read for a double array with FloatNBT should deserialize`()
-        = simpleRead<DoubleArray, PrimitiveDoubleArraySerializer>(doubleArrayOf(1.0, 2.0, 3.0), NBTBuilder.list() { n+ floats(1f, 2f, 3f) })
+        = simpleRead<DoubleArray, PrimitiveDoubleArraySerializer>(doubleArrayOf(1.0, 2.0, 3.0), NBTBuilder.list() { +floats(1f, 2f, 3f) })
     @Test
     fun `read for a float array with DoubleNBT should deserialize`()
-        = simpleRead<FloatArray, PrimitiveFloatArraySerializer>(floatArrayOf(1f, 2f, 3f), NBTBuilder.list() { n+ doubles(1.0, 2.0, 3.0) })
+        = simpleRead<FloatArray, PrimitiveFloatArraySerializer>(floatArrayOf(1f, 2f, 3f), NBTBuilder.list() { +doubles(1.0, 2.0, 3.0) })
     @Test
     fun `read for a double array with IntNBT should deserialize`()
-        = simpleRead<DoubleArray, PrimitiveDoubleArraySerializer>(doubleArrayOf(1.0, 2.0, 3.0), NBTBuilder.list() { n+ ints(1, 2, 3) })
+        = simpleRead<DoubleArray, PrimitiveDoubleArraySerializer>(doubleArrayOf(1.0, 2.0, 3.0), NBTBuilder.list() { +ints(1, 2, 3) })
     @Test
     fun `read for a float array with IntNBT should deserialize`()
-        = simpleRead<FloatArray, PrimitiveFloatArraySerializer>(floatArrayOf(1f, 2f, 3f), NBTBuilder.list() { n+ ints(1, 2, 3) })
+        = simpleRead<FloatArray, PrimitiveFloatArraySerializer>(floatArrayOf(1f, 2f, 3f), NBTBuilder.list() { +ints(1, 2, 3) })
 }
