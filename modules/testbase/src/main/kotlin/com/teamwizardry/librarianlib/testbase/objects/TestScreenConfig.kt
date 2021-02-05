@@ -2,7 +2,8 @@ package com.teamwizardry.librarianlib.testbase.objects
 
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.sided.ClientSupplier
+import com.teamwizardry.librarianlib.core.util.sided.ClientMetaSupplier
+import com.teamwizardry.librarianlib.core.util.sided.ClientSideFunction
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.Minecraft
@@ -26,13 +27,13 @@ public class TestScreenConfig(public val id: String, public val name: String, ac
             activatorItem.config.description = value
         }
 
-    public var customScreen: ClientSupplier<Screen>? = null
+    public var customScreen: ClientMetaSupplier<ScreenFactory>? = null
 
     /**
      * Use an entirely custom screen
      */
     public inline fun customScreen(crossinline client: () -> Screen) {
-        customScreen = ClientSupplier { client() }
+        customScreen = ClientMetaSupplier { ScreenFactory { client() } }
     }
 
     /**
@@ -200,7 +201,7 @@ public class TestScreenConfig(public val id: String, public val name: String, ac
     public fun activate() {
         lazies.forEach { it() }
         lazies.clear()
-        Client.displayGuiScreen(customScreen?.get() ?: TestScreen(this))
+        Client.displayGuiScreen(customScreen?.getClientFunction()?.create() ?: TestScreen(this))
     }
 
     public var activatorItem: TestItem = TestItem(TestItemConfig(this.id + "_screen", this.name + " Screen", activatorItemGroup) {
@@ -210,4 +211,8 @@ public class TestScreenConfig(public val id: String, public val name: String, ac
             }
         }
     })
+}
+
+public fun interface ScreenFactory: ClientSideFunction {
+    public fun create(): Screen
 }

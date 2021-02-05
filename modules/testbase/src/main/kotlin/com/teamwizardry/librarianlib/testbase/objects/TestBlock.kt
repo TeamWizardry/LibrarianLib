@@ -1,7 +1,8 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
-import com.teamwizardry.librarianlib.core.util.sided.ClientFunction
+import com.teamwizardry.librarianlib.core.util.sided.ClientMetaSupplier
+import com.teamwizardry.librarianlib.core.util.sided.ClientSideFunction
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.DirectionalBlock
@@ -38,7 +39,7 @@ import java.util.Random
 public open class TestBlock(public val config: TestBlockConfig): Block(config.also { configHolder = it }.properties) {
     public var tileEntityType: TileEntityType<*>? = null
         private set
-    public val tileEntityRenderer: ClientFunction<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>?
+    public val tileEntityRenderer: ClientMetaSupplier<TileEntityRendererFactory>?
     private var tileFactory: (() -> TileEntity)? = null
 
     init {
@@ -200,4 +201,8 @@ public open class TestBlock(public val config: TestBlockConfig): Block(config.al
         // needed because fillStateContainer is called before we can set the config property
         private var configHolder: TestBlockConfig? by threadLocal()
     }
+}
+
+public fun interface TileEntityRendererFactory: ClientSideFunction {
+    public fun create(dispatcher: TileEntityRendererDispatcher): TileEntityRenderer<*>
 }

@@ -12,7 +12,7 @@ public class ExampleModContainers {
         coolContainer.from(registrationManager.add(
                 new ContainerSpec<>("cool_container",
                         CoolContainer.class,
-                        CoolContainerScreen::new
+                        () -> CoolContainerScreen::new
                 )
         ));
     }

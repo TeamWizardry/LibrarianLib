@@ -42,10 +42,11 @@ internal object MessagePacketType: PacketType<MessagePacket>(MessagePacket::clas
     }
 
     override fun handle(packet: MessagePacket, context: Supplier<NetworkEvent.Context>) {
-        val player: PlayerEntity? = if(context.get().direction == NetworkDirection.PLAY_TO_CLIENT) {
-            clientOnly { Client.minecraft.player }
+        var player: PlayerEntity? = null
+        if(context.get().direction == NetworkDirection.PLAY_TO_CLIENT) {
+            clientOnly { player = Client.minecraft.player }
         } else {
-            context.get().sender
+            player = context.get().sender
         }
         packet.side = when(context.get().direction) {
             NetworkDirection.PLAY_TO_CLIENT -> MessageSide.CLIENT

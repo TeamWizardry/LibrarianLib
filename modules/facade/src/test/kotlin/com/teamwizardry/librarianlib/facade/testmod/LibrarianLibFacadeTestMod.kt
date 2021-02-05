@@ -11,10 +11,7 @@ import com.teamwizardry.librarianlib.facade.example.containers.DirtSetterItem
 import com.teamwizardry.librarianlib.facade.example.gettingstarted.*
 import com.teamwizardry.librarianlib.facade.example.transform.*
 import com.teamwizardry.librarianlib.facade.testmod.containers.*
-import com.teamwizardry.librarianlib.facade.testmod.containers.base.TestContainerSelectorContainer
-import com.teamwizardry.librarianlib.facade.testmod.containers.base.TestContainerSelectorScreen
-import com.teamwizardry.librarianlib.facade.testmod.containers.base.TestContainerSet
-import com.teamwizardry.librarianlib.facade.testmod.containers.base.TestContainerTile
+import com.teamwizardry.librarianlib.facade.testmod.containers.base.*
 import com.teamwizardry.librarianlib.facade.testmod.screens.*
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.PastryTestScreen
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.Rect2dUnionTestScreen
@@ -25,9 +22,11 @@ import com.teamwizardry.librarianlib.testbase.objects.TestBlockConfig
 import com.teamwizardry.librarianlib.testbase.objects.TestItem
 import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import net.minecraft.client.gui.ScreenManager
+import net.minecraft.client.gui.screen.Screen
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.inventory.container.ContainerType
 import net.minecraft.item.Item
+import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -35,62 +34,76 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 
 @Mod("librarianlib-facade-test")
-object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
+object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
     val groups: Map<String, FacadeTestGroup> = mapOf(
-        "basics" to FacadeTestGroup("Basics", listOf(
-            FacadeTest("Empty", ::EmptyTestScreen),
-            FacadeTest("zIndex", ::ZIndexTestScreen),
-            FacadeTest("Layer Transform", ::LayerTransformTestScreen),
-            FacadeTest("Layer MouseOver/MouseOff", ::LayerMouseOverOffTestScreen),
-            FacadeTest("Event Priority", ::EventPriorityScreen),
-        )),
-        "layers" to FacadeTestGroup("Layers", listOf(
-            FacadeTest("Simple Sprite", ::SimpleSpriteTestScreen),
-            FacadeTest("Simple Text", ::SimpleTextTestScreen),
-            FacadeTest("Text Embeds", ::TextEmbedsTestScreen),
-            FacadeTest("DragLayer", ::DragLayerTestScreen),
-        )),
-        "animations" to FacadeTestGroup("Animations/Time", listOf(
-            FacadeTest("Animations", ::AnimationTestScreen),
-            FacadeTest("Scheduled Callbacks", ::ScheduledCallbacksTestScreen),
-            FacadeTest("Scheduled Repeated Callbacks", ::ScheduledRepeatedCallbacksTestScreen),
-        )),
-        "clipping_compositing" to FacadeTestGroup("Clipping/Compositing", listOf(
-            FacadeTest("Clip to Bounds", ::ClipToBoundsTestScreen),
-            FacadeTest("Masking", ::MaskingTestScreen),
-            FacadeTest("Opacity", ::OpacityTestScreen),
-            FacadeTest("Blending", ::BlendingTestScreen),
-            FacadeTest("Render to FBO Scale", ::RenderFBOScaleTest),
-            FacadeTest("Render to Quad Scale", ::RenderQuadScaleTest),
-        )),
-        "advanced" to FacadeTestGroup("Advanced", listOf(
-            FacadeTest("Pastry", ::PastryTestScreen),
-            FacadeTest("Rect2dUnion", ::Rect2dUnionTestScreen),
-        )),
-        "examples" to FacadeTestGroup("Examples", listOf(
-            FacadeTest("Alignment", ::ExampleAlignmentScreen),
-            FacadeTest("Getting Started > Hello Square", ::HelloSquareScreen),
-            FacadeTest("Getting Started > All the Squares", ::AllTheSquaresScreen),
-            FacadeTest("Getting Started > Squares all the Way Down", ::SquaresAllTheWayDownScreen),
-            FacadeTest("Guessing Game", ::GuessingGameScreen),
-            FacadeTestGroup("Transform >", listOf(
-                FacadeTest("Visualization Test", ::VisualizationTestScreen),
-                FacadeTest("Position", ::PositionExampleScreen),
-            )),
-        )),
+        "basics" to FacadeTestGroup(
+            "Basics", listOf(
+                FacadeTest("Empty") { ScreenConstructor(::EmptyTestScreen) },
+                FacadeTest("zIndex") { ScreenConstructor(::ZIndexTestScreen) },
+                FacadeTest("Layer Transform") { ScreenConstructor(::LayerTransformTestScreen) },
+                FacadeTest("Layer MouseOver/MouseOff") { ScreenConstructor(::LayerMouseOverOffTestScreen) },
+                FacadeTest("Event Priority") { ScreenConstructor(::EventPriorityScreen) },
+            )
+        ),
+        "layers" to FacadeTestGroup(
+            "Layers", listOf(
+                FacadeTest("Simple Sprite") { ScreenConstructor(::SimpleSpriteTestScreen) },
+                FacadeTest("Simple Text") { ScreenConstructor(::SimpleTextTestScreen) },
+                FacadeTest("Text Embeds") { ScreenConstructor(::TextEmbedsTestScreen) },
+                FacadeTest("DragLayer") { ScreenConstructor(::DragLayerTestScreen) },
+            )
+        ),
+        "animations" to FacadeTestGroup(
+            "Animations/Time", listOf(
+                FacadeTest("Animations") { ScreenConstructor(::AnimationTestScreen) },
+                FacadeTest("Scheduled Callbacks") { ScreenConstructor(::ScheduledCallbacksTestScreen) },
+                FacadeTest("Scheduled Repeated Callbacks") { ScreenConstructor(::ScheduledRepeatedCallbacksTestScreen) },
+            )
+        ),
+        "clipping_compositing" to FacadeTestGroup(
+            "Clipping/Compositing", listOf(
+                FacadeTest("Clip to Bounds") { ScreenConstructor(::ClipToBoundsTestScreen) },
+                FacadeTest("Masking") { ScreenConstructor(::MaskingTestScreen) },
+                FacadeTest("Opacity") { ScreenConstructor(::OpacityTestScreen) },
+                FacadeTest("Blending") { ScreenConstructor(::BlendingTestScreen) },
+                FacadeTest("Render to FBO Scale") { ScreenConstructor(::RenderFBOScaleTest) },
+                FacadeTest("Render to Quad Scale") { ScreenConstructor(::RenderQuadScaleTest) },
+            )
+        ),
+        "advanced" to FacadeTestGroup(
+            "Advanced", listOf(
+                FacadeTest("Pastry") { ScreenConstructor(::PastryTestScreen) },
+                FacadeTest("Rect2dUnion") { ScreenConstructor(::Rect2dUnionTestScreen) },
+            )
+        ),
+        "examples" to FacadeTestGroup(
+            "Examples", listOf(
+                FacadeTest("Alignment") { ScreenConstructor(::ExampleAlignmentScreen) },
+                FacadeTest("Getting Started > Hello Square") { ScreenConstructor { HelloSquareScreen() } },
+                FacadeTest("Getting Started > All the Squares") { ScreenConstructor { AllTheSquaresScreen() } },
+                FacadeTest("Getting Started > Squares all the Way Down") { ScreenConstructor { SquaresAllTheWayDownScreen() } },
+                FacadeTest("Guessing Game") { ScreenConstructor { GuessingGameScreen() } },
+                FacadeTestGroup(
+                    "Transform >", listOf(
+                        FacadeTest("Visualization Test") { ScreenConstructor(::VisualizationTestScreen) },
+                        FacadeTest("Position") { ScreenConstructor(::PositionExampleScreen) },
+                    )
+                ),
+            )
+        ),
     )
 
     // note: the container and data classes are inferred from the screen
     val containerSets: Map<String, TestContainerSet> = mapOf(
         "basic" to TestContainerSet("Basic") {
-            container("Single Slot", ::SingleSlotScreen)
-            container("Slot Occlusion", ::OcclusionScreen)
-            container("Fluid Slot", ::FluidSlotScreen)
+            container("Single Slot", SingleSlotContainer::class.java) { ContainerScreenFactory(::SingleSlotScreen) }
+            container("Slot Occlusion", OcclusionContainer::class.java) { ContainerScreenFactory(::OcclusionScreen) }
+            container("Fluid Slot", FluidSlotContainer::class.java) { ContainerScreenFactory(::FluidSlotScreen) }
         },
         "jei_compat" to TestContainerSet("JEI Compat") {
-            container("Exclusion Areas", ::JeiExclusionAreasScreen)
-            container("Ghost Slots", ::GhostSlotScreen)
-            container("Ingredient Layers", ::JeiIngredientLayerScreen)
+            container("Exclusion Areas", JeiExclusionAreasContainer::class.java) { ContainerScreenFactory(::JeiExclusionAreasScreen) }
+            container("Ghost Slots", GhostSlotContainer::class.java) { ContainerScreenFactory(::GhostSlotScreen) }
+            container("Ingredient Layers", JeiIngredientLayerContainer::class.java) { ContainerScreenFactory(::JeiIngredientLayerScreen) }
         },
     )
 
@@ -115,7 +128,11 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
             tile(::SimpleInventoryTile)
 
             rightClick.server {
-                simpleInventoryContainerType.open(player as ServerPlayerEntity, StringTextComponent("Simple Inventory"), pos)
+                simpleInventoryContainerType.open(
+                    player as ServerPlayerEntity,
+                    StringTextComponent("Simple Inventory"),
+                    pos
+                )
             }
         })
 
@@ -134,7 +151,11 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
                 tile<TestContainerTile> { TestContainerTile(it, containerSet) }
 
                 rightClick.server {
-                    testContainerSelectorContainerType.open(player as ServerPlayerEntity, StringTextComponent(containerSet.name), pos)
+                    testContainerSelectorContainerType.open(
+                        player as ServerPlayerEntity,
+                        StringTextComponent(containerSet.name),
+                        pos
+                    )
                 }
             })
         }
@@ -160,8 +181,8 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
         e.registry.register(simpleInventoryContainerType)
         e.registry.register(testContainerSelectorContainerType)
         e.registry.register(backpackContainerType)
-        for((_, containerSet) in containerSets) {
-            for(type in containerSet.types) {
+        for ((_, containerSet) in containerSets) {
+            for (type in containerSet.types) {
                 e.registry.register(type.containerType)
             }
         }
@@ -174,13 +195,14 @@ object LibrarianLibFacadeTestMod: TestMod(LibrarianLibFacadeModule) {
         ScreenManager.registerFactory(simpleInventoryContainerType, ::SimpleInventoryContainerScreen)
         ScreenManager.registerFactory(testContainerSelectorContainerType, ::TestContainerSelectorScreen)
         ScreenManager.registerFactory(backpackContainerType, ::BackpackContainerScreen)
-        for((_, containerSet) in containerSets) {
-            for(type in containerSet.types) {
+        for ((_, containerSet) in containerSets) {
+            for (type in containerSet.types) {
                 @Suppress("UNCHECKED_CAST")
                 ScreenManager.registerFactory(
                     type.containerType as ContainerType<FacadeContainer>
                 ) { container, inventory, title ->
-                    (type.screenFactory as TestContainerSet.ContainerScreenFactory<FacadeContainer>).create(container, inventory, title)
+                    (type.screenFactory.getClientFunction() as ContainerScreenFactory<FacadeContainer>)
+                        .create(container, inventory, title)
                 }
             }
         }

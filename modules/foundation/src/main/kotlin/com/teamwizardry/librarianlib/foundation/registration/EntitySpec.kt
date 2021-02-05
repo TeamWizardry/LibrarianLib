@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
-import com.teamwizardry.librarianlib.core.util.sided.ClientFunction
+import com.teamwizardry.librarianlib.core.util.sided.ClientMetaSupplier
+import com.teamwizardry.librarianlib.core.util.sided.ClientSideFunction
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererManager
 import net.minecraft.entity.Entity
@@ -45,14 +46,14 @@ public class EntitySpec<T: Entity>(
 
     private val builder = EntityType.Builder.create(factory, classification)
     @get:JvmSynthetic
-    internal var renderFactory: ClientFunction<EntityRendererManager, EntityRenderer<in T>>? = null
+    internal var renderFactory: ClientMetaSupplier<EntityRendererFactory<T>>? = null
         private set
 
     public fun customClientFactory(factory: BiFunction<FMLPlayMessages.SpawnEntity, World, T>): EntitySpec<T> = build {
         builder.setCustomClientFactory(factory)
     }
 
-    public fun renderFactory(factory: ClientFunction<EntityRendererManager, EntityRenderer<in T>>): EntitySpec<T> = build {
+    public fun renderFactory(factory: ClientMetaSupplier<EntityRendererFactory<T>>): EntitySpec<T> = build {
         this.renderFactory = factory
     }
 
@@ -95,4 +96,8 @@ public class EntitySpec<T: Entity>(
         block()
         return this
     }
+}
+
+public fun interface EntityRendererFactory<T: Entity>: ClientSideFunction {
+    public fun create(rendererManager: EntityRendererManager): EntityRenderer<in T>
 }

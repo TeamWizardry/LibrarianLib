@@ -161,7 +161,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
             throw IllegalStateException("Tile entity type `$modid:sign` already configured")
         this.add(
             TileEntitySpec("sign") { FoundationSignTileEntityCreator.create(foundationSignTileEntityType.get()) }
-                .renderer { SignTileEntityRenderer(it) }
+                .renderer { TileEntityRendererFactory(::SignTileEntityRenderer) }
         )
     }
 
@@ -237,7 +237,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
             logger.debug("Registering TileEntityRenderer for ${spec.registryName}")
             @Suppress("UNCHECKED_CAST")
             ClientRegistry.bindTileEntityRenderer(spec.typeInstance as TileEntityType<TileEntity>) {
-                renderer.applyClient(it) as TileEntityRenderer<TileEntity>
+                renderer.getClientFunction().create(it) as TileEntityRenderer<TileEntity>
             }
         }
         for (spec in entities) {
@@ -245,7 +245,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
             logger.debug("Registering EntityRenderer for ${spec.registryName}")
             @Suppress("UNCHECKED_CAST")
             RenderingRegistry.registerEntityRenderingHandler(spec.typeInstance as EntityType<Entity>) {
-                factory.applyClient(it) as EntityRenderer<Entity>
+                factory.getClientFunction().create(it) as EntityRenderer<Entity>
             }
         }
         for (spec in containers) {
@@ -253,7 +253,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
             logger.debug("Registering ContainerScreen factory for ${spec.registryName}")
             @Suppress("UNCHECKED_CAST")
             ScreenManager.registerFactory(spec.typeInstance as ContainerType<FacadeContainer>) { container, inventory, title ->
-                (factory as ContainerSpec.ContainerScreenFactory<FacadeContainer>).create(container, inventory, title)
+                (factory.getClientFunction() as ContainerScreenFactory<FacadeContainer>).create(container, inventory, title)
             }
         }
     }
@@ -263,6 +263,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     internal fun dedicatedServerSetup(e: FMLDedicatedServerSetupEvent) {
     }
 
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     @JvmSynthetic
     internal fun stitchAtlasSprites(e: TextureStitchEvent.Pre) {

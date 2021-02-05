@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.facade.testmod.containers.base
 
 import com.teamwizardry.librarianlib.core.util.loc
+import com.teamwizardry.librarianlib.core.util.sided.ClientMetaSupplier
+import com.teamwizardry.librarianlib.core.util.sided.ClientSideFunction
 import com.teamwizardry.librarianlib.facade.container.FacadeContainer
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerType
@@ -46,11 +48,12 @@ class TestContainerSet(val name: String, config: Entry.Group.() -> Unit) {
                 entries.add(group)
             }
 
-            inline fun <reified T : TestContainerData, reified C : TestContainer<T>> container(
+            inline fun <reified T : TestContainerData, C : TestContainer<T>> container(
                 name: String,
-                screenFactory: ContainerScreenFactory<C>
+                containerClass: Class<C>,
+                screenFactory: ClientMetaSupplier<ContainerScreenFactory<C>>
             ) {
-                entries.add(Container(name, Type(T::class.java, C::class.java, screenFactory)))
+                entries.add(Container(name, Type(T::class.java, containerClass, screenFactory)))
             }
 
             override fun collectTypes(list: MutableList<Type<*, *>>): List<Type<*, *>> {
@@ -65,7 +68,7 @@ class TestContainerSet(val name: String, config: Entry.Group.() -> Unit) {
     class Type<T : TestContainerData, C : TestContainer<T>>(
         val dataClass: Class<T>,
         val containerClass: Class<C>,
-        val screenFactory: ContainerScreenFactory<C>
+        val screenFactory: ClientMetaSupplier<ContainerScreenFactory<C>>
     ) {
         val id: ResourceLocation = loc("librarianlib-facade-test", containerClass.simpleName.toLowerCase())
         val containerType: FacadeContainerType<C> = FacadeContainerType(containerClass)
@@ -75,10 +78,6 @@ class TestContainerSet(val name: String, config: Entry.Group.() -> Unit) {
         }
     }
 
-    fun interface ContainerScreenFactory<T : FacadeContainer> {
-        @OnlyIn(Dist.CLIENT)
-        fun create(container: T, inventory: PlayerInventory, title: ITextComponent): FacadeContainerScreen<T>
-    }
 
     companion object {
         val allTypes: MutableList<Type<*, *>> = mutableListOf()
@@ -88,4 +87,8 @@ class TestContainerSet(val name: String, config: Entry.Group.() -> Unit) {
                 ?: throw IllegalArgumentException("No container type for data type '${dataClass.canonicalName}'")
         }
     }
+}
+
+fun interface ContainerScreenFactory<T : FacadeContainer>: ClientSideFunction {
+    fun create(container: T, inventory: PlayerInventory, title: ITextComponent): FacadeContainerScreen<T>
 }

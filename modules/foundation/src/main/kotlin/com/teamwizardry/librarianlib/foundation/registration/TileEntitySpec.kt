@@ -2,7 +2,8 @@ package com.teamwizardry.librarianlib.foundation.registration
 
 import com.teamwizardry.librarianlib.core.util.IncompleteBuilderException
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
-import com.teamwizardry.librarianlib.core.util.sided.ClientFunction
+import com.teamwizardry.librarianlib.core.util.sided.ClientMetaSupplier
+import com.teamwizardry.librarianlib.core.util.sided.ClientSideFunction
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
@@ -53,13 +54,13 @@ public class TileEntitySpec<T: TileEntity>(
     }
 
     @get:JvmSynthetic
-    internal var renderer: ClientFunction<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>? = null
+    internal var renderer: ClientMetaSupplier<TileEntityRendererFactory>? = null
         private set
 
     /**
      * Sets the renderer factory for this tile type
      */
-    public fun renderer(renderer: ClientFunction<in TileEntityRendererDispatcher, out TileEntityRenderer<*>>): TileEntitySpec<T> {
+    public fun renderer(renderer: ClientMetaSupplier<TileEntityRendererFactory>): TileEntitySpec<T> {
         this.renderer = renderer
         return this
     }
@@ -77,4 +78,8 @@ public class TileEntitySpec<T: TileEntity>(
     }
 
     public val lazy: LazyTileEntityType<T> = LazyTileEntityType(this)
+}
+
+public fun interface TileEntityRendererFactory: ClientSideFunction {
+    public fun create(dispatcher: TileEntityRendererDispatcher): TileEntityRenderer<*>
 }

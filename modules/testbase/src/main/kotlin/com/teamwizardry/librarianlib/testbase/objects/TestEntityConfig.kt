@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
-import com.teamwizardry.librarianlib.core.util.sided.ClientFunction
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityClassification
 import net.minecraft.entity.EntityType
@@ -38,7 +37,7 @@ public class TestEntityConfig(public val id: String, public val name: String, sp
     public var serverFactory: (World) -> TestEntity = { world ->
         TestEntity(this, world)
     }
-    public var clientFactory: ClientFunction<World, TestEntity> = ClientFunction { world ->
+    public var clientFactory: (World) -> TestEntity = { world ->
         TestEntity(this, world)
     }
 
@@ -46,7 +45,7 @@ public class TestEntityConfig(public val id: String, public val name: String, sp
         serverFactory(world)
     }, EntityClassification.MISC)
         .setCustomClientFactory { _, world ->
-            clientFactory.apply(world)
+            clientFactory(world)
         }
         .size(0.5f, 0.5f)
     public val type: EntityType<TestEntity> by lazy {

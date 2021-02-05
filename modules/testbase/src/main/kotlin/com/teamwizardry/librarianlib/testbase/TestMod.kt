@@ -173,7 +173,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
                 block.tileEntityRenderer?.also { renderer ->
                     @Suppress("UNCHECKED_CAST")
                     ClientRegistry.bindTileEntityRenderer(block.tileEntityType as TileEntityType<TileEntity>) {
-                        renderer.applyClient(it) as TileEntityRenderer<TileEntity>
+                        renderer.getClientFunction().create(it) as TileEntityRenderer<TileEntity>
                     }
                 }
             }

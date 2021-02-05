@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.testbase.objects
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
-import com.teamwizardry.librarianlib.core.util.sided.ClientSupplier
+import com.teamwizardry.librarianlib.core.util.sided.clientOnly
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntitySize
 import net.minecraft.entity.Pose
@@ -53,10 +53,11 @@ public open class TestEntity(public val config: TestEntityConfig, world: World):
     }
 
     override fun isGlowing(): Boolean {
-        val heldGlow = ClientSupplier {
-            Client.minecraft.player?.getHeldItem(Hand.MAIN_HAND)?.item == config.spawnerItem ||
-                Client.minecraft.player?.getHeldItem(Hand.OFF_HAND)?.item == config.spawnerItem
-        }.get() ?: false
+        var heldGlow = false
+        clientOnly {
+            heldGlow = Client.minecraft.player?.getHeldItem(Hand.MAIN_HAND)?.item == config.spawnerItem ||
+                    Client.minecraft.player?.getHeldItem(Hand.OFF_HAND)?.item == config.spawnerItem
+        }
         return config.enableGlow || heldGlow || super.isGlowing()
     }
 

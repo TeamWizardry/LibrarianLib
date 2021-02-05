@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.testbase.objects
 
-import com.teamwizardry.librarianlib.core.util.sided.ClientFunction
 import net.minecraft.block.AbstractBlock
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState

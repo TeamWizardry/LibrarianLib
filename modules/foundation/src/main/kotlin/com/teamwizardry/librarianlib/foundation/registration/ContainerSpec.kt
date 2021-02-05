@@ -1,14 +1,13 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
-import com.teamwizardry.librarianlib.core.util.sided.ClientSupplier
+import com.teamwizardry.librarianlib.core.util.sided.ClientMetaSupplier
+import com.teamwizardry.librarianlib.core.util.sided.ClientSideFunction
 import com.teamwizardry.librarianlib.facade.container.FacadeContainer
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerType
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.text.ITextComponent
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
 
 /**
  * The specs for registering a container type.
@@ -25,7 +24,7 @@ public class ContainerSpec<T: FacadeContainer>(
     /**
      * The screen factory. This will generally be a lambda that returns a reference to the GUI's constructor
      */
-    screenFactory: ContainerScreenFactory<T>
+    screenFactory: ClientMetaSupplier<ContainerScreenFactory<T>>
 ) {
     /**
      * The mod ID to register this container under. This is populated by the [RegistrationManager].
@@ -42,7 +41,7 @@ public class ContainerSpec<T: FacadeContainer>(
 
 
     @get:JvmSynthetic
-    internal var screenFactory: ContainerScreenFactory<T> = screenFactory
+    internal var screenFactory: ClientMetaSupplier<ContainerScreenFactory<T>> = screenFactory
         private set
 
     public val typeInstance: FacadeContainerType<T> by lazy {
@@ -52,9 +51,8 @@ public class ContainerSpec<T: FacadeContainer>(
     }
 
     public val lazy: LazyContainerType<T> = LazyContainerType(this)
+}
 
-    public fun interface ContainerScreenFactory<T: FacadeContainer> {
-        @OnlyIn(Dist.CLIENT)
-        public fun create(container: T, inventory: PlayerInventory, title: ITextComponent): FacadeContainerScreen<T>
-    }
+public fun interface ContainerScreenFactory<T: FacadeContainer>: ClientSideFunction {
+    public fun create(container: T, inventory: PlayerInventory, title: ITextComponent): FacadeContainerScreen<T>
 }
