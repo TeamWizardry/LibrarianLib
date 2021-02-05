@@ -1,13 +1,13 @@
 package com.teamwizardry.librarianlib.courier.example;
 
 import com.teamwizardry.librarianlib.core.util.Client;
+import com.teamwizardry.librarianlib.courier.CourierBuffer;
 import com.teamwizardry.librarianlib.courier.CourierPacket;
 import dev.thecodewarrior.prism.annotation.Refract;
 import dev.thecodewarrior.prism.annotation.RefractClass;
 import dev.thecodewarrior.prism.annotation.RefractConstructor;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.jetbrains.annotations.NotNull;
@@ -28,13 +28,13 @@ public class ExamplePrismPacket implements CourierPacket {
 
     // optionally write anything not supported by Prism.
     @Override
-    public void writeBytes(@NotNull PacketBuffer buffer) {
+    public void writeBytes(@NotNull CourierBuffer buffer) {
     }
 
     // optionally read anything not supported by Prism.
     // you'll need to use a non-final field and initialize it in this method.
     @Override
-    public void readBytes(@NotNull PacketBuffer buffer) {
+    public void readBytes(@NotNull CourierBuffer buffer) {
     }
 
     @Override

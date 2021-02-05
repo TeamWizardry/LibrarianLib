@@ -56,8 +56,8 @@ public class CourierChannel(private val name: ResourceLocation, private var vers
         baseChannel.registerMessage(
             packetType.index,
             packetType.type,
-            packetType::encode,
-            packetType::decode
+            { packet, buffer -> packetType.encode(packet, CourierBuffer(buffer)) },
+            { buffer -> packetType.decode(CourierBuffer(buffer)) }
         ) { packet, context ->
             // because for some ungodly reason you have to do this yourself, otherwise you get spammed with
             // "Unknown custom packet identifier" log messages
@@ -73,8 +73,8 @@ public class CourierChannel(private val name: ResourceLocation, private var vers
         baseChannel.registerMessage(
             packetType.index,
             packetType.type,
-            packetType::encode,
-            packetType::decode,
+            { packet, buffer -> packetType.encode(packet, CourierBuffer(buffer)) },
+            { buffer -> packetType.decode(CourierBuffer(buffer)) },
             { packet, context ->
                 // because for some ungodly reason you have to do this yourself, otherwise you get spammed with
                 // "Unknown custom packet identifier" log messages

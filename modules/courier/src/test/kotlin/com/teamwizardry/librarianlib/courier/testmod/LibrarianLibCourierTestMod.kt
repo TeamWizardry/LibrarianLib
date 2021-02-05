@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.courier.testmod
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.core.util.sided.clientOnly
+import com.teamwizardry.librarianlib.courier.CourierBuffer
 import com.teamwizardry.librarianlib.courier.CourierChannel
 import com.teamwizardry.librarianlib.courier.CourierPacket
 import com.teamwizardry.librarianlib.courier.LibrarianLibCourierModule
@@ -46,11 +47,11 @@ object LibrarianLibCourierTestMod: TestMod(LibrarianLibCourierModule) {
 data class TestPacket @RefractConstructor constructor(@Refract val block: Block, @Refract val value: Int): CourierPacket {
     var manual: Int = 0
 
-    override fun writeBytes(buffer: PacketBuffer) {
+    override fun writeBytes(buffer: CourierBuffer) {
         buffer.writeVarInt(manual)
     }
 
-    override fun readBytes(buffer: PacketBuffer) {
+    override fun readBytes(buffer: CourierBuffer) {
         manual = buffer.readVarInt()
     }
 

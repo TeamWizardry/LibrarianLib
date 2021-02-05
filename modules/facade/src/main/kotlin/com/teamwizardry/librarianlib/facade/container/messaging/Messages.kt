@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.facade.container.messaging
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.inconceivable
 import com.teamwizardry.librarianlib.core.util.sided.clientOnly
+import com.teamwizardry.librarianlib.courier.CourierBuffer
 import com.teamwizardry.librarianlib.courier.PacketType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.CompoundNBT
@@ -28,13 +29,13 @@ public data class MessagePacket(val windowId: Int, val name: String, val payload
 }
 
 internal object MessagePacketType: PacketType<MessagePacket>(MessagePacket::class.java) {
-    override fun encode(packet: MessagePacket, buffer: PacketBuffer) {
+    override fun encode(packet: MessagePacket, buffer: CourierBuffer) {
         buffer.writeVarInt(packet.windowId)
         buffer.writeString(packet.name)
         buffer.writeCompoundTag(packet.payload)
     }
 
-    override fun decode(buffer: PacketBuffer): MessagePacket {
+    override fun decode(buffer: CourierBuffer): MessagePacket {
         val windowId = buffer.readVarInt()
         val name = buffer.readString()
         val payload = buffer.readCompoundTag()!!
@@ -51,7 +52,8 @@ internal object MessagePacketType: PacketType<MessagePacket>(MessagePacket::clas
         packet.side = when(context.get().direction) {
             NetworkDirection.PLAY_TO_CLIENT -> MessageSide.CLIENT
             NetworkDirection.PLAY_TO_SERVER -> MessageSide.SERVER
-            else -> inconceivable("Message packets should only be PLAY_TO_CLIENT or PLAY_TO_SERVER")
+            else -> inconceivable("Message packets should only be PLAY_TO_CLIENT or PLAY_TO_SERVER, not " +
+                    "${context.get().direction}")
         }
         context.get().enqueueWork {
             (player?.openContainer as? MessageHandler)?.receiveMessage(packet)

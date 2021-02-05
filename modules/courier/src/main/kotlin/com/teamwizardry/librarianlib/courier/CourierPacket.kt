@@ -10,13 +10,13 @@ public interface CourierPacket {
      * Writes the packet data to the buffer. Any [@Refract][Refract] annotated fields do NOT need to be written in this
      * method.
      */
-    public fun writeBytes(buffer: PacketBuffer) {}
+    public fun writeBytes(buffer: CourierBuffer) {}
 
     /**
      * Reads the packet data from the buffer. Any [@Refract][Refract] annotated fields do NOT need to be read in this
      * method.
      */
-    public fun readBytes(buffer: PacketBuffer) {}
+    public fun readBytes(buffer: CourierBuffer) {}
 
     /**
      * Handles the packet being received. This is handled on the network thread, so don't access anything that isn't

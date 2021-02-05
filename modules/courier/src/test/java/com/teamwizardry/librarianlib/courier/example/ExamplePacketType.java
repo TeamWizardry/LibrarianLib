@@ -1,10 +1,10 @@
 package com.teamwizardry.librarianlib.courier.example;
 
 import com.teamwizardry.librarianlib.core.util.Client;
+import com.teamwizardry.librarianlib.courier.CourierBuffer;
 import com.teamwizardry.librarianlib.courier.PacketType;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.jetbrains.annotations.NotNull;
@@ -28,13 +28,13 @@ public class ExamplePacketType extends PacketType<ExamplePacketType.Packet> {
     }
 
     @Override
-    public void encode(Packet packet, @NotNull PacketBuffer buffer) {
+    public void encode(Packet packet, @NotNull CourierBuffer buffer) {
         buffer.writeBlockPos(packet.pos);
         buffer.writeRegistryId(packet.block);
     }
 
     @Override
-    public Packet decode(@NotNull PacketBuffer buffer) {
+    public Packet decode(@NotNull CourierBuffer buffer) {
         BlockPos position = buffer.readBlockPos();
         Block block = buffer.readRegistryIdSafe(Block.class);
         return new Packet(position, block);

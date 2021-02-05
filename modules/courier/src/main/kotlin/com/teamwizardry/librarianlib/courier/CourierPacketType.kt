@@ -21,13 +21,13 @@ internal class CourierPacketType<T: Any>(type: Class<T>, val handler: BiConsumer
     }
     private val serializer by Prisms.nbt[Mirror.reflect(type)]
 
-    override fun encode(packet: T, buffer: PacketBuffer) {
+    override fun encode(packet: T, buffer: CourierBuffer) {
         val tag = serializer.write(packet) as CompoundNBT
         buffer.writeCompoundTag(tag)
         (packet as? CourierPacket)?.writeBytes(buffer)
     }
 
-    override fun decode(buffer: PacketBuffer): T {
+    override fun decode(buffer: CourierBuffer): T {
         val tag = buffer.readCompoundTag() ?: throw IllegalStateException("Packet didn't start with a compound tag")
         val packet = serializer.read(tag, null)
         (packet as? CourierPacket)?.readBytes(buffer)
