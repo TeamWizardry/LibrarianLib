@@ -5,10 +5,10 @@
   "refmap": "ll-mirage.refmap.json",
   "mixins": [
     "FallbackResourceManagerMixin",
-    "LanguageMapMixin",
     "SimpleReloadableResourceManagerMixin"
   ],
   "client": [
+    "LanguageMapMixin"
   ],
   "injectors": {
     "defaultRequire": 1

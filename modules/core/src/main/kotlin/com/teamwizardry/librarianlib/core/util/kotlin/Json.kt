@@ -29,6 +29,39 @@ public operator fun JsonObject.set(property: String, value: Char) {
 
 public operator fun JsonObject.contains(property: String): Boolean = this.has(property)
 
+/**
+ * ```json
+ * {
+ *     "property1": 10,
+ *     "property2": 10,
+ *     "children_array": [
+ *         "child1",
+ *         { "name": "child2" }
+ *     ],
+ *     "optionalKey": {
+ *         "name": "optional_child"
+ *     }
+ * }
+ * ```
+ * ```kotlin
+ * val parsedValue: ParsedType = jsonElement.parse("root") {
+ *     val property1 = get("property1").asInt()
+ *     val property2 = get("property2").asInt()
+ *     val children: List<ChildType> = "children_array" {
+ *         elements.map {
+ *             if(it.isString)
+ *                 ChildType(it.asString())
+ *             else
+ *                 ChildType(it["name"].asString())
+ *         }
+ *     }
+ *     val optionalChild: OptionalChild? = optional("optionalKey") {
+ *         OptionalChild(get("name").asString())
+ *     }
+ *     ParsedType(property1, property2, children)
+ * }
+ * ```
+ */
 public inline fun <T> JsonObject.parse(rootName: String, dsl: JsonParsingDSL.() -> T): T
     = JsonParsingDSL(this, rootName).dsl()
 

@@ -1,8 +1,6 @@
 package com.teamwizardry.librarianlib
 
 import com.google.gson.Gson
-import com.teamwizardry.librarianlib.core.bridge.ASMEnvCheckTarget
-import com.teamwizardry.librarianlib.core.bridge.MixinEnvCheckTarget
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.fml.common.Mod
@@ -22,7 +20,6 @@ internal object LibrarianLibBootstrap {
         if("bootstrap" in System.getProperty("librarianlib.debug.modules", "").split(","))
             changeLogLevel(logger, Level.DEBUG)
 
-        checkEnvironment()
 
         val names = resource("/META-INF/ll/core/modules.txt")?.lines()
             ?: throw RuntimeException("Unable to find LibrarianLib modules list")
@@ -39,34 +36,6 @@ internal object LibrarianLibBootstrap {
             throw RuntimeException("Failed to load LibrarianLib modules [${failedLoading.joinToString(", ")}]")
         }
         logger.info("Finished loading modules")
-    }
-
-    /**
-     * Perform a few fail-fast checks for the LibrarianLib environment.
-     *
-     * The liblib build environment is pretty complex, so it would be easy to have one of these break, so we want to
-     * fail immediately instead of crashing when we try to use the result of one of them.
-     */
-    private fun checkEnvironment() {
-        logger.debug("Checking environment")
-
-        logger.debug("Checking if Mixins are being applied")
-        val mixinPatched = MixinEnvCheckTarget().isPatched
-        if(mixinPatched)
-            logger.debug("Environment check passed: Mixins are being applied")
-        else
-            logger.error("Environment check failed: Mixins are not being applied")
-
-        logger.debug("Checking if ASM transformers are being applied")
-        val asmPatched = ASMEnvCheckTarget().isPatched
-        if(asmPatched)
-            logger.debug("Environment check passed: ASM transformers are being applied")
-        else
-            logger.error("Environment check failed: ASM transformers are not being applied")
-
-        if(!mixinPatched || !asmPatched) {
-            throw RuntimeException("LibrarianLib environment checks failed")
-        }
     }
 
     private fun loadModule(name: String) {
