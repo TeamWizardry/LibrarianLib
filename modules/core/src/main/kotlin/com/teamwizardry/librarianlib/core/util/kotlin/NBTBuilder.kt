@@ -55,15 +55,15 @@ public object NBTBuilder {
     public inline fun short(value: Number): ShortNBT = ShortNBT.valueOf(value.toShort())
     public inline fun byte(value: Number): ByteNBT = ByteNBT.valueOf(value.toByte())
 
-    public fun string(value: String): StringNBT = StringNBT.valueOf(value)
+    public inline fun string(value: String): StringNBT = StringNBT.valueOf(value)
 
-    public fun byteArray(vararg value: Int): ByteArrayNBT = ByteArrayNBT(value.map { it.toByte() }.toByteArray())
-    public fun byteArray(vararg value: Byte): ByteArrayNBT = ByteArrayNBT(value)
-    public fun byteArray(): ByteArrayNBT = ByteArrayNBT(byteArrayOf()) // avoiding overload ambiguity
-    public fun longArray(vararg value: Int): LongArrayNBT = LongArrayNBT(value.map { it.toLong() }.toLongArray())
-    public fun longArray(vararg value: Long): LongArrayNBT = LongArrayNBT(value)
-    public fun longArray(): LongArrayNBT = LongArrayNBT(longArrayOf()) // avoiding overload ambiguity
-    public fun intArray(vararg value: Int): IntArrayNBT = IntArrayNBT(value)
+    public inline fun byteArray(vararg value: Int): ByteArrayNBT = ByteArrayNBT(ByteArray(value.size) { value[it].toByte() })
+    public inline fun byteArray(vararg value: Byte): ByteArrayNBT = ByteArrayNBT(value)
+    public inline fun byteArray(): ByteArrayNBT = ByteArrayNBT(byteArrayOf()) // avoiding overload ambiguity
+    public inline fun longArray(vararg value: Int): LongArrayNBT = LongArrayNBT(LongArray(value.size) { value[it].toLong() })
+    public inline fun longArray(vararg value: Long): LongArrayNBT = LongArrayNBT(value)
+    public inline fun longArray(): LongArrayNBT = LongArrayNBT(longArrayOf()) // avoiding overload ambiguity
+    public inline fun intArray(vararg value: Int): IntArrayNBT = IntArrayNBT(value)
 }
 
 @NBTBuilderDslMarker
@@ -97,15 +97,15 @@ public inline class CompoundNBTBuilder(public val tag: CompoundNBT) {
     public inline fun short(value: Number): ShortNBT = ShortNBT.valueOf(value.toShort())
     public inline fun byte(value: Number): ByteNBT = ByteNBT.valueOf(value.toByte())
 
-    public fun string(value: String): StringNBT = StringNBT.valueOf(value)
+    public inline fun string(value: String): StringNBT = StringNBT.valueOf(value)
 
-    public fun byteArray(vararg value: Int): ByteArrayNBT = ByteArrayNBT(value.map { it.toByte() }.toByteArray())
-    public fun byteArray(vararg value: Byte): ByteArrayNBT = ByteArrayNBT(value)
-    public fun byteArray(): ByteArrayNBT = ByteArrayNBT(byteArrayOf()) // avoiding overload ambiguity
-    public fun longArray(vararg value: Int): LongArrayNBT = LongArrayNBT(value.map { it.toLong() }.toLongArray())
-    public fun longArray(vararg value: Long): LongArrayNBT = LongArrayNBT(value)
-    public fun longArray(): LongArrayNBT = LongArrayNBT(longArrayOf()) // avoiding overload ambiguity
-    public fun intArray(vararg value: Int): IntArrayNBT = IntArrayNBT(value)
+    public inline fun byteArray(vararg value: Int): ByteArrayNBT = ByteArrayNBT(ByteArray(value.size) { value[it].toByte() })
+    public inline fun byteArray(vararg value: Byte): ByteArrayNBT = ByteArrayNBT(value)
+    public inline fun byteArray(): ByteArrayNBT = ByteArrayNBT(byteArrayOf()) // avoiding overload ambiguity
+    public inline fun longArray(vararg value: Int): LongArrayNBT = LongArrayNBT(LongArray(value.size) { value[it].toLong() })
+    public inline fun longArray(vararg value: Long): LongArrayNBT = LongArrayNBT(value)
+    public inline fun longArray(): LongArrayNBT = LongArrayNBT(longArrayOf()) // avoiding overload ambiguity
+    public inline fun intArray(vararg value: Int): IntArrayNBT = IntArrayNBT(value)
 }
 
 @NBTBuilderDslMarker
@@ -165,27 +165,27 @@ public inline class ListNBTBuilder(public val tag: ListNBT) {
     public inline fun short(value: Number): ShortNBT = ShortNBT.valueOf(value.toShort())
     public inline fun byte(value: Number): ByteNBT = ByteNBT.valueOf(value.toByte())
 
-    public fun string(value: String): StringNBT = StringNBT.valueOf(value)
+    public inline fun string(value: String): StringNBT = StringNBT.valueOf(value)
 
-    public fun byteArray(vararg value: Int): ByteArrayNBT = ByteArrayNBT(value.map { it.toByte() }.toByteArray())
-    public fun byteArray(vararg value: Byte): ByteArrayNBT = ByteArrayNBT(value)
-    public fun byteArray(): ByteArrayNBT = ByteArrayNBT(byteArrayOf()) // avoiding overload ambiguity
-    public fun longArray(vararg value: Int): LongArrayNBT = LongArrayNBT(value.map { it.toLong() }.toLongArray())
-    public fun longArray(vararg value: Long): LongArrayNBT = LongArrayNBT(value)
-    public fun longArray(): LongArrayNBT = LongArrayNBT(longArrayOf()) // avoiding overload ambiguity
-    public fun intArray(vararg value: Int): IntArrayNBT = IntArrayNBT(value)
+    public inline fun byteArray(vararg value: Int): ByteArrayNBT = ByteArrayNBT(ByteArray(value.size) { value[it].toByte() })
+    public inline fun byteArray(vararg value: Byte): ByteArrayNBT = ByteArrayNBT(value)
+    public inline fun byteArray(): ByteArrayNBT = ByteArrayNBT(byteArrayOf()) // avoiding overload ambiguity
+    public inline fun longArray(vararg value: Int): LongArrayNBT = LongArrayNBT(LongArray(value.size) { value[it].toLong() })
+    public inline fun longArray(vararg value: Long): LongArrayNBT = LongArrayNBT(value)
+    public inline fun longArray(): LongArrayNBT = LongArrayNBT(longArrayOf()) // avoiding overload ambiguity
+    public inline fun intArray(vararg value: Int): IntArrayNBT = IntArrayNBT(value)
 
-    public fun doubles(vararg value: Int): List<DoubleNBT> = value.map { DoubleNBT.valueOf(it.toDouble()) }
-    public fun doubles(vararg value: Double): List<DoubleNBT> = value.map { DoubleNBT.valueOf(it) }
-    public fun floats(vararg value: Int): List<FloatNBT> = value.map { FloatNBT.valueOf(it.toFloat()) }
-    public fun floats(vararg value: Float): List<FloatNBT> = value.map { FloatNBT.valueOf(it) }
-    public fun longs(vararg value: Int): List<LongNBT> = value.map { LongNBT.valueOf(it.toLong()) }
-    public fun longs(vararg value: Long): List<LongNBT> = value.map { LongNBT.valueOf(it) }
-    public fun ints(vararg value: Int): List<IntNBT> = value.map { IntNBT.valueOf(it) }
-    public fun shorts(vararg value: Int): List<ShortNBT> = value.map { ShortNBT.valueOf(it.toShort()) }
-    public fun shorts(vararg value: Short): List<ShortNBT> = value.map { ShortNBT.valueOf(it) }
-    public fun bytes(vararg value: Int): List<ByteNBT> = value.map { ByteNBT.valueOf(it.toByte()) }
-    public fun bytes(vararg value: Byte): List<ByteNBT> = value.map { ByteNBT.valueOf(it) }
+    public inline fun doubles(vararg value: Int): List<DoubleNBT> = value.map { DoubleNBT.valueOf(it.toDouble()) }
+    public inline fun doubles(vararg value: Double): List<DoubleNBT> = value.map { DoubleNBT.valueOf(it) }
+    public inline fun floats(vararg value: Int): List<FloatNBT> = value.map { FloatNBT.valueOf(it.toFloat()) }
+    public inline fun floats(vararg value: Float): List<FloatNBT> = value.map { FloatNBT.valueOf(it) }
+    public inline fun longs(vararg value: Int): List<LongNBT> = value.map { LongNBT.valueOf(it.toLong()) }
+    public inline fun longs(vararg value: Long): List<LongNBT> = value.map { LongNBT.valueOf(it) }
+    public inline fun ints(vararg value: Int): List<IntNBT> = value.map { IntNBT.valueOf(it) }
+    public inline fun shorts(vararg value: Int): List<ShortNBT> = value.map { ShortNBT.valueOf(it.toShort()) }
+    public inline fun shorts(vararg value: Short): List<ShortNBT> = value.map { ShortNBT.valueOf(it) }
+    public inline fun bytes(vararg value: Int): List<ByteNBT> = value.map { ByteNBT.valueOf(it.toByte()) }
+    public inline fun bytes(vararg value: Byte): List<ByteNBT> = value.map { ByteNBT.valueOf(it) }
 
     public fun strings(vararg value: String): List<StringNBT> = value.map { StringNBT.valueOf(it) }
 }
