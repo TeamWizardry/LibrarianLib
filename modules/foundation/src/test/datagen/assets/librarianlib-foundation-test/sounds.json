@@ -1,0 +1,12 @@
+{
+  "test_sound": {
+    "subtitle": "foundation.subtitle.testSound",
+    "sounds": [
+      "minecraft:mob/cow/say1",
+      {
+        "name": "minecraft:mob/pig/say1",
+        "pitch": 1.2
+      }
+    ]
+  }
+}

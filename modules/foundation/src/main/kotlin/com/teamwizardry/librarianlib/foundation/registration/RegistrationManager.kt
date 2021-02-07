@@ -1,10 +1,12 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
+import com.google.gson.*
 import com.mojang.datafixers.util.Pair
 import com.teamwizardry.librarianlib.facade.container.FacadeContainer
 import com.teamwizardry.librarianlib.foundation.LibrarianLibFoundationModule
 import com.teamwizardry.librarianlib.foundation.block.IFoundationBlock
 import com.teamwizardry.librarianlib.foundation.bridge.FoundationSignTileEntityCreator
+import com.teamwizardry.librarianlib.foundation.datagen.FoundationDataProvider
 import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
 import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
 import com.teamwizardry.librarianlib.foundation.loot.LootTableGenerator
@@ -14,10 +16,7 @@ import net.minecraft.client.renderer.RenderTypeLookup
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.tileentity.SignTileEntityRenderer
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer
-import net.minecraft.data.BlockTagsProvider
-import net.minecraft.data.DataGenerator
-import net.minecraft.data.ItemTagsProvider
-import net.minecraft.data.LootTableProvider
+import net.minecraft.data.*
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.inventory.container.ContainerType
@@ -31,6 +30,7 @@ import net.minecraft.tileentity.SignTileEntity
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityType
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.SoundEvent
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.TextureStitchEvent
@@ -85,6 +85,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     private val capabilities = mutableListOf<CapabilitySpec<*>>()
     private val containers = mutableListOf<ContainerSpec<*>>()
     private val atlasSprites = mutableMapOf<ResourceLocation, MutableSet<ResourceLocation>>()
+    private val sounds = mutableListOf<SoundEventSpec>()
 
     /**
      * Methods for performing data generation
@@ -153,6 +154,15 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     }
 
     /**
+     * Adds a sound event spec to this registration manager and returns a reference to it
+     */
+    public fun add(spec: SoundEventSpec): SoundEvent {
+        spec.modid = modid
+        sounds.add(spec)
+        return spec.soundInstance
+    }
+
+    /**
      * A lazy TE type used by built-in block collections
      */
     @get:JvmSynthetic
@@ -213,6 +223,15 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         for (type in containers) {
             logger.debug("Registering FacadeContainerType ${type.registryName}")
             e.registry.register(type.typeInstance)
+        }
+    }
+
+    @SubscribeEvent
+    @JvmSynthetic
+    internal fun registerSounds(e: RegistryEvent.Register<SoundEvent>) {
+        for (sound in sounds) {
+            logger.debug("Registering sound ${sound.registryName}")
+            e.registry.register(sound.soundInstance)
         }
     }
 
@@ -294,6 +313,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         e.generator.addProvider(ItemTagsGeneration(e.generator, blockTags, existingFileHelper))
 
         e.generator.addProvider(LootTableGeneration(e.generator))
+        e.generator.addProvider(SoundsJsonGeneration(e.generator))
     }
 
     public class DataGen {
@@ -520,5 +540,54 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
                 LootTableManager.validateLootTable(validationtracker, name, table)
             }
         }
+    }
+
+    private inner class SoundsJsonGeneration(gen: DataGenerator) : FoundationDataProvider(gen) {
+        private val GSON = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
+
+        override fun getName(): String {
+            return "sounds.json"
+        }
+
+        override fun act(cache: DirectoryCache) {
+            if(sounds.size == 0)
+                return
+            val root = JsonObject()
+            for(spec in sounds) {
+                root.add(spec.name, serialize(spec))
+            }
+            val data = GSON.toJson(root)
+            save(cache, "assets/$modid/sounds.json", data)
+        }
+
+        private fun serialize(spec: SoundEventSpec): JsonObject {
+            val json = JsonObject()
+            spec.subtitle?.also { json.addProperty("subtitle", it) }
+            val sounds = JsonArray()
+            for(sound in spec.sounds) {
+                sounds.add(serialize(sound))
+            }
+            json.add("sounds", sounds)
+            return json
+        }
+
+        private fun serialize(sound: SoundEventSpec.SoundFileInfo): JsonElement {
+            if(sound.volume == null && sound.pitch == null && sound.weight == null && sound.stream == null &&
+                sound.attenuationDistance == null && sound.preload == null && sound.type == null) {
+                return JsonPrimitive(sound.name.toString())
+            }
+            val json = JsonObject()
+            json.addProperty("name", sound.name.toString())
+            sound.volume?.also { json.addProperty("volume", it) }
+            sound.pitch?.also { json.addProperty("pitch", it) }
+            sound.weight?.also { json.addProperty("weight", it) }
+            sound.stream?.also { json.addProperty("stream", it) }
+            sound.attenuationDistance?.also { json.addProperty("attenuation_distance", it) }
+            sound.preload?.also { json.addProperty("preload", it) }
+            sound.type?.also { json.addProperty("type", it.jsonName) }
+            return json
+        }
+
+
     }
 }

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "librarianlib-foundation-test:item/test_sound"
+  }
+}

@@ -3,6 +3,9 @@ package com.teamwizardry.librarianlib.core.util.kotlin
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.common.util.LazyOptional
 import java.util.Optional
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
  * Creates a translation key in the format `type.namespace.path[.suffix]`, e.g. `item.minecraft.iron_ingot`
@@ -13,6 +16,15 @@ public fun ResourceLocation.translationKey(type: String, suffix: String? = null)
 public fun<T> Optional<T>.getOrNull(): T? = this.orElse(null)
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 public fun<T> LazyOptional<T>.getOrNull(): T? = this.orElse(null)
+
+@OptIn(ExperimentalContracts::class)
+public inline fun <T> T.build(block: (T) -> Unit): T {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    block(this)
+    return this
+}
 
 /**
  * Used for cases where code is unreachable, but the language demands a value be returned. For the case where the

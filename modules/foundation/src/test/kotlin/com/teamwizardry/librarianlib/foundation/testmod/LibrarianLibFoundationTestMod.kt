@@ -18,6 +18,7 @@ object LibrarianLibFoundationTestMod: BaseMod(true) {
         ModTags.registerTagsDatagen(registrationManager)
         ModCapabilities.registerCapabilities(registrationManager)
         ModContainers.registerContainers(registrationManager)
+        ModSounds.registerSounds(registrationManager)
 
         ExampleModItems.register(registrationManager)
         ExampleModContainers.register(registrationManager)

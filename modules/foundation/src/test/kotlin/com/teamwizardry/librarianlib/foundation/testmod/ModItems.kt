@@ -5,11 +5,13 @@ import com.teamwizardry.librarianlib.foundation.registration.LazyItem
 import com.teamwizardry.librarianlib.foundation.registration.RegistrationManager
 import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestCapabilityItem
 import com.teamwizardry.librarianlib.foundation.testmod.customtypes.DirtSetterItem
+import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestSoundItem
 
 object ModItems {
     val testItem: LazyItem = LazyItem()
     val testCapabilityItem: LazyItem = LazyItem()
     val dirtSetter: LazyItem = LazyItem()
+    val testSoundItem: LazyItem = LazyItem()
 
     internal fun registerItems(registrationManager: RegistrationManager) {
         testItem.from(registrationManager.add(
@@ -28,6 +30,11 @@ object ModItems {
                 .datagen {
                     name("en_us", "Dirt Setter")
                 }
+        ))
+        testSoundItem.from(registrationManager.add(
+            ItemSpec("test_sound")
+                .maxStackSize(1)
+                .item { TestSoundItem(it.itemProperties) }
         ))
     }
 }
