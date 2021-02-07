@@ -162,6 +162,79 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         return spec.soundInstance
     }
 
+    public class DataGen {
+        @get:JvmSynthetic
+        internal val lootTableGenerators = mutableListOf<LootTableGenerator>()
+
+        public val blockTags: BlockTagGen = BlockTagGen()
+        public val itemTags: ItemTagGen = ItemTagGen()
+
+        public fun add(lootTableGenerator: LootTableGenerator) {
+            lootTableGenerators.add(lootTableGenerator)
+        }
+
+        public class BlockTagGen {
+            @get:JvmSynthetic
+            internal val metaTags = mutableMapOf<ITag.INamedTag<Block>, MutableList<ITag.INamedTag<Block>>>()
+
+            @get:JvmSynthetic
+            internal val valueTags = mutableMapOf<ITag.INamedTag<Block>, MutableList<Block>>()
+
+            @get:JvmSynthetic
+            internal val itemForms = mutableMapOf<ITag.INamedTag<Block>, MutableList<ITag.INamedTag<Item>>>()
+
+            /**
+             * Add values to the given tag
+             */
+            public fun add(tag: ITag.INamedTag<Block>, vararg values: Block): BlockTagGen {
+                valueTags.getOrPut(tag) { mutableListOf() }.addAll(values)
+                return this
+            }
+
+            /**
+             * Add tags to the given tag
+             */
+            public fun meta(tag: ITag.INamedTag<Block>, vararg tags: ITag.INamedTag<Block>): BlockTagGen {
+                metaTags.getOrPut(tag) { mutableListOf() }.addAll(tags)
+                return this
+            }
+
+            /**
+             * Copies the contents of the given block tag into the specified item tag
+             */
+            public fun addItemForm(blockTag: ITag.INamedTag<Block>, itemForm: ITag.INamedTag<Item>): BlockTagGen {
+                itemForms.getOrPut(blockTag) { mutableListOf() }.add(itemForm)
+                return this
+            }
+        }
+
+        public class ItemTagGen {
+            @get:JvmSynthetic
+            internal val metaTags = mutableMapOf<ITag.INamedTag<Item>, MutableList<ITag.INamedTag<Item>>>()
+
+            @get:JvmSynthetic
+            internal val valueTags = mutableMapOf<ITag.INamedTag<Item>, MutableList<Item>>()
+
+            /**
+             * Add values to the given tag
+             */
+            public fun add(tag: ITag.INamedTag<Item>, vararg values: Item): ItemTagGen {
+                valueTags.getOrPut(tag) { mutableListOf() }.addAll(values)
+                return this
+            }
+
+            /**
+             * Add tags to the given tag
+             */
+            public fun meta(tag: ITag.INamedTag<Item>, vararg tags: ITag.INamedTag<Item>): ItemTagGen {
+                metaTags.getOrPut(tag) { mutableListOf() }.addAll(tags)
+                return this
+            }
+        }
+    }
+
+    // implementation:
+
     /**
      * A lazy TE type used by built-in block collections
      */
@@ -314,77 +387,6 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
         e.generator.addProvider(LootTableGeneration(e.generator))
         e.generator.addProvider(SoundsJsonGeneration(e.generator))
-    }
-
-    public class DataGen {
-        @get:JvmSynthetic
-        internal val lootTableGenerators = mutableListOf<LootTableGenerator>()
-
-        public val blockTags: BlockTagGen = BlockTagGen()
-        public val itemTags: ItemTagGen = ItemTagGen()
-
-        public fun add(lootTableGenerator: LootTableGenerator) {
-            lootTableGenerators.add(lootTableGenerator)
-        }
-
-        public class BlockTagGen {
-            @get:JvmSynthetic
-            internal val metaTags = mutableMapOf<ITag.INamedTag<Block>, MutableList<ITag.INamedTag<Block>>>()
-
-            @get:JvmSynthetic
-            internal val valueTags = mutableMapOf<ITag.INamedTag<Block>, MutableList<Block>>()
-
-            @get:JvmSynthetic
-            internal val itemForms = mutableMapOf<ITag.INamedTag<Block>, MutableList<ITag.INamedTag<Item>>>()
-
-            /**
-             * Add values to the given tag
-             */
-            public fun add(tag: ITag.INamedTag<Block>, vararg values: Block): BlockTagGen {
-                valueTags.getOrPut(tag) { mutableListOf() }.addAll(values)
-                return this
-            }
-
-            /**
-             * Add tags to the given tag
-             */
-            public fun meta(tag: ITag.INamedTag<Block>, vararg tags: ITag.INamedTag<Block>): BlockTagGen {
-                metaTags.getOrPut(tag) { mutableListOf() }.addAll(tags)
-                return this
-            }
-
-            /**
-             * Copies the contents of the given block tag into the specified item tag
-             */
-            public fun addItemForm(blockTag: ITag.INamedTag<Block>, itemForm: ITag.INamedTag<Item>): BlockTagGen {
-                itemForms.getOrPut(blockTag) { mutableListOf() }.add(itemForm)
-                return this
-            }
-        }
-
-        public class ItemTagGen {
-            @get:JvmSynthetic
-            internal val metaTags = mutableMapOf<ITag.INamedTag<Item>, MutableList<ITag.INamedTag<Item>>>()
-
-            @get:JvmSynthetic
-            internal val valueTags = mutableMapOf<ITag.INamedTag<Item>, MutableList<Item>>()
-
-            /**
-             * Add values to the given tag
-             */
-            public fun add(tag: ITag.INamedTag<Item>, vararg values: Item): ItemTagGen {
-                valueTags.getOrPut(tag) { mutableListOf() }.addAll(values)
-                return this
-            }
-
-            /**
-             * Add tags to the given tag
-             */
-            public fun meta(tag: ITag.INamedTag<Item>, vararg tags: ITag.INamedTag<Item>): ItemTagGen {
-                metaTags.getOrPut(tag) { mutableListOf() }.addAll(tags)
-                return this
-            }
-        }
     }
 
     private inner class BlockStateGeneration(
