@@ -134,7 +134,13 @@ minecraft {
     }
 }
 
-task copyClientModJars(type: Sync) {
+// the sync task won't delete extra files, so we have to delete and copy
+// https://github.com/gradle/gradle/issues/1349
+task cleanModJars(type: Delete) {
+    delete project.file('run/mods')
+}
+
+task copyClientModJars(type: Copy) {
     into project.file('run/mods')
     from project.file('mods')
     from configurations.clientMod
@@ -142,8 +148,9 @@ task copyClientModJars(type: Sync) {
     allmodules.each {
         from it.configurations.clientMod
     }
+    dependsOn cleanModJars
 }
-task copyServerModJars(type: Sync) {
+task copyServerModJars(type: Copy) {
     into project.file('run/mods')
     from project.file('mods')
     from configurations.serverMod
@@ -151,8 +158,9 @@ task copyServerModJars(type: Sync) {
     allmodules.each {
         from it.configurations.serverMod
     }
+    dependsOn cleanModJars
 }
-task copyDataModJars(type: Sync) {
+task copyDataModJars(type: Copy) {
     into project.file('run/mods')
     from project.file('mods')
     from configurations.dataMod
@@ -160,6 +168,7 @@ task copyDataModJars(type: Sync) {
     allmodules.each {
         from it.configurations.dataMod
     }
+    dependsOn cleanModJars
 }
 
 // I have to create the directories at the last moment, otherwise for some reason something else ends up deleting them
