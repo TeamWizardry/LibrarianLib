@@ -23,6 +23,7 @@ object LibrarianLibFoundationTestMod: BaseMod(true) {
         ExampleModItems.register(registrationManager)
         ExampleModContainers.register(registrationManager)
 
+        registrationManager.datagen.add(ModRecipes)
         registrationManager.itemGroupIcon = ModItems.testItem
 
         logger.info("Default logger, should be called `LibrarianLib: Foundation Test`")

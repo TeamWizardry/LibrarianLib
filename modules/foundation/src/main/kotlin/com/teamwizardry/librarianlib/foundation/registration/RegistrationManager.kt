@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.foundation.datagen.FoundationDataProvider
 import com.teamwizardry.librarianlib.foundation.item.IFoundationItem
 import com.teamwizardry.librarianlib.foundation.loot.BlockLootTableGenerator
 import com.teamwizardry.librarianlib.foundation.loot.LootTableGenerator
+import com.teamwizardry.librarianlib.foundation.recipe.RecipeGenerator
 import net.minecraft.block.Block
 import net.minecraft.client.gui.ScreenManager
 import net.minecraft.client.renderer.RenderTypeLookup
@@ -164,6 +165,8 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
     public class DataGen {
         @get:JvmSynthetic
+        internal val recipeGenerators = mutableListOf<RecipeGenerator>()
+        @get:JvmSynthetic
         internal val lootTableGenerators = mutableListOf<LootTableGenerator>()
 
         public val blockTags: BlockTagGen = BlockTagGen()
@@ -171,6 +174,10 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
 
         public fun add(lootTableGenerator: LootTableGenerator) {
             lootTableGenerators.add(lootTableGenerator)
+        }
+
+        public fun add(generator: RecipeGenerator) {
+            recipeGenerators.add(generator)
         }
 
         public class BlockTagGen {
@@ -386,6 +393,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         e.generator.addProvider(ItemTagsGeneration(e.generator, blockTags, existingFileHelper))
 
         e.generator.addProvider(LootTableGeneration(e.generator))
+        e.generator.addProvider(RecipeGeneration(e.generator))
         e.generator.addProvider(SoundsJsonGeneration(e.generator))
     }
 
@@ -540,6 +548,14 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         override fun validate(map: MutableMap<ResourceLocation, LootTable>, validationtracker: ValidationTracker) {
             for ((name, table) in map) {
                 LootTableManager.validateLootTable(validationtracker, name, table)
+            }
+        }
+    }
+
+    private inner class RecipeGeneration(gen: DataGenerator) : RecipeProvider(gen) {
+        override fun registerRecipes(consumer: Consumer<IFinishedRecipe>) {
+            for(generator in datagen.recipeGenerators) {
+                generator.addRecipes(consumer)
             }
         }
     }

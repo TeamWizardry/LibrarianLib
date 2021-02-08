@@ -25,6 +25,7 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.event.TickEvent
+import net.minecraftforge.fml.DatagenModLoader
 import net.minecraftforge.resource.IResourceType
 import net.minecraftforge.resource.ISelectiveResourceReloadListener
 import net.minecraftforge.resource.SelectiveReloadStateHandler
@@ -69,12 +70,7 @@ public object Client {
      * Datagen is like a quasi-client, so some things don't work. For example, there's no [Minecraft] instance.
      */
     @JvmStatic
-    public val isDataGen: Boolean =
-        Thread.getAllStackTraces().any { trace ->
-            trace.value.any { element ->
-                element.className == "net.minecraft.data.Main"
-            }
-        }
+    public val isDataGen: Boolean get() = DatagenModLoader.isRunningDataGen()
 
     /**
      * The game time, as measured from the game launch

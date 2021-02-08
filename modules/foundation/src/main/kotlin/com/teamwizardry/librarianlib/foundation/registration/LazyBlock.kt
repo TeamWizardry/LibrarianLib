@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.foundation.registration
 
 import net.minecraft.block.Block
 import net.minecraft.item.Item
+import net.minecraft.util.IItemProvider
 import java.lang.IllegalStateException
 import java.util.function.Supplier
 import kotlin.reflect.KProperty
@@ -10,7 +11,7 @@ import kotlin.reflect.KProperty
  * A lazy access to a block instance and its item (if it has one). The result of adding a [BlockSpec] to a registration
  * manager. Instances can be created with a block directly if needed.
  */
-public class LazyBlock {
+public class LazyBlock : IItemProvider {
     private var blockInstance: Supplier<Block>?
     private var itemInstance: Supplier<Item?>?
 
@@ -60,5 +61,9 @@ public class LazyBlock {
     @JvmSynthetic
     public operator fun getValue(thisRef: Any?, property: KProperty<*>): Block {
         return get()
+    }
+
+    override fun asItem(): Item {
+        return getItem() ?: throw IllegalStateException("Tried to use an lazy block with no item as an IItemProvider")
     }
 }
