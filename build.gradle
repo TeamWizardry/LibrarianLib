@@ -208,7 +208,7 @@ task obfJar(type: Jar) {
     from sourceSets.main.output
     afterEvaluate {
         productionModules.each {
-            dependsOn it.obfJar
+            dependsOn it.assemble
         }
         with createMergeSpec('obfJar')
     }
@@ -225,7 +225,7 @@ task deobfJar(type: Jar) {
     from sourceSets.main.output
     afterEvaluate {
         productionModules.each {
-            dependsOn it.deobfJar
+            dependsOn it.assemble
         }
         with createMergeSpec('deobfJar')
     }
@@ -242,7 +242,7 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     afterEvaluate {
         productionModules.each {
-            dependsOn it.sourcesJar
+            dependsOn it.assemble
         }
         with createMergeSpec('sourcesJar')
     }
