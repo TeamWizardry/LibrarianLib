@@ -23,4 +23,4 @@ A collection of libraries designed to make creating great Minecraft mods easier.
 [[dependencies.librarianlib]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.4]"
+    versionRange="[1.16.4,1.17)"

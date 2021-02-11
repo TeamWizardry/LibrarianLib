@@ -59,7 +59,7 @@ allprojects {
             name = 'kotlinforforge'
             url = 'https://thedarkcolour.github.io/KotlinForForge/'
         }
-        maven { url = 'http://repo.spongepowered.org/maven' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
     }
 
     version = maven_version

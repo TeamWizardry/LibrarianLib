@@ -33,14 +33,14 @@ dependencies {
     // `fg.deobf` breaks source jars (MinecraftForge/ForgeGradle#736,727,637), so some dependencies aren't deobfuscated
 
     // The API doesn't seem to have anything that actually gets obfuscated and we want sources, so no `fg.deobf`
-    compileOnly "mezz.jei:jei-${mc_version}:${jei_version}:api"
+    compileOnly "mezz.jei:jei-${jei_mc_version}:${jei_version}:api"
     // include the implementation somewhere so we can see the source code in the IDE. (We put it in test to avoid
     // accidental coupling with the module.)
     // sure, without `fg.deobf` the jar and sources won't line up, but that shouldn't really matter since this code
     // should never actually get used.
-    testCompileOnly "mezz.jei:jei-${mc_version}:${jei_version}"
+    testCompileOnly "mezz.jei:jei-${jei_mc_version}:${jei_version}"
     // this is the part that actually gets used at runtime, so deobfuscate it
-    mod fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
+    mod fg.deobf("mezz.jei:jei-${jei_mc_version}:${jei_version}")
 
     compileOnly "curse.maven:mouse-tweaks-60089:${mousetweaks_api_id}"
     clientMod fg.deobf("curse.maven:mouse-tweaks-60089:${mousetweaks_jar_id}") // mouse tweaks crashes datagen

@@ -19,7 +19,7 @@ repositories {
     jcenter()
     maven { url = 'https://jitpack.io' }
     maven { url = 'https://minecraft.curseforge.com/api/maven/' }
-    maven { url = 'http://repo.spongepowered.org/maven' }
+    maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
 }
 
 dependencies {
@@ -32,7 +32,7 @@ repositories {
     maven { url = 'https://oss.jfrog.org/artifactory/oss-snapshot-local' }
     maven { url = 'https://jitpack.io' }
     maven { url = 'https://minecraft.curseforge.com/api/maven/' }
-    maven { url = 'http://repo.spongepowered.org/maven' }
+    maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
 }
 
 dependencies {
