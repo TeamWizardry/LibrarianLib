@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "dcd",
+    "cdc",
+    "dcd"
+  ],
+  "key": {
+    "d": {
+      "item": "minecraft:dirt"
+    },
+    "c": {
+      "tag": "minecraft:coals"
+    }
+  },
+  "result": {
+    "item": "minecraft:diamond_block"
+  }
+}

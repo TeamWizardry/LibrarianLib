@@ -21,4 +21,15 @@ public class RecipeDslContext(private val consumer: Consumer<IFinishedRecipe>, p
         dsl.config()
         dsl.buildRecipe(consumer, loc(modid, id))
     }
+
+    public fun shaped(
+        id: String,
+        result: IItemProvider,
+        count: Int = 1,
+        config: ShapedRecipeDsl.() -> Unit
+    ) {
+        val dsl = ShapedRecipeDsl(result, count)
+        dsl.config()
+        dsl.buildRecipe(consumer, loc(modid, id))
+    }
 }
