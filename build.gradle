@@ -115,7 +115,7 @@ task generateFiles {
         fileTree(dir: "$it.projectDir/src/main/resources/META-INF/ll/$it.name/asm", includes: ['*.js'])
     })
     ext.mixinFiles = files(productionModules.collect {
-        fileTree(dir: "$it.projectDir/src/main/resources/META-INF/ll/$it.name/mixin", includes: ['*.json'])
+        fileTree(dir: "$it.projectDir/src/main/resources/META-INF/ll/$it.name/mixins", includes: ['*.json'])
     })
 
     inputs.files(
