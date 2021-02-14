@@ -9,13 +9,6 @@ import net.minecraft.util.math.vector.Vector3i
 import java.util.function.BiFunction
 import kotlin.reflect.jvm.javaMethod
 
-private val obfTest = Vector3i::getX.javaMethod!! // has to be a separate field, otherwise it gets optimized away
-
-/**
- * True if the current environment is obfuscated
- */
-public val IS_OBFUSCATED: Boolean = obfTest.name == "func_177958_n"
-
 /**
  * True if this mod is running in a development environment.
  */

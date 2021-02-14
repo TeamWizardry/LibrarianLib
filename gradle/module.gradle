@@ -463,7 +463,6 @@ afterEvaluate {
     }
 }
 
-// I have to create the directories at the last moment, otherwise for some reason something else ends up deleting them
 tasks.whenTaskAdded { task ->
     if(task.name == "reobfJar") {
         task.enabled = false

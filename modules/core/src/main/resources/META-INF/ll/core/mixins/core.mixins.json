@@ -1,4 +1,5 @@
 {
+  "minVersion": "0.8.2",
   "required": true,
   "package": "com.teamwizardry.librarianlib.core.mixin",
   "compatibilityLevel": "JAVA_8",

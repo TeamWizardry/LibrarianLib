@@ -1,10 +1,7 @@
 package com.teamwizardry.librarianlib.etcetera.eventbus
 
-import com.teamwizardry.librarianlib.core.util.IS_DEV_ENV
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.MethodMirror
-import dev.thecodewarrior.mirror.type.TypeMirror
-import java.util.function.Consumer
 
 /**
  * Annotate methods with this, giving them a single parameter that inherits from [Event]. Passing this class to
