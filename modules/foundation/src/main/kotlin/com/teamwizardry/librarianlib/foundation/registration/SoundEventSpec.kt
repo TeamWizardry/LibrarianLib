@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
-import com.teamwizardry.librarianlib.core.util.kotlin.build
+import com.teamwizardry.librarianlib.core.util.kotlin.builder
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.SoundEvent
 import java.util.function.Consumer
@@ -40,17 +40,17 @@ public class SoundEventSpec(
     /**
      * Set the subtitle for data generation.
      */
-    public fun subtitle(value: String): SoundEventSpec = build { subtitle = value }
+    public fun subtitle(value: String): SoundEventSpec = builder { subtitle = value }
 
     /**
      * Add a sound file for data generation.
      */
-    public fun sound(name: ResourceLocation): SoundEventSpec = build { sounds.add(SoundFileInfo(name)) }
+    public fun sound(name: ResourceLocation): SoundEventSpec = builder { sounds.add(SoundFileInfo(name)) }
 
     /**
      * Add a sound file for data generation.
      */
-    public fun sound(name: ResourceLocation, config: Consumer<SoundFileInfo>): SoundEventSpec = build {
+    public fun sound(name: ResourceLocation, config: Consumer<SoundFileInfo>): SoundEventSpec = builder {
         val sound = SoundFileInfo(name)
         config.accept(sound)
         sounds.add(sound)

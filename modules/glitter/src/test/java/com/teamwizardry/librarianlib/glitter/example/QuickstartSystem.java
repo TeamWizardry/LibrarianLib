@@ -19,15 +19,16 @@ public class QuickstartSystem extends ParticleSystem {
                 position, previousPosition, velocity
         ));
 
-        getRenderModules().add(new SpriteRenderModule(
-                SpriteRenderModule.simpleRenderType(
-                        new ResourceLocation("modid", "textures/particle/sprite.png")
-                ),
-                position,
-                previousPosition,
-                color,
-                new ConstantBinding(0.25) // size
-        ));
+        getRenderModules().add(
+                SpriteRenderModule.build(
+                        new ResourceLocation("modid", "textures/particle/sprite.png"),
+                        position
+                )
+                        .previousPosition(previousPosition)
+                        .color(color)
+                        .size(0.25)
+                        .build()
+        );
     }
 
     public void spawn(

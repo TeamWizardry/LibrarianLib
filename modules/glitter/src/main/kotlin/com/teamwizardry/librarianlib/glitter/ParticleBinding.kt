@@ -68,8 +68,19 @@ public interface WriteParticleBinding: ParticleBinding {
 public interface ParticleBinding {
     public val contents: DoubleArray
 
+    /**
+     * Throws an exception if this binding size isn't the same as the given size
+     */
     public fun require(size: Int) {
         if (this.contents.size != size)
             throw IllegalArgumentException("Binding size is incorrect, required: $size, actual: ${this.contents.size}")
+    }
+
+    /**
+     * Throws an exception if this binding's size is less than [minSize] or greater than [maxSize]
+     */
+    public fun require(minSize: Int, maxSize: Int) {
+        if (this.contents.size < minSize || this.contents.size > maxSize)
+            throw IllegalArgumentException("Binding size is incorrect, required: $minSize-$maxSize, actual: ${this.contents.size}")
     }
 }

@@ -17,8 +17,13 @@ public fun<T> Optional<T>.getOrNull(): T? = this.orElse(null)
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 public fun<T> LazyOptional<T>.getOrNull(): T? = this.orElse(null)
 
+/**
+ * Runs a block and then returns `this`.
+ *
+ * Technically this is the same as [also], but names matter.
+ */
 @OptIn(ExperimentalContracts::class)
-public inline fun <T> T.build(block: (T) -> Unit): T {
+public inline fun <T> T.builder(block: (T) -> Unit): T {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }

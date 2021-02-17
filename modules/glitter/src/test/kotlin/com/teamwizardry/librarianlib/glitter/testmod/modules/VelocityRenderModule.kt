@@ -3,7 +3,9 @@ package com.teamwizardry.librarianlib.glitter.testmod.modules
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.glitter.ParticleRenderModule
 import com.teamwizardry.librarianlib.glitter.ParticleUpdateModule
 import com.teamwizardry.librarianlib.glitter.ReadParticleBinding
@@ -61,6 +63,7 @@ class VelocityRenderModule(
         alpha?.require(1)
     }
 
+    @Suppress("LocalVariableName")
     override fun render(matrixStack: MatrixStack, projectionMatrix: Matrix4f, particles: List<DoubleArray>, prepModules: List<ParticleUpdateModule>) {
         RenderSystem.disableTexture()
         if(blend) {
@@ -77,12 +80,27 @@ class VelocityRenderModule(
         RenderSystem.disableCull()
         RenderSystem.lineWidth(size)
 
+        val modelViewMatrix = matrixStack.last.matrix
+        val transformMatrix = mixinCast<IMatrix4f>(modelViewMatrix)
+        val tm00 = transformMatrix.m00
+        val tm01 = transformMatrix.m01
+        val tm02 = transformMatrix.m02
+        val tm03 = transformMatrix.m03
+        val tm10 = transformMatrix.m10
+        val tm11 = transformMatrix.m11
+        val tm12 = transformMatrix.m12
+        val tm13 = transformMatrix.m13
+        val tm20 = transformMatrix.m20
+        val tm21 = transformMatrix.m21
+        val tm22 = transformMatrix.m22
+        val tm23 = transformMatrix.m23
+
         val tessellator = Tessellator.getInstance()
         val vb = tessellator.buffer
         vb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
 
         particles.forEach { particle ->
-            for(i in 0 until prepModules.size) {
+            for(i in prepModules.indices) {
                 prepModules[i].update(particle)
             }
 
@@ -103,8 +121,29 @@ class VelocityRenderModule(
             if(alpha != null)
                 a *= alpha.contents[0].toFloat()
 
-            vb.pos(x, y, z).color(r, g, b, a).endVertex()
-            vb.pos(x+velocity.contents[0], y+velocity.contents[1], z+velocity.contents[2]).color(r, g, b, a).endVertex()
+            var startX = x
+            var startY = y
+            var startZ = z
+            var endX = x + velocity.contents[0]
+            var endY = y + velocity.contents[1]
+            var endZ = z + velocity.contents[2]
+
+            val _startX = startX
+            val _startY = startY
+            val _startZ = startZ
+            startX = tm00 * _startX + tm01 * _startY + tm02 * _startZ + tm03 * 1
+            startY = tm10 * _startX + tm11 * _startY + tm12 * _startZ + tm13 * 1
+            startZ = tm20 * _startX + tm21 * _startY + tm22 * _startZ + tm23 * 1
+
+            val _endX = endX
+            val _endY = endY
+            val _endZ = endZ
+            endX = tm00 * _endX + tm01 * _endY + tm02 * _endZ + tm03 * 1
+            endY = tm10 * _endX + tm11 * _endY + tm12 * _endZ + tm13 * 1
+            endZ = tm20 * _endX + tm21 * _endY + tm22 * _endZ + tm23 * 1
+
+            vb.pos(startX, startY, startZ).color(r, g, b, a).endVertex()
+            vb.pos(endX, endY, endZ).color(r, g, b, a).endVertex()
         }
 
         tessellator.draw()

@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.glitter.testmod.systems
 
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.glitter.ParticleSystem
 import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.glitter.modules.BasicPhysicsUpdateModule
@@ -11,36 +12,41 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.vector.Vector3d
 import net.minecraft.util.math.MathHelper
 
-object SpawnCountAdjustmentSystem: TestSystem("spawn_count_adjustment") {
+object SpawnCountAdjustmentSystem : TestSystem("spawn_count_adjustment") {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)
         val velocity = bind(3)
         val color = bind(4)
 
-        updateModules.add(BasicPhysicsUpdateModule(
-            position = position,
-            previousPosition = previousPosition,
-            velocity = velocity,
-            enableCollision = true,
-            gravity = ConstantBinding(0.02),
-            bounciness = ConstantBinding(0.8),
-            friction = ConstantBinding(0.02),
-            damping = ConstantBinding(0.01)
-        ))
+        updateModules.add(
+            BasicPhysicsUpdateModule(
+                position = position,
+                previousPosition = previousPosition,
+                velocity = velocity,
+                enableCollision = true,
+                gravity = ConstantBinding(0.02),
+                bounciness = ConstantBinding(0.8),
+                friction = ConstantBinding(0.02),
+                damping = ConstantBinding(0.01)
+            )
+        )
 
-        renderModules.add(SpriteRenderModule(
-            renderType = SpriteRenderModule.simpleRenderType(
-                sprite = ResourceLocation("librarianlib-glitter-test:textures/glitter/glow.png"),
-                blendMode = BlendMode.ADDITIVE,
-                writeDepth = false,
-                blur = true
-            ),
-            previousPosition = previousPosition,
-            position = position,
-            color = color,
-            size = ConstantBinding(2.0)
-        ))
+        renderModules.add(
+            SpriteRenderModule.build(
+                renderType = SpriteRenderModule.simpleRenderType(
+                    sprite = loc("librarianlib-glitter-test:textures/glitter/glow.png"),
+                    blendMode = BlendMode.ADDITIVE,
+                    writeDepth = false,
+                    blur = true
+                ),
+                position = position
+            )
+                .previousPosition(previousPosition)
+                .color(color)
+                .size(2.0)
+                .build()
+        )
 
         ignoreParticleSetting = true
     }
@@ -63,7 +69,8 @@ object SpawnCountAdjustmentSystem: TestSystem("spawn_count_adjustment") {
         val spawnDistance = 2
         val spawnVelocity = 1.0
 
-        this.addParticle(200,
+        this.addParticle(
+            200,
             // position
             pos.x + look.x * spawnDistance,
             pos.y + look.y * spawnDistance,

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.glitter.testmod.systems
 
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.math.plus
 import com.teamwizardry.librarianlib.math.times
 import com.teamwizardry.librarianlib.glitter.ParticleSystem
@@ -9,22 +10,20 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.ResourceLocation
 
-object DepthSortSystem: TestSystem("depthsort") {
+object DepthSortSystem : TestSystem("depthsort") {
     override fun configure() {
         val pos = bind(3)
         val color = bind(4)
         val depth = bind(1)
 
         globalUpdateModules.add(DepthSortModule(pos, depth))
-        renderModules.add(SpriteRenderModule(
-            renderType = SpriteRenderModule.simpleRenderType(
-                sprite = ResourceLocation("librarianlib-glitter-test:textures/glitter/depthsort.png")
-            ),
-            previousPosition = pos,
-            position = pos,
-            color = color,
-            size = ConstantBinding(1.0)
-        ))
+        renderModules.add(
+            SpriteRenderModule.build(loc("librarianlib-glitter-test:textures/glitter/depthsort.png"), pos)
+                .previousPosition(pos)
+                .color(color)
+                .size(1.0)
+                .build()
+        )
     }
 
     override fun spawn(player: Entity) {
@@ -32,8 +31,9 @@ object DepthSortSystem: TestSystem("depthsort") {
         val look = player.lookVec
         val center = eyePos + look * 5
 
-        for(i in 0 until 5) {
-            this.addParticle(2000,
+        for (i in 0 until 5) {
+            this.addParticle(
+                2000,
                 center.x + (Math.random() * 2 - 0.5) * 3,
                 center.y + (Math.random() * 2 - 0.5) * 3,
                 center.z + (Math.random() * 2 - 0.5) * 3,

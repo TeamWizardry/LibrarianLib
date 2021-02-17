@@ -1,29 +1,40 @@
 package com.teamwizardry.librarianlib.glitter.testmod.systems
 
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.glitter.ParticleSystem
 import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
+import com.teamwizardry.librarianlib.glitter.testmod.modules.VelocityRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.ResourceLocation
 
-object SpriteSheetSystem : TestSystem("spritesheet") {
+object UpVectorSystem : TestSystem("up_vector") {
     override fun configure() {
         val pos = bind(3)
         val color = bind(4)
-        val sprite = bind(1)
+        val upVector = bind(3)
 
         renderModules.add(
             SpriteRenderModule.build(
-                renderType = SpriteRenderModule.simpleRenderType(
-                    sprite = ResourceLocation("librarianlib-glitter-test:textures/glitter/spritesheet.png")
-                ),
-                position = pos
+                SpriteRenderModule.simpleRenderType(loc("librarianlib-glitter-test:textures/glitter/arrow.png")),
+                pos,
             )
-                .previousPosition(pos)
                 .color(color)
-                .size(0.2)
-                .spriteSheet(2, sprite)
+                .size(0.15, 0.3)
+                .upVector(upVector)
                 .build()
+        )
+
+        renderModules.add(
+            VelocityRenderModule(
+                blend = true,
+                previousPosition = pos,
+                position = pos,
+                velocity = upVector,
+                color = ConstantBinding(1.0, 0.0, 1.0, 1.0),
+                size = 2f,
+                alpha = null
+            )
         )
     }
 
@@ -39,8 +50,10 @@ object SpriteSheetSystem : TestSystem("spritesheet") {
             Math.random(),
             Math.random(),
             Math.random(),
-            Math.random(),
-            Math.random() * 4
+            1.0,
+            Math.random() * 2 - 1,
+            Math.random() * 2 - 1,
+            Math.random() * 2 - 1,
         )
     }
 }

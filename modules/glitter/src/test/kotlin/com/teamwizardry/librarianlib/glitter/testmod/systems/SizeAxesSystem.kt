@@ -1,28 +1,22 @@
 package com.teamwizardry.librarianlib.glitter.testmod.systems
 
-import com.teamwizardry.librarianlib.glitter.ParticleSystem
-import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
-import net.minecraft.util.ResourceLocation
 
-object SpriteSheetSystem : TestSystem("spritesheet") {
+object SizeAxesSystem: TestSystem("size_axes") {
     override fun configure() {
         val pos = bind(3)
         val color = bind(4)
-        val sprite = bind(1)
+        val size = bind(2)
 
         renderModules.add(
             SpriteRenderModule.build(
-                renderType = SpriteRenderModule.simpleRenderType(
-                    sprite = ResourceLocation("librarianlib-glitter-test:textures/glitter/spritesheet.png")
-                ),
-                position = pos
+                SpriteRenderModule.simpleRenderType(loc("minecraft", "textures/item/clay_ball.png")),
+                pos,
             )
-                .previousPosition(pos)
                 .color(color)
-                .size(0.2)
-                .spriteSheet(2, sprite)
+                .size(size)
                 .build()
         )
     }
@@ -31,16 +25,16 @@ object SpriteSheetSystem : TestSystem("spritesheet") {
         val eyePos = player.getEyePosition(0f)
         val look = player.lookVec
 
-        this.addParticle(
-            200,
+        this.addParticle(200,
             eyePos.x + look.x * 2,
             eyePos.y + look.y * 2,
             eyePos.z + look.z * 2,
             Math.random(),
             Math.random(),
             Math.random(),
-            Math.random(),
-            Math.random() * 4
+            1.0,
+            Math.random() * 0.3,
+            Math.random() * 0.3,
         )
     }
 }
