@@ -37,46 +37,56 @@ public class SpriteRenderModule private constructor(
     /**
      * The [RenderType] that is used to draw the particles. It should have both position and texture components.
      */
-    @JvmField public var renderType: RenderType,
+    public var renderType: RenderType,
     /**
      * The current position of the particle
      */
-    @JvmField public val position: ReadParticleBinding,
+    public val position: ReadParticleBinding,
     /**
      * The position of the particle last tick, used to interpolate between ticks
      */
-    @JvmField public val previousPosition: ReadParticleBinding?,
+    public val previousPosition: ReadParticleBinding?,
     /**
      * The OpenGL color of the particle
      */
-    @JvmField public val color: ReadParticleBinding,
+    public val color: ReadParticleBinding,
     /**
      * The width and height of the particle in meters. If this is a 1D binding the value is used for both width and
      * height, if it's a 2D binding the two axes are used as the width and height. Note that this does not affect UV
      * coordinates, so if you set this to non-square and have a square texture it will be distorted.
      */
-    @JvmField public val size: ReadParticleBinding,
+    public val size: ReadParticleBinding,
     /**
      * If present, an artificial facing vector used instead of the player's look vector. This vector _does not need
      * to be normalized._
      */
-    @JvmField public val facingVector: ReadParticleBinding?,
+    public val facingVector: ReadParticleBinding?,
     /**
      * The alpha multiplier for the color. Defaults to 1 if not present.
      */
-    @JvmField public val alphaMultiplier: ReadParticleBinding,
+    public val alphaMultiplier: ReadParticleBinding,
     /**
      * The size of the sprite sheet (must be a power of 2)
      */
-    @JvmField public val spriteSheetSize: Int,
+    public val spriteSheetSize: Int,
     /**
      * The sprite index (indexed left-to-right, top-to-bottom)
      */
-    @JvmField public val spriteIndex: ReadParticleBinding,
+    public val spriteIndex: ReadParticleBinding,
     /**
      * If present, an artificial direction for the particle's "up" axis. This vector _does not need to be normalized._
      */
-    @JvmField public val upVector: ReadParticleBinding?,
+    public val upVector: ReadParticleBinding?,
+    /**
+     * If present, an artificial U/V texture size. When used in combination with sprite sheets, this will be a size
+     * within the particle's specific sprite.
+     */
+    public val uvSize: ReadParticleBinding?,
+    /**
+     * If present, an offset to apply to the UV coordinates of the sprite. When used in combination with sprite sheets,
+     * this will be an offset within the particle's specific sprite.
+     */
+    public val uvOffset: ReadParticleBinding?,
 ) : ParticleRenderModule {
 
     @Suppress("LocalVariableName")
@@ -193,11 +203,11 @@ public class SpriteRenderModule private constructor(
                             upZ = 1.0
                         } else {
 
-                            // note: our cross products don't care about the input normalization. The output magnitude
+                            // note: these cross products don't care about the input normalization. The output magnitude
                             // will be mangled whether we normalize the inputs or not, so there's no point doing the
                             // excess calculations
 
-                            // compute the right axis using the cross product `facing x (0, 1, 0)`
+                            // compute the rightward vector using the cross product `facing x (0, 1, 0)`
                             // the zeros can be simplified away, leaving us with essentially a 2d perpendicular vector
                             // on the xz plane (x, z) -> (z, -x)
                             rightX = facingZ
@@ -208,7 +218,7 @@ public class SpriteRenderModule private constructor(
                             rightX *= rightInvLength
                             rightZ *= rightInvLength
 
-                            // compute the up axis using the cross product `facing x right`
+                            // compute the upward vector using the cross product `facing x right`
                             // we can simplify some of the factors since `rightY` will always be zero
                             upX = facingY * rightZ
                             upY = facingZ * rightX - facingX * rightZ
@@ -221,7 +231,7 @@ public class SpriteRenderModule private constructor(
                     }
                 } else {
                     // if we have an up vector, compute the right vector based upon it and the facing vector
-                    // if no custom facing vector is specified, the facingXYZ variables will be the player's look vector
+                    // if no custom facing vector is specified, the facingXYZ variables will be toward the camera
                     upVector.load(particle)
                     upX = upVector.contents[0]
                     upY = upVector.contents[1]
@@ -282,8 +292,8 @@ public class SpriteRenderModule private constructor(
 
             var minU = 0f
             var minV = 0f
-            var maxU = 1f
-            var maxV = 1f
+            var uSize = 1f
+            var vSize = 1f
 
             if (spriteSheetSize > 1) {
                 spriteIndex.load(particle)
@@ -292,9 +302,23 @@ public class SpriteRenderModule private constructor(
                 val vIndex = index ushr spriteSheetBits
                 minU = spriteSize * uIndex
                 minV = spriteSize * vIndex
-                maxU = spriteSize * (uIndex + 1)
-                maxV = spriteSize * (vIndex + 1)
+                uSize = spriteSize
+                vSize = spriteSize
             }
+
+            if(uvOffset != null) {
+                uvOffset.load(particle)
+                minU += uSize * uvOffset.contents[0].toFloat()
+                minV += vSize * uvOffset.contents[1].toFloat()
+            }
+            if(uvSize != null) {
+                uvSize.load(particle)
+                uSize *= uvSize.contents[0].toFloat()
+                vSize *= uvSize.contents[1].toFloat()
+            }
+
+            val maxU = minU + uSize
+            val maxV = minV + vSize
 
             builder.pos(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ)
                 .color(r, g, b, a).tex(minU, maxV).endVertex()
@@ -400,6 +424,8 @@ public class SpriteRenderModule private constructor(
         private var alphaMultiplier: ReadParticleBinding = ConstantBinding(1.0)
         private var spriteSheetSize: Int = 1
         private var spriteIndex: ReadParticleBinding = ConstantBinding(0.0)
+        private var uvSize: ReadParticleBinding? = null
+        private var uvOffset: ReadParticleBinding? = null
 
         /**
          * The position of the particle last tick, used to interpolate between ticks
@@ -496,6 +522,24 @@ public class SpriteRenderModule private constructor(
             spriteIndex = index
         }
 
+        /**
+         * If present, an artificial U/V texture size. When used in combination with sprite sheets, this will be a size
+         * within the particle's specific sprite.
+         */
+        public fun uvSize(value: ReadParticleBinding): Builder = builder {
+            value.require(2)
+            uvSize = value
+        }
+
+        /**
+         * If present, an offset to apply to the UV coordinates of the sprite. When used in combination with sprite sheets,
+         * this will be an offset within the particle's specific sprite.
+         */
+        public fun uvOffset(value: ReadParticleBinding): Builder = builder {
+            value.require(2)
+            uvOffset = value
+        }
+
         public fun build(): SpriteRenderModule {
             return SpriteRenderModule(
                 renderType,
@@ -507,7 +551,9 @@ public class SpriteRenderModule private constructor(
                 alphaMultiplier,
                 spriteSheetSize,
                 spriteIndex,
-                upVector
+                upVector,
+                uvSize,
+                uvOffset
             )
         }
     }

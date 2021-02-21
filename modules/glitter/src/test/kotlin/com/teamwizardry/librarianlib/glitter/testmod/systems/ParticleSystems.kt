@@ -20,6 +20,7 @@ object ParticleSystems {
         SizeAxesSystem,
         UpVectorSystem,
         UpFacingVectorSystem,
+        CustomUvSystem,
     )
     private val systemMap = systems.associateBy { it.id }
 

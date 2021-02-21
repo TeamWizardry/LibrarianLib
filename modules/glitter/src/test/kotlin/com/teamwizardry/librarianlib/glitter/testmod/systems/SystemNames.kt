@@ -102,6 +102,13 @@ object SystemNames {
                 Spawns particles with custom up and facing vectors 
             """.trimIndent()
         ),
+        System(
+            "custom_uv",
+            "Custom UV coodrinates Test Particle",
+            """
+                Spawns particles with custom UV sizes and offsets
+            """.trimIndent()
+        ),
     )
 
     data class System(val id: String, val name: String, val description: String)
