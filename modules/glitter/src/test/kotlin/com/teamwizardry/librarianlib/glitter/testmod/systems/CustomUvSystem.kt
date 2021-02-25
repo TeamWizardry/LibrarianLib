@@ -13,7 +13,7 @@ object CustomUvSystem : TestSystem("custom_uv") {
 
         renderModules.add(
             SpriteRenderModule.build(
-                SpriteRenderModule.simpleRenderType(loc("minecraft", "textures/block/orange_glazed_terracotta.png")),
+                loc("minecraft", "textures/block/orange_glazed_terracotta.png"),
                 pos,
             )
                 .color(color)

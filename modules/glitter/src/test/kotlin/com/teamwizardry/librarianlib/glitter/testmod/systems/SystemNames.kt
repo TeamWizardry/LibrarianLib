@@ -104,9 +104,23 @@ object SystemNames {
         ),
         System(
             "custom_uv",
-            "Custom UV coodrinates Test Particle",
+            "Custom UV coordinates Test Particle",
             """
                 Spawns particles with custom UV sizes and offsets
+            """.trimIndent()
+        ),
+        System(
+            "world_lit",
+            "World lighting Test Particle",
+            """
+                Spawns world lit particles
+            """.trimIndent()
+        ),
+        System(
+            "diffuse_lit",
+            "Diffuse lighting Test Particle",
+            """
+                Spawns diffuse lit particles
             """.trimIndent()
         ),
     )

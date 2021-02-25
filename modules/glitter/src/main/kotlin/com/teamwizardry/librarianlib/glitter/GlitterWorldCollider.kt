@@ -29,10 +29,9 @@ import kotlin.math.min
  *
  * This class makes two main sacrifices in the name of speed:
  *
- * 1. It doesn't clear its cache every tick. [blockCache] and [airCache] can be used to clear the cache immediately if
- * needed.
- * 2. It doesn't properly handle collision boxes that extend outside the bounds of their block. This is because, unlike
- * Minecraft's collision handling it doesn't check any blocks outside of those the velocity vector moves through.
+ * 1. It doesn't clear its cache every tick. [blockCacheManager], [airCacheManager], and [clearCache] can be used to
+ * clear the caches immediately if needed.
+ * 2. It doesn't handle collision boxes that extend outside the bounds of their block.
  */
 @OnlyIn(Dist.CLIENT)
 public object GlitterWorldCollider {
@@ -233,7 +232,6 @@ public object GlitterWorldCollider {
 
     @Suppress("UNUSED_PARAMETER")
     @SubscribeEvent
-    @JvmStatic
     public fun tick(e: TickEvent.ClientTickEvent) {
         blockCacheManager.tick()
         shapeCacheManager.tick()

@@ -2,13 +2,11 @@ package com.teamwizardry.librarianlib.glitter.testmod.systems
 
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.util.loc
-import com.teamwizardry.librarianlib.glitter.ParticleSystem
 import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.glitter.modules.BasicPhysicsUpdateModule
-import com.teamwizardry.librarianlib.glitter.modules.GlLineBeamRenderModule
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
+import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderOptions
 import net.minecraft.entity.Entity
-import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.vector.Vector3d
 import net.minecraft.util.math.MathHelper
 
@@ -34,12 +32,11 @@ object FloodSystem : TestSystem("flood") {
 
         renderModules.add(
             SpriteRenderModule.build(
-                renderType = SpriteRenderModule.simpleRenderType(
-                    sprite = loc("librarianlib-glitter-test:textures/glitter/glow.png"),
-                    blendMode = BlendMode.ADDITIVE,
-                    writeDepth = false,
-                    blur = true
-                ),
+                renderOptions = SpriteRenderOptions.build(loc("librarianlib-glitter-test:textures/glitter/glow.png"))
+                    .additiveBlending()
+                    .writeDepth(false)
+                    .blur(true)
+                    .build(),
                 position = position
             )
                 .previousPosition(previousPosition)

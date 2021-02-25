@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.glitter.testmod.systems
 
+import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.glitter.ParticleSystem
 import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
@@ -14,10 +15,8 @@ object SpriteSheetSystem : TestSystem("spritesheet") {
 
         renderModules.add(
             SpriteRenderModule.build(
-                renderType = SpriteRenderModule.simpleRenderType(
-                    sprite = ResourceLocation("librarianlib-glitter-test:textures/glitter/spritesheet.png")
-                ),
-                position = pos
+                loc("librarianlib-glitter-test:textures/glitter/spritesheet.png"),
+                pos
             )
                 .previousPosition(pos)
                 .color(color)

@@ -31,7 +31,7 @@ object PartialTickLerpSystem : TestSystem("partial_tick_lerp") {
 
         renderModules.add(
             SpriteRenderModule.build(
-                SpriteRenderModule.simpleRenderType(loc("minecraft", "textures/item/clay_ball.png")),
+                loc("minecraft", "textures/item/clay_ball.png"),
                 position,
             )
                 .previousPosition(previousPosition)

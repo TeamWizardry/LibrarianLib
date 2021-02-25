@@ -11,6 +11,7 @@ internal object LibrarianLibGlitterModule: LibrarianLibModule("glitter", "Glitte
     fun clientSetup(event: FMLClientSetupEvent) {
         MinecraftForge.EVENT_BUS.register(ParticleSystemManager)
         MinecraftForge.EVENT_BUS.register(GlitterWorldCollider)
+        MinecraftForge.EVENT_BUS.register(GlitterLightingCache)
     }
 }
 

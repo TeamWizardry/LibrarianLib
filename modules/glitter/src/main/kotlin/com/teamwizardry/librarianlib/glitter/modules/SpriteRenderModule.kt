@@ -1,27 +1,36 @@
 package com.teamwizardry.librarianlib.glitter.modules
 
+import com.google.common.collect.ImmutableList
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
+import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
-import com.teamwizardry.librarianlib.core.rendering.BlendMode
+import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.kotlin.builder
+import com.teamwizardry.librarianlib.core.util.kotlin.normal
+import com.teamwizardry.librarianlib.core.util.kotlin.unreachable
 import com.teamwizardry.librarianlib.core.util.mixinCast
+import com.teamwizardry.librarianlib.glitter.GlitterLightingCache
 import com.teamwizardry.librarianlib.glitter.ParticleRenderModule
 import com.teamwizardry.librarianlib.glitter.ParticleUpdateModule
 import com.teamwizardry.librarianlib.glitter.ReadParticleBinding
 import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
-import net.minecraft.util.math.vector.Matrix4f
+import com.teamwizardry.librarianlib.math.floorInt
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
-import net.minecraft.util.math.vector.Vector4f
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.renderer.vertex.VertexFormat
+import net.minecraft.client.renderer.vertex.VertexFormatElement
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.vector.Matrix4f
+import net.minecraft.util.math.vector.Vector4f
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.lang.IllegalArgumentException
+import java.util.function.Consumer
 
 /**
  * The bread-and-butter render module, a simple billboarded sprite.
@@ -35,9 +44,9 @@ import java.lang.IllegalArgumentException
  */
 public class SpriteRenderModule private constructor(
     /**
-     * The [RenderType] that is used to draw the particles. It should have both position and texture components.
+     * The [SpriteRenderOptions] configuring the rendering of the particles.
      */
-    public var renderType: RenderType,
+    public var renderOptions: SpriteRenderOptions,
     /**
      * The current position of the particle
      */
@@ -98,7 +107,18 @@ public class SpriteRenderModule private constructor(
     ) {
         val modelViewMatrix = matrixStack.last.matrix
         val buffer = Client.minecraft.renderTypeBuffers.bufferSource
-        val builder = buffer.getBuffer(renderType)
+        val builder = buffer.getBuffer(renderOptions.renderType)
+
+        val normalMatrix = mixinCast<IMatrix3f>(matrixStack.last.normal)
+        val nm00 = normalMatrix.m00
+        val nm01 = normalMatrix.m01
+        val nm02 = normalMatrix.m02
+        val nm10 = normalMatrix.m10
+        val nm11 = normalMatrix.m11
+        val nm12 = normalMatrix.m12
+        val nm20 = normalMatrix.m20
+        val nm21 = normalMatrix.m21
+        val nm22 = normalMatrix.m22
 
         val transformMatrix = mixinCast<IMatrix4f>(modelViewMatrix)
         val tm00 = transformMatrix.m00
@@ -122,22 +142,6 @@ public class SpriteRenderModule private constructor(
         val billboardedMatrix = modelViewMatrix.copy()
         val renderInfo = Client.minecraft.gameRenderer.activeRenderInfo
 
-        val rotation = renderInfo.rotation.copy()
-        rotation.multiply(-1f)
-        billboardedMatrix.mul(rotation)
-
-        lookRightVec.transform(billboardedMatrix)
-        lookUpVec.transform(billboardedMatrix)
-        lookVec.transform(billboardedMatrix)
-
-        val lookRightX = 1.0 //lookRightVec.x.toDouble()
-        val lookRightY = 0.0 //lookRightVec.y.toDouble()
-        val lookRightZ = 0.0 //lookRightVec.z.toDouble()
-
-        val lookUpX = 0.0 // lookUpVec.x.toDouble()
-        val lookUpY = 1.0 // lookUpVec.y.toDouble()
-        val lookUpZ = 0.0 // lookUpVec.z.toDouble()
-
         val cameraX = renderInfo.projectedView.x
         val cameraY = renderInfo.projectedView.y
         val cameraZ = renderInfo.projectedView.z
@@ -146,8 +150,8 @@ public class SpriteRenderModule private constructor(
         val spriteIndexMask = spriteSheetSize - 1
         val spriteSheetBits = MathHelper.log2(spriteSheetSize)
 
-        // front-load this branch as a micro-optimization
         val widthSizeIndex: Int = if (this.size.contents.size == 2) 1 else 0
+        val computeNormal = renderOptions.diffuseLight
 
         particles.forEach { particle ->
             for (i in prepModules.indices) {
@@ -165,13 +169,17 @@ public class SpriteRenderModule private constructor(
                 posZ = Client.worldTime.interp(previousPosition.contents[2], posZ)
             }
 
-            var rightX = lookRightX
-            var rightY = lookRightY
-            var rightZ = lookRightZ
+            var rightX = 1.0
+            var rightY = 0.0
+            var rightZ = 0.0
 
-            var upX = lookUpX
-            var upY = lookUpY
-            var upZ = lookUpZ
+            var upX = 0.0
+            var upY = 1.0
+            var upZ = 0.0
+
+            var normalX = 0.0
+            var normalY = 0.0
+            var normalZ = 1.0
 
             // compute local axes
             if (facingVector != null || upVector != null) {
@@ -200,7 +208,7 @@ public class SpriteRenderModule private constructor(
 
                             upX = 0.0
                             upY = 0.0
-                            upZ = 1.0
+                            upZ = -1.0
                         } else {
 
                             // note: these cross products don't care about the input normalization. The output magnitude
@@ -251,6 +259,14 @@ public class SpriteRenderModule private constructor(
                     rightZ *= -rightInvLength
                 }
 
+                if(computeNormal) {
+                    // compute the normal using the cross product `right x up`
+                    // two unit vectors at right angles will produce a unit vector output
+                    normalX = rightY * upZ - rightZ * upY
+                    normalY = rightZ * upX - rightX * upZ
+                    normalZ = rightX * upY - rightY * upX
+                }
+
                 // both of those calculations spit out directions in world space. We need to transform those back into
                 // the rendering space
                 val _rightX = rightX
@@ -266,6 +282,13 @@ public class SpriteRenderModule private constructor(
                 upX = tm00 * _upX + tm01 * _upY + tm02 * _upZ
                 upY = tm10 * _upX + tm11 * _upY + tm12 * _upZ
                 upZ = tm20 * _upX + tm21 * _upY + tm22 * _upZ
+
+                val _normalX = normalX
+                val _normalY = normalY
+                val _normalZ = normalZ
+                normalX = nm00 * _normalX + nm01 * _normalY + nm02 * _normalZ
+                normalY = nm10 * _normalX + nm11 * _normalY + nm12 * _normalZ
+                normalZ = nm20 * _normalX + nm21 * _normalY + nm22 * _normalZ
             }
 
             size.load(particle)
@@ -306,12 +329,12 @@ public class SpriteRenderModule private constructor(
                 vSize = spriteSize
             }
 
-            if(uvOffset != null) {
+            if (uvOffset != null) {
                 uvOffset.load(particle)
                 minU += uSize * uvOffset.contents[0].toFloat()
                 minV += vSize * uvOffset.contents[1].toFloat()
             }
-            if(uvSize != null) {
+            if (uvSize != null) {
                 uvSize.load(particle)
                 uSize *= uvSize.contents[0].toFloat()
                 vSize *= uvSize.contents[1].toFloat()
@@ -320,14 +343,50 @@ public class SpriteRenderModule private constructor(
             val maxU = minU + uSize
             val maxV = minV + vSize
 
+            val lightmap = if(renderOptions.worldLight) {
+                val blockX = floorInt(posX)
+                val blockY = floorInt(posY)
+                val blockZ = floorInt(posZ)
+                GlitterLightingCache.getCombinedLight(blockX, blockY, blockZ)
+            } else {
+                0
+            }
+
             builder.pos(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ)
-                .color(r, g, b, a).tex(minU, maxV).endVertex()
+                .color(r, g, b, a)
+                .tex(minU, maxV)
+            if(renderOptions.worldLight)
+                builder.lightmap(lightmap)
+            if(renderOptions.diffuseLight)
+                builder.normal(normalX, normalY, normalZ)
+            builder.endVertex()
+
             builder.pos(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ)
-                .color(r, g, b, a).tex(maxU, maxV).endVertex()
+                .color(r, g, b, a)
+                .tex(maxU, maxV)
+            if(renderOptions.worldLight)
+                builder.lightmap(lightmap)
+            if(renderOptions.diffuseLight)
+                builder.normal(normalX, normalY, normalZ)
+            builder.endVertex()
+
             builder.pos(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ)
-                .color(r, g, b, a).tex(maxU, minV).endVertex()
+                .color(r, g, b, a)
+                .tex(maxU, minV)
+            if(renderOptions.worldLight)
+                builder.lightmap(lightmap)
+            if(renderOptions.diffuseLight)
+                builder.normal(normalX, normalY, normalZ)
+            builder.endVertex()
+
             builder.pos(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ)
-                .color(r, g, b, a).tex(minU, minV).endVertex()
+                .color(r, g, b, a)
+                .tex(minU, minV)
+            if(renderOptions.worldLight)
+                builder.lightmap(lightmap)
+            if(renderOptions.diffuseLight)
+                builder.normal(normalX, normalY, normalZ)
+            builder.endVertex()
         }
 
         buffer.finish()
@@ -335,13 +394,12 @@ public class SpriteRenderModule private constructor(
 
     public companion object {
         /**
-         * @param renderType The [RenderType] that is used to draw the particles. It should have both position and
-         * texture components. For simple render types use [simpleRenderType]
+         * @param renderOptions The [SpriteRenderOptions] configuring the rendering of the particles
          * @param position The position binding for the particle (3D)
          */
         @JvmStatic
-        public fun build(renderType: RenderType, position: ReadParticleBinding): Builder {
-            return Builder(renderType, position)
+        public fun build(renderOptions: SpriteRenderOptions, position: ReadParticleBinding): Builder {
+            return Builder(renderOptions, position)
         }
 
         /**
@@ -350,68 +408,15 @@ public class SpriteRenderModule private constructor(
          */
         @JvmStatic
         public fun build(sprite: ResourceLocation, position: ReadParticleBinding): Builder {
-            return Builder(simpleRenderType(sprite), position)
-        }
-
-        @JvmStatic
-        @JvmOverloads
-        public fun simpleRenderType(
-            /**
-             * The sprite texture to use
-             */
-            sprite: ResourceLocation,
-            /**
-             * The OpenGL source/dest enableBlend factors. A null value disables blending.
-             */
-            blendMode: BlendMode? = BlendMode.NORMAL,
-            /**
-             * Whether to write to the depth buffer
-             */
-            writeDepth: Boolean = true,
-            /**
-             * Whether to blur the texture
-             */
-            blur: Boolean = false
-        ): RenderType {
-
-            val renderState = RenderType.State.getBuilder()
-                .texture(RenderState.TextureState(sprite, blur, false))
-                .cull(DefaultRenderStates.CULL_DISABLED)
-                .alpha(DefaultRenderStates.DEFAULT_ALPHA)
-
-            if (blendMode != null) {
-                renderState.transparency(RenderState.TransparencyState("particle_transparency", {
-                    RenderSystem.enableBlend()
-                    blendMode.glApply()
-                }, {
-                    RenderSystem.disableBlend()
-                    RenderSystem.defaultBlendFunc()
-                }))
-            }
-
-            if (!writeDepth) {
-                renderState.writeMask(DefaultRenderStates.COLOR_WRITE)
-            }
-
-            @Suppress("INACCESSIBLE_TYPE")
-            return RenderType.makeType(
-                "particle_type",
-                DefaultVertexFormats.POSITION_COLOR_TEX,
-                GL11.GL_QUADS,
-                256,
-                false,
-                false,
-                renderState.build(false)
-            )
+            return Builder(SpriteRenderOptions.build(sprite).build(), position)
         }
     }
 
     /**
-     * @param renderType The [RenderType] that is used to draw the particles. It should have both position and texture
-     * components. For simple render types try [simpleRenderType]
+     * @param renderOptions The [SpriteRenderOptions] configuring the rendering of the particles
      * @param position The position binding for the particle (3D)
      */
-    public class Builder(private val renderType: RenderType, private val position: ReadParticleBinding) {
+    public class Builder(private val renderOptions: SpriteRenderOptions, private val position: ReadParticleBinding) {
         init {
             position.require(3)
         }
@@ -542,7 +547,7 @@ public class SpriteRenderModule private constructor(
 
         public fun build(): SpriteRenderModule {
             return SpriteRenderModule(
-                renderType,
+                renderOptions,
                 position,
                 previousPosition,
                 color,
@@ -555,6 +560,188 @@ public class SpriteRenderModule private constructor(
                 uvSize,
                 uvOffset
             )
+        }
+    }
+}
+
+public class SpriteRenderOptions private constructor(
+    public val renderType: RenderType,
+    public val cull: Boolean,
+    public val worldLight: Boolean,
+    public val diffuseLight: Boolean,
+) {
+    public companion object {
+        @JvmStatic
+        public fun build(sprite: ResourceLocation): Builder {
+            return Builder(sprite)
+        }
+    }
+
+    public class Builder(private val sprite: ResourceLocation) {
+        private var blendMode: BlendMode? = BlendMode.NORMAL
+        private var writeDepth: Boolean = true
+        private var blur: Boolean = false
+        private var extraConfig: Consumer<RenderType.State.Builder>? = null
+
+        private var cull: Boolean = true
+        private var worldLight: Boolean = false
+        private var diffuseLight: Boolean = false
+
+        /**
+         * Disable OpenGL blending
+         */
+        public fun disableBlending(): Builder = builder {
+            blendMode = null
+        }
+
+        /**
+         * The OpenGL source/dest enableBlend factors.
+         */
+        public fun blendMode(value: BlendMode): Builder = builder {
+            blendMode = value
+        }
+
+        /**
+         * Use additive blending
+         */
+        public fun additiveBlending(): Builder = blendMode(BlendMode.ADDITIVE)
+
+        /**
+         * Whether to write to the depth buffer
+         */
+        public fun writeDepth(value: Boolean): Builder = builder {
+            writeDepth = value
+        }
+
+        /**
+         * Whether to blur the texture (i.e. interpolate colors vs. use nearest-neighbor scaling)
+         */
+        public fun blur(value: Boolean): Builder = builder {
+            blur = value
+        }
+
+        /**
+         * Whether to enable backface culling (defaults to true)
+         */
+        public fun cull(value: Boolean): Builder = builder {
+            cull = value
+        }
+
+        /**
+         * Whether to apply world light (i.e. block and sky light) to the particles. Note: At large scales this may have
+         * some performance impact.
+         */
+        public fun worldLight(value: Boolean): Builder = builder {
+            worldLight = value
+        }
+
+        /**
+         * Whether to apply diffuse lighting (e.g. particles appear darker from below) to the particles. Note: At large
+         * scales this may have some performance impact.
+         */
+        public fun diffuseLight(value: Boolean): Builder = builder {
+            diffuseLight = value
+        }
+
+        /**
+         * Additional configurations for the render type.
+         */
+        public fun extraConfig(value: Consumer<RenderType.State.Builder>): Builder = builder {
+            extraConfig = value
+        }
+
+        public fun build(): SpriteRenderOptions {
+            val renderState = RenderType.State.getBuilder()
+                .texture(RenderState.TextureState(sprite, blur, false))
+                .alpha(DefaultRenderStates.DEFAULT_ALPHA)
+
+            if (cull || diffuseLight) {
+                // when using diffuse lighting we always cull. If culling is disabled we render two quads with different normals
+                renderState.cull(DefaultRenderStates.CULL_ENABLED)
+            } else {
+                renderState.cull(DefaultRenderStates.CULL_DISABLED)
+            }
+
+            blendMode?.let { blendMode ->
+                renderState.transparency(RenderState.TransparencyState("particle_transparency", {
+                    RenderSystem.enableBlend()
+                    blendMode.glApply()
+                }, {
+                    RenderSystem.disableBlend()
+                    RenderSystem.defaultBlendFunc()
+                }))
+            }
+
+            if (worldLight) renderState.lightmap(DefaultRenderStates.LIGHTMAP_ENABLED)
+            if (diffuseLight) renderState.diffuseLighting(DefaultRenderStates.DIFFUSE_LIGHTING_ENABLED)
+            if (!writeDepth) renderState.writeMask(DefaultRenderStates.COLOR_WRITE)
+
+            extraConfig?.accept(renderState)
+
+            val renderType = SimpleRenderTypes.makeType(
+                "particle_type",
+                vertexFormatForLighting(worldLight, diffuseLight),
+                GL11.GL_QUADS,
+                256,
+                false,
+                false,
+                renderState.build(false)
+            )
+
+            return SpriteRenderOptions(renderType, cull, worldLight, diffuseLight)
+        }
+
+        public companion object {
+            @JvmStatic
+            public val positionColorTexFormat: VertexFormat = VertexFormat(
+                ImmutableList.builder<VertexFormatElement>()
+                    .add(DefaultVertexFormats.POSITION_3F) // position
+                    .add(DefaultVertexFormats.COLOR_4UB) // color
+                    .add(DefaultVertexFormats.TEX_2F) // tex
+                    .build()
+            )
+
+            @JvmStatic
+            public val positionColorTexLightmapFormat: VertexFormat = VertexFormat(
+                ImmutableList.builder<VertexFormatElement>()
+                    .add(DefaultVertexFormats.POSITION_3F) // position
+                    .add(DefaultVertexFormats.COLOR_4UB) // color
+                    .add(DefaultVertexFormats.TEX_2F) // tex
+                    .add(DefaultVertexFormats.TEX_2SB) // lightmap
+                    .build()
+            )
+
+            @JvmStatic
+            public val positionColorTexNormalFormat: VertexFormat = VertexFormat(
+                ImmutableList.builder<VertexFormatElement>()
+                    .add(DefaultVertexFormats.POSITION_3F) // position
+                    .add(DefaultVertexFormats.COLOR_4UB) // color
+                    .add(DefaultVertexFormats.TEX_2F) // tex
+                    .add(DefaultVertexFormats.NORMAL_3B) // normal
+                    .build()
+            )
+
+            @JvmStatic
+            public val positionColorTexLightmapNormalFormat: VertexFormat = VertexFormat(
+                ImmutableList.builder<VertexFormatElement>()
+                    .add(DefaultVertexFormats.POSITION_3F) // position
+                    .add(DefaultVertexFormats.COLOR_4UB) // color
+                    .add(DefaultVertexFormats.TEX_2F) // tex
+                    .add(DefaultVertexFormats.TEX_2SB) // lightmap
+                    .add(DefaultVertexFormats.NORMAL_3B) // normal
+                    .build()
+            )
+
+            private fun vertexFormatForLighting(worldLight: Boolean, diffuseLight: Boolean): VertexFormat {
+                return when(worldLight to diffuseLight) {
+                    false to false -> positionColorTexFormat
+                    true to false -> positionColorTexLightmapFormat
+                    false to true -> positionColorTexNormalFormat
+                    true to true -> positionColorTexLightmapNormalFormat
+
+                    else -> unreachable()
+                }
+            }
         }
     }
 }

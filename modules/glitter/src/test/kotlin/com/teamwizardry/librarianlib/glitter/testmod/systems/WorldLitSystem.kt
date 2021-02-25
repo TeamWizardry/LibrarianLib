@@ -6,15 +6,15 @@ import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.glitter.modules.BasicPhysicsUpdateModule
 import com.teamwizardry.librarianlib.glitter.modules.GlLineBeamRenderModule
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
+import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderOptions
 import net.minecraft.entity.Entity
 import net.minecraft.util.ResourceLocation
 
-object ShowOnMinimalSystem : TestSystem("show_on_minimal") {
+object WorldLitSystem : TestSystem("world_lit") {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)
         val velocity = bind(3)
-        val color = bind(4)
 
         updateModules.add(
             BasicPhysicsUpdateModule(
@@ -31,16 +31,15 @@ object ShowOnMinimalSystem : TestSystem("show_on_minimal") {
 
         renderModules.add(
             SpriteRenderModule.build(
-                loc("minecraft", "textures/item/clay_ball.png"),
+                SpriteRenderOptions.build(loc("minecraft", "textures/item/snowball.png"))
+                    .worldLight(true)
+                    .build(),
                 position,
             )
                 .previousPosition(previousPosition)
-                .color(color)
-                .size(0.2)
+                .size(0.25)
                 .build()
         )
-
-        minimalSpawnChance = 1 / 10.0
     }
 
     override fun spawn(player: Entity) {
@@ -64,11 +63,6 @@ object ShowOnMinimalSystem : TestSystem("show_on_minimal") {
             look.x * spawnVelocity,
             look.y * spawnVelocity,
             look.z * spawnVelocity,
-            // color
-            Math.random(),
-            Math.random(),
-            Math.random(),
-            1.0
         )
     }
 }

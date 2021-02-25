@@ -31,7 +31,7 @@ object IgnoreParticleSettingSystem : TestSystem("ignore_particle_setting") {
 
         renderModules.add(
             SpriteRenderModule.build(
-                SpriteRenderModule.simpleRenderType(loc("minecraft", "textures/item/clay_ball.png")),
+                loc("minecraft", "textures/item/clay_ball.png"),
                 position,
             )
                 .previousPosition(previousPosition)

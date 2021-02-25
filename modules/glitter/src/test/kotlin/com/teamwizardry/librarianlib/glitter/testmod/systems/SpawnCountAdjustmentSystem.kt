@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.glitter.modules.BasicPhysicsUpdateModule
 import com.teamwizardry.librarianlib.glitter.modules.GlLineBeamRenderModule
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
+import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderOptions
 import net.minecraft.entity.Entity
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.math.vector.Vector3d
@@ -34,12 +35,11 @@ object SpawnCountAdjustmentSystem : TestSystem("spawn_count_adjustment") {
 
         renderModules.add(
             SpriteRenderModule.build(
-                renderType = SpriteRenderModule.simpleRenderType(
-                    sprite = loc("librarianlib-glitter-test:textures/glitter/glow.png"),
-                    blendMode = BlendMode.ADDITIVE,
-                    writeDepth = false,
-                    blur = true
-                ),
+                renderOptions = SpriteRenderOptions.build(loc("librarianlib-glitter-test:textures/glitter/glow.png"))
+                    .additiveBlending()
+                    .writeDepth(false)
+                    .blur(true)
+                    .build(),
                 position = position
             )
                 .previousPosition(previousPosition)

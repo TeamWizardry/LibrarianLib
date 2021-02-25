@@ -14,7 +14,7 @@ object StaticSystem : TestSystem("static") {
 
         renderModules.add(
             SpriteRenderModule.build(
-                SpriteRenderModule.simpleRenderType(loc("minecraft", "textures/item/clay_ball.png")),
+                loc("minecraft", "textures/item/clay_ball.png"),
                 pos,
             )
                 .color(color)
