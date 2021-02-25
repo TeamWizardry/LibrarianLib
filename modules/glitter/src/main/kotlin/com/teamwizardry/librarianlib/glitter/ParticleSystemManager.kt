@@ -45,7 +45,7 @@ internal object ParticleSystemManager: ISimpleReloadListener<Unit> {
     fun tick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START)
             return
-        if (Minecraft.getInstance().currentScreen?.isPauseScreen == true)
+        if (Client.minecraft.isGamePaused)
             return
         if (Minecraft.getInstance().world == null)
             return
@@ -54,7 +54,9 @@ internal object ParticleSystemManager: ISimpleReloadListener<Unit> {
         profiler.startSection("liblib_particles")
         try {
             systems.forEach {
+                profiler.startSection(it.javaClass.simpleName)
                 it.update()
+                profiler.endSection()
             }
         } catch (e: ConcurrentModificationException) {
             e.printStackTrace()
