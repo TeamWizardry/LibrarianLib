@@ -12,8 +12,7 @@ buildscript {
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
         // rolled back from 4.0.4 to 4.0.1 due to #425: https://github.com/johnrengelman/shadow/issues/425
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.1'
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokka_gradle_version"
     }
 }
 
@@ -36,8 +35,6 @@ if(hasProperty('liblibVersion')) {
 }
 
 ext.allmodules = rootProject.subprojects.findAll { it.findProperty("non_module") != "true" }
-
-// this is populated by the modules, since the modules need to know about each other's relocation packages
 
 allprojects {
     apply plugin: 'java-library'
@@ -89,6 +86,7 @@ dependencies {
 // =====================================================================================================================
 
 ext.productionModules = allmodules.findAll { it.name != "testbase" }
+ext.publishedModules = productionModules + [project]
 
 //region Merged file generation
 
@@ -253,9 +251,51 @@ assemble.dependsOn obfJar, deobfJar, sourcesJar
 
 //endregion
 
+//region Merged Javadoc configuration
+task relativizeJavadocLinks(type: Copy) {
+    group = 'documentation'
+    ext.outputDir = "$buildDir/dokka/javadoc"
+
+    from "$buildDir/dokka/modules"
+    into ext.outputDir
+
+    // replace the placeholders in each file
+    doLast {
+        // instead of doing all sorts of relativize operations, we just offset the
+        // number of slashes based on the root
+        int slashOffset = ext.outputDir.count('/') + 1
+
+        fileTree(ext.outputDir).forEach {f ->
+            if(f.isFile() && f.name.endsWith(".html")) {
+                def relativeRoot = "../" * (f.path.count('/') - slashOffset)
+                f.text = f.text.replaceAll(
+                        "https://placeholder.docs/", relativeRoot
+                ).replace(
+                        '<ul class="navList" title="Navigation">',
+                        '<ul class="navList" title="Navigation">\n' +
+                                '<li><a href="' + relativeRoot + 'index.html">Modules</a></li>'
+                )
+            }
+        }
+    }
+
+    afterEvaluate {
+        productionModules.each {
+            dependsOn(it.dokkaMergedJavadoc)
+        }
+    }
+}
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from relativizeJavadocLinks
+    dependsOn(relativizeJavadocLinks)
+}
+
+//endregion
+
 //region Shared publish configuration
 
-configure(productionModules + [project]) {
+configure(publishedModules) {
     components.java
 
     artifacts {
@@ -275,16 +315,23 @@ configure(productionModules + [project]) {
                     // for the maven-publish plugin
                     name = project == rootProject ? "LibrarianLib" : "LibrarianLib $human_name".toString()
                     description = project == rootProject ? "The final packaged LibrarianLib jar" : "$module_description".toString()
-                    url = 'http://github.com/LibrarianLib/LibrarianLib'
+                    url = 'https://github.com/LibrarianLib/LibrarianLib'
                     if(project == rootProject) {
                         artifactId = "librarianlib"
                     } else {
-                        artifactId = "librarianlib-" + project.name
+                        artifactId = project.name
                     }
                     licenses {
                         license {
                             name = 'GNU Lesser General Public License v3'
                             url = 'https://www.gnu.org/licenses/lgpl-3.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'thecodewarrior'
+                            name = 'Pierce Corcoran'
+                            email = 'code@thecodewarrior.dev'
                         }
                     }
                     scm {
@@ -305,53 +352,27 @@ configure(productionModules + [project]) {
             }
         }
         repositories {
+            maven {
+                def stagingRepo = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                def snapshotRepo = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                url = project.version.endsWith('SNAPSHOT') ? snapshotRepo : stagingRepo
+                name = 'ossrh'
+                credentials {
+                    username ossrhUsername
+                    password ossrhPassword
+                }
+            }
         }
     }
 
-    apply plugin: 'com.jfrog.bintray'
+    apply plugin: 'signing'
+    signing {
+        useGpgCmd()
 
-    bintray {
-        user = System.getenv("BINTRAY_USER")
-        key = System.getenv("BINTRAY_API_KEY")
-        publications = ["mod"]
-        pkg {
-            repo = "teamwizardry"
-            userOrg = "teamwizardry"
-
-            if(project != rootProject)
-                name = "librarianlib-" + project.name
-            else
-                name = project.name
-            desc = project.description
-            labels = ["minecraft", "mc", "mod", "modding", "forge", "library", "wizardry"]
-            licenses = ["LGPL-3.0"]
-
-            websiteUrl = "https://github.com/TeamWizardry/LibrarianLib"
-            githubRepo = "TeamWizardry/LibrarianLib"
-            vcsUrl = "https://github.com/TeamWizardry/LibrarianLib.git"
-            issueTrackerUrl = "https://github.com/TeamWizardry/LibrarianLib/issues"
-
-        }
+        sign publishing.publications.mod
     }
-
-    apply plugin: 'com.jfrog.artifactory'
 }
 
-artifactory {
-    setContextUrl 'https://oss.jfrog.org'
-    publish {
-        repository {
-            repoKey = project.version.endsWith("-SNAPSHOT") ? "oss-snapshot-local" : "oss-release-local"
-            username = System.getenv("BINTRAY_USER")
-            password = System.getenv("BINTRAY_API_KEY")
-            maven = true
-        }
-        defaults {
-            publications "mod"
-        }
-    }
-    clientConfig.info.setBuildNumber(System.getenv('ARTIFACTORY_BUILD_NUMBER')) // no env = null -> default value
-}
 //endregion
 
 // =====================================================================================================================
