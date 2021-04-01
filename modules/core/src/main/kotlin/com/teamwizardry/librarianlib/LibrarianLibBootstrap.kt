@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.core.config.Configurator
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 
-@Mod("librarianlib")
+@Mod("ll-core")
 internal object LibrarianLibBootstrap {
     private val modEventBus: IEventBus = MOD_BUS
     private val logger = LogManager.getLogger("LibrarianLib Bootstrap")

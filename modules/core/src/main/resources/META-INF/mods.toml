@@ -1,26 +1,8 @@
 modLoader="kotlinforforge"
 loaderVersion="[1,)"
-issueTrackerURL="https://github.com/LibrarianLib/LibrarianLib/issues"
 license="LGPL-3.0"
 [[mods]]
-modId="librarianlib"
-version="@version@"
-displayName="LibrarianLib"
-# A URL to query for updates for this mod. See the JSON update specification <here>
-# updateJSONURL="http://myurl.me/" #optional
-# A URL for the "homepage" for this mod, displayed in the mod UI
-# displayURL="http://example.com/" #optional
-logoFile="icon.png"
-# credits="Thanks for this example mod goes to Java"
-# authors="Love, Cheese and small house plants" #optional
-description='''
-A collection of libraries designed to make creating great Minecraft mods easier.
-'''
-[[dependencies.librarianlib]]
-    modId="forge"
-    mandatory=true
-    versionRange="[35,)"
-[[dependencies.librarianlib]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.16.4,1.17)"
+modId="ll-core"
+version="5.0.0a3"
+displayName="LibrarianLib Core"
+description="Core classes for LibrarianLib"

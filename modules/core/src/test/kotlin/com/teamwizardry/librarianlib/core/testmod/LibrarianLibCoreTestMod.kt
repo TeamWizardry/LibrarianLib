@@ -1,5 +1,5 @@
 package com.teamwizardry.librarianlib.core.testmod
-
+/*
 import com.teamwizardry.librarianlib.core.LibrarianLibCoreModule
 import com.teamwizardry.librarianlib.core.testmod.tests.EasingTests
 import com.teamwizardry.librarianlib.testbase.TestMod
@@ -16,3 +16,5 @@ object LibrarianLibCoreTestMod: TestMod(LibrarianLibCoreModule) {
 }
 
 internal val logger = LibrarianLibCoreTestMod.makeLogger(null)
+
+ */

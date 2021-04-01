@@ -1,3 +1,7 @@
+plugins {
+    id 'librarianlib.module-conventions'
+}
+
 import org.gradle.internal.os.OperatingSystem
 switch (OperatingSystem.current()) {
     case OperatingSystem.LINUX:
