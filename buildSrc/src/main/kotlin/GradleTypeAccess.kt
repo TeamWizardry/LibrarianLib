@@ -1,7 +1,6 @@
-import com.teamwizardry.gradle.module.LibLibModuleExtension
-import com.teamwizardry.gradle.module.LibLibModulePlugin
-
 typealias LibLibRootPlugin = com.teamwizardry.gradle.LibLibPlugin
 typealias LibLibRootExtension = com.teamwizardry.gradle.LibLibExtension
-typealias LibLibModulePlugin = LibLibModulePlugin
-typealias LibLibModuleExtension = LibLibModuleExtension
+typealias LibLibModulePlugin = com.teamwizardry.gradle.module.LibLibModulePlugin
+typealias LibLibModuleExtension = com.teamwizardry.gradle.module.LibLibModuleExtension
+typealias GenerateCoremodsJson = com.teamwizardry.gradle.task.GenerateCoremodsJson
+typealias GenerateMixinConnector = com.teamwizardry.gradle.task.GenerateMixinConnector

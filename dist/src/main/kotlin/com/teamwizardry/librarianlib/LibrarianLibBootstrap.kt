@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.core.config.Configurator
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 
-@Mod("ll-core")
+@Mod("librarianlib")
 internal object LibrarianLibBootstrap {
     private val modEventBus: IEventBus = MOD_BUS
     private val logger = LogManager.getLogger("LibrarianLib Bootstrap")
@@ -20,8 +20,7 @@ internal object LibrarianLibBootstrap {
         if("bootstrap" in System.getProperty("librarianlib.debug.modules", "").split(","))
             changeLogLevel(logger, Level.DEBUG)
 
-
-        val names = resource("/META-INF/ll/core/modules.txt")?.lines()
+        val names = resource("/META-INF/ll/modules.txt")?.lines()
             ?: throw RuntimeException("Unable to find LibrarianLib modules list")
         logger.info("Module index contained ${names.size} modules")
         logger.info("To enable LibrarianLib debug logging, add the `-Dlibrarianlib.debug.modules=<module>,<module>` VM option")
@@ -45,20 +44,19 @@ internal object LibrarianLibBootstrap {
             logger.info("Unable to find module info file for $name, skipping")
             return
         }
-        try {
-            Class.forName(info.mainClass, false, this.javaClass.classLoader)
-        } catch (e: ClassNotFoundException) {
-            failedLoading.add(name)
-            logger.error("Unable to find module class ${info.mainClass}.")
-            return
+        if(info.mainClass != null) {
+            try {
+                Class.forName(info.mainClass, false, this.javaClass.classLoader)
+            } catch (e: ClassNotFoundException) {
+                failedLoading.add(name)
+                logger.error("Unable to find module class ${info.mainClass}.")
+                return
+            }
+            val clazz = Class.forName(info.mainClass)
+            val module = clazz.kotlin.objectInstance ?: clazz.newInstance()
+            MinecraftForge.EVENT_BUS.register(module)
+            modEventBus.register(module)
         }
-        val clazz = Class.forName(info.mainClass)
-        val module = clazz.kotlin.objectInstance ?: clazz.newInstance()
-        if(module is LibrarianLibModule && module.debugEnabled) {
-            logger.info("Debug logging enabled for $name")
-        }
-        MinecraftForge.EVENT_BUS.register(module)
-        modEventBus.register(module)
 
         logger.info("Finished loading $name")
     }
@@ -68,7 +66,7 @@ internal object LibrarianLibBootstrap {
     }
 
     private data class ModuleInfo(
-        val mainClass: String
+        val mainClass: String?
     ) {
         companion object {
             private val gson = Gson()

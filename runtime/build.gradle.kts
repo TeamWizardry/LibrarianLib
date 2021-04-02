@@ -39,11 +39,12 @@ configure<UserDevExtension> {
         property("forge.logging.console.level", "debug")
 
         mods {
-            liblib.root.modules.forEach { module ->
+            create("librarianlib") {
+                sources(project(":dist").sourceSets.main.get())
+                liblib.modules.forEach { sources(it.mainSources.get()) }
+            }
+            liblib.modules.forEach { module ->
                 // todo: ForgeGradle needs the source set references directly. Lazy evaluation is stupid, amirite?
-                create(module.modid.get()) {
-                    sources(module.project.get().sourceSets.main.get())
-                }
 //                create(module.testModid.get()) {
 //                    sources(module.project.get().sourceSets.test.get())
 //                }
@@ -68,25 +69,26 @@ configure<UserDevExtension> {
             "--all",
             "--output",
             project.file("run/datagen"),
-            "--mod", liblib.root.modules.joinToString(",") { "${it.modid},${it.testModid}" }
+            "--mod", liblib.modules.joinToString(",") { it.testModid.get() }
         )
-        liblib.root.modules.forEach { module ->
+        liblib.modules.forEach { module ->
             args.add("--existing")
-            args.add(module.project.get().sourceSets.main.get().output.resourcesDir)
+            args.add(module.mainSources.get().output.resourcesDir)
             args.add("--existing")
-            args.add(module.project.get().sourceSets.test.get().output.resourcesDir)
+            args.add(module.testSources.get().output.resourcesDir)
         }
 
-        args()
+        args(args)
     }
 }
 
-// todo: ForgeGradle doesn't set up build dependencies, so we have to manually wire them up
 tasks.named("classes") {
-    dependsOn(liblib.root.modules.map { it.project.get().tasks.named("classes") })
-    dependsOn(liblib.root.modules.map { it.project.get().tasks.named("testClasses") })
+    dependsOn(project(":dist").tasks.named("classes"))
+    dependsOn(liblib.modules.map { it.project.get().tasks.named("classes") })
+    dependsOn(liblib.modules.map { it.project.get().tasks.named("testClasses") })
 }
 tasks.named("processResources") {
-    dependsOn(liblib.root.modules.map { it.project.get().tasks.named("processResources") })
-    dependsOn(liblib.root.modules.map { it.project.get().tasks.named("processTestResources") })
+    dependsOn(project(":dist").tasks.named("processResources"))
+    dependsOn(liblib.modules.map { it.project.get().tasks.named("processResources") })
+    dependsOn(liblib.modules.map { it.project.get().tasks.named("processTestResources") })
 }
