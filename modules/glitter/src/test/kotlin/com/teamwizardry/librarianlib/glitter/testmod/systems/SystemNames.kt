@@ -123,6 +123,13 @@ object SystemNames {
                 Spawns diffuse lit particles
             """.trimIndent()
         ),
+        System(
+            "physics_only",
+            "Physics only Test Particle",
+            """
+                Identical to flood but only renders when this item is held
+            """.trimIndent()
+        ),
     )
 
     data class System(val id: String, val name: String, val description: String)

@@ -23,6 +23,7 @@ object ParticleSystems {
         CustomUvSystem,
         WorldLitSystem,
         DiffuseLitSystem,
+        PhysicsOnlySystem,
     )
     private val systemMap = systems.associateBy { it.id }
 
