@@ -10,10 +10,9 @@ import java.lang.IllegalStateException
  * sign blocks. I could spend a couple days setting up a Forge environment and creating a patch, or I could sit staring
  * at a wall for a couple days and get the same results without waiting three months for the stale bot to close my PR.
  *
- * To do this we look in the `SignTileEntity` constructor for the `GETSTATIC` that accesses the vanilla sign
- * `TileEntityType`, then feed that into the [interceptSignTileEntityType] method. That method then checks the
- * thread-local [tileEntityTypeOverride] property. If there is an override it returns that, otherwise it returns the
- * input unchanged.
+ * To do this we look in the `SignTileEntity` constructor for the superclass constructor call, then use
+ * [interceptSignTileEntityType] to intercept the parameter off the stack. That method then checks the thread-local
+ * [tileEntityTypeOverride] property. If there is an override it returns that, otherwise it returns the input unchanged.
  */
 public object FoundationSignTileEntityCreator {
     private var tileEntityTypeOverride: TileEntityType<SignTileEntity>? by threadLocal()

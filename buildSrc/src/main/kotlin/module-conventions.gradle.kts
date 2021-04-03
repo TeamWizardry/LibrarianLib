@@ -1,5 +1,4 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+@file:Suppress("PublicApiImplicitType")
 
 plugins {
     id("java-library")
@@ -19,6 +18,23 @@ sourceSets {
         resources.srcDir("src/test/datagen")
     }
 }
+
+configurations {
+    create("shade") {
+        compileOnly.get().extendsFrom(this)
+        testCompileOnly.get().extendsFrom(this)
+        api.get().extendsFrom(this)
+    }
+    val mod = create("mod")
+    create("clientMod").extendsFrom(mod)
+    create("serverMod").extendsFrom(mod)
+    create("dataMod").extendsFrom(mod)
+    create("devClasspath")
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+//region // File generation
+// ---------------------------------------------------------------------------------------------------------------------
 
 val generatedMain: File = file("$buildDir/generated/main")
 val generatedTest: File = file("$buildDir/generated/test")
@@ -52,3 +68,7 @@ tasks.named("compileTestJava") {
 tasks.named("processTestResources") {
     dependsOn(generateTestCoremodsJson)
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+//endregion // File generation
+// ---------------------------------------------------------------------------------------------------------------------
