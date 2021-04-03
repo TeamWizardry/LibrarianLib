@@ -56,7 +56,7 @@ internal object IntArrayUniform: ShaderTest<IntArrayUniform.Test>() {
 
     private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("int_array_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/int_array_tests.frag")) {
+    class Test: Shader("int_array_tests", null, ResourceLocation("ll-albedo-test:shaders/int_array_tests.frag")) {
         val index = GLSL.glInt()
         val primitive = GLSL.glInt[2]
         val vector2 = GLSL.ivec2[2]

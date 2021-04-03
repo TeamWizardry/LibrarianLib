@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "librarianlib-foundation-test:block/test_wood_sign"
+      "model": "ll-foundation-test:block/test_wood_sign"
     }
   }
 }

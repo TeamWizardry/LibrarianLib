@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/cube_column",
   "textures": {
-    "side": "librarianlib-foundation-test:block/test_wood_log",
-    "end": "librarianlib-foundation-test:block/test_wood_log"
+    "side": "ll-foundation-test:block/test_wood_log",
+    "end": "ll-foundation-test:block/test_wood_log"
   }
 }

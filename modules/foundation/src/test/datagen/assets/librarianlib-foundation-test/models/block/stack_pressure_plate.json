@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/pressure_plate_up",
   "textures": {
-    "texture": "librarianlib-foundation-test:block/stack_pressure_plate"
+    "texture": "ll-foundation-test:block/stack_pressure_plate"
   }
 }

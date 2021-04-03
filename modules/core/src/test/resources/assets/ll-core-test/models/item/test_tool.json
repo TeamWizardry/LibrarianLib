@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "ll-core-testmod:item/test_tool"
+  }
+}

@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/slab_top",
   "textures": {
-    "side": "librarianlib-foundation-test:block/building_block",
-    "bottom": "librarianlib-foundation-test:block/building_block",
-    "top": "librarianlib-foundation-test:block/building_block"
+    "side": "ll-foundation-test:block/building_block",
+    "bottom": "ll-foundation-test:block/building_block",
+    "top": "ll-foundation-test:block/building_block"
   }
 }

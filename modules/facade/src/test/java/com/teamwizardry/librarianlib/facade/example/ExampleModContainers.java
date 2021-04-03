@@ -14,7 +14,7 @@ public class ExampleModContainers {
 
     static {
 //        dirtSetterContainerType.setRegistryName("modid:dirt_setter");
-        dirtSetterContainerType.setRegistryName("librarianlib-facade-test:dirt_setter");
+        dirtSetterContainerType.setRegistryName("ll-facade-test:dirt_setter");
     }
 
     public static void registerContainers(RegistryEvent.Register<ContainerType<?>> e) {

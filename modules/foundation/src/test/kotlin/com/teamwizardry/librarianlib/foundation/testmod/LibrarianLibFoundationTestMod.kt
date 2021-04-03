@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.foundation.example.ExampleModItems
 import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestItem
 import net.minecraftforge.fml.common.Mod
 
-@Mod("librarianlib-foundation-test")
+@Mod("ll-foundation-test")
 object LibrarianLibFoundationTestMod: BaseMod(true) {
     init {
         setLoggerBaseName("LibrarianLib: Foundation Test")

@@ -50,10 +50,9 @@ configure<UserDevExtension> {
                 liblib.modules.forEach { sources(it.mainSources.get()) }
             }
             liblib.modules.forEach { module ->
-                // todo: ForgeGradle needs the source set references directly. Lazy evaluation is stupid, amirite?
-//                create(module.testModid.get()) {
-//                    sources(module.project.get().sourceSets.test.get())
-//                }
+                create(module.testModid.get()) {
+                    sources(module.testSources.get())
+                }
             }
         }
     }
@@ -90,11 +89,13 @@ configure<UserDevExtension> {
 
 tasks.named("classes") {
     dependsOn(project(":dist").tasks.named("classes"))
+    dependsOn(project(":testcore").tasks.named("classes"))
     dependsOn(liblib.modules.map { it.project.get().tasks.named("classes") })
     dependsOn(liblib.modules.map { it.project.get().tasks.named("testClasses") })
 }
 tasks.named("processResources") {
     dependsOn(project(":dist").tasks.named("processResources"))
+    dependsOn(project(":testcore").tasks.named("processResources"))
     dependsOn(liblib.modules.map { it.project.get().tasks.named("processResources") })
     dependsOn(liblib.modules.map { it.project.get().tasks.named("processTestResources") })
 }

@@ -40,7 +40,7 @@ object PrimitiveUniform: ShaderTest<PrimitiveUniform.Test>() {
 
     private val renderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
 
-    class Test: Shader("primitive_uniform", null, ResourceLocation("librarianlib-albedo-test:shaders/primitive_uniform.frag")) {
+    class Test: Shader("primitive_uniform", null, ResourceLocation("ll-albedo-test:shaders/primitive_uniform.frag")) {
         val time = GLSL.glFloat()
     }
 }

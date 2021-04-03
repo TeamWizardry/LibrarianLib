@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "librarianlib-foundation-test:test_wood_fence_gate"
+          "name": "ll-foundation-test:test_wood_fence_gate"
         }
       ],
       "conditions": [

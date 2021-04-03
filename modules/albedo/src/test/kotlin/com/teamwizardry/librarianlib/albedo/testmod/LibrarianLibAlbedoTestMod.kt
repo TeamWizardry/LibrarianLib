@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
-@Mod("librarianlib-albedo-test")
+@Mod("ll-albedo-test")
 object LibrarianLibAlbedoTestMod: TestMod(LibrarianLibAlbedoModule) {
     init {
         +test("simple_frag", "Simple Fragment Shader", "A simple fragment shader with no uniforms") {

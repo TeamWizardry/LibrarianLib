@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "librarianlib-foundation-test:block/strange_loot"
+    "all": "ll-foundation-test:block/strange_loot"
   }
 }

@@ -25,7 +25,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import org.apache.logging.log4j.LogManager
 import java.util.function.Predicate
 
-@Mod("librarianlib-etcetera-test")
+@Mod("ll-etcetera-test")
 object LibrarianLibEtceteraTestMod: TestMod(LibrarianLibEtceteraModule) {
 
     init {

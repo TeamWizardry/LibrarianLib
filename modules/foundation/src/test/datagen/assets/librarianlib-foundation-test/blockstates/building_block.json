@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "librarianlib-foundation-test:block/building_block"
+      "model": "ll-foundation-test:block/building_block"
     }
   }
 }

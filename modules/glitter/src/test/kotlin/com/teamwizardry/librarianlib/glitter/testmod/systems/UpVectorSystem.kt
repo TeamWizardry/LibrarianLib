@@ -16,7 +16,7 @@ object UpVectorSystem : TestSystem("up_vector") {
 
         renderModules.add(
             SpriteRenderModule.build(
-                loc("librarianlib-glitter-test:textures/glitter/arrow.png"),
+                loc("ll-glitter-test:textures/glitter/arrow.png"),
                 pos,
             )
                 .color(color)

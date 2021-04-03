@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_fence_gate_wall",
   "textures": {
-    "texture": "librarianlib-foundation-test:block/test_wood_planks"
+    "texture": "ll-foundation-test:block/test_wood_planks"
   }
 }

@@ -165,7 +165,7 @@ internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>() {
 
     private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("matrix_array_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/matrix_array_tests.frag")) {
+    class Test: Shader("matrix_array_tests", null, ResourceLocation("ll-albedo-test:shaders/matrix_array_tests.frag")) {
         val index = GLSL.glInt()
 
         val matrix4x4 = GLSL.mat4[2]

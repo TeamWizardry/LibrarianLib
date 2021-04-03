@@ -56,7 +56,7 @@ internal object FloatArrayUniform: ShaderTest<FloatArrayUniform.Test>() {
 
     private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("float_array_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/float_array_tests.frag")) {
+    class Test: Shader("float_array_tests", null, ResourceLocation("ll-albedo-test:shaders/float_array_tests.frag")) {
         val index = GLSL.glInt()
         val primitive = GLSL.glFloat[2]
         val vector2 = GLSL.vec2[2]

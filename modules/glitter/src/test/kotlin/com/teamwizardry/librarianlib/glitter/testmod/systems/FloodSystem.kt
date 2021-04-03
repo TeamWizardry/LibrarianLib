@@ -32,7 +32,7 @@ object FloodSystem : TestSystem("flood") {
 
         renderModules.add(
             SpriteRenderModule.build(
-                renderOptions = SpriteRenderOptions.build(loc("librarianlib-glitter-test:textures/glitter/glow.png"))
+                renderOptions = SpriteRenderOptions.build(loc("ll-glitter-test:textures/glitter/glow.png"))
                     .additiveBlending()
                     .writeDepth(false)
                     .blur(true)

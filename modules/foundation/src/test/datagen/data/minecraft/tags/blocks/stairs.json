@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "librarianlib-foundation-test:building_block_stairs",
-    "librarianlib-foundation-test:test_wood_stairs"
+    "ll-foundation-test:building_block_stairs",
+    "ll-foundation-test:test_wood_stairs"
   ]
 }

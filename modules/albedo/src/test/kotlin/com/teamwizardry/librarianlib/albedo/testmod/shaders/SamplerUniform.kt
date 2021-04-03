@@ -23,9 +23,9 @@ import org.lwjgl.opengl.GL13
 import java.awt.Color
 
 internal object SamplerUniform: ShaderTest<SamplerUniform.Test>() {
-    private val failureLocation = ResourceLocation("librarianlib-albedo-test:textures/sampler_failure.png")
-    private val successLocation1 = ResourceLocation("librarianlib-albedo-test:textures/sampler_success1.png")
-    private val successLocation2 = ResourceLocation("librarianlib-albedo-test:textures/sampler_success2.png")
+    private val failureLocation = ResourceLocation("ll-albedo-test:textures/sampler_failure.png")
+    private val successLocation1 = ResourceLocation("ll-albedo-test:textures/sampler_success1.png")
+    private val successLocation2 = ResourceLocation("ll-albedo-test:textures/sampler_success2.png")
 
     override fun doDraw(matrixStack: MatrixStack) {
         val minX = 0.0
@@ -79,7 +79,7 @@ internal object SamplerUniform: ShaderTest<SamplerUniform.Test>() {
         )
     }
 
-    class Test: Shader("sampler_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/sampler_tests.frag")) {
+    class Test: Shader("sampler_tests", null, ResourceLocation("ll-albedo-test:shaders/sampler_tests.frag")) {
         // we only test sampler2D because all the sampler implementations are identical, and the others will be complex
         // to set up
         val sampler1 = GLSL.sampler2D()

@@ -33,7 +33,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 
-@Mod("librarianlib-facade-test")
+@Mod("ll-facade-test")
 object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
     val groups: Map<String, FacadeTestGroup> = mapOf(
         "basics" to FacadeTestGroup(
@@ -123,7 +123,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
         }
 
         simpleInventoryContainerType = FacadeContainerType(SimpleInventoryContainer::class.java)
-        simpleInventoryContainerType.registryName = loc("librarianlib-facade-test", "simple_inventory")
+        simpleInventoryContainerType.registryName = loc("ll-facade-test", "simple_inventory")
         +TestBlock(TestBlockConfig("simple_inventory", "Simple Inventory") {
             tile(::SimpleInventoryTile)
 
@@ -137,7 +137,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
         })
 
         simpleContainerType = FacadeContainerType(SimpleContainer::class.java)
-        simpleContainerType.registryName = loc("librarianlib-facade-test", "simple_container")
+        simpleContainerType.registryName = loc("ll-facade-test", "simple_container")
         +TestItem(TestItemConfig("simple_container", "Simple Container") {
             rightClick.server {
                 simpleContainerType.open(player as ServerPlayerEntity, StringTextComponent("Simple Container"))
@@ -145,7 +145,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
         })
 
         testContainerSelectorContainerType = FacadeContainerType(TestContainerSelectorContainer::class.java)
-        testContainerSelectorContainerType.registryName = loc("librarianlib-facade-test", "container_selector")
+        testContainerSelectorContainerType.registryName = loc("ll-facade-test", "container_selector")
         containerSets.forEach { (id, containerSet) ->
             +TestBlock(TestBlockConfig(id + "_container_set", "${containerSet.name} Container Set") {
                 tile<TestContainerTile> { TestContainerTile(it, containerSet) }
@@ -161,9 +161,9 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
         }
 
         backpackContainerType = FacadeContainerType(BackpackContainer::class.java)
-        backpackContainerType.registryName = loc("librarianlib-facade-test", "backpack")
+        backpackContainerType.registryName = loc("ll-facade-test", "backpack")
         backpackItem = BackpackItem(itemGroup)
-        backpackItem.registryName = loc("librarianlib-facade-test", "backpack")
+        backpackItem.registryName = loc("ll-facade-test", "backpack")
         +backpackItem
 
         +UnitTestSuite("rmvalue") {
@@ -171,7 +171,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
         }
 
         +DirtSetterItem(Item.Properties().group(itemGroup).maxStackSize(1)).also {
-            it.registryName = loc("librarianlib-facade-test", "dirt_setter")
+            it.registryName = loc("ll-facade-test", "dirt_setter")
         }
     }
 

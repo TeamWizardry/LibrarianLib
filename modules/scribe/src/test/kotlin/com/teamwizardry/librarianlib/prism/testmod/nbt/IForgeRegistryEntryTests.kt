@@ -36,7 +36,7 @@ internal class IForgeRegistryEntryTests: NBTPrismTest() {
     fun `read+write with a custom registry should be symmetrical`() {
         simple<UnitTestSuite, IForgeRegistryEntrySerializerFactory.IForgeRegistryEntrySerializer>(
             LibrarianLibPrismTestMod.primitiveTests,
-            NBTBuilder.string("librarianlib-prism-test:nbt_primitives")
+            NBTBuilder.string("ll-prism-test:nbt_primitives")
         )
     }
 

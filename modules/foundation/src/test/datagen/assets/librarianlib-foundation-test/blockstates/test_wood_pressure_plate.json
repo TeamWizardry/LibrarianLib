@@ -1,10 +1,10 @@
 {
   "variants": {
     "powered=false": {
-      "model": "librarianlib-foundation-test:block/test_wood_pressure_plate"
+      "model": "ll-foundation-test:block/test_wood_pressure_plate"
     },
     "powered=true": {
-      "model": "librarianlib-foundation-test:block/test_wood_pressure_plate_down"
+      "model": "ll-foundation-test:block/test_wood_pressure_plate_down"
     }
   }
 }

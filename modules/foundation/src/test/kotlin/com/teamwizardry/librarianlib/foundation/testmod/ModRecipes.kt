@@ -10,7 +10,7 @@ import java.util.function.Consumer
 
 object ModRecipes : RecipeGenerator() {
     override fun addRecipes(consumer: Consumer<IFinishedRecipe>) {
-        val dsl = RecipeDslContext(consumer, "librarianlib-foundation-test")
+        val dsl = RecipeDslContext(consumer, "ll-foundation-test")
 
         dsl.shapeless("dirt_to_diamonds", Items.DIAMOND, 10) {
             inputs = 1 * Items.DIRT + 3 * ItemTags.COALS

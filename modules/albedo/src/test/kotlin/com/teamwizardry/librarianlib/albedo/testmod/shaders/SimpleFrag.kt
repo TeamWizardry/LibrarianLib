@@ -37,7 +37,7 @@ object SimpleFrag: ShaderTest<SimpleFrag.Test>() {
 
     private val renderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
 
-    class Test: Shader("simple_frag", null, ResourceLocation("librarianlib-albedo-test:shaders/simple_frag.frag")) {
+    class Test: Shader("simple_frag", null, ResourceLocation("ll-albedo-test:shaders/simple_frag.frag")) {
 
     }
 }

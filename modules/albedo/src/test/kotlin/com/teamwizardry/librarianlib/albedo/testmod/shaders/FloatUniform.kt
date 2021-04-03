@@ -43,7 +43,7 @@ internal object FloatUniform: ShaderTest<FloatUniform.Test>() {
 
     private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("float_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/float_tests.frag")) {
+    class Test: Shader("float_tests", null, ResourceLocation("ll-albedo-test:shaders/float_tests.frag")) {
         val primitive = GLSL.glFloat()
         val vector2 = GLSL.vec2()
         val vector3 = GLSL.vec3()

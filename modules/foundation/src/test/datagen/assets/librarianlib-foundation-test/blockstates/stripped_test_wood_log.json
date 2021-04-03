@@ -1,15 +1,15 @@
 {
   "variants": {
     "axis=x": {
-      "model": "librarianlib-foundation-test:block/stripped_test_wood_log_horizontal",
+      "model": "ll-foundation-test:block/stripped_test_wood_log_horizontal",
       "x": 90,
       "y": 90
     },
     "axis=y": {
-      "model": "librarianlib-foundation-test:block/stripped_test_wood_log"
+      "model": "ll-foundation-test:block/stripped_test_wood_log"
     },
     "axis=z": {
-      "model": "librarianlib-foundation-test:block/stripped_test_wood_log_horizontal",
+      "model": "ll-foundation-test:block/stripped_test_wood_log_horizontal",
       "x": 90
     }
   }

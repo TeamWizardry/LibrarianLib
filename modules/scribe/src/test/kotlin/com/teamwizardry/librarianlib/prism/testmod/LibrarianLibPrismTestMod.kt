@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.testbase.objects.UnitTestSuite
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
-@Mod("librarianlib-prism-test")
+@Mod("ll-scribe-test")
 object LibrarianLibPrismTestMod: TestMod(LibrarianLibPrismModule) {
     val primitiveTests: UnitTestSuite = UnitTestSuite("nbt_primitives") {
         add<PrimitiveTests>()

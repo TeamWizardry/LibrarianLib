@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "librarianlib-foundation-test:item/cool_item"
+    "layer0": "ll-foundation-test:item/cool_item"
   }
 }

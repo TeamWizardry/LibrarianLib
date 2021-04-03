@@ -1,4 +1,6 @@
-@file:Suppress("PublicApiImplicitType")
+@file:Suppress("PublicApiImplicitType", "UnstableApiUsage")
+
+import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id("java-library")
@@ -33,18 +35,12 @@ configurations {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-//region // File generation
+//region // Test mod file generation
 // ---------------------------------------------------------------------------------------------------------------------
 
-val generatedMain: File = file("$buildDir/generated/main")
 val generatedTest: File = file("$buildDir/generated/test")
 
 sourceSets {
-    main {
-        java.srcDir(generatedMain.resolve("java"))
-        resources.srcDir(generatedMain.resolve("resources"))
-    }
-
     test {
         java.srcDir(generatedTest.resolve("java"))
         resources.srcDir(generatedTest.resolve("resources"))
@@ -60,15 +56,24 @@ val generateTestCoremodsJson = tasks.register<GenerateCoremodsJson>("generateTes
     from(sourceSets.test)
     outputRoot.set(generatedTest.resolve("resources"))
 }
+val generateTestModInfo = tasks.register<GenerateModInfo>("generateTestModInfo") {
+    modid.set("ll-${project.name}-test")
+    outputRoot.set(generatedTest.resolve("resources"))
+}
 
+val mod_version: String by project
 
 tasks.named("compileTestJava") {
     dependsOn(generateTestMixinConnector)
 }
-tasks.named("processTestResources") {
+tasks.named<ProcessResources>("processTestResources") {
     dependsOn(generateTestCoremodsJson)
+    dependsOn(generateTestModInfo)
+    filesMatching("**/mods.toml") {
+        filter(ReplaceTokens::class, "tokens" to mapOf("version" to mod_version))
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-//endregion // File generation
+//endregion // Test mod file generation
 // ---------------------------------------------------------------------------------------------------------------------

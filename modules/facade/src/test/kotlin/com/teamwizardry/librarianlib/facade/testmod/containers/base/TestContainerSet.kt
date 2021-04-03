@@ -70,7 +70,7 @@ class TestContainerSet(val name: String, config: Entry.Group.() -> Unit) {
         val containerClass: Class<C>,
         val screenFactory: ClientMetaSupplier<ContainerScreenFactory<C>>
     ) {
-        val id: ResourceLocation = loc("librarianlib-facade-test", containerClass.simpleName.toLowerCase())
+        val id: ResourceLocation = loc("ll-facade-test", containerClass.simpleName.toLowerCase())
         val containerType: FacadeContainerType<C> = FacadeContainerType(containerClass)
 
         init {

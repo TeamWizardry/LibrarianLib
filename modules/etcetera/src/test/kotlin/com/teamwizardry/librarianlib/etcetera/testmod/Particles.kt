@@ -13,10 +13,10 @@ import net.minecraftforge.api.distmarker.OnlyIn
 
 object Particles {
     val TARGET_RED: BasicParticleType = BasicParticleType(true).also {
-        it.setRegistryName("librarianlib-etcetera-test:target_red")
+        it.setRegistryName("ll-etcetera-test:target_red")
     }
     val TARGET_BLUE: BasicParticleType = BasicParticleType(true).also {
-        it.setRegistryName("librarianlib-etcetera-test:target_blue")
+        it.setRegistryName("ll-etcetera-test:target_blue")
     }
 }
 

@@ -23,9 +23,9 @@ import net.minecraftforge.fml.network.NetworkEvent
 import net.minecraftforge.fml.network.PacketDistributor
 import org.apache.logging.log4j.LogManager
 
-@Mod("librarianlib-courier-test")
+@Mod("ll-courier-test")
 object LibrarianLibCourierTestMod: TestMod(LibrarianLibCourierModule) {
-    val channel: CourierChannel = CourierChannel(loc("librarianlib-courier-test", "courier"), "0")
+    val channel: CourierChannel = CourierChannel(loc("ll-courier-test", "courier"), "0")
 
     init {
         channel.registerCourierPacket<TestPacket>(NetworkDirection.PLAY_TO_CLIENT) { packet, context ->

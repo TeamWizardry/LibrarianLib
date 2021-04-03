@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "librarianlib-foundation-test:block/strange_loot"
+      "model": "ll-foundation-test:block/strange_loot"
     }
   }
 }

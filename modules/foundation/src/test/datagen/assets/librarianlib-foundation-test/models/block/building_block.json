@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "librarianlib-foundation-test:block/building_block"
+    "all": "ll-foundation-test:block/building_block"
   }
 }

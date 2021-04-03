@@ -43,7 +43,7 @@ internal object IntUniform: ShaderTest<IntUniform.Test>() {
 
     private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("int_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/int_tests.frag")) {
+    class Test: Shader("int_tests", null, ResourceLocation("ll-albedo-test:shaders/int_tests.frag")) {
         val primitive = GLSL.glInt()
         val vector2 = GLSL.ivec2()
         val vector3 = GLSL.ivec3()

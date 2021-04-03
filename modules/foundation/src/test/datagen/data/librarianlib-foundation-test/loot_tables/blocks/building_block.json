@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "librarianlib-foundation-test:building_block"
+          "name": "ll-foundation-test:building_block"
         }
       ],
       "conditions": [

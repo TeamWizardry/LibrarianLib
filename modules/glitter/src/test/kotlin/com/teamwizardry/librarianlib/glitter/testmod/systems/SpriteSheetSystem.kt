@@ -15,7 +15,7 @@ object SpriteSheetSystem : TestSystem("spritesheet") {
 
         renderModules.add(
             SpriteRenderModule.build(
-                loc("librarianlib-glitter-test:textures/glitter/spritesheet.png"),
+                loc("ll-glitter-test:textures/glitter/spritesheet.png"),
                 pos
             )
                 .previousPosition(pos)

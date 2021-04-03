@@ -58,7 +58,7 @@ internal object BoolArrayUniform: ShaderTest<BoolArrayUniform.Test>() {
 
     private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("bool_array_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/bool_array_tests.frag")) {
+    class Test: Shader("bool_array_tests", null, ResourceLocation("ll-albedo-test:shaders/bool_array_tests.frag")) {
         val index = GLSL.glInt()
         val primitive = GLSL.glBool[2]
         val vector2 = GLSL.bvec2[2]

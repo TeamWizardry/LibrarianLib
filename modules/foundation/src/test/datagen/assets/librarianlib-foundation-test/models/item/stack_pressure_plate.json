@@ -1,3 +1,3 @@
 {
-  "parent": "librarianlib-foundation-test:block/stack_pressure_plate"
+  "parent": "ll-foundation-test:block/stack_pressure_plate"
 }

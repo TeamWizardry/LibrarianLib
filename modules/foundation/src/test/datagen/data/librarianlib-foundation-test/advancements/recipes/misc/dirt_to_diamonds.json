@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "librarianlib-foundation-test:dirt_to_diamonds"
+      "ll-foundation-test:dirt_to_diamonds"
     ]
   },
   "criteria": {
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "librarianlib-foundation-test:dirt_to_diamonds"
+        "recipe": "ll-foundation-test:dirt_to_diamonds"
       }
     }
   },

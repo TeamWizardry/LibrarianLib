@@ -60,7 +60,7 @@ internal object StructUniform: ShaderTest<StructUniform.Test>() {
 
     private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("struct_tests", null, ResourceLocation("librarianlib-albedo-test:shaders/struct_tests.frag")) {
+    class Test: Shader("struct_tests", null, ResourceLocation("ll-albedo-test:shaders/struct_tests.frag")) {
         val simple = GLSL.struct<Simple>()
         val simpleArray = GLSL.struct<Simple>(2)
 

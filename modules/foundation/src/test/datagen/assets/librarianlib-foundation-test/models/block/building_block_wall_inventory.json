@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/wall_inventory",
   "textures": {
-    "wall": "librarianlib-foundation-test:block/building_block"
+    "wall": "ll-foundation-test:block/building_block"
   }
 }

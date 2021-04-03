@@ -18,7 +18,7 @@ object DepthSortSystem : TestSystem("depthsort") {
 
         globalUpdateModules.add(DepthSortModule(pos, depth))
         renderModules.add(
-            SpriteRenderModule.build(loc("librarianlib-glitter-test:textures/glitter/depthsort.png"), pos)
+            SpriteRenderModule.build(loc("ll-glitter-test:textures/glitter/depthsort.png"), pos)
                 .previousPosition(pos)
                 .color(color)
                 .size(1.0)

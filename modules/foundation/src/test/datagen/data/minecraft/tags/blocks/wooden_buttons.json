@@ -1,6 +1,6 @@
 {
   "replace": false,
   "values": [
-    "librarianlib-foundation-test:test_wood_button"
+    "ll-foundation-test:test_wood_button"
   ]
 }

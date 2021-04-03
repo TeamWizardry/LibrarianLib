@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:block/door_top_rh",
   "textures": {
-    "bottom": "librarianlib-foundation-test:block/test_wood_door_bottom",
-    "top": "librarianlib-foundation-test:block/test_wood_door_top"
+    "bottom": "ll-foundation-test:block/test_wood_door_bottom",
+    "top": "ll-foundation-test:block/test_wood_door_top"
   }
 }

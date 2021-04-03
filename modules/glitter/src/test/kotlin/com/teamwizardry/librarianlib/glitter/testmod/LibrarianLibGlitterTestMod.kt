@@ -10,9 +10,9 @@ import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
-internal const val modid: String = "librarianlib-glitter-test"
+internal const val modid: String = "ll-glitter-test"
 
-@Mod("librarianlib-glitter-test")
+@Mod("ll-glitter-test")
 object LibrarianLibGlitterTestMod: TestMod(LibrarianLibGlitterModule) {
     init {
         SystemNames.systems.forEach { system ->

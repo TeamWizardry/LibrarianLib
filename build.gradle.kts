@@ -26,7 +26,6 @@ configure<LibLibRootExtension> {
         create("mirage")
         create("mosaic")
         create("scribe")
-        //create("testbase")
         create("albedo")
     }
 }

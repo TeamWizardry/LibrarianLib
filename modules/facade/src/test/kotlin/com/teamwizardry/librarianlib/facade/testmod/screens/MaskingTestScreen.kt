@@ -39,6 +39,6 @@ class MaskingTestScreen(title: ITextComponent): FacadeScreen(title) {
     }
 
     companion object {
-        val spiral: Sprite = Mosaic(loc("librarianlib-facade-test:textures/spiral_mask.png"), 128, 128).getSprite("")
+        val spiral: Sprite = Mosaic(loc("ll-facade-test:textures/spiral_mask.png"), 128, 128).getSprite("")
     }
 }

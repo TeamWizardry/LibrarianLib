@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "librarianlib-foundation-test:block/test_wood_planks"
+      "model": "ll-foundation-test:block/test_wood_planks"
     }
   }
 }

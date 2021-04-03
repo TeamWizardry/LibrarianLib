@@ -8,7 +8,7 @@ import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 
-@Mod("librarianlib-lieutenant-test")
+@Mod("ll-lieutenant-test")
 object LibrarianLibLieutenantTestMod : TestMod(LibrarianLibLieutenantModule) {
     @SubscribeEvent
     public fun registerClientCommands(e: RegisterClientCommandsEvent) {

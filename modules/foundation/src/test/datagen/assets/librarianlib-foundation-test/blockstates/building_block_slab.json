@@ -1,13 +1,13 @@
 {
   "variants": {
     "type=top": {
-      "model": "librarianlib-foundation-test:block/building_block_slab_top"
+      "model": "ll-foundation-test:block/building_block_slab_top"
     },
     "type=bottom": {
-      "model": "librarianlib-foundation-test:block/building_block_slab"
+      "model": "ll-foundation-test:block/building_block_slab"
     },
     "type=double": {
-      "model": "librarianlib-foundation-test:block/building_block"
+      "model": "ll-foundation-test:block/building_block"
     }
   }
 }
