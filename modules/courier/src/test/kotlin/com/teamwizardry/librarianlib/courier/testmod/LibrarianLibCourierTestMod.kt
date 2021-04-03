@@ -7,21 +7,19 @@ import com.teamwizardry.librarianlib.courier.CourierBuffer
 import com.teamwizardry.librarianlib.courier.CourierChannel
 import com.teamwizardry.librarianlib.courier.CourierPacket
 import com.teamwizardry.librarianlib.courier.LibrarianLibCourierModule
-import com.teamwizardry.librarianlib.testbase.TestMod
-import com.teamwizardry.librarianlib.testbase.objects.TestItem
+import com.teamwizardry.librarianlib.testcore.TestMod
+import com.teamwizardry.librarianlib.testcore.objects.TestItem
 import dev.thecodewarrior.prism.annotation.Refract
 import dev.thecodewarrior.prism.annotation.RefractClass
 import dev.thecodewarrior.prism.annotation.RefractConstructor
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraft.entity.player.ServerPlayerEntity
-import net.minecraft.network.PacketBuffer
 import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.network.NetworkDirection
 import net.minecraftforge.fml.network.NetworkEvent
 import net.minecraftforge.fml.network.PacketDistributor
-import org.apache.logging.log4j.LogManager
 
 @Mod("ll-courier-test")
 object LibrarianLibCourierTestMod: TestMod(LibrarianLibCourierModule) {

@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.facade.testmod.containers.base
 
 import com.teamwizardry.librarianlib.prism.Save
-import com.teamwizardry.librarianlib.testbase.objects.TestTileEntity
+import com.teamwizardry.librarianlib.testcore.objects.TestTileEntity
 import net.minecraft.nbt.CompoundNBT
 import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.tileentity.TileEntityType

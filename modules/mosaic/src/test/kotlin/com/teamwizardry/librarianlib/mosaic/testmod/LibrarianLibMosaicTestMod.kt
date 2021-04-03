@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.mosaic.ISprite
 import com.teamwizardry.librarianlib.mosaic.LibrarianLibMosaicModule
 import com.teamwizardry.librarianlib.mosaic.Mosaic
-import com.teamwizardry.librarianlib.testbase.TestMod
+import com.teamwizardry.librarianlib.testcore.TestMod
 import net.minecraftforge.fml.common.Mod
 import java.awt.Color
 

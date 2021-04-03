@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.lieutenant.testmod
 import com.teamwizardry.librarianlib.lieutenant.LibrarianLibLieutenantModule
 import com.teamwizardry.librarianlib.lieutenant.RegisterClientCommandsEvent
 import com.teamwizardry.librarianlib.lieutenant.dsl.command
-import com.teamwizardry.librarianlib.testbase.TestMod
+import com.teamwizardry.librarianlib.testcore.TestMod
 import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod

@@ -4,11 +4,10 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.etcetera.LibrarianLibEtceteraModule
 import com.teamwizardry.librarianlib.etcetera.Raycaster
 import com.teamwizardry.librarianlib.math.times
-import com.teamwizardry.librarianlib.testbase.TestMod
-import com.teamwizardry.librarianlib.testbase.objects.TestEntityConfig
-import com.teamwizardry.librarianlib.testbase.objects.TestItem
+import com.teamwizardry.librarianlib.testcore.TestMod
+import com.teamwizardry.librarianlib.testcore.objects.TestEntityConfig
+import com.teamwizardry.librarianlib.testcore.objects.TestItem
 import net.minecraft.entity.Entity
-import net.minecraft.particles.BasicParticleType
 import net.minecraft.particles.BlockParticleData
 import net.minecraft.particles.IParticleData
 import net.minecraft.particles.ParticleType
@@ -21,8 +20,6 @@ import net.minecraftforge.client.event.ParticleFactoryRegisterEvent
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
-import org.apache.logging.log4j.LogManager
 import java.util.function.Predicate
 
 @Mod("ll-etcetera-test")

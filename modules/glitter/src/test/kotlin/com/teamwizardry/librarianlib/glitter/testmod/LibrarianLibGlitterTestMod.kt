@@ -4,11 +4,10 @@ import com.teamwizardry.librarianlib.glitter.LibrarianLibGlitterModule
 import com.teamwizardry.librarianlib.glitter.testmod.init.TestEntities
 import com.teamwizardry.librarianlib.glitter.testmod.systems.ParticleSystems
 import com.teamwizardry.librarianlib.glitter.testmod.systems.SystemNames
-import com.teamwizardry.librarianlib.testbase.TestMod
+import com.teamwizardry.librarianlib.testcore.TestMod
 import net.minecraft.entity.EntityType
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.fml.common.Mod
-import org.apache.logging.log4j.LogManager
 
 internal const val modid: String = "ll-glitter-test"
 

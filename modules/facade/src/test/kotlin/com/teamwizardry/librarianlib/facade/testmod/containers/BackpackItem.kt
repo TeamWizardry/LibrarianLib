@@ -1,14 +1,13 @@
 package com.teamwizardry.librarianlib.facade.testmod.containers
 
 import com.teamwizardry.librarianlib.facade.testmod.LibrarianLibFacadeTestMod
-import com.teamwizardry.librarianlib.testbase.objects.ITestItem
+import com.teamwizardry.librarianlib.testcore.objects.ITestItem
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
-import net.minecraft.nbt.INBT
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Direction
 import net.minecraft.util.Hand

@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.core.testmod
 
 import com.teamwizardry.librarianlib.core.LibrarianLibCoreModule
 import com.teamwizardry.librarianlib.core.testmod.tests.EasingTests
-import com.teamwizardry.librarianlib.testbase.TestMod
+import com.teamwizardry.librarianlib.testcore.TestMod
 import net.minecraftforge.fml.common.Mod
 
 @Suppress("UNUSED_PARAMETER")

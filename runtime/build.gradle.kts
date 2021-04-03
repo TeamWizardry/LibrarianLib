@@ -41,13 +41,19 @@ configure<UserDevExtension> {
         singleInstance(true)
         taskName(configName)
 
-        property("forge.logging.markers", "REGISTRIES")
+        property("forge.logging.markers", "")
         property("forge.logging.console.level", "debug")
 
         mods {
             create("librarianlib") {
                 sources(project(":dist").sourceSets.main.get())
                 liblib.modules.forEach { sources(it.mainSources.get()) }
+            }
+            create("testcore") {
+                sources(project(":testcore").sourceSets.main.get())
+            }
+            create("testcore-test") {
+                sources(project(":testcore").sourceSets.test.get())
             }
             liblib.modules.forEach { module ->
                 create(module.testModid.get()) {
@@ -90,12 +96,14 @@ configure<UserDevExtension> {
 tasks.named("classes") {
     dependsOn(project(":dist").tasks.named("classes"))
     dependsOn(project(":testcore").tasks.named("classes"))
+    dependsOn(project(":testcore").tasks.named("testClasses"))
     dependsOn(liblib.modules.map { it.project.get().tasks.named("classes") })
     dependsOn(liblib.modules.map { it.project.get().tasks.named("testClasses") })
 }
 tasks.named("processResources") {
     dependsOn(project(":dist").tasks.named("processResources"))
     dependsOn(project(":testcore").tasks.named("processResources"))
+    dependsOn(project(":testcore").tasks.named("processTestResources"))
     dependsOn(liblib.modules.map { it.project.get().tasks.named("processResources") })
     dependsOn(liblib.modules.map { it.project.get().tasks.named("processTestResources") })
 }

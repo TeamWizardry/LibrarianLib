@@ -3,8 +3,8 @@ package com.teamwizardry.librarianlib.prism.testmod.nbt
 import com.teamwizardry.librarianlib.core.util.kotlin.NBTBuilder
 import com.teamwizardry.librarianlib.prism.nbt.IForgeRegistryEntrySerializerFactory
 import com.teamwizardry.librarianlib.prism.testmod.LibrarianLibPrismTestMod
-import com.teamwizardry.librarianlib.testbase.LibrarianLibTestBaseModule
-import com.teamwizardry.librarianlib.testbase.objects.UnitTestSuite
+import com.teamwizardry.librarianlib.testcore.LibrarianLibTestBaseModule
+import com.teamwizardry.librarianlib.testcore.objects.UnitTestSuite
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.prism.DeserializationException
 import net.minecraft.block.Block

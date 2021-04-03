@@ -3,10 +3,9 @@ package com.teamwizardry.librarianlib.albedo.testmod
 import com.teamwizardry.librarianlib.albedo.LibrarianLibAlbedoModule
 import com.teamwizardry.librarianlib.albedo.testmod.shaders.*
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.testbase.TestMod
-import com.teamwizardry.librarianlib.testbase.objects.TestScreenConfig
+import com.teamwizardry.librarianlib.testcore.TestMod
+import com.teamwizardry.librarianlib.testcore.objects.TestScreenConfig
 import net.minecraftforge.fml.common.Mod
-import org.apache.logging.log4j.LogManager
 
 @Mod("ll-albedo-test")
 object LibrarianLibAlbedoTestMod: TestMod(LibrarianLibAlbedoModule) {

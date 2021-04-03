@@ -2,10 +2,9 @@ package com.teamwizardry.librarianlib.prism.testmod
 
 import com.teamwizardry.librarianlib.prism.LibrarianLibPrismModule
 import com.teamwizardry.librarianlib.prism.testmod.nbt.*
-import com.teamwizardry.librarianlib.testbase.TestMod
-import com.teamwizardry.librarianlib.testbase.objects.UnitTestSuite
+import com.teamwizardry.librarianlib.testcore.TestMod
+import com.teamwizardry.librarianlib.testcore.objects.UnitTestSuite
 import net.minecraftforge.fml.common.Mod
-import org.apache.logging.log4j.LogManager
 
 @Mod("ll-scribe-test")
 object LibrarianLibPrismTestMod: TestMod(LibrarianLibPrismModule) {
