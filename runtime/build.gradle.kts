@@ -16,24 +16,30 @@ apply<LibLibModulePlugin>()
 
 val kotlinforforge_version: String by project
 
+val liblib: LibLibModuleExtension = the()
+
 dependencies {
     // exclude Minecraft's default ICU4J so facade's version can override it. At runtime LibLib's will be relocated.
     configurations.getByName("minecraft").exclude("com.ibm.icu", "icu4j-core-mojang")
 
     implementation("thedarkcolour:kotlinforforge:$kotlinforforge_version")
+
+    liblib.modules.forEach { module ->
+        runtimeOnly(project(path = module.projectPath.get(), configuration = "shade"))
+        runtimeOnly(project(path = module.projectPath.get(), configuration = "devClasspath"))
+    }
 }
 
-val liblib: LibLibModuleExtension = the()
 
 configure<UserDevExtension> {
-    val commonConfig: RunConfig.() -> Unit = {
+    val commonConfig: RunConfig.(configName: String) -> Unit = { configName ->
         // ForgeGradle would generate `runtime_main`, which is wrong on two counts. Firstly it needs to be `.main` and
         // not `_main` (which is a _known issue_ https://github.com/MinecraftForge/ForgeGradle/issues/425), and secondly
         // it doesn"t take into account the fact that this project may not be the root project.
         // https://github.com/MinecraftForge/ForgeGradle/blob/bd92a0d384b987be361ed3f7df28b1980f7fae1e/src/common/java/net/minecraftforge/gradle/common/util/RunConfig.java#L240
-        ideaModule("librarianlib.runtime.main")
+        ideaModule("librarianlib.zzz.runtime.main")
         singleInstance(true)
-        taskName(name)
+        taskName(configName)
 
         property("forge.logging.markers", "REGISTRIES")
         property("forge.logging.console.level", "debug")
@@ -55,15 +61,15 @@ configure<UserDevExtension> {
     // todo: ForgeGradle doesn't generate run configs properly unless I eagerly configure these using `create`
     runs.create("client") {
         workingDirectory(project.file("run/client"))
-        this.commonConfig()
+        this.commonConfig("client")
     }
     runs.create("server") {
         workingDirectory(project.file("run/server"))
-        this.commonConfig()
+        this.commonConfig("server")
     }
     runs.create("data") {
         workingDirectory(project.file("run/data"))
-        this.commonConfig()
+        this.commonConfig("data")
         jvmArg("-XstartOnFirstThread")
         val args = mutableListOf<Any?>(
             "--all",

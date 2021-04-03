@@ -9,7 +9,8 @@ import org.gradle.kotlin.dsl.the
 
 open class ModuleConfig(val name: String, private val ctx: DslContext) {
     val testModid: Property<String> = ctx.property("ll-$name-test")
-    val project: Property<Project> = ctx.property() { ctx.project.project(":$name")  }
+    val projectPath: Property<String> = ctx.property() { ":$name" }
+    val project: Property<Project> = ctx.property() { ctx.project.project(projectPath.get())  }
 
     val mainSources: Property<SourceSet> = ctx.property() {
         project.get().the<SourceSetContainer>().getByName("main")

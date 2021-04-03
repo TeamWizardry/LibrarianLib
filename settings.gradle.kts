@@ -2,12 +2,12 @@ rootProject.name = "librarianlib"
 
 fun includeModule(name: String) {
     include(name)
-    project(":$name").projectDir = java.io.File(rootDir.path + "/modules/" + name)
+    project(":$name").projectDir = rootDir.resolve("modules/$name")
 }
 
-include("runtime")
 include("dist")
 include("testcore")
+includeModule("albedo")
 includeModule("core")
 includeModule("courier")
 includeModule("etcetera")
@@ -18,5 +18,19 @@ includeModule("lieutenant")
 includeModule("mirage")
 includeModule("mosaic")
 includeModule("scribe")
-//includeModule("testbase")
-includeModule("albedo")
+
+// This is absolutely disgusting, but ForgeGradle has forced my hand here. Even though the `RunConfig`'s `ModConfig`
+// has no reason to need the `sourceSets` immediately, (the only place they're used is when creating IDE run
+// configurations) it still requires them to be resolved at configure time, instead of using deferred configuration
+// like the rest of gradle does.
+//
+// https://github.com/MinecraftForge/ForgeGradle/blob/83993e9/src/common/java/net/minecraftforge/gradle/common/util/ModConfig.java#L101-L108
+//
+// This wasn't a problem until I renamed the `prism` module to `scribe`. Because, you see, `s` comes after `r` in the
+// alphabet, which means it gets configured later, which means when the `runtime` project is configured the `scribe`
+// project isn't.
+//
+// So in summary, fuck Lex for making me do this shit. I would create a pull request if I knew it would actually be
+// looked at sometime in the next two years.
+include("zzz:runtime")
+project(":zzz:runtime").projectDir = rootDir.resolve("runtime")

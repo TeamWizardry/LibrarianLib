@@ -8,7 +8,7 @@ apply<LibLibModulePlugin>()
 dependencies {
     api(project(":core"))
     api(project(":mirage"))
-    api(project(":prism"))
+    api(project(":scribe"))
     api("org.junit.jupiter:junit-jupiter-api:5.6.2")
     api("org.junit.jupiter:junit-jupiter-engine:5.6.2")
     api("org.junit.platform:junit-platform-launcher:1.6.2")
