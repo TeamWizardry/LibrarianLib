@@ -5,7 +5,6 @@ fun includeModule(name: String) {
     project(":$name").projectDir = rootDir.resolve("modules/$name")
 }
 
-include("dist")
 include("testcore")
 includeModule("albedo")
 includeModule("core")
@@ -34,3 +33,9 @@ includeModule("scribe")
 // looked at sometime in the next two years.
 include("zzz:runtime")
 project(":zzz:runtime").projectDir = rootDir.resolve("runtime")
+
+// Due to another issue in ForgeGradle I'm not allowed to depend on tasks lazily
+// https://github.com/MinecraftForge/ForgeGradle/blob/6639464/src/userdev/java/net/minecraftforge/gradle/userdev/MinecraftUserRepo.java#L285
+//
+include("zzz:dist")
+project(":zzz:dist").projectDir = rootDir.resolve("dist")

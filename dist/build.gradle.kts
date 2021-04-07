@@ -1,5 +1,7 @@
 @file:Suppress("PublicApiImplicitType", "UnstableApiUsage", "PropertyName")
 
+import net.minecraftforge.gradle.mcp.task.GenerateSRG
+import net.minecraftforge.gradle.userdev.tasks.RenameJar
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
@@ -8,8 +10,7 @@ plugins {
     `minecraft-conventions`
 }
 
-apply<LibLibModulePlugin>()
-val liblib: LibLibModuleExtension = the()
+val liblibModules = rootProject.liblibModules
 
 dependencies {
     // Dragging in the entirety of MixinGradle just to compile the mixin connector is entirely unnecessary.
@@ -26,7 +27,6 @@ tasks.named<ProcessResources>("processResources") {
 
 // ---------------------------------------------------------------------------------------------------------------------
 //region // File generation
-// ---------------------------------------------------------------------------------------------------------------------
 
 val generatedMain = file("$buildDir/generated/main")
 
@@ -38,22 +38,22 @@ sourceSets {
 }
 
 val generateMixinConnector = tasks.register<GenerateMixinConnector>("generateMixinConnector") {
-    liblib.modules.forEach { module ->
-        from(module.project.map { it.sourceSets.main.get() })
+    liblibModules.forEach { module ->
+        from(module.project.sourceSets.main.get())
     }
     outputRoot.set(generatedMain.resolve("java"))
     mixinName.set("com.teamwizardry.librarianlib.MixinConnector")
 }
 
 val generateCoremodsJson = tasks.register<GenerateCoremodsJson>("generateCoremodsJson") {
-    liblib.modules.forEach { module ->
-        from(module.project.map { it.sourceSets.main.get() })
+    liblibModules.forEach { module ->
+        from(module.project.sourceSets.main.get())
     }
     outputRoot.set(generatedMain.resolve("resources"))
 }
 
 val generateModuleList = tasks.register("generateModuleList") {
-    val modules = liblib.modules.map { it.name }
+    val modules = liblibModules.map { it.name }
     val outputFile = generatedMain.resolve("resources/META-INF/ll/modules.txt")
     inputs.property("modules", modules)
     outputs.file(outputFile)
@@ -73,4 +73,44 @@ tasks.named("processResources") {
 }
 
 //endregion // File generation
+// ---------------------------------------------------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
+//region // Build configuration
+
+tasks.named("jar") { enabled = false }
+tasks.whenTaskAdded {
+    // disable the one automatically created for the `jar` task, since that jar won't exist when it tries to run
+    if(name == "reobfJar") {
+        enabled = false
+    }
+}
+
+val deobfJar = tasks.register<Jar>("deobfJar") {
+    archiveBaseName.set("librarianlib")
+    includeEmptyDirs = false
+    liblibModules.forEach { module ->
+        // ForgeGradle resolves this immediately anyway, so whatever.
+        val moduleJar = module.project.tasks.getByName("deobfJar")
+        dependsOn(moduleJar)
+        from(zipTree(moduleJar.outputs.files.singleFile))
+    }
+}
+
+val obfJar = tasks.create<Jar>("obfJar") {
+    archiveBaseName.set("librarianlib")
+    classifier = "obf"
+    dependsOn(deobfJar)
+    includeEmptyDirs = false
+    from(deobfJar.map { zipTree(it.archiveFile) })
+}
+reobf.create("obfJar")
+
+tasks.named("assemble") {
+    liblibModules.forEach { module ->
+        dependsOn(module.project.tasks.named("assemble"))
+    }
+}
+
+//endregion // Build configuration
 // ---------------------------------------------------------------------------------------------------------------------

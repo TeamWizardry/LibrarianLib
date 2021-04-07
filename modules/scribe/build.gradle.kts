@@ -2,6 +2,10 @@ plugins {
     `module-conventions`
 }
 
+module {
+    shadow("dev.thecodewarrior.prism")
+}
+
 dependencies {
     api(project(":core"))
     testApi(project(":testcore"))

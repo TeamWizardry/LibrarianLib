@@ -1,16 +1,17 @@
 @file:Suppress("PublicApiImplicitType", "UnstableApiUsage")
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id("java-library")
     id("kotlin-conventions")
     id("minecraft-conventions")
-    id("org.spongepowered.mixin")
+    id("com.github.johnrengelman.shadow")
 }
 
 apply<LibLibModulePlugin>()
-
+val commonConfig = rootProject.the<CommonConfigExtension>()
 
 sourceSets {
     main {
@@ -34,9 +35,13 @@ configurations {
     create("devClasspath")
 }
 
+val validateMixinApplication = tasks.register<ValidateMixinApplication>("validateMixinApplication") {
+    from(sourceSets.main)
+    from(sourceSets.test)
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Test mod file generation
-// ---------------------------------------------------------------------------------------------------------------------
 
 val generatedTest: File = file("$buildDir/generated/test")
 
@@ -65,15 +70,56 @@ val mod_version: String by project
 
 tasks.named("compileTestJava") {
     dependsOn(generateTestMixinConnector)
+    dependsOn(validateMixinApplication)
 }
 tasks.named<ProcessResources>("processTestResources") {
     dependsOn(generateTestCoremodsJson)
     dependsOn(generateTestModInfo)
-    filesMatching("**/mods.toml") {
-        filter(ReplaceTokens::class, "tokens" to mapOf("version" to mod_version))
+}
+
+//endregion // Test mod file generation
+// ---------------------------------------------------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
+//region // Build configuration
+
+tasks.named("jar") { enabled = false }
+tasks.whenTaskAdded {
+    // disable the one automatically created for the `jar` task, since that jar won't exist when it tries to run
+    if(name == "reobfJar") {
+        enabled = false
     }
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
-//endregion // Test mod file generation
+val deobfJar = tasks.register<ShadowJar>("deobfJar") {
+    configurations = listOf(project.configurations.getByName("shade"))
+    classifier = "deobf"
+    includeEmptyDirs = false
+
+    from(sourceSets.main.map { it.output })
+    dependsOn(tasks.named("classes"))
+    dependsOn(tasks.named("processResources"))
+
+    doFirst {
+    }
+
+    doLast {
+        includedDependencies.forEach {
+            logger.info("Shading ${it.name}")
+        }
+    }
+
+    commonConfig.shadowRules {
+        relocate(it.from, it.to)
+    }
+}
+
+val obfJar = tasks.register<Jar>("obfJar") {
+    dependsOn(deobfJar)
+    classifier = "obf"
+    from(deobfJar.map { zipTree(it.archiveFile) })
+}
+reobf.create("obfJar")
+
+//endregion // Build configuration
 // ---------------------------------------------------------------------------------------------------------------------

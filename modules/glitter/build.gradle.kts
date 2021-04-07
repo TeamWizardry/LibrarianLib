@@ -2,6 +2,10 @@ plugins {
     `module-conventions`
 }
 
+module {
+    shadow("org.magicwerk.brownies")
+}
+
 dependencies {
     api(project(":core"))
     api(project(":etcetera"))

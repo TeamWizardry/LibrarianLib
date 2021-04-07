@@ -1,11 +1,11 @@
+@file:Suppress("PublicApiImplicitType")
+
 import net.minecraftforge.gradle.common.util.RunConfig
 import net.minecraftforge.gradle.userdev.UserDevExtension
 
 plugins {
     `minecraft-conventions`
 }
-apply<LibLibModulePlugin>()
-
 
 //configurations {
 //    mod
@@ -16,7 +16,7 @@ apply<LibLibModulePlugin>()
 
 val kotlinforforge_version: String by project
 
-val liblib: LibLibModuleExtension = the()
+val liblibModules = rootProject.liblibModules
 
 dependencies {
     // exclude Minecraft's default ICU4J so facade's version can override it. At runtime LibLib's will be relocated.
@@ -24,9 +24,10 @@ dependencies {
 
     implementation("thedarkcolour:kotlinforforge:$kotlinforforge_version")
 
-    liblib.modules.forEach { module ->
-        runtimeOnly(project(path = module.projectPath.get(), configuration = "shade"))
-        runtimeOnly(project(path = module.projectPath.get(), configuration = "devClasspath"))
+    runtimeOnly(project(path = ":testcore", configuration = "devClasspath"))
+    liblibModules.forEach { module ->
+        runtimeOnly(project(path = module.path, configuration = "shade"))
+        runtimeOnly(project(path = module.path, configuration = "devClasspath"))
     }
 }
 
@@ -46,8 +47,8 @@ configure<UserDevExtension> {
 
         mods {
             create("librarianlib") {
-                sources(project(":dist").sourceSets.main.get())
-                liblib.modules.forEach { sources(it.mainSources.get()) }
+                sources(project(":zzz:dist").sourceSets.main.get())
+                liblibModules.forEach { sources(it.mainSources.get()) }
             }
             create("testcore") {
                 sources(project(":testcore").sourceSets.main.get())
@@ -55,8 +56,8 @@ configure<UserDevExtension> {
             create("testcore-test") {
                 sources(project(":testcore").sourceSets.test.get())
             }
-            liblib.modules.forEach { module ->
-                create(module.testModid.get()) {
+            liblibModules.forEach { module ->
+                create(module.testModid) {
                     sources(module.testSources.get())
                 }
             }
@@ -80,9 +81,9 @@ configure<UserDevExtension> {
             "--all",
             "--output",
             project.file("run/datagen"),
-            "--mod", liblib.modules.joinToString(",") { it.testModid.get() }
+            "--mod", liblibModules.joinToString(",") { it.testModid }
         )
-        liblib.modules.forEach { module ->
+        liblibModules.forEach { module ->
             args.add("--existing")
             args.add(module.mainSources.get().output.resourcesDir)
             args.add("--existing")
@@ -94,16 +95,16 @@ configure<UserDevExtension> {
 }
 
 tasks.named("classes") {
-    dependsOn(project(":dist").tasks.named("classes"))
+    dependsOn(project(":zzz:dist").tasks.named("classes"))
     dependsOn(project(":testcore").tasks.named("classes"))
     dependsOn(project(":testcore").tasks.named("testClasses"))
-    dependsOn(liblib.modules.map { it.project.get().tasks.named("classes") })
-    dependsOn(liblib.modules.map { it.project.get().tasks.named("testClasses") })
+    dependsOn(liblibModules.map { it.project.tasks.named("classes") })
+    dependsOn(liblibModules.map { it.project.tasks.named("testClasses") })
 }
 tasks.named("processResources") {
-    dependsOn(project(":dist").tasks.named("processResources"))
+    dependsOn(project(":zzz:dist").tasks.named("processResources"))
     dependsOn(project(":testcore").tasks.named("processResources"))
     dependsOn(project(":testcore").tasks.named("processTestResources"))
-    dependsOn(liblib.modules.map { it.project.get().tasks.named("processResources") })
-    dependsOn(liblib.modules.map { it.project.get().tasks.named("processTestResources") })
+    dependsOn(liblibModules.map { it.project.tasks.named("processResources") })
+    dependsOn(liblibModules.map { it.project.tasks.named("processTestResources") })
 }

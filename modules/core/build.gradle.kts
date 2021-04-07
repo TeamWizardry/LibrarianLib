@@ -1,5 +1,10 @@
 plugins {
     `module-conventions`
+    `mixin-conventions`
+}
+
+module {
+    shadow("dev.thecodewarrior.mirror")
 }
 
 dependencies {

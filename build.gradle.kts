@@ -1,6 +1,6 @@
-apply<LibLibRootPlugin>()
+apply<CommonConfigPlugin>()
 
-configure<LibLibRootExtension> {
+allprojects {
     repositories {
         mavenLocal()
         jcenter()
@@ -14,7 +14,9 @@ configure<LibLibRootExtension> {
         maven("https://dvs1.progwml6.com/files/maven/") { name = "Progwml6 maven (JEI)" }
         maven("https://modmaven.k-4u.nl") { name = "ModMaven (JEI mirror)" }
     }
+}
 
+configure<CommonConfigExtension> {
     modules {
         create("core")
         create("courier")

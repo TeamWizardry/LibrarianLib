@@ -1,5 +1,6 @@
 plugins {
     `module-conventions`
+    `mixin-conventions`
 }
 
 dependencies {
