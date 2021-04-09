@@ -3,8 +3,10 @@ package com.teamwizardry.gradle
 import org.gradle.api.NamedDomainObjectContainer;
 import com.teamwizardry.gradle.util.DslContext
 import com.teamwizardry.gradle.module.ShadowRule
+import org.gradle.api.provider.Property
 
 open class CommonConfigExtension(private val ctx: DslContext) {
+    var version: String = "?"
     val modules: NamedDomainObjectContainer<ModuleInfo> = ctx.domainObjectContainer { ModuleInfo(it, ctx) }
 
     private val shadowRuleListeners = mutableListOf<(ShadowRule) -> Unit>()

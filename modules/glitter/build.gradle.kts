@@ -7,8 +7,8 @@ module {
 }
 
 dependencies {
-    api(project(":core"))
-    api(project(":etcetera"))
+    liblib(project(":core"))
+    liblib(project(":etcetera"))
     testApi(project(":testcore"))
     shade("org.magicwerk:brownies-collections:0.9.13")
 }

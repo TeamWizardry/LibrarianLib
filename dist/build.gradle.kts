@@ -3,14 +3,22 @@
 import net.minecraftforge.gradle.mcp.task.GenerateSRG
 import net.minecraftforge.gradle.userdev.tasks.RenameJar
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.plugin.ProjectLocalConfigurations
 
 plugins {
+    `maven-publish`
     `java-library`
     `kotlin-conventions`
     `minecraft-conventions`
+    `publish-conventions`
 }
 
-val liblibModules = rootProject.liblibModules
+val commonConfig = rootProject.the<CommonConfigExtension>()
+val liblibModules = commonConfig.modules
+
+group = "com.teamwizardry.librarianlib"
+version = commonConfig.version
 
 dependencies {
     // Dragging in the entirety of MixinGradle just to compile the mixin connector is entirely unnecessary.
@@ -18,10 +26,9 @@ dependencies {
     compileOnly(files("libs/mixin-connector-api.jar"))
 }
 
-val mod_version: String by project
 tasks.named<ProcessResources>("processResources") {
     filesMatching("**/mods.toml") {
-        filter(ReplaceTokens::class, "tokens" to mapOf("version" to mod_version))
+        filter(ReplaceTokens::class, "tokens" to mapOf("version" to commonConfig.version))
     }
 }
 
@@ -114,3 +121,27 @@ tasks.named("assemble") {
 
 //endregion // Build configuration
 // ---------------------------------------------------------------------------------------------------------------------
+
+artifacts {
+    add("publishedRuntime", deobfJar)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.teamwizardry.librarianlib"
+            artifactId = "librarianlib"
+            version = commonConfig.version
+
+            from(components["mod"])
+        }
+    }
+}
+
+tasks.create("publishAllToMavenLocal") {
+    group = "Publishing"
+    dependsOn(tasks.named("publishToMavenLocal"))
+    liblibModules.forEach { module ->
+        dependsOn(module.project.tasks.getByName("publishToMavenLocal"))
+    }
+}

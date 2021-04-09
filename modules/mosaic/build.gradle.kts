@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    api(project(":core"))
+    liblib(project(":core"))
     testApi(project(":testcore"))
 }

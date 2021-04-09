@@ -1,8 +1,16 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.plugin.ProjectLocalConfigurations
+
 plugins {
     `module-conventions`
+    `publish-conventions`
 }
 
+val commonConfig = rootProject.the<CommonConfigExtension>()
+
 dependencies {
-    api(project(":core"))
+    liblib(project(":core"))
     testApi(project(":testcore"))
+    "publishedApi"(project(":core"))
 }

@@ -4,9 +4,9 @@ plugins {
 }
 
 dependencies {
-    api(project(":core"))
-    api(project(":scribe"))
-    api(project(":courier"))
-    api(project(":facade"))
+    liblib(project(":core"))
+    liblib(project(":scribe"))
+    liblib(project(":courier"))
+    liblib(project(":facade"))
     testApi(project(":testcore"))
 }

@@ -23,17 +23,14 @@ module {
 }
 
 dependencies {
-    api project(":core")
-    api project(":mosaic")
-    api project(":albedo")
-    api project(":etcetera")
-    api project(":scribe")
-    api project(":courier")
+    liblib project(":core")
+    liblib project(":mosaic")
+    liblib project(":albedo")
+    liblib project(":etcetera")
+    liblib project(":scribe")
+    liblib project(":courier")
     testApi project(":testcore")
-    shade("dev.thecodewarrior:bitfont:$bitfont_version") {
-        exclude group: 'org.jetbrains.kotlin'
-        exclude group: 'it.unimi.dsi' // fastutil is already included in MC
-    }
+    shade("dev.thecodewarrior:bitfont:$bitfont_version")
     shade 'com.ibm.icu:icu4j:63.1'
     shade 'org.msgpack:msgpack-core:0.8.16'
 

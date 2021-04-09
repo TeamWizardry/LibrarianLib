@@ -37,5 +37,5 @@ project(":zzz:runtime").projectDir = rootDir.resolve("runtime")
 // Due to another issue in ForgeGradle I'm not allowed to depend on tasks lazily
 // https://github.com/MinecraftForge/ForgeGradle/blob/6639464/src/userdev/java/net/minecraftforge/gradle/userdev/MinecraftUserRepo.java#L285
 //
-include("zzz:dist")
-project(":zzz:dist").projectDir = rootDir.resolve("dist")
+include("zzz:librarianlib")
+project(":zzz:librarianlib").projectDir = rootDir.resolve("dist")

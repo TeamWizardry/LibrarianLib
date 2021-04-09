@@ -17,6 +17,8 @@ allprojects {
 }
 
 configure<CommonConfigExtension> {
+    val mod_version: String by project
+    version = mod_version
     modules {
         create("core")
         create("courier")

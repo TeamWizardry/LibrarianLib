@@ -24,10 +24,10 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew :zzz:librarianlib:build
 
-      - name: Publish to Bintray
-        run: ./gradlew bintrayUpload
-        env:
-          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+#      - name: Publish to Bintray
+#        run: ./gradlew bintrayUpload
+#        env:
+#          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+#          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}

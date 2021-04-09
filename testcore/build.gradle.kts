@@ -3,9 +3,32 @@
 plugins {
     `minecraft-conventions`
     `kotlin-conventions`
+    `java-library`
 }
 
-configurations.create("devClasspath")
+dependencies.attributesSchema {
+    attribute(LibLibAttributes.Target.attribute) {
+        compatibilityRules.add(LibLibAttributes.Rules.optional())
+    }
+}
+
+configurations {
+    create("devClasspath") {
+        isCanBeConsumed = true
+        isCanBeResolved = false
+        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.devClasspath)
+    }
+    // consumers
+    listOf(compileClasspath, runtimeClasspath, testCompileClasspath, testRuntimeClasspath).forEach {
+        it {
+            attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.internal)
+        }
+    }
+    // provider
+    apiElements {
+        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.internal)
+    }
+}
 
 dependencies {
     api(project(":core"))

@@ -1,17 +1,21 @@
 @file:Suppress("PublicApiImplicitType", "UnstableApiUsage")
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id("java-library")
     id("kotlin-conventions")
     id("minecraft-conventions")
+    id("publish-conventions")
     id("com.github.johnrengelman.shadow")
 }
 
 apply<LibLibModulePlugin>()
+val module = the<ModuleExtension>()
 val commonConfig = rootProject.the<CommonConfigExtension>()
+
+group = "com.teamwizardry.librarianlib"
+version = commonConfig.version
 
 sourceSets {
     main {
@@ -22,17 +26,82 @@ sourceSets {
     }
 }
 
+dependencies.attributesSchema {
+    attribute(LibLibAttributes.Target.attribute) {
+        compatibilityRules.add(LibLibAttributes.Rules.optional())
+    }
+}
+
 configurations {
-    create("shade") {
-        compileOnly.get().extendsFrom(this)
-        testCompileOnly.get().extendsFrom(this)
+
+    // ----- Providers -----
+
+    apiElements {
+        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.internal)
+    }
+
+    val devClasspath = create("devClasspath") {
+        description = "Libraries to put on the development environment classpath"
+        canBe(consumed = true, resolved = false)
+        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.devClasspath)
+    }
+
+    // files to copy into the mods directory
+    val clientMod = create("clientMod") {
+        description = "Mod jars to copy into the client mods/ directory. (not transitive!)"
+
+        canBe(consumed = true, resolved = false)
+        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.clientMods)
+        isTransitive = false
+    }
+    val serverMod = create("serverMod") {
+        description = "Mod jars to copy into the server mods/ directory. (not transitive!)"
+
+        canBe(consumed = true, resolved = false)
+        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.serverMods)
+        isTransitive = false
+    }
+    val dataMod = create("dataMod") {
+        description = "Mod jars to copy into the data mods/ directory. (not transitive!)"
+
+        canBe(consumed = true, resolved = false)
+        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.dataMods)
+        isTransitive = false
+    }
+
+    val mod = create("mod") {
+        description = "Mod jars to copy into the client, server, and data mods/ directory. (not transitive!)"
+
+        canBe(consumed = false, resolved = false)
+        isTransitive = false
+        clientMod.extendsFrom(this)
+        serverMod.extendsFrom(this)
+        dataMod.extendsFrom(this)
+    }
+
+    // ----- Consumers -----
+
+    val shade = create("shade") {
+        description = "Dependencies to shade into the mod jar."
+
+        canBe(consumed = false, resolved = true)
+        devClasspath.extendsFrom(this)
         api.get().extendsFrom(this)
     }
-    val mod = create("mod")
-    create("clientMod").extendsFrom(mod)
-    create("serverMod").extendsFrom(mod)
-    create("dataMod").extendsFrom(mod)
-    create("devClasspath")
+
+    listOf(compileClasspath, runtimeClasspath, testCompileClasspath, testRuntimeClasspath).forEach {
+        it {
+            attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.internal)
+        }
+    }
+
+    val liblib = create("liblib") {
+        description = "Inter-module dependencies"
+
+        canBe(consumed = false, resolved = false)
+        api.get().extendsFrom(this)
+        getByName("publishedApi").extendsFrom(this)
+    }
 }
 
 val validateMixinApplication = tasks.register<ValidateMixinApplication>("validateMixinApplication") {
@@ -86,22 +155,19 @@ tasks.named<ProcessResources>("processTestResources") {
 tasks.named("jar") { enabled = false }
 tasks.whenTaskAdded {
     // disable the one automatically created for the `jar` task, since that jar won't exist when it tries to run
-    if(name == "reobfJar") {
+    if (name == "reobfJar") {
         enabled = false
     }
 }
 
 val deobfJar = tasks.register<ShadowJar>("deobfJar") {
     configurations = listOf(project.configurations.getByName("shade"))
-    classifier = "deobf"
+    classifier = ""
     includeEmptyDirs = false
 
     from(sourceSets.main.map { it.output })
     dependsOn(tasks.named("classes"))
     dependsOn(tasks.named("processResources"))
-
-    doFirst {
-    }
 
     doLast {
         includedDependencies.forEach {
@@ -122,4 +188,30 @@ val obfJar = tasks.register<Jar>("obfJar") {
 reobf.create("obfJar")
 
 //endregion // Build configuration
+// ---------------------------------------------------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
+//region // Publishing
+
+dependencies {
+    "publishedRuntime"(project(":zzz:librarianlib"))
+}
+
+artifacts {
+    add("publishedApi", deobfJar)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.teamwizardry.librarianlib"
+            artifactId = module.name
+            version = commonConfig.version
+
+            from(components["mod"])
+        }
+    }
+}
+
+//endregion // Publishing
 // ---------------------------------------------------------------------------------------------------------------------

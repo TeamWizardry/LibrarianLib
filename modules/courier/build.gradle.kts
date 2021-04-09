@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
-    api(project(":core"))
-    api(project(":scribe"))
+    liblib(project(":core"))
+    liblib(project(":scribe"))
     testApi(project(":testcore"))
     testApi(project(":scribe"))
 }

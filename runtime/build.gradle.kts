@@ -16,7 +16,23 @@ plugins {
 
 val kotlinforforge_version: String by project
 
-val liblibModules = rootProject.liblibModules
+val commonConfig = rootProject.the<CommonConfigExtension>()
+val liblibModules = commonConfig.modules
+
+dependencies.attributesSchema {
+    attribute(LibLibAttributes.Target.attribute) {
+        compatibilityRules.add(LibLibAttributes.Rules.optional())
+    }
+}
+
+configurations {
+    runtimeClasspath {
+        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.devClasspath)
+    }
+    testRuntimeClasspath {
+        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.devClasspath)
+    }
+}
 
 dependencies {
     // exclude Minecraft's default ICU4J so facade's version can override it. At runtime LibLib's will be relocated.
@@ -24,10 +40,9 @@ dependencies {
 
     implementation("thedarkcolour:kotlinforforge:$kotlinforforge_version")
 
-    runtimeOnly(project(path = ":testcore", configuration = "devClasspath"))
+    runtimeOnly(project(":testcore"))
     liblibModules.forEach { module ->
-        runtimeOnly(project(path = module.path, configuration = "shade"))
-        runtimeOnly(project(path = module.path, configuration = "devClasspath"))
+        runtimeOnly(module.project)
     }
 }
 
@@ -47,7 +62,7 @@ configure<UserDevExtension> {
 
         mods {
             create("librarianlib") {
-                sources(project(":zzz:dist").sourceSets.main.get())
+                sources(project(":zzz:librarianlib").sourceSets.main.get())
                 liblibModules.forEach { sources(it.mainSources.get()) }
             }
             create("testcore") {
@@ -95,14 +110,14 @@ configure<UserDevExtension> {
 }
 
 tasks.named("classes") {
-    dependsOn(project(":zzz:dist").tasks.named("classes"))
+    dependsOn(project(":zzz:librarianlib").tasks.named("classes"))
     dependsOn(project(":testcore").tasks.named("classes"))
     dependsOn(project(":testcore").tasks.named("testClasses"))
     dependsOn(liblibModules.map { it.project.tasks.named("classes") })
     dependsOn(liblibModules.map { it.project.tasks.named("testClasses") })
 }
 tasks.named("processResources") {
-    dependsOn(project(":zzz:dist").tasks.named("processResources"))
+    dependsOn(project(":zzz:librarianlib").tasks.named("processResources"))
     dependsOn(project(":testcore").tasks.named("processResources"))
     dependsOn(project(":testcore").tasks.named("processTestResources"))
     dependsOn(liblibModules.map { it.project.tasks.named("processResources") })

@@ -3,6 +3,7 @@ package com.teamwizardry.gradle.module
 import com.teamwizardry.gradle.util.DslContext
 import com.teamwizardry.gradle.ModuleInfo
 import com.teamwizardry.gradle.CommonConfigExtension
+import org.gradle.api.component.AdhocComponentWithVariants
 import org.gradle.kotlin.dsl.the
 
 /**
@@ -19,6 +20,8 @@ open class ModuleExtension(private val ctx: DslContext) {
 
     val name: String = ctx.project.name
     val moduleInfo: ModuleInfo = commonConfig.modules.getByName(name)
+    val component: AdhocComponentWithVariants
+        get() = ctx.project.components.getByName("module") as AdhocComponentWithVariants
 
     val shadowRules: List<ShadowRule> = _shadowRules
 
