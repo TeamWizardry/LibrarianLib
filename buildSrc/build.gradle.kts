@@ -25,5 +25,6 @@ dependencies {
     // rolled back from 4.0.4 to 4.0.1 due to issues with sources relocation:
     // https://github.com/johnrengelman/shadow/issues/425
     implementation("com.github.jengelman.gradle.plugins:shadow:4.0.1")
+    implementation("org.freemarker:freemarker:2.3.31")
 }
 

@@ -17,6 +17,7 @@ typealias GenerateMixinConnector = com.teamwizardry.gradle.task.GenerateMixinCon
 typealias GenerateModInfo = com.teamwizardry.gradle.task.GenerateModInfo
 typealias ValidateMixinApplication = com.teamwizardry.gradle.task.ValidateMixinApplication
 typealias ShadowCopy = com.teamwizardry.gradle.task.ShadowCopy
+typealias CopyFreemarker = com.teamwizardry.gradle.task.CopyFreemarker
 
 
 inline fun <reified T: Named> Project.namedAttribute(value: String): T = objects.named(T::class.java, value)
