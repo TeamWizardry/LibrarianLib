@@ -16,6 +16,7 @@ typealias GenerateCoremodsJson = com.teamwizardry.gradle.task.GenerateCoremodsJs
 typealias GenerateMixinConnector = com.teamwizardry.gradle.task.GenerateMixinConnector
 typealias GenerateModInfo = com.teamwizardry.gradle.task.GenerateModInfo
 typealias ValidateMixinApplication = com.teamwizardry.gradle.task.ValidateMixinApplication
+typealias ShadowCopy = com.teamwizardry.gradle.task.ShadowCopy
 
 
 inline fun <reified T: Named> Project.namedAttribute(value: String): T = objects.named(T::class.java, value)

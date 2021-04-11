@@ -113,6 +113,18 @@ val obfJar = tasks.create<Jar>("obfJar") {
 }
 reobf.create("obfJar")
 
+val sourcesJar = tasks.register<Jar>("sourcesJar") {
+    archiveBaseName.set("librarianlib")
+    classifier = "sources"
+    includeEmptyDirs = false
+    liblibModules.forEach { module ->
+        // ForgeGradle resolves this immediately anyway, so whatever.
+        val moduleJar = module.project.tasks.getByName("sourcesJar")
+        dependsOn(moduleJar)
+        from(zipTree(moduleJar.outputs.files.singleFile))
+    }
+}
+
 tasks.named("assemble") {
     liblibModules.forEach { module ->
         dependsOn(module.project.tasks.named("assemble"))
@@ -124,6 +136,7 @@ tasks.named("assemble") {
 
 artifacts {
     add("publishedRuntime", deobfJar)
+    add("publishedSources", sourcesJar)
 }
 
 publishing {

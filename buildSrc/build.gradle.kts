@@ -1,6 +1,7 @@
 plugins {
     java
     `kotlin-dsl`
+    `java-gradle-plugin`
 }
 
 repositories {

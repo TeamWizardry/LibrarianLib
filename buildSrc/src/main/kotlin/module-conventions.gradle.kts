@@ -187,6 +187,20 @@ val obfJar = tasks.register<Jar>("obfJar") {
 }
 reobf.create("obfJar")
 
+val shadowSources = tasks.register<ShadowCopy>("shadowSources") {
+    relocators.set(deobfJar.get().relocators)
+
+    from(sourceSets.main.map { it.allSource })
+    sourcesFrom(configurations["shade"])
+    into("$buildDir/shadowSources")
+}
+
+val sourcesJar = tasks.register<Jar>("sourcesJar") {
+    classifier = "sources"
+    includeEmptyDirs = false
+    from(shadowSources.map { it.outputs })
+}
+
 //endregion // Build configuration
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -199,6 +213,7 @@ dependencies {
 
 artifacts {
     add("publishedApi", deobfJar)
+    add("publishedSources", sourcesJar)
 }
 
 publishing {
