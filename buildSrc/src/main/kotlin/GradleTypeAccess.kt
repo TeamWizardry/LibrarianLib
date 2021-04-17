@@ -18,6 +18,7 @@ typealias GenerateModInfo = com.teamwizardry.gradle.task.GenerateModInfo
 typealias ValidateMixinApplication = com.teamwizardry.gradle.task.ValidateMixinApplication
 typealias ShadowSources = com.teamwizardry.gradle.task.ShadowSources
 typealias CopyFreemarker = com.teamwizardry.gradle.task.CopyFreemarker
+typealias MergeDokkaModules = com.teamwizardry.gradle.task.MergeDokkaModules
 
 
 inline fun <reified T: Named> Project.namedAttribute(value: String): T = objects.named(T::class.java, value)

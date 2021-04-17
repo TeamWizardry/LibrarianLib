@@ -224,8 +224,9 @@ val sourcesJar = tasks.register<Jar>("sourcesJar") {
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Documentation
 
-val dokkaDependencyRoot = file("$buildDir/dokka/dependencies")
 val dokkaRoot = file("$buildDir/dokka/module")
+val dokkaDependencyRoot = file("$buildDir/dokka/dependencies")
+val mergedDokkaRoot = file("$buildDir/dokka/merged")
 
 val copyDependencyJavadocs = tasks.register<Copy>("copyDependencyJavadocs") {
     from(configurations["dokkaDependencies"])
@@ -245,7 +246,7 @@ val dokkaJavadoc = tasks.register<DokkaTask>("dokkaJavadoc") {
 
     dependsOn(copyDependencyJavadocs)
 
-    // the external documentation links are configured at the last moment, after the copyDependencyJavadocs task has
+    // the cross-module documentation links are configured at the last moment, after the copyDependencyJavadocs task has
     // populated the dependencies directory. This works since the dokka task doesn't use up-to-date checks, however it
     // just makes me feel better to declare them as inputs as well.
     inputs.files(fileTree(dokkaDependencyRoot) { include("*/package-list") })
@@ -264,11 +265,18 @@ val dokkaJavadoc = tasks.register<DokkaTask>("dokkaJavadoc") {
     }
 }
 
-
 artifacts {
     add("crossLinkedJavadoc", dokkaRoot) {
         builtBy(dokkaJavadoc)
     }
+}
+
+val mergeJavadocs = tasks.register<MergeDokkaModules>("mergeJavadocs") {
+    outputDir.set(mergedDokkaRoot)
+    source(project.fileTree(dokkaDependencyRoot))
+    source(project.fileTree(dokkaRoot))
+
+    dependsOn(copyDependencyJavadocs, dokkaJavadoc)
 }
 
 //val merge = tasks.register<Copy>("dokkaMergedJavadoc") {
