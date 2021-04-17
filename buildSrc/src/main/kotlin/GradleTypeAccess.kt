@@ -16,7 +16,7 @@ typealias GenerateCoremodsJson = com.teamwizardry.gradle.task.GenerateCoremodsJs
 typealias GenerateMixinConnector = com.teamwizardry.gradle.task.GenerateMixinConnector
 typealias GenerateModInfo = com.teamwizardry.gradle.task.GenerateModInfo
 typealias ValidateMixinApplication = com.teamwizardry.gradle.task.ValidateMixinApplication
-typealias ShadowCopy = com.teamwizardry.gradle.task.ShadowCopy
+typealias ShadowSources = com.teamwizardry.gradle.task.ShadowSources
 typealias CopyFreemarker = com.teamwizardry.gradle.task.CopyFreemarker
 
 

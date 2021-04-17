@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.gradle.utils.`is`
  * means that after relocating files the old directory structure is left behind. To fix that  means we have to output
  * the relocated sources, then we package though into a jar, ignoring the empty directories.
  */
-open class ShadowCopy : Copy() {
+open class ShadowSources : Copy() {
     private val ctx = DslContext(project)
 
     @Internal

@@ -204,7 +204,7 @@ val obfJar = tasks.register<Jar>("obfJar") {
 }
 reobf.create("obfJar")
 
-val shadowSources = tasks.register<ShadowCopy>("shadowSources") {
+val shadowSources = tasks.register<ShadowSources>("shadowSources") {
     relocators.set(deobfJar.get().relocators)
 
     from(sourceSets.main.map { it.allSource })
