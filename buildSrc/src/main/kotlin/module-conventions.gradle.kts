@@ -1,6 +1,9 @@
 @file:Suppress("PublicApiImplicitType", "UnstableApiUsage")
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.dokka.DokkaVersion
+import org.jetbrains.dokka.gradle.DokkaTask
+import java.net.URL
 
 plugins {
     id("java-library")
@@ -102,6 +105,20 @@ configurations {
         api.get().extendsFrom(this)
         getByName("publishedApi").extendsFrom(this)
     }
+
+    val crossLinkedJavadoc = create("crossLinkedJavadoc") {
+        description = "The output javadocs for this module"
+
+        canBe(consumed = true, resolved = false)
+        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.moduleJavadocs)
+    }
+    val dokkaDependencies = create("dokkaDependencies") {
+        description = "The javadocs to cross-link this module's javadocs with"
+
+        canBe(consumed = false, resolved = true)
+        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.moduleJavadocs)
+        extendsFrom(liblib)
+    }
 }
 
 val validateMixinApplication = tasks.register<ValidateMixinApplication>("validateMixinApplication") {
@@ -202,6 +219,70 @@ val sourcesJar = tasks.register<Jar>("sourcesJar") {
 }
 
 //endregion // Build configuration
+// ---------------------------------------------------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------------------------------------------
+//region // Documentation
+
+val dokkaDependencyRoot = file("$buildDir/dokka/dependencies")
+val dokkaRoot = file("$buildDir/dokka/module")
+
+val copyDependencyJavadocs = tasks.register<Copy>("copyDependencyJavadocs") {
+    from(configurations["dokkaDependencies"])
+    into(dokkaDependencyRoot)
+}
+
+val dokkaJavadoc = tasks.register<DokkaTask>("dokkaJavadoc") {
+    dependencies {
+        "dokkaJavadocPlugin"("org.jetbrains.dokka:javadoc-plugin:${DokkaVersion.version}")
+    }
+
+    outputDirectory.set(file("$dokkaRoot/${project.name}"))
+
+    dokkaSourceSets {
+        named("main")
+    }
+
+    dependsOn(copyDependencyJavadocs)
+
+    // the external documentation links are configured at the last moment, after the copyDependencyJavadocs task has
+    // populated the dependencies directory. This works since the dokka task doesn't use up-to-date checks, however it
+    // just makes me feel better to declare them as inputs as well.
+    inputs.files(fileTree(dokkaDependencyRoot) { include("*/package-list") })
+    doFirst {
+        logger.info("Adding documentation links for module ${project.name}")
+        val dokkaSourceSet = dokkaSourceSets["main"]
+        fileTree(dokkaDependencyRoot) { include("*/package-list") }.forEach { packageList ->
+            val moduleName = packageList.parentFile.name
+            val listUrl = packageList.toURI().toURL()
+            logger.info("  adding link: $moduleName - $listUrl")
+            dokkaSourceSet.externalDocumentationLink {
+                url.set(URL("https://placeholder.docs/$moduleName"))
+                packageListUrl.set(listUrl)
+            }
+        }
+    }
+}
+
+
+artifacts {
+    add("crossLinkedJavadoc", dokkaRoot) {
+        builtBy(dokkaJavadoc)
+    }
+}
+
+//val merge = tasks.register<Copy>("dokkaMergedJavadoc") {
+//    // create a variant that provides the cross-linked javadoc
+//    // merge that with our own cross-linked javadoc
+//    // fix placeholder URLs
+//    // generate index.html?
+//}
+//
+//val javadocJar = tasks.register<Jar>("javadocJar") {
+//    // merge javadoc jars
+//}
+
+//endregion // Documentation
 // ---------------------------------------------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------------------------------------------
