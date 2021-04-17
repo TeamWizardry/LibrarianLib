@@ -3,6 +3,7 @@ package com.teamwizardry.gradle.module
 import com.teamwizardry.gradle.util.DslContext
 import com.teamwizardry.gradle.ModuleInfo
 import com.teamwizardry.gradle.CommonConfigExtension
+import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.component.AdhocComponentWithVariants
 import org.gradle.kotlin.dsl.the
 
@@ -32,6 +33,19 @@ open class ModuleExtension(private val ctx: DslContext) {
         val rule = ShadowRule(pkg, "ll.$pkg")
         _shadowRules.add(rule)
         commonConfig.addShadowRule(rule)
+    }
+
+    init {
+        ctx.project.configurations.register("liblib") {
+            this.dependencies.all {
+                if(this is ProjectDependency) {
+                    val dep = commonConfig.modules.find { it.project == this.dependencyProject }
+                    if(dep != null) {
+                        moduleInfo.dependencies.add(dep)
+                    }
+                }
+            }
+        }
     }
 }
 
