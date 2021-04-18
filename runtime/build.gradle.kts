@@ -122,4 +122,5 @@ tasks.named("processResources") {
     dependsOn(project(":testcore").tasks.named("processTestResources"))
     dependsOn(liblibModules.map { it.project.tasks.named("processResources") })
     dependsOn(liblibModules.map { it.project.tasks.named("processTestResources") })
+    dependsOn(rootProject.tasks.named("updateReadmeVersions"))
 }

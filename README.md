@@ -5,9 +5,9 @@
   <br>
   LibrarianLib
   <br>
-  <img id="mc-version-shield" src="https://img.shields.io/badge/Minecraft-1.16.4-blue" alt="Minecraft 1.16.4"/>
-  <img id="forge-version-shield" src="https://img.shields.io/badge/Forge-35.1.37-blue" alt="Minecraft Forge 35.1.37"/>
-  <img id="mcp-mappings-shield" src="https://img.shields.io/badge/MCP-snapshot__20201028--1.16.3-blue" alt="MCP snapshot_20201028-1.16.3"/>
+  <img id="mc-version-badge" src="https://img.shields.io/badge/Minecraft-1.16.4-blue" alt="Minecraft 1.16.4"/>
+  <img id="forge-version-badge" src="https://img.shields.io/badge/Forge-35.1.37-blue" alt="Minecraft Forge 35.1.37"/>
+  <img id="mcp-mappings-badge" src="https://img.shields.io/badge/MCP-snapshot__20201028--1.16.3-blue" alt="MCP snapshot_20201028-1.16.3"/>
   <img src="https://github.com/TeamWizardry/LibrarianLib/workflows/Publish%20Snapshots/badge.svg?branch=1.15" alt="Publish Snapshots"/>
 </h1>
 

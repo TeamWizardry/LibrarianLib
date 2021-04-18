@@ -61,3 +61,49 @@ tasks.register<CreateModule>("createModule") {
         logger.warn("############################################################################")
     }
 }
+
+tasks.register<ReplaceTextInPlace>("updateReadmeVersions") {
+
+    fun formatBadge(id: String, label: String, message: String, color: String, alt: String): String {
+        val cleanLabel = label.replace("_", "__").replace("-", "--").replace(" ", "_")
+        val cleanMessage = message.replace("_", "__").replace("-", "--").replace(" ", "_")
+        return """<img id="$id" src="https://img.shields.io/badge/$cleanLabel-$cleanMessage-$color" alt="$alt"/>"""
+    }
+
+    val mc_version: String by project
+    val forge_version: String by project
+    val mc_mappings_channel: String by project
+    val mc_mappings_version: String by project
+    val mcpVersion = "${mc_mappings_channel}_${mc_mappings_version}"
+
+    replaceIn("README.md") {
+        add("""<img id="([^"]*-badge)".*?/>""".toRegex()) { _, match ->
+            when (match.group(1)) {
+                "mc-version-badge" -> formatBadge(
+                    id = "mc-version-badge",
+                    label = "Minecraft",
+                    message = mc_version,
+                    color = "blue",
+                    alt = "Minecraft $mc_version"
+                )
+                "forge-version-badge" ->
+                    formatBadge(
+                        id = "forge-version-badge",
+                        label = "Forge",
+                        message = forge_version,
+                        color = "blue",
+                        alt = "Minecraft Forge $forge_version"
+                    )
+                "mcp-mappings-badge" ->
+                    formatBadge(
+                        id = "mcp-mappings-badge",
+                        label = "MCP",
+                        message = mcpVersion,
+                        color = "blue",
+                        alt = "MCP $mcpVersion"
+                    )
+                else -> match.group()
+            }
+        }
+    }
+}

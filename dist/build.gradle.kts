@@ -136,6 +136,9 @@ tasks.named("assemble") {
 //endregion // Build configuration
 // ---------------------------------------------------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------------------------------------------------
+//region // Publishing
+
 artifacts {
     add("publishedRuntime", deobfJar)
     add("publishedSources", sourcesJar)
@@ -162,3 +165,6 @@ tasks.create("publishAllToMavenLocal") {
         dependsOn(module.project.tasks.getByName("publishToMavenLocal"))
     }
 }
+
+//endregion // Publishing
+// ---------------------------------------------------------------------------------------------------------------------
