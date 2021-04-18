@@ -145,7 +145,15 @@ publishing {
 }
 
 signing {
-    useGpgCmd()
+    if(System.getenv("SIGNING_KEY") != null) {
+        useInMemoryPgpKeys(
+            System.getenv("SIGNING_KEY_ID"),
+            System.getenv("SIGNING_KEY"),
+            System.getenv("SIGNING_KEY_PASSWORD")
+        )
+    } else {
+        useGpgCmd()
+    }
 
     sign(publishing.publications["maven"])
 }
