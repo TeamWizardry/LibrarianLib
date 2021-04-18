@@ -237,6 +237,14 @@ val dokkaMergedHtml = tasks.register<DokkaMultiModuleTask>("dokkaMergedHtml") {
     }
 }
 
+val styledDokkaHtml = tasks.register<RestyleDokka>("styledDokkaHtml") {
+    group = "Documentation"
+    description = "Applies customizations and fixes Dokka's god-awful default styles"
+
+    dokkaTask.set(dokkaMergedHtml)
+    outputDir.set(file("$buildDir/dokka/styled"))
+}
+
 //endregion // Documentation
 // ---------------------------------------------------------------------------------------------------------------------
 
