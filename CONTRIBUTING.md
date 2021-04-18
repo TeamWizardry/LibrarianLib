@@ -6,7 +6,7 @@ should set everything up correctly. I don't use Eclipse, so the process there is
 testing I have done it works fine.
 
 ## Running LibrarianLib
-To set up the run configuration for LibrarianLib, run the `genIntellijRuns` or `genEclipseRuns` for the `runtime` 
+To set up the run configuration for LibrarianLib, run the `genIntellijRuns` or `genEclipseRuns` for the `:zzz:runtime` 
 subproject. 
 
 ## Enabling debug logging
