@@ -168,7 +168,7 @@ tasks.whenTaskAdded {
 
 val deobfJar = tasks.register<ShadowJar>("deobfJar") {
     configurations = listOf(project.configurations.getByName("shade"))
-    classifier = ""
+    archiveClassifier.set("")
     includeEmptyDirs = false
 
     from(sourceSets.main.map { it.output })
@@ -182,7 +182,7 @@ val deobfJar = tasks.register<ShadowJar>("deobfJar") {
 
 val obfJar = tasks.register<Jar>("obfJar") {
     dependsOn(deobfJar)
-    classifier = "obf"
+    archiveClassifier.set("obf")
     from(deobfJar.map { zipTree(it.archiveFile) })
 }
 reobf.create("obfJar")
@@ -196,7 +196,7 @@ val shadowSources = tasks.register<ShadowSources>("shadowSources") {
 }
 
 val sourcesJar = tasks.register<Jar>("sourcesJar") {
-    classifier = "sources"
+    archiveClassifier.set("sources")
     includeEmptyDirs = false
     from(shadowSources.map { it.outputs })
 }
@@ -237,12 +237,22 @@ val dokkaMergedHtml = tasks.register<DokkaMultiModuleTask>("dokkaMergedHtml") {
     }
 }
 
+val styledDokkaDir = file("$buildDir/dokka/styled")
 val styledDokkaHtml = tasks.register<RestyleDokka>("styledDokkaHtml") {
     group = "Documentation"
     description = "Applies customizations and fixes Dokka's god-awful default styles"
 
     dokkaTask.set(dokkaMergedHtml)
-    outputDir.set(file("$buildDir/dokka/styled"))
+    outputDir.set(styledDokkaDir)
+}
+
+val dokkaJar = tasks.register<Jar>("dokkaJar") {
+    group = "Documentation"
+    description = "Packages the styled Dokka HTML into a jar"
+    archiveClassifier.set("javadoc")
+
+    from(styledDokkaDir)
+    dependsOn(styledDokkaHtml)
 }
 
 //endregion // Documentation
@@ -258,6 +268,8 @@ dependencies {
 artifacts {
     add("publishedApi", deobfJar)
     add("publishedSources", sourcesJar)
+    add("publishedJavadoc", dokkaJar)
+    add("publishedObf", obfJar)
 }
 
 publishing {

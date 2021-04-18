@@ -20,10 +20,12 @@ val liblibModules = commonConfig.modules
 group = "com.teamwizardry.librarianlib"
 version = commonConfig.version
 
+val kotlinforforge_version: String by project
 dependencies {
     // Dragging in the entirety of MixinGradle just to compile the mixin connector is entirely unnecessary.
     // This jar contains the single interface and function the generated mixin connector uses.
     compileOnly(files("libs/mixin-connector-api.jar"))
+    publishedRuntime("thedarkcolour:kotlinforforge:$kotlinforforge_version")
 }
 
 tasks.named<ProcessResources>("processResources") {
@@ -106,7 +108,7 @@ val deobfJar = tasks.register<Jar>("deobfJar") {
 
 val obfJar = tasks.create<Jar>("obfJar") {
     archiveBaseName.set("librarianlib")
-    classifier = "obf"
+    archiveClassifier.set("obf")
     dependsOn(deobfJar)
     includeEmptyDirs = false
     from(deobfJar.map { zipTree(it.archiveFile) })
@@ -115,14 +117,14 @@ reobf.create("obfJar")
 
 val sourcesJar = tasks.register<Jar>("sourcesJar") {
     archiveBaseName.set("librarianlib")
-    classifier = "sources"
-    includeEmptyDirs = false
-    liblibModules.forEach { module ->
-        // ForgeGradle resolves this immediately anyway, so whatever.
-        val moduleJar = module.project.tasks.getByName("sourcesJar")
-        dependsOn(moduleJar)
-        from(zipTree(moduleJar.outputs.files.singleFile))
-    }
+    archiveClassifier.set("sources")
+    from(file("no_sources.txt"))
+}
+
+val javadocJar = tasks.register<Jar>("javadocJar") {
+    archiveBaseName.set("librarianlib")
+    archiveClassifier.set("javadoc")
+    from(file("no_javadoc.txt"))
 }
 
 tasks.named("assemble") {
@@ -137,6 +139,8 @@ tasks.named("assemble") {
 artifacts {
     add("publishedRuntime", deobfJar)
     add("publishedSources", sourcesJar)
+    add("publishedJavadoc", javadocJar)
+    add("publishedObf", obfJar)
 }
 
 publishing {

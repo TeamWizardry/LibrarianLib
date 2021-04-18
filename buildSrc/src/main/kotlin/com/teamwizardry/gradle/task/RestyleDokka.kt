@@ -58,7 +58,19 @@ open class RestyleDokka : DefaultTask() {
         }
 
         processFile("styles/style.css") {
-            readResource("style.css")
+            it + readResource("layout.css") + readResource("appearance.css")
+        }
+
+        val replacements = readResource("active-tabs.js").split("// <=== REPLACE ===>").drop(1).map {
+            it.split("// <=== WITH ===>")
+        }.map { it[0] to it[1] }
+
+        processFile("scripts/platform-content-handler.js") {
+            var text = it
+            for((replace, with) in replacements) {
+                text = text.replace(replace, with)
+            }
+            text
         }
     }
 

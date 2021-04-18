@@ -58,6 +58,13 @@ configurations {
             attribute(DocsType.DOCS_TYPE_ATTRIBUTE, namedAttribute(DocsType.JAVADOC))
         }
     }
+    create("publishedObf") {
+        isCanBeResolved = false
+        isCanBeConsumed = true
+        attributes {
+            attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.public)
+        }
+    }
 }
 
 val modComponent = components["mod"] as AdhocComponentWithVariants
@@ -70,5 +77,7 @@ modComponent.addVariantsFromConfiguration(configurations["publishedRuntime"]) {
 }
 modComponent.addVariantsFromConfiguration(configurations["publishedSources"]) {
 }
-//modComponent.addVariantsFromConfiguration(configurations["publishedJavadoc"]) {
-//}
+modComponent.addVariantsFromConfiguration(configurations["publishedJavadoc"]) {
+}
+modComponent.addVariantsFromConfiguration(configurations["publishedObf"]) {
+}

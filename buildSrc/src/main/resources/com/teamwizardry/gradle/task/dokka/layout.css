@@ -1,0 +1,32 @@
+
+/* ===== Begin Team Wizardry layout customization ===== */
+/* The default layout is "friendly", but it just ends up being puffy and hard to read */
+
+.table-row {
+    padding: 5px 16px 5px 16px;
+}
+
+.symbol {
+    padding: 5px 20px 5px 5px;
+    min-height: auto;
+}
+
+.symbol .top-right-position {
+    top: 5px;
+    right: 5px;
+}
+
+.divergent-group:last-child {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.platform-hinted {
+    margin-bottom: 0;
+}
+
+.brief {
+    margin-top: 5px;
+}
+
+/* ===== End Team Wizardry layout customization ===== */

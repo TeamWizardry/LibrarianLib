@@ -1,0 +1,1 @@
+This dependency is runtime-only. The individual modules provide sources.
