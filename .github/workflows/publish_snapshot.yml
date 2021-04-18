@@ -1,13 +1,10 @@
-# This workflow will build a package using Gradle and then publish it oss.jfrog.org when a release is created
-# For more information see: https://github.com/actions/setup-java#publishing-using-gradle
-
 name: Publish Snapshots
 
 on:
   push:
     branches:
-      - '1.15**'
-      - '1.16**'
+      - '1.[0-9]+**'
+      - '!1.12'
 
 jobs:
   build:
@@ -22,14 +19,16 @@ jobs:
           java-version: 1.8
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v3
+        with:
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
-      - name: Build with Gradle
-        run: ./gradlew :zzz:librarianlib:build
-
-#      - name: Publish to oss.jfrog.org
-#        run: ./gradlew artifactoryPublish
-#        env:
-#          SNAPSHOT_BRANCH: ${{ github.ref }}
-#          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
-#          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-#          ARTIFACTORY_BUILD_NUMBER: ${{ github.run_number }}
+      - name: Publish to OSSRH
+        run: ./gradlew publish
+        env:
+          SNAPSHOT_REF: ${{ github.ref }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}

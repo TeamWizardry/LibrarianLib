@@ -19,8 +19,15 @@ allprojects {
 }
 
 configure<CommonConfigExtension> {
+    val snapshotVersion = System.getenv("SNAPSHOT_REF")?.let { ref ->
+        if(!ref.startsWith("refs/heads/"))
+            throw IllegalStateException("SNAPSHOT_REF `$ref` doesn't start with refs/heads/")
+        val branch = ref.removePrefix("refs/heads/")
+        branch.replace("[^.\\w-]".toRegex(), "-") + "-SNAPSHOT"
+    }
     val mod_version: String by project
-    version = mod_version
+    version = snapshotVersion ?: mod_version
+
     modules {
         create("albedo")
         create("core")
@@ -55,6 +62,7 @@ tasks.register<CreateModule>("createModule") {
         val lowerName = humanName.get().replace(" ", "").toLowerCase(Locale.ROOT)
         logger.warn("############################################################################")
         logger.warn("# Some manual actions are still required when adding a module!             #")
+        logger.warn("# - Set the maven_description in the new module's gradle.properties        #")
         logger.warn("# - Add `includeModule(\"$lowerName\")` to the settings.gradle.kts file    #")
         logger.warn("# - Add `create(\"$lowerName\")` to the root build.gradle.kts commonConfig #")
         logger.warn("# - Add an item describing the module in the root README.md file           #")

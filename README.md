@@ -73,7 +73,7 @@ ever-increasing amount of boilerplate Forge requires.
 - `albedo` – Making GLSL shaders simple.
 - `courier` — Networking made easy(er).
 - `etcetera` – Minor utilities that don't warrant their own modules.
-- `lieutenant` – Client-sided commands. Many thanks to [Cotton Client Commands](https://github.com/CottonMC/ClientCommands)
+- `lieutenant` – Client-side commands. Many thanks to [Cotton Client Commands](https://github.com/CottonMC/ClientCommands)
   for providing an excellent reference implementation. (Lieutenant is a nearly direct port of Cotton Client Commands)
 - `mirage` – Create virtual resources (textures/etc.) at runtime. Use this sparingly.
 - `mosaic` – Data-driven spritesheets, designed for Facade.

@@ -1,11 +1,15 @@
+import java.net.URI
+
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.ProjectLocalConfigurations
 
 plugins {
     `maven-publish`
+    signing
 }
 
 apply<ModPublishingPlugin>()
+val modPublishing = the<ModPublishingExtension>()
 
 configurations {
     create("publishedApi") {
@@ -80,4 +84,68 @@ modComponent.addVariantsFromConfiguration(configurations["publishedSources"]) {
 modComponent.addVariantsFromConfiguration(configurations["publishedJavadoc"]) {
 }
 modComponent.addVariantsFromConfiguration(configurations["publishedObf"]) {
+}
+
+val commonConfig = rootProject.the<CommonConfigExtension>()
+
+publishing {
+    publications {
+        register<MavenPublication>("maven") {
+            groupId = "com.teamwizardry.librarianlib"
+            version = commonConfig.version
+
+            from(components["mod"])
+
+            pom {
+                name.set(project.property("maven_name") as String)
+                description.set(project.property("maven_description") as String)
+                url.set("https://github.com/TeamWizardry/LibrarianLib")
+
+                licenses {
+                    license {
+                        name.set("LGPL-3.0-only")
+                        url.set("https://opensource.org/licenses/BSD-2-Clause")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("thecodewarrior")
+                        name.set("Pierce Corcoran")
+                        email.set("code@thecodewarrior.dev")
+                        url.set("https://thecodewarrior.dev")
+                    }
+
+                    developer {
+                        id.set("librarianlib-contributors")
+                        name.set("LibrarianLib Contributors")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:https://github.com/TeamWizardry/LibrarianLib.git")
+                    developerConnection.set("scm:git:ssh://github.com:TeamWizardry/LibrarianLib.git")
+                    url.set("https://github.com/TeamWizardry/LibrarianLib")
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "ossrh"
+
+            val stagingRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            val snapshotRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = URI(if(commonConfig.version.endsWith("SNAPSHOT")) snapshotRepo else stagingRepo)
+            credentials {
+                username = project.findProperty("ossrhUsername") as String? ?: System.getenv("OSSRH_USERNAME") ?: "N/A"
+                password = project.findProperty("ossrhPassword") as String? ?: System.getenv("OSSRH_PASSWORD") ?: "N/A"
+            }
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+
+    sign(publishing.publications["maven"])
 }

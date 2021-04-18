@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.plugin.ProjectLocalConfigurations
 
 plugins {
     `module-conventions`
-    `publish-conventions`
 }
 
 val commonConfig = rootProject.the<CommonConfigExtension>()
@@ -12,5 +11,4 @@ val commonConfig = rootProject.the<CommonConfigExtension>()
 dependencies {
     liblib(project(":core"))
     testApi(project(":testcore"))
-    "publishedApi"(project(":core"))
 }

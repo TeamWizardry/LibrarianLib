@@ -25,7 +25,6 @@ dependencies {
     // Dragging in the entirety of MixinGradle just to compile the mixin connector is entirely unnecessary.
     // This jar contains the single interface and function the generated mixin connector uses.
     compileOnly(files("libs/mixin-connector-api.jar"))
-    publishedRuntime("thedarkcolour:kotlinforforge:$kotlinforforge_version")
 }
 
 tasks.named<ProcessResources>("processResources") {
@@ -139,6 +138,10 @@ tasks.named("assemble") {
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Publishing
 
+dependencies {
+    publishedRuntime("thedarkcolour:kotlinforforge:$kotlinforforge_version")
+}
+
 artifacts {
     add("publishedRuntime", deobfJar)
     add("publishedSources", sourcesJar)
@@ -146,24 +149,8 @@ artifacts {
     add("publishedObf", obfJar)
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "com.teamwizardry.librarianlib"
-            artifactId = "librarianlib"
-            version = commonConfig.version
-
-            from(components["mod"])
-        }
-    }
-}
-
-tasks.create("publishAllToMavenLocal") {
-    group = "Publishing"
-    dependsOn(tasks.named("publishToMavenLocal"))
-    liblibModules.forEach { module ->
-        dependsOn(module.project.tasks.getByName("publishToMavenLocal"))
-    }
+publishing.publications.named<MavenPublication>("maven") {
+    artifactId = "librarianlib"
 }
 
 //endregion // Publishing

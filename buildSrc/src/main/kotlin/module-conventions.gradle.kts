@@ -115,6 +115,13 @@ val validateMixinApplication = tasks.register<ValidateMixinApplication>("validat
     from(sourceSets.test)
 }
 
+tasks.named("compileJava") {
+    dependsOn(validateMixinApplication)
+}
+tasks.named("compileTestJava") {
+    dependsOn(validateMixinApplication)
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Test mod file generation
 
@@ -141,11 +148,8 @@ val generateTestModInfo = tasks.register<GenerateModInfo>("generateTestModInfo")
     outputRoot.set(generatedTest.resolve("resources"))
 }
 
-val mod_version: String by project
-
 tasks.named("compileTestJava") {
     dependsOn(generateTestMixinConnector)
-    dependsOn(validateMixinApplication)
 }
 tasks.named<ProcessResources>("processTestResources") {
     dependsOn(generateTestCoremodsJson)
@@ -272,16 +276,8 @@ artifacts {
     add("publishedObf", obfJar)
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = "com.teamwizardry.librarianlib"
-            artifactId = module.name
-            version = commonConfig.version
-
-            from(components["mod"])
-        }
-    }
+publishing.publications.named<MavenPublication>("maven") {
+    artifactId = module.name
 }
 
 //endregion // Publishing

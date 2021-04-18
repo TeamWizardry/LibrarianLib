@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.gradle.plugin.ProjectLocalConfigurations
 plugins {
     `module-conventions`
     `mixin-conventions`
-    `publish-conventions`
 }
 
 module {
