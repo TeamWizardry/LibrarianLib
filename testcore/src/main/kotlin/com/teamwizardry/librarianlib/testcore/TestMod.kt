@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.testcore
 
 import com.teamwizardry.librarianlib.LibrarianLibModule
 import com.teamwizardry.librarianlib.core.util.DistinctColors
-import com.teamwizardry.librarianlib.core.util.MiscUtil
 import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.mirage.Mirage
@@ -28,6 +27,7 @@ import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.client.registry.ClientRegistry
 import net.minecraftforge.fml.client.registry.RenderingRegistry
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import org.apache.logging.log4j.LogManager
@@ -36,7 +36,8 @@ import thedarkcolour.kotlinforforge.forge.MOD_BUS
 import java.awt.Color
 
 public abstract class TestMod(public val module: LibrarianLibModule) {
-    public val modid: String = MiscUtil.getModId(this.javaClass)
+    public val modid: String = this.javaClass.getAnnotation(Mod::class.java)?.value
+        ?: throw IllegalStateException("Could not find mod annotation on ${javaClass.canonicalName}")
     public val name: String = "${module.name}-test"
     public val itemGroup: ItemGroup = object: ItemGroup("ll-$name") {
         private val stack: ItemStack by lazy {

@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.foundation
 
-import com.teamwizardry.librarianlib.core.util.MiscUtil
 import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.courier.CourierChannel
 import com.teamwizardry.librarianlib.foundation.registration.RegistrationManager
@@ -17,6 +16,7 @@ import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.IEventBus
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.ModLoadingContext
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent
@@ -44,7 +44,8 @@ import thedarkcolour.kotlinforforge.forge.MOD_BUS
  */
 @Suppress("LeakingThis")
 public abstract class BaseMod @JvmOverloads constructor(private val kotlinContext: Boolean = false) {
-    public val modid: String = MiscUtil.getModId(this.javaClass)
+    public val modid: String = this.javaClass.getAnnotation(Mod::class.java)?.value
+            ?: throw IllegalStateException("Could not find mod annotation on ${javaClass.canonicalName}")
     public val version: String = ModLoadingContext.get().activeContainer.modInfo.version.toString()
     public val registrationManager: RegistrationManager
     public val courier: CourierChannel
