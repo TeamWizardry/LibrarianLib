@@ -5,23 +5,20 @@ plugins {
 }
 
 repositories {
-    maven { url = uri("https://files.minecraftforge.net/maven") }
-    maven { url = uri("https://repo.spongepowered.org/repository/maven-public/") }
+    maven { url = uri("https://maven.quiltmc.org/repository/release/") }
     jcenter()
     mavenCentral()
     gradlePluginPortal()
 }
 
-val gradle_Kotlin_version: String by project
-val gradle_ForgeGradle_version: String by project
-val gradle_MixinGradle_version: String by project
-val gradle_Dokka_version: String by project
+val gradle_kotlin_version: String by project
+val gradle_dokka_version: String by project
+val gradle_loom_version: String by project
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$gradle_Kotlin_version")
-    implementation("net.minecraftforge.gradle:ForgeGradle:$gradle_ForgeGradle_version")
-    implementation("org.spongepowered:mixingradle:$gradle_MixinGradle_version")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:$gradle_Dokka_version")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$gradle_kotlin_version")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:$gradle_dokka_version")
+    implementation("org.quiltmc:loom:$gradle_loom_version")
     // rolled back from 4.0.4 to 4.0.1 due to issues with sources relocation:
     // https://github.com/johnrengelman/shadow/issues/425
     implementation("com.github.jengelman.gradle.plugins:shadow:4.0.1")

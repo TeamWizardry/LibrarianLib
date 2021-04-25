@@ -110,17 +110,17 @@ configurations {
 
 }
 
-val validateMixinApplication = tasks.register<ValidateMixinApplication>("validateMixinApplication") {
-    from(sourceSets.main)
-    from(sourceSets.test)
-}
-
-tasks.named("compileJava") {
-    dependsOn(validateMixinApplication)
-}
-tasks.named("compileTestJava") {
-    dependsOn(validateMixinApplication)
-}
+//val validateMixinApplication = tasks.register<ValidateMixinApplication>("validateMixinApplication") {
+//    from(sourceSets.main)
+//    from(sourceSets.test)
+//}
+//
+//tasks.named("compileJava") {
+//    dependsOn(validateMixinApplication)
+//}
+//tasks.named("compileTestJava") {
+//    dependsOn(validateMixinApplication)
+//}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Test mod file generation
@@ -189,7 +189,7 @@ val obfJar = tasks.register<Jar>("obfJar") {
     archiveClassifier.set("obf")
     from(deobfJar.map { zipTree(it.archiveFile) })
 }
-reobf.create("obfJar")
+//reobf.create("obfJar")
 
 val shadowSources = tasks.register<ShadowSources>("shadowSources") {
     relocators.set(deobfJar.get().relocators)
@@ -266,7 +266,7 @@ val dokkaJar = tasks.register<Jar>("dokkaJar") {
 //region // Publishing
 
 dependencies {
-    "publishedRuntime"(project(":zzz:librarianlib"))
+//    "publishedRuntime"(project(":zzz:librarianlib"))
 }
 
 artifacts {

@@ -103,8 +103,8 @@ publishing {
 
                 licenses {
                     license {
-                        name.set("LGPL-3.0-only")
-                        url.set("https://opensource.org/licenses/BSD-2-Clause")
+                        name.set("LGPL-3.0")
+                        url.set("https://opensource.org/licenses/LGPL-3.0")
                     }
                 }
                 developers {
