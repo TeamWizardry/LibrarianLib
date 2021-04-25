@@ -16,7 +16,7 @@ import com.teamwizardry.librarianlib.testcore.logger
 import net.minecraft.command.CommandSource
 import net.minecraft.command.Commands
 import net.minecraft.command.ISuggestionProvider
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.StringTextComponent
 import net.minecraft.util.text.Style
@@ -97,9 +97,9 @@ public class UnitTestArgument: ArgumentType<UnitTestSuite> {
 
     @Throws(CommandSyntaxException::class)
     override fun parse(p_parse_1_: StringReader): UnitTestSuite {
-        val resourcelocation = ResourceLocation.read(p_parse_1_)
-        return registry.getValue(resourcelocation)
-            ?: throw TEST_NOT_FOUND.create(resourcelocation)
+        val Identifier = Identifier.read(p_parse_1_)
+        return registry.getValue(Identifier)
+            ?: throw TEST_NOT_FOUND.create(Identifier)
     }
 
     override fun <S> listSuggestions(p_listSuggestions_1_: CommandContext<S>, p_listSuggestions_2_: SuggestionsBuilder): CompletableFuture<Suggestions> {

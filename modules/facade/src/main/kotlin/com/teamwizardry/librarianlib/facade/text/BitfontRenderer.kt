@@ -2,11 +2,7 @@ package com.teamwizardry.librarianlib.facade.text
 
 import com.mojang.blaze3d.vertex.IVertexBuilder
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
-import com.teamwizardry.librarianlib.core.util.kotlin.tex
-import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.math.Matrix4d
 import dev.thecodewarrior.bitfont.data.Glyph
 import dev.thecodewarrior.bitfont.typesetting.TextContainer

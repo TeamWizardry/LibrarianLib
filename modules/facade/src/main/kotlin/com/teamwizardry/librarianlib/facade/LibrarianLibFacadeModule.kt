@@ -40,7 +40,7 @@ internal object LibrarianLibFacadeModule: LibrarianLibModule("facade", "Facade")
     fun preload() {
         /*
          * For some reason finding (not loading, just locating) classes/textures takes a long time. I did some
-         * profiling and it took 115 milliseconds for only 32 cursor ResourceLocations to load, and the GuiLayer class
+         * profiling and it took 115 milliseconds for only 32 cursor Identifiers to load, and the GuiLayer class
          * ends up loading ~200-300 other classes, so it suffers the same issue.
          *
          * In total, this can easily cause a 1-2 second hitch when first opening a Facade GUI, which is beyond

@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.math
 import com.teamwizardry.librarianlib.core.util.vec
 import java.io.Serializable
 
-import net.minecraft.util.math.vector.Vector3d
+import net.minecraft.util.math.Vec3d
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.acos
@@ -54,7 +54,7 @@ public class Quaternion(
      *
      * @return The vector representing the direction this quaternion is pointing to
      */
-    public val direction: Vector3d
+    public val direction: Vec3d
         get() = rotate(vec(0, 0, 1))
 
     /**
@@ -62,7 +62,7 @@ public class Quaternion(
      *
      * @return The axis of rotation
      */
-    public val axis: Vector3d
+    public val axis: Vec3d
         get() {
             val q = fastInvSqrt(1 - w * w)
             return vec(x * q, y * q, z * q)
@@ -73,7 +73,7 @@ public class Quaternion(
      *
      * @return The angle in degrees for each axis, stored in a vector, in the corresponding component
      */
-    public val axesAnglesDeg: Vector3d
+    public val axesAnglesDeg: Vec3d
         get() = axesAnglesRad * (180 / PI)
 
     /**
@@ -81,7 +81,7 @@ public class Quaternion(
      *
      * @return The angle in radians for each axis, stored in a vector, in the corresponding component
      */
-    public val axesAnglesRad: Vector3d
+    public val axesAnglesRad: Vec3d
         get() {
             val roll: Double
             val pitch: Double
@@ -97,7 +97,7 @@ public class Quaternion(
                 pitch = sign * Math.PI / 2
                 yaw = -sign * 2 * atan2(z, w)
             }
-            return Vector3d(pitch, yaw, roll)
+            return Vec3d(pitch, yaw, roll)
         }
 
     /**
@@ -385,7 +385,7 @@ public class Quaternion(
      * @param v The vector to rotate
      * @return The rotated vector
      */
-    public fun rotate(v: Vector3d): Vector3d {
+    public fun rotate(v: Vec3d): Vec3d {
         return rotate(v.getX(), v.getY(), v.getZ())
     }
 
@@ -397,7 +397,7 @@ public class Quaternion(
      * @param z The z component of the vector
      * @return The rotated vector
      */
-    public fun rotate(x: Float, y: Float, z: Float): Vector3d {
+    public fun rotate(x: Float, y: Float, z: Float): Vec3d {
         return rotate(x.toDouble(), y.toDouble(), z.toDouble())
     }
 
@@ -409,7 +409,7 @@ public class Quaternion(
      * @param z The z component of the vector
      * @return The rotated vector
      */
-    public fun rotate(x: Double, y: Double, z: Double): Vector3d {
+    public fun rotate(x: Double, y: Double, z: Double): Vec3d {
         val length = length()
         if (abs(length) < DBL_EPSILON) {
             throw ArithmeticException("Cannot rotate by the zero quaternion")
@@ -422,7 +422,7 @@ public class Quaternion(
         val py = nw * y + nz * x - nx * z
         val pz = nw * z + nx * y - ny * x
         val pw = -nx * x - ny * y - nz * z
-        return Vector3d(
+        return Vec3d(
             pw * -nx + px * nw - py * nz + pz * ny,
             pw * -ny + py * nw - pz * nx + px * nz,
             pw * -nz + pz * nw - px * ny + py * nx)
@@ -638,7 +638,7 @@ public class Quaternion(
          * @param to The second vector
          * @return The quaternion defined by the angle-axis rotation between the vectors
          */
-        public fun fromRotationTo(from: Vector3d, to: Vector3d): Quaternion {
+        public fun fromRotationTo(from: Vec3d, to: Vec3d): Quaternion {
             return fromAngleRadAxis(acos((from dot to) / (from.length() * to.length())), from cross to)
         }
 
@@ -649,7 +649,7 @@ public class Quaternion(
          * @param axis The axis of rotation
          * @return The quaternion defined by the rotation around the axis
          */
-        public fun fromAngleDegAxis(angle: Float, axis: Vector3d): Quaternion {
+        public fun fromAngleDegAxis(angle: Float, axis: Vec3d): Quaternion {
             return fromAngleRadAxis(Math.toRadians(angle.toDouble()), axis)
         }
 
@@ -660,7 +660,7 @@ public class Quaternion(
          * @param axis The axis of rotation
          * @return The quaternion defined by the rotation around the axis
          */
-        public fun fromAngleRadAxis(angle: Float, axis: Vector3d): Quaternion {
+        public fun fromAngleRadAxis(angle: Float, axis: Vec3d): Quaternion {
             return fromAngleRadAxis(angle.toDouble(), axis)
         }
 
@@ -671,7 +671,7 @@ public class Quaternion(
          * @param axis The axis of rotation
          * @return The quaternion defined by the rotation around the axis
          */
-        public fun fromAngleDegAxis(angle: Double, axis: Vector3d): Quaternion {
+        public fun fromAngleDegAxis(angle: Double, axis: Vec3d): Quaternion {
             return fromAngleRadAxis(Math.toRadians(angle), axis)
         }
 
@@ -682,7 +682,7 @@ public class Quaternion(
          * @param axis The axis of rotation
          * @return The quaternion defined by the rotation around the axis
          */
-        public fun fromAngleRadAxis(angle: Double, axis: Vector3d): Quaternion {
+        public fun fromAngleRadAxis(angle: Double, axis: Vec3d): Quaternion {
             return fromAngleRadAxis(angle, axis.getX(), axis.getY(), axis.getZ())
         }
 

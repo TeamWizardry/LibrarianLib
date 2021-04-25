@@ -6,7 +6,7 @@ import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.DeserializationException
 import net.minecraft.nbt.INBT
 import net.minecraft.nbt.StringNBT
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import net.minecraft.world.DimensionType
 import net.minecraftforge.fml.common.registry.GameRegistry
@@ -30,13 +30,13 @@ internal open class IForgeRegistryEntrySerializerFactory(prism: NBTPrism): NBTSe
          * The type checker doesn't like accessing `IForgeRegistry<*>.registryName`, so we have to cast it down to an
          * `IForgeRegistry<DummyRegistryEntry>` in order to access the name.
          */
-        private val registryName: ResourceLocation by lazy {
+        private val registryName: Identifier by lazy {
             @Suppress("UNCHECKED_CAST")
             (registry as IForgeRegistry<DummyRegistryEntry>).registryName
         }
 
         override fun deserialize(tag: INBT, existing: IForgeRegistryEntry<*>?): IForgeRegistryEntry<*> {
-            val entryName = ResourceLocation(tag.expectType<StringNBT>("tag").string)
+            val entryName = Identifier(tag.expectType<StringNBT>("tag").string)
             return registry.getValue(entryName)
                 ?: throw DeserializationException("Could not find entry $entryName in $registryName")
         }
@@ -61,7 +61,7 @@ internal open class IForgeRegistryEntrySerializerFactory(prism: NBTPrism): NBTSe
 // */
 //internal object DimensionTypeSerializer: NBTSerializer<DimensionType>() {
 //    override fun deserialize(tag: INBT, existing: DimensionType?): DimensionType {
-//        val entryName = ResourceLocation(tag.expectType<StringNBT>("tag").string)
+//        val entryName = Identifier(tag.expectType<StringNBT>("tag").string)
 //        @Suppress("DEPRECATION")
 //        return Registry.DIMENSION_TYPE_KEY.getValue(entryName).get() // DIMENSION_TYPE has a default value
 //    }

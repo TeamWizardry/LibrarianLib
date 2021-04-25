@@ -73,9 +73,9 @@ public object Prisms {
             SectionPosSerializer,
 //            GlobalPosSerializer, // DimensionType serialization issues
             RotationsSerializer,
-            AxisAlignedBBSerializer,
+            BoxSerializer,
             MutableBoundingBoxSerializer,
-            ResourceLocationSerializer,
+            IdentifierSerializer,
             BlockStateSerializer,
             GameProfileSerializer,
             ItemStackSerializer,

@@ -3,13 +3,13 @@ package com.teamwizardry.librarianlib.facade.layer.supporting
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.Shader
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 
 /**
  * Clears every pixel it's drawn over to be transparent black, with a depth reset to 1, and stencil reset to 0.
  */
-internal object FramebufferClearShader: Shader("framebuffer_clear", null, ResourceLocation("librarianlib:facade/shaders/framebuffer_clear.frag")) {
+internal object FramebufferClearShader: Shader("framebuffer_clear", null, Identifier("librarianlib:facade/shaders/framebuffer_clear.frag")) {
 
     override fun setupState() {
         RenderSystem.disableAlphaTest()

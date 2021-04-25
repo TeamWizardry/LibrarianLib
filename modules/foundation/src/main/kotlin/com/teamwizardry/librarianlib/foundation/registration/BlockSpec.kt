@@ -17,7 +17,7 @@ import net.minecraft.item.*
 import net.minecraft.tags.ITag
 import net.minecraft.tags.Tag
 import net.minecraft.util.IItemProvider
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraftforge.client.model.generators.BlockStateProvider
 import net.minecraftforge.client.model.generators.ItemModelProvider
 import net.minecraftforge.common.ToolType
@@ -47,8 +47,8 @@ public class BlockSpec(
     /**
      * The registry name of the block. The [mod ID][modid] is populated by the [RegistrationManager].
      */
-    public val registryName: ResourceLocation
-        get() = ResourceLocation(modid, id)
+    public val registryName: Identifier
+        get() = Identifier(modid, id)
 
     /**
      * Whether a [BlockItem] should be registered for this block

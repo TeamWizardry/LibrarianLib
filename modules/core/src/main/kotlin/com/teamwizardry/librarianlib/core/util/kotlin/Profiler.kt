@@ -1,14 +1,13 @@
 package com.teamwizardry.librarianlib.core.util.kotlin
 
-import net.minecraft.profiler.IProfiler
-import net.minecraft.profiler.Profiler
+import net.minecraft.util.profiler.Profiler
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 
 @OptIn(ExperimentalContracts::class)
-public inline fun <T> IProfiler.tick(block: () -> T): T {
+public inline fun <T> Profiler.tick(block: () -> T): T {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
@@ -21,27 +20,27 @@ public inline fun <T> IProfiler.tick(block: () -> T): T {
 }
 
 @OptIn(ExperimentalContracts::class)
-public inline fun <T> IProfiler.section(name: String, block: () -> T): T {
+public inline fun <T> Profiler.section(name: String, block: () -> T): T {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
-    this.startSection(name)
+    this.push(name)
     return try {
         block()
     } finally {
-        this.endSection()
+        this.pop()
     }
 }
 
 @OptIn(ExperimentalContracts::class)
-public inline fun <T> IProfiler.section(noinline name: () -> String, block: () -> T): T {
+public inline fun <T> Profiler.section(noinline name: () -> String, block: () -> T): T {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
-    this.startSection(name)
+    this.push(name)
     return try {
         block()
     } finally {
-        this.endSection()
+        this.pop()
     }
 }

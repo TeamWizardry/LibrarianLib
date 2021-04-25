@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.glitter.example;
 import com.teamwizardry.librarianlib.glitter.ParticleSystem;
 import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding;
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 public class SpriteRenderExampleSystem extends ParticleSystem {
     @Override
@@ -14,7 +14,7 @@ public class SpriteRenderExampleSystem extends ParticleSystem {
 
         getRenderModules().add(
                 SpriteRenderModule.build(
-                        new ResourceLocation("modid", "textures/particle/sprite.png"),
+                        new Identifier("modid", "textures/particle/sprite.png"),
                         position
                 )
                         .previousPosition(previousPosition)

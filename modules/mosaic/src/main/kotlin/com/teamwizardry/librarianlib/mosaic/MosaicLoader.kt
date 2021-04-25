@@ -15,21 +15,21 @@ import net.minecraft.client.resources.data.AnimationMetadataSection
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResource
 import net.minecraft.resources.IResourceManager
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.IOException
 import javax.imageio.ImageIO
 
-internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefinition?>>() {
-    private var definitions: MutableMap<ResourceLocation, MosaicDefinition?> = mutableMapOf()
+internal object MosaicLoader : ReloadListener<Map<Identifier, MosaicDefinition?>>() {
+    private var definitions: MutableMap<Identifier, MosaicDefinition?> = mutableMapOf()
     private var missingno = loc("librarianlib:mosaic/textures/missingno.png")
 
     val missingnoSheet: MosaicDefinition get() = getDefinition(missingno)
     val missingnoSprite: SpriteDefinition get() = getDefinition(missingno).sprites[0]
     val missingnoColor: ColorDefinition get() = getDefinition(missingno).colors[0]
 
-    fun getDefinition(location: ResourceLocation): MosaicDefinition {
+    fun getDefinition(location: Identifier): MosaicDefinition {
         val def = definitions.getOrPut(location) {
             load(Client.minecraft.resourceManager, location)
         }
@@ -38,15 +38,15 @@ internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefini
         return def ?: getDefinition(missingno)
     }
 
-    override fun prepare(manager: IResourceManager, profiler: IProfiler): Map<ResourceLocation, MosaicDefinition?> {
+    override fun prepare(manager: IResourceManager, profiler: IProfiler): Map<Identifier, MosaicDefinition?> {
         return profiler.tick { loadDefinitions(manager) }
     }
 
-    override fun apply(result: Map<ResourceLocation, MosaicDefinition?>, manager: IResourceManager, profiler: IProfiler) {
+    override fun apply(result: Map<Identifier, MosaicDefinition?>, manager: IResourceManager, profiler: IProfiler) {
         profiler.tick { updateDefinitions(result) }
     }
 
-    internal fun updateDefinitions(result: Map<ResourceLocation, MosaicDefinition?>) {
+    internal fun updateDefinitions(result: Map<Identifier, MosaicDefinition?>) {
         definitions = result.toMutableMap()
         synchronized(Mosaic.textures) {
             Mosaic.textures.forEach {
@@ -55,8 +55,8 @@ internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefini
         }
     }
 
-    internal fun loadDefinitions(manager: IResourceManager): Map<ResourceLocation, MosaicDefinition?> {
-        val locations = mutableSetOf<ResourceLocation>()
+    internal fun loadDefinitions(manager: IResourceManager): Map<Identifier, MosaicDefinition?> {
+        val locations = mutableSetOf<Identifier>()
         synchronized(Mosaic.textures) {
             Mosaic.textures.forEach {
                 locations.add(it.location)
@@ -67,7 +67,7 @@ internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefini
         }
     }
 
-    private fun load(manager: IResourceManager, location: ResourceLocation): MosaicDefinition? {
+    private fun load(manager: IResourceManager, location: Identifier): MosaicDefinition? {
         val resource = try {
              manager.getResource(location)
         } catch (exception: IOException) {
@@ -164,7 +164,7 @@ internal object MosaicLoader : ReloadListener<Map<ResourceLocation, MosaicDefini
         return color
     }
 
-    private fun loadRaw(location: ResourceLocation, resource: IResource, image: BufferedImage): MosaicDefinition {
+    private fun loadRaw(location: Identifier, resource: IResource, image: BufferedImage): MosaicDefinition {
         val sheet = MosaicDefinition(location)
         sheet.singleSprite = true
 

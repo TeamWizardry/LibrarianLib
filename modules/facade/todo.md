@@ -37,7 +37,7 @@
   - MT_getSlots, MT_getSlotUnderMouse, MT_isCraftingOutput, MT_isIgnored
 - InventorySorter: https://github.com/cpw/inventorysorter/blob/master/src/main/java/cpw/mods/inventorysorter/InventorySorter.java
   - IMC: `"slotblacklist"` -> slot class name
-  - IMC: `"containerblacklist"` -> resourcelocation
+  - IMC: `"containerblacklist"` -> Identifier
 - Quark search bar?
 -
 -

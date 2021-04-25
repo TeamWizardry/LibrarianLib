@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.mosaic
 
-import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 

@@ -12,7 +12,7 @@ import com.teamwizardry.librarianlib.glitter.ReadParticleBinding
 import net.minecraft.util.math.vector.Matrix4f
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 
 /**
@@ -22,7 +22,7 @@ class HeldItemConditionalRenderModule(
     /**
      * What item ID the player must be holding in order for the particles to render
      */
-    @JvmField val filter: ResourceLocation,
+    @JvmField val filter: Identifier,
     /**
      * The render module to run when the player is holding the item
      */

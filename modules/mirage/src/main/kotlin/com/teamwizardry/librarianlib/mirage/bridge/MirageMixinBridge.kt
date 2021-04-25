@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.mirage.bridge
 import com.teamwizardry.librarianlib.mirage.Mirage
 import net.minecraft.resources.*
 import net.minecraft.resources.data.IMetadataSectionSerializer
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.util.function.Predicate
@@ -37,23 +37,23 @@ private class MirageResourcePack : IResourcePack {
     // the FallbackResourceManager type can be null, but we can treat the parameters as not nullable because we
     // don't add the resource pack when it's null.
 
-    override fun getResourceStream(type: ResourcePackType, location: ResourceLocation): InputStream {
+    override fun getResourceStream(type: ResourcePackType, location: Identifier): InputStream {
         return Mirage.resourceManager(type).mixinBridge.getResourceStream(location)
             ?: throw FileNotFoundException("Virtual resource $location not found")
     }
 
-    override fun resourceExists(type: ResourcePackType, location: ResourceLocation): Boolean {
+    override fun resourceExists(type: ResourcePackType, location: Identifier): Boolean {
         return Mirage.resourceManager(type).mixinBridge.resourceExists(location)
     }
 
-    override fun getAllResourceLocations(
+    override fun getAllIdentifiers(
         type: ResourcePackType,
         namespaceIn: String,
         pathIn: String,
         maxDepthIn: Int,
         filterIn: Predicate<String>
-    ): Collection<ResourceLocation> {
-        return Mirage.resourceManager(type).mixinBridge.getAllResourceLocations(
+    ): Collection<Identifier> {
+        return Mirage.resourceManager(type).mixinBridge.getAllIdentifiers(
             namespaceIn,
             pathIn,
             maxDepthIn,

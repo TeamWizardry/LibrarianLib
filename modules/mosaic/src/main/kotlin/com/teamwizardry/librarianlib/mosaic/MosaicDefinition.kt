@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.math.Vec2i
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import java.awt.Color
 import java.awt.image.BufferedImage
 
-internal class MosaicDefinition internal constructor(val location: ResourceLocation) {
+internal class MosaicDefinition internal constructor(val location: Identifier) {
     /**
      * True if this definition was generated for a texture that had no spritesheet mcmeta.
      */

@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.glitter.modules.BasicPhysicsUpdateModule
 import com.teamwizardry.librarianlib.glitter.modules.GlLineBeamRenderModule
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 
 object IgnoreParticleSettingSystem : TestSystem("ignore_particle_setting") {
     override fun configure() {

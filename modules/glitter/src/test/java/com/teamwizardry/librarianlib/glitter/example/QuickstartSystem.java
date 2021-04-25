@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding;
 import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding;
 import com.teamwizardry.librarianlib.glitter.modules.BasicPhysicsUpdateModule;
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 public class QuickstartSystem extends ParticleSystem {
     @Override
@@ -21,7 +21,7 @@ public class QuickstartSystem extends ParticleSystem {
 
         getRenderModules().add(
                 SpriteRenderModule.build(
-                        new ResourceLocation("modid", "textures/particle/sprite.png"),
+                        new Identifier("modid", "textures/particle/sprite.png"),
                         position
                 )
                         .previousPosition(previousPosition)

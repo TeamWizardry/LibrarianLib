@@ -11,7 +11,7 @@ import java.awt.Color
 import kotlin.math.max
 
 class TestListScreen(name: String, val tests: List<FacadeTestEntry>): Screen(StringTextComponent(name)) {
-    val itemHeight: Int = Client.fontRenderer.FONT_HEIGHT + 1
+    val itemHeight: Int = Client.textRenderer.FONT_HEIGHT + 1
     val border: Int = 3
 
     val size: Vec2d = vec(300, 20 * itemHeight)
@@ -44,12 +44,12 @@ class TestListScreen(name: String, val tests: List<FacadeTestEntry>): Screen(Str
             if(i == hoveredIndex) {
                 fill(matrixStack,
                     guiPos.xi, guiPos.yi + i * itemHeight,
-                    guiPos.xi + size.xi, guiPos.yi + i * itemHeight + Client.fontRenderer.FONT_HEIGHT,
+                    guiPos.xi + size.xi, guiPos.yi + i * itemHeight + Client.textRenderer.FONT_HEIGHT,
                     Color.gray.rgb
                 )
             }
 
-            Client.fontRenderer.drawString(matrixStack, tests[i].name, guiPos.xf, guiPos.yf + i * itemHeight, Color(0, 0, 0, 0).rgb)
+            Client.textRenderer.drawString(matrixStack, tests[i].name, guiPos.xf, guiPos.yf + i * itemHeight, Color(0, 0, 0, 0).rgb)
         }
     }
 

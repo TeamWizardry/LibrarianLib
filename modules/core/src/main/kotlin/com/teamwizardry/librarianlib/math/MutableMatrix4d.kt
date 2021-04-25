@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.math
 
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
-import net.minecraft.util.math.vector.Matrix4f
-import net.minecraft.util.math.vector.Vector3d
+import net.minecraft.util.math.Matrix4f
+import net.minecraft.util.math.Vec3d
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -418,7 +418,7 @@ public open class MutableMatrix4d(
         return this
     }
 
-    override fun translate(v: Vector3d): MutableMatrix4d {
+    override fun translate(v: Vec3d): MutableMatrix4d {
         return translate(v.x, v.y, v.z)
     }
 
@@ -450,7 +450,7 @@ public open class MutableMatrix4d(
         return this.mul(createRotation(rot))
     }
 
-    override fun rotate(axis: Vector3d, angle: Double): Matrix4d {
+    override fun rotate(axis: Vec3d, angle: Double): Matrix4d {
         return this.mul(createRotation(axis, angle))
     }
 

@@ -8,10 +8,10 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.block.Blocks
-import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.Box
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.vector.Vector3d
-import net.minecraft.util.math.shapes.VoxelShape
+import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.chunk.ChunkSection
 import net.minecraft.world.chunk.ChunkStatus
 import net.minecraftforge.api.distmarker.Dist
@@ -36,8 +36,8 @@ import kotlin.math.min
 @OnlyIn(Dist.CLIENT)
 public object GlitterWorldCollider {
 
-    private val blockCache = Long2ObjectOpenHashMap<List<AxisAlignedBB>>()
-    private val shapeCache = Object2ObjectOpenHashMap<VoxelShape, List<AxisAlignedBB>>()
+    private val blockCache = Long2ObjectOpenHashMap<List<Box>>()
+    private val shapeCache = Object2ObjectOpenHashMap<VoxelShape, List<Box>>()
     private val airCache = LongOpenHashSet()
     private val intersectingIterator: IntersectingBlocksIterator by threadLocal { IntersectingBlocksIterator() }
     private val raycaster: DirectRaycaster by threadLocal { DirectRaycaster() }
@@ -179,7 +179,7 @@ public object GlitterWorldCollider {
     private val mutablePos = BlockPos.Mutable()
 
     @Suppress("ReplacePutWithAssignment")
-    private fun getBoundingBoxes(x: Int, y: Int, z: Int): List<AxisAlignedBB> {
+    private fun getBoundingBoxes(x: Int, y: Int, z: Int): List<Box> {
         val world = Client.minecraft.world ?: return emptyList()
 
         // blocks outside the world never have collision

@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.foundation.registration
 
 import com.teamwizardry.librarianlib.core.util.kotlin.builder
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.SoundEvent
 import java.util.function.Consumer
 
@@ -21,8 +21,8 @@ public class SoundEventSpec(
     /**
      * The registry name of the sound. The [mod ID][modid] is populated by the [RegistrationManager].
      */
-    public val registryName: ResourceLocation
-        get() = ResourceLocation(modid, name)
+    public val registryName: Identifier
+        get() = Identifier(modid, name)
 
     public val soundInstance: SoundEvent by lazy {
         SoundEvent(registryName).setRegistryName(registryName)
@@ -45,12 +45,12 @@ public class SoundEventSpec(
     /**
      * Add a sound file for data generation.
      */
-    public fun sound(name: ResourceLocation): SoundEventSpec = builder { sounds.add(SoundFileInfo(name)) }
+    public fun sound(name: Identifier): SoundEventSpec = builder { sounds.add(SoundFileInfo(name)) }
 
     /**
      * Add a sound file for data generation.
      */
-    public fun sound(name: ResourceLocation, config: Consumer<SoundFileInfo>): SoundEventSpec = builder {
+    public fun sound(name: Identifier, config: Consumer<SoundFileInfo>): SoundEventSpec = builder {
         val sound = SoundFileInfo(name)
         config.accept(sound)
         sounds.add(sound)
@@ -60,11 +60,11 @@ public class SoundEventSpec(
      * Add a sound file for data generation.
      */
     @JvmSynthetic
-    public inline fun sound(name: ResourceLocation, crossinline config: SoundFileInfo.() -> Unit): SoundEventSpec =
+    public inline fun sound(name: Identifier, crossinline config: SoundFileInfo.() -> Unit): SoundEventSpec =
         sound(name, Consumer { it.config() })
 
     public inner class SoundFileInfo(
-        public val name: ResourceLocation
+        public val name: Identifier
     ) {
         public var volume: Double? = null
         public var pitch: Double? = null

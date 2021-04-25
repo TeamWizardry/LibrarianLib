@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.glitter.testmod.modid
 import net.minecraft.entity.EntityClassification
 import net.minecraft.entity.AreaEffectCloudEntity
 import net.minecraft.entity.EntityType
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraftforge.registries.ForgeRegistries
 
 object TestEntities {

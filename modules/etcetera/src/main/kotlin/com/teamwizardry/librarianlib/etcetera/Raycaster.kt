@@ -1,13 +1,14 @@
 package com.teamwizardry.librarianlib.etcetera
 
+import com.teamwizardry.librarianlib.core.util.QUILT_TODO
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.longs.LongSet
 import net.minecraft.entity.Entity
-import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.Box
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
-import net.minecraft.util.math.shapes.VoxelShape
-import net.minecraft.util.math.shapes.VoxelShapes
+import net.minecraft.util.shape.VoxelShape
+import net.minecraft.util.shape.VoxelShapes
 import net.minecraft.world.World
 import java.util.function.Predicate
 
@@ -320,7 +321,7 @@ public class Raycaster {
      * @return true if the block was hit
      */
     private fun castBlock(world: World, blockMode: BlockMode, fluidMode: FluidMode, blockX: Int, blockY: Int, blockZ: Int): Boolean {
-        mutablePos.setPos(blockX, blockY, blockZ)
+        mutablePos.set(blockX, blockY, blockZ)
         val hitBlock = when (blockMode) {
             BlockMode.NONE -> {
                 false
@@ -331,7 +332,7 @@ public class Raycaster {
             }
             BlockMode.VISUAL -> {
                 val state = world.getBlockState(mutablePos)
-                castShape(blockX, blockY, blockZ, state.getShape(world, mutablePos))
+                castShape(blockX, blockY, blockZ, state.getRaycastShape(world, mutablePos))
             }
         }
         if (hitBlock) {
@@ -348,7 +349,7 @@ public class Raycaster {
             }
             FluidMode.SOURCE -> {
                 val state = world.getFluidState(mutablePos)
-                if (state.isSource)
+                if (state.isStill)
                     castShape(blockX, blockY, blockZ, state.getShape(world, mutablePos))
                 else
                     false
@@ -388,7 +389,7 @@ public class Raycaster {
      * [VoxelShape.forEachBox] expects a [VoxelShapes.ILineConsumer]. While I could make the raycaster implement that
      * interface, it would only serve to clutter the API.
      */
-    private val boxConsumer = VoxelShapes.ILineConsumer { minX, minY, minZ, maxX, maxY, maxZ ->
+    private val boxConsumer = VoxelShapes.BoxConsumer { minX, minY, minZ, maxX, maxY, maxZ ->
         val raycaster = raycaster
         if (raycaster.cast(
                 true,
@@ -436,8 +437,8 @@ public class Raycaster {
      * The implementation of entity raycasting. This checks against entities on a per-chunk basis
      */
     private fun castEntities(world: World, entityFilter: Predicate<Entity>) {
-        val fullBoundingBox = AxisAlignedBB(startX, startY, startZ, endX, endY, endZ)
-        val radius = world.maxEntityRadius
+        val fullBoundingBox = Box(startX, startY, startZ, endX, endY, endZ)
+        val radius = QUILT_TODO<Double>("world.maxEntityRadius", "forge patch")
         visitedEntityChunks.clear()
         // iterate the chunks four times, skipping any duplicates. This should eliminate cases where an entity's
         // bounding box extends outside its chunk
@@ -463,7 +464,7 @@ public class Raycaster {
      * being slightly early makes a chunk worth of difference, the hit is necessarily going to be on the leading edge
      * of the chunk, so nothing will be able to dwarf it from more than two chunks away.
      */
-    private fun castEntityChunks(world: World, boundingBox: AxisAlignedBB, offsetX: Double, offsetZ: Double, entityFilter: Predicate<Entity>) {
+    private fun castEntityChunks(world: World, boundingBox: Box, offsetX: Double, offsetZ: Double, entityFilter: Predicate<Entity>) {
         intersectingIterator.reset(
             (startX + offsetX) / 16, 0.0, (startZ + offsetZ) / 16,
             (endX + offsetX) / 16, 0.0, (endZ + offsetZ) / 16
@@ -476,10 +477,10 @@ public class Raycaster {
             if (shortCircuitCountdown-- == 0)
                 break
 
-            if (visitedEntityChunks.add(ChunkPos.asLong(chunkPos.x, chunkPos.z))) {
-                val chunk = world.chunkProvider.getChunk(chunkPos.x, chunkPos.z, false) ?: continue
+            if (visitedEntityChunks.add(ChunkPos.toLong(chunkPos.x, chunkPos.z))) {
+                val chunk = world.chunkManager.getWorldChunk(chunkPos.x, chunkPos.z, false) ?: continue
                 entityList.clear()
-                chunk.getEntitiesWithinAABBForEntity(null, boundingBox, entityList, entityFilter)
+                chunk.collectEntities(null, boundingBox, entityList, entityFilter)
                 for (i in entityList.indices) {
                     castEntity(entityList[i])
                 }

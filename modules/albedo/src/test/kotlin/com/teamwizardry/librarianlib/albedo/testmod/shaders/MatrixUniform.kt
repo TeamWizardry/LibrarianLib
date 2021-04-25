@@ -5,14 +5,12 @@ import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.util.math.vector.Matrix4f
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -150,9 +148,9 @@ internal object MatrixUniform: ShaderTest<MatrixUniform.Test>() {
 
     }
 
-    private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
+    private val renderType = SimpleRenderTypes.flat(Identifier("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("matrix_tests", null, ResourceLocation("ll-albedo-test:shaders/matrix_tests.frag")) {
+    class Test: Shader("matrix_tests", null, Identifier("ll-albedo-test:shaders/matrix_tests.frag")) {
         val matrix4x4 = GLSL.mat4()
         val matrix4x3 = GLSL.mat4x3()
         val matrix4x2 = GLSL.mat4x2()

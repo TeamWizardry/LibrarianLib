@@ -4,10 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.*
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
-import com.teamwizardry.librarianlib.core.util.kotlin.tex
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
@@ -20,7 +18,7 @@ import com.teamwizardry.librarianlib.mosaic.Mosaic
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -209,7 +207,7 @@ public class PastryColorPicker : GuiLayer(0, 0, 80, 50) {
      * draws the saturation/brightness box
      */
     private object ColorPickerShader :
-        Shader("color_picker", null, ResourceLocation("librarianlib:facade/shaders/color_picker.frag")) {
+        Shader("color_picker", null, Identifier("librarianlib:facade/shaders/color_picker.frag")) {
         val hue = GLSL.glFloat()
 
         override fun setupState() {

@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
 import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -72,7 +72,7 @@ import kotlin.reflect.KProperty
  * ```
  */
 public class Mosaic(
-    public val location: ResourceLocation,
+    public val location: Identifier,
     /**
      * The logical width of this texture in pixels. Used to determine the scaling factor from texture pixels to
      * logical pixels

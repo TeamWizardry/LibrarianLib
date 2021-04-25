@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.testcore.objects.TestItem
 import com.teamwizardry.librarianlib.testcore.objects.UnitTestCommand
 import com.teamwizardry.librarianlib.testcore.objects.UnitTestSuite
 import net.minecraft.item.Item
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.event.ColorHandlerEvent
@@ -33,7 +33,7 @@ public object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", "Test 
     }
 
     public val testTool: Item = Item(Item.Properties().maxStackSize(1)).also {
-        it.registryName = ResourceLocation("testcore", "test_tool")
+        it.registryName = Identifier("testcore", "test_tool")
     }
 
     private val mods = mutableListOf<TestMod>().synchronized()
@@ -54,7 +54,7 @@ public object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", "Test 
     @SubscribeEvent
     internal fun createRegistries(e: RegistryEvent.NewRegistry) {
         RegistryBuilder<UnitTestSuite>()
-            .setName(ResourceLocation("testcore:unit_tests"))
+            .setName(Identifier("testcore:unit_tests"))
             .setType(UnitTestSuite::class.java)
             .disableSaving()
             .create()

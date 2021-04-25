@@ -24,7 +24,7 @@ import net.minecraft.util.ActionResultType
 import net.minecraft.util.Direction
 import net.minecraft.util.Hand
 import net.minecraft.util.Mirror
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.Rotation
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.BlockRayTraceResult
@@ -43,7 +43,7 @@ public open class TestBlock(public val config: TestBlockConfig): Block(config.al
     private var tileFactory: (() -> TileEntity)? = null
 
     init {
-        this.registryName = ResourceLocation(ModLoadingContext.get().activeContainer.modId, config.id)
+        this.registryName = Identifier(ModLoadingContext.get().activeContainer.modId, config.id)
         if (config.directional) {
             this.defaultState = this.stateContainer.baseState.with(FACING, Direction.UP)
         }

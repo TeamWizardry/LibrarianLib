@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.facade.container.messaging.Message
 import com.teamwizardry.librarianlib.facade.testmod.LibrarianLibFacadeTestMod
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.ServerPlayerEntity
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.StringTextComponent
 
@@ -23,7 +23,7 @@ class TestContainerSelectorContainer(windowId: Int, player: PlayerEntity, val po
     }
 
     @Message
-    private fun selectType(id: ResourceLocation) {
+    private fun selectType(id: Identifier) {
         if(player is ServerPlayerEntity) {
             val type = containerSet.getType(id)
             type.containerType.open(player, StringTextComponent(containerSet.name), pos)

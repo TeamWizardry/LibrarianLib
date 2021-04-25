@@ -16,7 +16,7 @@ import io.netty.buffer.ByteBufOutputStream
 import net.minecraft.nbt.NBTSizeTracker
 import io.netty.buffer.ByteBufInputStream
 import net.minecraft.item.ItemStack
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockRayTraceResult
 import net.minecraft.util.math.vector.Vector3d
 import io.netty.buffer.ByteBufAllocator
@@ -190,9 +190,9 @@ public class CourierBuffer(public val buf: PacketBuffer) : ByteBuf() {
         }
     }
 
-    public fun readResourceLocation(): ResourceLocation = buf.readResourceLocation()
-    public fun writeResourceLocation(resourceLocationIn: ResourceLocation): CourierBuffer =
-        build { buf.writeResourceLocation(resourceLocationIn) }
+    public fun readIdentifier(): Identifier = buf.readIdentifier()
+    public fun writeIdentifier(IdentifierIn: Identifier): CourierBuffer =
+        build { buf.writeIdentifier(IdentifierIn) }
 
     public fun readTime(): Date = buf.readTime()
     public fun writeTime(time: Date): CourierBuffer = build { buf.writeTime(time) }
@@ -220,7 +220,7 @@ public class CourierBuffer(public val buf: PacketBuffer) : ByteBuf() {
      * @param registry The registry containing the entry represented by this key
      * @param entryKey The registry-name of an entry in this [IForgeRegistry]
      */
-    public fun writeRegistryIdUnsafe(registry: IForgeRegistry<*>, entryKey: ResourceLocation): CourierBuffer =
+    public fun writeRegistryIdUnsafe(registry: IForgeRegistry<*>, entryKey: Identifier): CourierBuffer =
         build { buf.writeRegistryIdUnsafe(registry, entryKey) }
 
     /**

@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.facade.pastry
 import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import com.teamwizardry.librarianlib.mosaic.Sprite
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import java.awt.Color
 
 internal object PastryTexture {
@@ -73,7 +73,7 @@ internal object PastryTexture {
     val shadowFadeSize = 48
     val shadowSprite = shadowTexture.getSprite("shadow")
 
-    enum class Theme(val location: ResourceLocation) {
+    enum class Theme(val location: Identifier) {
         NORMAL(loc("librarianlib:facade/textures/pastry/light.png")),
         DARK(loc("librarianlib:facade/textures/pastry/dark.png")),
         HIGH_CONTRAST(loc("librarianlib:facade/textures/pastry/contrast.png")),

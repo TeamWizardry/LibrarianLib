@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityType
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import java.util.function.Supplier
 
 /**
@@ -35,8 +35,8 @@ public class TileEntitySpec<T: TileEntity>(
     /**
      * The registry name of the tile entity type. The [mod ID][modid] is populated by the [RegistrationManager].
      */
-    public val registryName: ResourceLocation
-        get() = ResourceLocation(modid, id)
+    public val registryName: Identifier
+        get() = Identifier(modid, id)
 
     internal val _validBlocks: MutableList<LazyBlock> = mutableListOf()
 

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.prism.testmod.nbt
 
-import com.teamwizardry.librarianlib.core.util.kotlin.NBTBuilder
+import com.teamwizardry.librarianlib.core.util.kotlin.TagBuilder
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.prism.DeserializationException
 import net.minecraft.nbt.StringNBT
@@ -13,7 +13,7 @@ internal class INBTSerializableTests: NBTPrismTest() {
     @Test
     fun `writing an INBTSerializable should return the serialized NBT`() {
         assertEquals(
-            NBTBuilder.string("value"),
+            TagBuilder.string("value"),
             prism[Mirror.reflect<SerializableThing>()].value.write(SerializableThing("value"))
         )
     }
@@ -21,20 +21,20 @@ internal class INBTSerializableTests: NBTPrismTest() {
     @Test
     fun `reading an existing INBTSerializable from a tag should deserialize`() {
         val thing = SerializableThing("")
-        prism[Mirror.reflect<SerializableThing>()].value.read(NBTBuilder.string("value"), thing)
+        prism[Mirror.reflect<SerializableThing>()].value.read(TagBuilder.string("value"), thing)
         assertEquals("value", thing.value)
     }
 
     @Test
     fun `reading an INBTSerializable from a tag with no existing value should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<SerializableThing>()].value.read(NBTBuilder.string("value"), null)
+            prism[Mirror.reflect<SerializableThing>()].value.read(TagBuilder.string("value"), null)
         }
     }
 
     class SerializableThing(var value: String): INBTSerializable<StringNBT> {
         override fun serializeNBT(): StringNBT {
-            return NBTBuilder.string(value)
+            return TagBuilder.string(value)
         }
 
         override fun deserializeNBT(nbt: StringNBT) {

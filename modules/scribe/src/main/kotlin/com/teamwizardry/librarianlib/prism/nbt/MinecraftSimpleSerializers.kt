@@ -20,9 +20,9 @@ import net.minecraft.nbt.NBTUtil
 import net.minecraft.nbt.NumberNBT
 import net.minecraft.nbt.StringNBT
 import net.minecraft.potion.EffectInstance
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.Tuple
-import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.Box
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.ColumnPos
@@ -38,12 +38,12 @@ import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fluids.capability.templates.FluidTank
 import net.minecraftforge.fml.common.registry.GameRegistry
 
-internal object ResourceLocationSerializer: NBTSerializer<ResourceLocation>() {
-    override fun deserialize(tag: INBT, existing: ResourceLocation?): ResourceLocation {
-        return ResourceLocation(tag.expectType<StringNBT>("tag").string)
+internal object IdentifierSerializer: NBTSerializer<Identifier>() {
+    override fun deserialize(tag: INBT, existing: Identifier?): Identifier {
+        return Identifier(tag.expectType<StringNBT>("tag").string)
     }
 
-    override fun serialize(value: ResourceLocation): INBT {
+    override fun serialize(value: Identifier): INBT {
         return StringNBT.valueOf(value.toString())
     }
 }
@@ -156,7 +156,7 @@ internal object SectionPosSerializer: NBTSerializer<SectionPos>() {
 //internal object GlobalPosSerializer: NBTSerializer<GlobalPos>() {
 //    override fun deserialize(tag: INBT, existing: GlobalPos?): GlobalPos {
 //        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
-//        val dimensionName = ResourceLocation(tag.expect<StringNBT>("Dimension").string)
+//        val dimensionName = Identifier(tag.expect<StringNBT>("Dimension").string)
 //        return GlobalPos.of(
 //            DimensionType.byName(dimensionName)!!, // `!!` because the dimension type registry has a default value
 //            block(
@@ -196,10 +196,10 @@ internal object RotationsSerializer: NBTSerializer<Rotations>() {
     }
 }
 
-internal object AxisAlignedBBSerializer: NBTSerializer<AxisAlignedBB>() {
-    override fun deserialize(tag: INBT, existing: AxisAlignedBB?): AxisAlignedBB {
+internal object BoxSerializer: NBTSerializer<Box>() {
+    override fun deserialize(tag: INBT, existing: Box?): Box {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
-        return AxisAlignedBB(
+        return Box(
             tag.expect<NumberNBT>("MinX").double,
             tag.expect<NumberNBT>("MinY").double,
             tag.expect<NumberNBT>("MinZ").double,
@@ -209,7 +209,7 @@ internal object AxisAlignedBBSerializer: NBTSerializer<AxisAlignedBB>() {
         )
     }
 
-    override fun serialize(value: AxisAlignedBB): INBT {
+    override fun serialize(value: Box): INBT {
         val tag = CompoundNBT()
         tag.put("MinX", DoubleNBT.valueOf(value.minX))
         tag.put("MinY", DoubleNBT.valueOf(value.minY))
@@ -379,7 +379,7 @@ internal object EnchantmentDataSerializer: NBTSerializer<EnchantmentData>() {
 
     override fun deserialize(tag: INBT, existing: EnchantmentData?): EnchantmentData {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundNBT>("tag")
-        val dimensionName = ResourceLocation(tag.expect<StringNBT>("Enchantment").string)
+        val dimensionName = Identifier(tag.expect<StringNBT>("Enchantment").string)
         val enchantment = registry.getValue(dimensionName)
             ?: throw DeserializationException("Unknown enchantment type $dimensionName")
         return EnchantmentData(

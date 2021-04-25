@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20.*
@@ -27,11 +27,11 @@ public abstract class Shader(
     /**
      * The location of the vertex shader, if any
      */
-    public val vertexName: ResourceLocation?,
+    public val vertexName: Identifier?,
     /**
      * The location of the fragment shader, if any
      */
-    public val fragmentName: ResourceLocation?
+    public val fragmentName: Identifier?
 ) {
     /**
      * The OpenGL handle for the shader program
@@ -144,7 +144,7 @@ public abstract class Shader(
                 // dummy value, making sure it will always try to re-bind next time someone binds a texture.
                 RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
                 RenderSystem.enableTexture()
-                Client.textureManager.bindTexture(ResourceLocation("librarianlib:albedo/textures/dummy.png"))
+                Client.textureManager.bindTexture(Identifier("librarianlib:albedo/textures/dummy.png"))
             }
             RenderSystem.activeTexture(GL13.GL_TEXTURE0) // get GlStateManager into a known state
             GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit)
@@ -167,7 +167,7 @@ public abstract class Shader(
                 // since it may think that a texture doesn't need to be re-bound. To alleviate this we set it to a
                 // dummy value, making sure it will always try to re-bind next time someone binds a texture.
                 RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
-                Client.textureManager.bindTexture(ResourceLocation("librarianlib:albedo/textures/dummy.png"))
+                Client.textureManager.bindTexture(Identifier("librarianlib:albedo/textures/dummy.png"))
                 RenderSystem.bindTexture(0)
                 RenderSystem.disableTexture()
             }
@@ -215,12 +215,12 @@ public abstract class Shader(
         var fragmentHandle = 0
         try {
             if (vertexName != null) {
-                val files = mutableMapOf<ResourceLocation, Int>()
+                val files = mutableMapOf<Identifier, Int>()
                 vertexHandle = compileShader(GL_VERTEX_SHADER, "vertex",
                     readShader(resourceManager, vertexName, files), vertexName, files)
             }
             if (fragmentName != null) {
-                val files = mutableMapOf<ResourceLocation, Int>()
+                val files = mutableMapOf<Identifier, Int>()
                 fragmentHandle = compileShader(GL_FRAGMENT_SHADER, "fragment",
                     readShader(resourceManager, fragmentName, files), fragmentName, files)
             }
@@ -238,9 +238,9 @@ public abstract class Shader(
     }
 
     private fun readShader(
-        resourceManager: IResourceManager, name: ResourceLocation,
-        files: MutableMap<ResourceLocation, Int>,
-        stack: LinkedList<ResourceLocation> = LinkedList()
+        resourceManager: IResourceManager, name: Identifier,
+        files: MutableMap<Identifier, Int>,
+        stack: LinkedList<Identifier> = LinkedList()
     ): String {
         if (name in stack) {
             val cycleString = stack.reversed().joinToString(" -> ") { if (it == name) "[$it" else "$it" } + " -> $name]"
@@ -264,7 +264,7 @@ public abstract class Shader(
                 val includeLocation = if (':' !in includeName) {
                     name.resolveSibling(includeName)
                 } else {
-                    ResourceLocation(includeName)
+                    Identifier(includeName)
                 }
 
                 out += readShader(resourceManager, includeLocation, files, stack)
@@ -298,7 +298,7 @@ public abstract class Shader(
         }
     }
 
-    private fun compileShader(type: Int, typeName: String, source: String, location: ResourceLocation, files: Map<ResourceLocation, Int>): Int {
+    private fun compileShader(type: Int, typeName: String, source: String, location: Identifier, files: Map<Identifier, Int>): Int {
         logger.debug("Compiling $typeName shader $location")
         checkVersion(source)
         val shader = GlStateManager.createShader(type)

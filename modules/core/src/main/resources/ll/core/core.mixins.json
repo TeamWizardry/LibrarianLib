@@ -7,10 +7,11 @@
   "mixins": [
   ],
   "client": [
-    "MinecraftMixin",
+    "RenderTickCounterMixin",
     "Matrix3fMixin",
     "Matrix4fMixin",
-    "RenderTypeStateMixin"
+    "MinecraftClientMixin",
+    "RenderLayerPhaseParametersMixin"
   ],
   "injectors": {
     "defaultRequire": 1

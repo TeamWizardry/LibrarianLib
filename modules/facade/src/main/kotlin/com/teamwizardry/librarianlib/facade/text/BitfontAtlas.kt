@@ -10,11 +10,11 @@ import net.minecraft.client.renderer.texture.NativeImage
 import net.minecraft.client.renderer.texture.Texture
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.resources.IResourceManager
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 
 public object BitfontAtlas: Texture() {
-    public val ATLAS_LOCATION: ResourceLocation = ResourceLocation("librarianlib:textures/atlas/bitfont.png")
+    public val ATLAS_LOCATION: Identifier = Identifier("librarianlib:textures/atlas/bitfont.png")
 
     public var width: Int = 128
         private set

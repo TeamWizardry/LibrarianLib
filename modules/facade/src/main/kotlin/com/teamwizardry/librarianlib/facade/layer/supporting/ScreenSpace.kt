@@ -28,7 +28,7 @@ public object ScreenSpace: CoordinateSpace2D {
         }
 
     private fun updateMatrices() {
-        val s = Client.guiScaleFactor
+        val s = Client.scaleFactor
         val S = 1.0/s
         _transform.set(
             S, 0.0, 0.0,

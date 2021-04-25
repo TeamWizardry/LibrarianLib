@@ -5,11 +5,9 @@ import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import net.minecraft.client.renderer.IRenderTypeBuffer
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -54,9 +52,9 @@ internal object FloatArrayUniform: ShaderTest<FloatArrayUniform.Test>() {
         )
     }
 
-    private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
+    private val renderType = SimpleRenderTypes.flat(Identifier("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("float_array_tests", null, ResourceLocation("ll-albedo-test:shaders/float_array_tests.frag")) {
+    class Test: Shader("float_array_tests", null, Identifier("ll-albedo-test:shaders/float_array_tests.frag")) {
         val index = GLSL.glInt()
         val primitive = GLSL.glFloat[2]
         val vector2 = GLSL.vec2[2]

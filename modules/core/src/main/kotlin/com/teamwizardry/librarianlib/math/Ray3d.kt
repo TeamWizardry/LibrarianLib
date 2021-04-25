@@ -1,13 +1,13 @@
 package com.teamwizardry.librarianlib.math
 
 import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.util.math.vector.Vector3d
+import net.minecraft.util.math.Vec3d
 import kotlin.math.max
 import kotlin.math.min
 
 public class Ray3d(originX: Double, originY: Double, originZ: Double, directionX: Double, directionY: Double, directionZ: Double) {
 
-    public constructor(origin: Vector3d, direction: Vector3d): this(origin.x, origin.y, origin.z, direction.x, direction.y, direction.z)
+    public constructor(origin: Vec3d, direction: Vec3d): this(origin.x, origin.y, origin.z, direction.x, direction.y, direction.z)
 
     /** The distance, measured in the multiple of the direction vector used for this trace (hit point = origin + distance * direction) */
     public var hitDistance: Double = Double.NaN
@@ -19,7 +19,7 @@ public class Ray3d(originX: Double, originY: Double, originZ: Double, directionX
         private set
     public var hitZ: Double = Double.NaN
         private set
-    public val hit: Vector3d?
+    public val hit: Vec3d?
         get() = if (hitX.isNaN() || hitY.isNaN() || hitZ.isNaN()) null else vec(hitX, hitY, hitZ)
 
     public var hitNormalX: Double = Double.NaN
@@ -28,7 +28,7 @@ public class Ray3d(originX: Double, originY: Double, originZ: Double, directionX
         private set
     public var hitNormalZ: Double = Double.NaN
         private set
-    public val hitNormal: Vector3d?
+    public val hitNormal: Vec3d?
         get() = if (hitNormalX.isNaN() || hitNormalY.isNaN() || hitNormalZ.isNaN()) null else vec(hitNormalX, hitNormalY, hitNormalZ)
 
     public var originX: Double = originX
@@ -37,7 +37,7 @@ public class Ray3d(originX: Double, originY: Double, originZ: Double, directionX
         private set
     public var originZ: Double = originZ
         private set
-    public val origin: Vector3d
+    public val origin: Vec3d
         get() = vec(originX, originY, originZ)
 
     public var directionX: Double = directionX
@@ -46,14 +46,14 @@ public class Ray3d(originX: Double, originY: Double, originZ: Double, directionX
         private set
     public var directionZ: Double = directionZ
         private set
-    public val direction: Vector3d
+    public val direction: Vec3d
         get() = vec(directionX, directionY, directionZ)
 
     private var invX: Double = 1 / directionX
     private var invY: Double = 1 / directionY
     private var invZ: Double = 1 / directionZ
 
-    public fun reset(origin: Vector3d, direction: Vector3d) {
+    public fun reset(origin: Vec3d, direction: Vec3d) {
         reset(origin.x, origin.y, origin.z, direction.x, direction.y, direction.z)
     }
 

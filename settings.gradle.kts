@@ -9,7 +9,7 @@ fun includeModule(name: String) {
 //includeModule("albedo")
 includeModule("core")
 //includeModule("courier")
-//includeModule("etcetera")
+includeModule("etcetera")
 //includeModule("facade")
 //includeModule("foundation")
 //includeModule("glitter")

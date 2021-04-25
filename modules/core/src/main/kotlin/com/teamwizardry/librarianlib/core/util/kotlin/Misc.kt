@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.core.util.kotlin
 
-import net.minecraft.util.ResourceLocation
-import net.minecraftforge.common.util.LazyOptional
+import net.minecraft.util.Identifier
 import java.util.Optional
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -10,12 +9,10 @@ import kotlin.contracts.contract
 /**
  * Creates a translation key in the format `type.namespace.path[.suffix]`, e.g. `item.minecraft.iron_ingot`
  */
-public fun ResourceLocation.translationKey(type: String, suffix: String? = null): String
+public fun Identifier.translationKey(type: String, suffix: String? = null): String
     = "$type.$namespace.$path${suffix?.let { ".$it" } ?: ""}"
 
 public fun<T> Optional<T>.getOrNull(): T? = this.orElse(null)
-@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-public fun<T> LazyOptional<T>.getOrNull(): T? = this.orElse(null)
 
 /**
  * Runs a block and then returns `this`.

@@ -8,9 +8,8 @@ import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
-import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.kotlin.builder
-import com.teamwizardry.librarianlib.core.util.kotlin.normal
 import com.teamwizardry.librarianlib.core.util.kotlin.unreachable
 import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.glitter.GlitterLightingCache
@@ -24,7 +23,7 @@ import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.vertex.VertexFormat
 import net.minecraft.client.renderer.vertex.VertexFormatElement
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.vector.Matrix4f
 import net.minecraft.util.math.vector.Vector4f
@@ -407,7 +406,7 @@ public class SpriteRenderModule private constructor(
          * @param position The position binding for the particle (3D)
          */
         @JvmStatic
-        public fun build(sprite: ResourceLocation, position: ReadParticleBinding): Builder {
+        public fun build(sprite: Identifier, position: ReadParticleBinding): Builder {
             return Builder(SpriteRenderOptions.build(sprite).build(), position)
         }
     }
@@ -572,12 +571,12 @@ public class SpriteRenderOptions private constructor(
 ) {
     public companion object {
         @JvmStatic
-        public fun build(sprite: ResourceLocation): Builder {
+        public fun build(sprite: Identifier): Builder {
             return Builder(sprite)
         }
     }
 
-    public class Builder(private val sprite: ResourceLocation) {
+    public class Builder(private val sprite: Identifier) {
         private var blendMode: BlendMode? = BlendMode.NORMAL
         private var writeDepth: Boolean = true
         private var blur: Boolean = false

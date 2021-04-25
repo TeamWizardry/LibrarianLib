@@ -4,11 +4,9 @@ import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import net.minecraft.client.renderer.IRenderTypeBuffer
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -37,7 +35,7 @@ object SimpleFrag: ShaderTest<SimpleFrag.Test>() {
 
     private val renderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
 
-    class Test: Shader("simple_frag", null, ResourceLocation("ll-albedo-test:shaders/simple_frag.frag")) {
+    class Test: Shader("simple_frag", null, Identifier("ll-albedo-test:shaders/simple_frag.frag")) {
 
     }
 }

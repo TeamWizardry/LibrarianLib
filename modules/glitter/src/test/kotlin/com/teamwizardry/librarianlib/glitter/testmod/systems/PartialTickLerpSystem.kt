@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.glitter.modules.BasicPhysicsUpdateModule
 import com.teamwizardry.librarianlib.glitter.modules.GlLineBeamRenderModule
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 
 object PartialTickLerpSystem : TestSystem("partial_tick_lerp") {
     override fun configure() {

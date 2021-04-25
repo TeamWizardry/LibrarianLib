@@ -1,57 +1,40 @@
 package com.teamwizardry.librarianlib.core.util
 
-import com.google.common.collect.Lists
-import com.teamwizardry.librarianlib.core.logger
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.core.util.vec
 import dev.thecodewarrior.mirror.Mirror
-import net.minecraft.client.MainWindow
-import net.minecraft.client.Minecraft
-import net.minecraft.client.entity.player.ClientPlayerEntity
-import net.minecraft.client.gui.FontRenderer
+import net.minecraft.client.MinecraftClient
+import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.texture.AtlasTexture
-import net.minecraft.client.renderer.texture.TextureAtlasSprite
-import net.minecraft.client.renderer.texture.TextureManager
-import net.minecraft.resources.IFutureReloadListener
-import net.minecraft.resources.IReloadableResourceManager
-import net.minecraft.resources.IResourceManager
-import net.minecraft.util.ResourceLocation
-import net.minecraft.util.Timer
-import net.minecraft.util.math.vector.Vector3d
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.event.TickEvent
-import net.minecraftforge.fml.DatagenModLoader
-import net.minecraftforge.resource.IResourceType
-import net.minecraftforge.resource.ISelectiveResourceReloadListener
-import net.minecraftforge.resource.SelectiveReloadStateHandler
+import net.minecraft.client.network.ClientPlayerEntity
+import net.minecraft.client.render.Tessellator
+import net.minecraft.client.texture.TextureManager
+import net.minecraft.client.util.Window
+import net.minecraft.resource.ResourceManager
+import net.minecraft.util.Identifier
+import net.minecraft.util.math.Vec3d
 import java.io.IOException
 import java.io.InputStream
 import java.util.concurrent.CompletableFuture
 
 public object Client {
     @JvmStatic
-    public val minecraft: Minecraft
-        get() = Minecraft.getInstance()
+    public val minecraft: MinecraftClient
+        get() = MinecraftClient.getInstance()
 
     @JvmStatic
     public val player: ClientPlayerEntity?
         get() = minecraft.player
 
     @JvmStatic
-    public val window: MainWindow
-        get() = minecraft.mainWindow
+    public val window: Window
+        get() = minecraft.window
 
     @JvmStatic
-    public val guiScaleFactor: Double
-        get() = window.guiScaleFactor
+    public val scaleFactor: Double
+        get() = window.scaleFactor
 
     @JvmStatic
-    public val resourceManager: IResourceManager
+    public val resourceManager: ResourceManager
         get() = minecraft.resourceManager
 
     @JvmStatic
@@ -59,218 +42,38 @@ public object Client {
         get() = minecraft.textureManager
 
     @JvmStatic
-    public val fontRenderer: FontRenderer
-        get() = minecraft.fontRenderer
+    public val textRenderer: TextRenderer
+        get() = minecraft.textRenderer
 
     @JvmStatic
     public val tessellator: Tessellator
         get() = Tessellator.getInstance()
 
     /**
-     * Datagen is like a quasi-client, so some things don't work. For example, there's no [Minecraft] instance.
-     */
-    @JvmStatic
-    public val isDataGen: Boolean get() = DatagenModLoader.isRunningDataGen()
-
-    /**
      * The game time, as measured from the game launch
      */
     @JvmStatic
-    public val time: Time = object: Time() {
-        override val ticks: Int
-            get() = globalTicks.toInt()
-        override val partialTicks: Float
-            get() = timer.renderPartialTicks
-    }
+    public val time: GameTime = GameTime()
 
     /**
-     * The world time, as measured from the game launch
+     * The world time, as measured from the game launch. This timer pauses when the game is paused.
      */
     @JvmStatic
-    public val worldTime: Time = object: Time() {
-        override val ticks: Int
-            get() = worldTicks.toInt()
-        override val partialTicks: Float
-            get() = if (minecraft.isGamePaused)
-                renderPartialTicksPaused.get(minecraft) as Float
-            else
-                timer.renderPartialTicks
-    }
+    public val worldTime: GameTime = GameTime()
 
-    @JvmStatic
-    public val resourceReloadHandler: ResourceReload = ResourceReload()
+    public class GameTime {
+        public var ticks: Int = 0
+            private set
+        public var tickDelta: Float = 0f
+            private set
 
-    @JvmStatic
-    public fun displayGuiScreen(screen: Screen?) {
-        minecraft.displayGuiScreen(screen)
-    }
-
-    /**
-     * Queue a task to be executed on the client thread. The task is executed immediately if this is called from the
-     * client thread.
-     */
-    @JvmStatic
-    public fun runAsync(task: Runnable): CompletableFuture<Void> {
-        return minecraft.runAsync(task)
-    }
-
-    @JvmStatic
-    public fun getBlockAtlasSprite(sprite: ResourceLocation): TextureAtlasSprite {
-        @Suppress("DEPRECATION")
-        return getAtlasSprite(AtlasTexture.LOCATION_BLOCKS_TEXTURE, sprite)
-    }
-
-    @JvmStatic
-    public fun getAtlasSprite(atlas: ResourceLocation, texture: ResourceLocation): TextureAtlasSprite {
-        return minecraft.getAtlasSpriteGetter(atlas).apply(texture)
-    }
-
-    /**
-     * Gets the [InputStream] for a given resource, or throws an IOException if it isn't found
-     *
-     * @see getResourceInputStreamOrNull
-     */
-    @JvmStatic
-    @Throws(IOException::class)
-    public fun getResourceInputStream(resourceManager: IResourceManager, location: ResourceLocation): InputStream {
-        return resourceManager.getResource(location).inputStream
-    }
-
-    /**
-     * Gets the [InputStream] for a given resource, or returns null if it isn't found
-     *
-     * @see getResourceInputStream
-     */
-    @JvmStatic
-    public fun getResourceInputStreamOrNull(resourceManager: IResourceManager, location: ResourceLocation): InputStream? {
-        return try {
-            getResourceInputStream(resourceManager, location)
-        } catch (e: IOException) {
-            null
-        }
-    }
-
-    /**
-     * Gets the contents of the given resource as a byte array, or throws an IOException if the resource isn't found
-     *
-     * @see getResourceBytesOrNull
-     */
-    @JvmStatic
-    @Throws(IOException::class)
-    public fun getResourceBytes(resourceManager: IResourceManager, location: ResourceLocation): ByteArray {
-        return resourceManager.getResource(location).inputStream.use { it.readBytes() }
-    }
-
-    /**
-     * Gets the contents of the given resource as a byte array, or returns null if the resource isn't found
-     *
-     * @see getResourceBytes
-     */
-    @JvmStatic
-    public fun getResourceBytesOrNull(resourceManager: IResourceManager, location: ResourceLocation): ByteArray? {
-        return try {
-            getResourceBytes(resourceManager, location)
-        } catch (e: IOException) {
-            null
-        }
-    }
-
-    /**
-     * Gets the contents of the given resource as a string, or throws an IOException if the resource isn't found
-     *
-     * @see getResourceTextOrNull
-     */
-    @JvmStatic
-    @Throws(IOException::class)
-    public fun getResourceText(resourceManager: IResourceManager, location: ResourceLocation): String {
-        return resourceManager.getResource(location).inputStream.bufferedReader().use { it.readText() }
-    }
-
-    /**
-     * Gets the contents of the given resource as a string, or returns null if the resource isn't found
-     *
-     * @see getResourceText
-     */
-    @JvmStatic
-    public fun getResourceTextOrNull(resourceManager: IResourceManager, location: ResourceLocation): String? {
-        return try {
-            getResourceText(resourceManager, location)
-        } catch (e: IOException) {
-            null
-        }
-    }
-
-    /**
-     * Gets the [InputStream] for a given resource, or throws an IOException if it isn't found
-     *
-     * @see getResourceInputStreamOrNull
-     */
-    @JvmStatic
-    @Throws(IOException::class)
-    public fun getResourceInputStream(location: ResourceLocation): InputStream {
-        return getResourceInputStream(resourceManager, location)
-    }
-
-    /**
-     * Gets the [InputStream] for a given resource, or returns null if it isn't found
-     *
-     * @see getResourceInputStream
-     */
-    @JvmStatic
-    public fun getResourceInputStreamOrNull(location: ResourceLocation): InputStream? {
-        return getResourceInputStreamOrNull(resourceManager, location)
-    }
-
-    /**
-     * Gets the contents of the given resource as a byte array, or throws an IOException if the resource isn't found
-     *
-     * @see getResourceBytesOrNull
-     */
-    @JvmStatic
-    @Throws(IOException::class)
-    public fun getResourceBytes(location: ResourceLocation): ByteArray {
-        return getResourceBytes(resourceManager, location)
-    }
-
-    /**
-     * Gets the contents of the given resource as a byte array, or returns null if the resource isn't found
-     *
-     * @see getResourceBytes
-     */
-    @JvmStatic
-    public fun getResourceBytesOrNull(location: ResourceLocation): ByteArray? {
-        return getResourceBytesOrNull(resourceManager, location)
-    }
-
-    /**
-     * Gets the contents of the given resource as a string, or throws an IOException if the resource isn't found
-     *
-     * @see getResourceTextOrNull
-     */
-    @JvmStatic
-    @Throws(IOException::class)
-    public fun getResourceText(location: ResourceLocation): String {
-        return getResourceText(resourceManager, location)
-    }
-
-    /**
-     * Gets the contents of the given resource as a string, or returns null if the resource isn't found
-     *
-     * @see getResourceText
-     */
-    @JvmStatic
-    public fun getResourceTextOrNull(location: ResourceLocation): String? {
-        return getResourceTextOrNull(resourceManager, location)
-    }
-
-    public abstract class Time {
-        public abstract val ticks: Int
-        public abstract val partialTicks: Float
-        public val time: Float get() = ticks + partialTicks
-        public val seconds: Float get() = time / 20
+        public val time: Float
+            get() = ticks + tickDelta
+        public val seconds: Float
+            get() = time / 20
 
         public fun interp(previous: Double, current: Double): Double {
-            return previous + (current - previous) * partialTicks
+            return previous + (current - previous) * tickDelta
         }
 
         @Suppress("NOTHING_TO_INLINE")
@@ -280,33 +83,21 @@ public object Client {
             return vec(interp(previous.x, current.x), interp(previous.y, current.y))
         }
 
-        public fun interp(previous: Vector3d, current: Vector3d): Vector3d {
+        public fun interp(previous: Vec3d, current: Vec3d): Vec3d {
             return vec(interp(previous.x, current.x), interp(previous.y, current.y), interp(previous.z, current.z))
         }
-    }
 
-    private val timer: Timer = if(isDataGen)
-        Timer(50f, 0)
-    else
-        Mirror.reflectClass<Minecraft>().getField(mapSrgName("field_71428_T")).get(minecraft)
+        public fun updateTime(ticks: Int, tickDelta: Float) {
+            this.ticks = ticks
+            this.tickDelta = tickDelta
+        }
 
-    private val renderPartialTicksPaused = Mirror.reflectClass<Minecraft>().getField(mapSrgName("field_193996_ah"))
+        public fun trackTick() {
+            ticks++
+        }
 
-    private var worldTicks: Float = 0f
-    private var globalTicks: Float = 0f
-
-    init {
-        MinecraftForge.EVENT_BUS.register(this)
-    }
-
-    @JvmSynthetic
-    @SubscribeEvent
-    internal fun clientTickEnd(event: TickEvent.ClientTickEvent) {
-        if (event.phase == TickEvent.Phase.END) {
-            val mc = Minecraft.getInstance()
-            if (!mc.isGamePaused)
-                worldTicks++
-            globalTicks++
+        public fun updateTickDelta(tickDelta: Float) {
+            this.tickDelta = tickDelta
         }
     }
 }

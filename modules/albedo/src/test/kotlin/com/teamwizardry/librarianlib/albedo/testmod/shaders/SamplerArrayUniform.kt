@@ -1,32 +1,25 @@
 package com.teamwizardry.librarianlib.albedo.testmod.shaders
 
 import com.mojang.blaze3d.matrix.MatrixStack
-import com.mojang.blaze3d.platform.GlStateManager
-import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
 import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
-import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.mixinCast
-import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.renderer.IRenderTypeBuffer
-import net.minecraft.client.renderer.RenderState
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL13
 import java.awt.Color
 
 internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
-    private val failureLocation = ResourceLocation("ll-albedo-test:textures/sampler_failure.png")
-    private val successLocation1 = ResourceLocation("ll-albedo-test:textures/sampler_success1.png")
-    private val successLocation2 = ResourceLocation("ll-albedo-test:textures/sampler_success2.png")
+    private val failureLocation = Identifier("ll-albedo-test:textures/sampler_failure.png")
+    private val successLocation1 = Identifier("ll-albedo-test:textures/sampler_success1.png")
+    private val successLocation2 = Identifier("ll-albedo-test:textures/sampler_success2.png")
 
     override fun doDraw(matrixStack: MatrixStack) {
         val minX = 0.0
@@ -84,7 +77,7 @@ internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
         )
     }
 
-    class Test: Shader("sampler_array_tests", null, ResourceLocation("ll-albedo-test:shaders/sampler_array_tests.frag")) {
+    class Test: Shader("sampler_array_tests", null, Identifier("ll-albedo-test:shaders/sampler_array_tests.frag")) {
         val index = GLSL.glInt()
         // we only test sampler2D because all the sampler implementations are identical, and the others will be complex
         // to set up

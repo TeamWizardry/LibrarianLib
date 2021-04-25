@@ -5,9 +5,9 @@ import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.util.Client
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 
-internal object FlatLayerShader: Shader("flat_layer", null, ResourceLocation("librarianlib:facade/shaders/flat_layer.frag")) {
+internal object FlatLayerShader: Shader("flat_layer", null, Identifier("librarianlib:facade/shaders/flat_layer.frag")) {
     val layerImage = GLSL.sampler2D()
     val maskImage = GLSL.sampler2D()
     val displaySize = GLSL.vec2()

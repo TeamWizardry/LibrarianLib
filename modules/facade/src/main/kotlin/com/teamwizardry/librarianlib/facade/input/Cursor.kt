@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.core.util.loc
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import org.apache.commons.io.IOUtils
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWImage
@@ -20,7 +20,7 @@ public class Cursor @JvmOverloads constructor(
     /**
      * The location of the cursor texture
      */
-    private val resourceLocation: ResourceLocation,
+    private val Identifier: Identifier,
     /**
      * The position of the cursor point within the image (e.g. the tip of an arrow cursor). The origin is in the
      * top-left of the image, with the X axis extending to the right.
@@ -52,7 +52,7 @@ public class Cursor @JvmOverloads constructor(
             if (glfwCursor != 0L)
                 return
         }
-        val stream = Client.resourceManager.getResource(resourceLocation).inputStream
+        val stream = Client.resourceManager.getResource(Identifier).inputStream
         var bytebuffer: ByteBuffer? = null
         try {
             bytebuffer = TextureUtil.readToBuffer(stream)
@@ -85,7 +85,7 @@ public class Cursor @JvmOverloads constructor(
     }
 
     override fun toString(): String {
-        return "Cursor($resourceLocation)"
+        return "Cursor($Identifier)"
     }
 
     /**

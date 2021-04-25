@@ -1,15 +1,16 @@
 package com.teamwizardry.librarianlib.core.util.sided
 
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 
+//todo: bad?
 /**
  * A marker denoting a functional interface that should only run on the client
  */
 public interface ClientSideFunction
 
 public fun interface ClientMetaSupplier<T: ClientSideFunction> {
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public fun getClientFunction(): T
 }
 
@@ -22,6 +23,6 @@ public interface ServerSideFunction
  *
  */
 public fun interface ServerMetaSupplier<T: ServerSideFunction> {
-    @OnlyIn(Dist.DEDICATED_SERVER)
+    @Environment(EnvType.SERVER)
     public fun getServerFunction(): T
 }

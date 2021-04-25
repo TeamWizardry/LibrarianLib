@@ -1,4 +1,9 @@
 package com.teamwizardry.librarianlib
 
-public object LibrarianLib {
+import net.fabricmc.api.ModInitializer
+
+public object LibrarianLib : ModInitializer {
+    override fun onInitialize() {
+        println("INITIALIZEDFLKAJLKS")
+    }
 }

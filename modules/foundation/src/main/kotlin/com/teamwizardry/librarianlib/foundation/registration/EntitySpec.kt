@@ -8,7 +8,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityClassification
 import net.minecraft.entity.EntitySize
 import net.minecraft.entity.EntityType
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.world.World
 import net.minecraftforge.fml.client.registry.IRenderFactory
 import net.minecraftforge.fml.network.FMLPlayMessages
@@ -41,8 +41,8 @@ public class EntitySpec<T: Entity>(
     /**
      * The registry name of the tile entity type. The [mod ID][modid] is populated by the [RegistrationManager].
      */
-    public val registryName: ResourceLocation
-        get() = ResourceLocation(modid, id)
+    public val registryName: Identifier
+        get() = Identifier(modid, id)
 
     private val builder = EntityType.Builder.create(factory, classification)
     @get:JvmSynthetic

@@ -17,7 +17,7 @@ import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
 import net.minecraft.tileentity.SignTileEntity
 import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.world.IBlockReader
 import net.minecraftforge.client.model.generators.BlockStateProvider
 
@@ -31,7 +31,7 @@ import net.minecraftforge.client.model.generators.BlockStateProvider
 public open class FoundationStandingSignBlock(
     override val properties: FoundationBlockProperties,
     protected val materialName: String,
-    protected val particleTexture: ResourceLocation,
+    protected val particleTexture: Identifier,
     protected val wallSignBlock: LazyBlock,
     protected val tileEntityType: LazyTileEntityType<SignTileEntity>
 ): StandingSignBlock(properties.vanillaProperties, WoodType.OAK), IFoundationBlock, ICustomSignMaterialBlock {
@@ -54,7 +54,7 @@ public open class FoundationStandingSignBlock(
     }
 
     internal companion object {
-        fun signTexture(namespace: String, name: String): ResourceLocation {
+        fun signTexture(namespace: String, name: String): Identifier {
             return loc(namespace, "entity/signs/$name")
         }
     }

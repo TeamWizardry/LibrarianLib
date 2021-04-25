@@ -11,7 +11,7 @@ import net.minecraft.util.math.vector.Vector3f
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererManager
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
@@ -113,8 +113,8 @@ public class TestEntityRenderer(renderManagerIn: EntityRendererManager): EntityR
     /**
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
-    override fun getEntityTexture(entity: TestEntity): ResourceLocation {
-//        return ResourceLocation("textures/entity/projectiles/arrow.png")
+    override fun getEntityTexture(entity: TestEntity): Identifier {
+//        return Identifier("textures/entity/projectiles/arrow.png")
         return loc("testcore:textures/entity/testentity.png")
     }
 }

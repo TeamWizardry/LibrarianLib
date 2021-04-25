@@ -12,7 +12,7 @@ import net.minecraft.item.UseAction
 import net.minecraft.util.ActionResult
 import net.minecraft.util.ActionResultType
 import net.minecraft.util.Hand
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.TextFormatting
@@ -22,7 +22,7 @@ import net.minecraftforge.fml.ModLoadingContext
 
 public open class TestItem(public val config: TestItemConfig): Item(config.properties), ITestItem {
     init {
-        this.registryName = ResourceLocation(ModLoadingContext.get().activeContainer.modId, config.id)
+        this.registryName = Identifier(ModLoadingContext.get().activeContainer.modId, config.id)
     }
 
     override fun addInformation(stack: ItemStack, worldIn: World?, tooltip: MutableList<ITextComponent>, flagIn: ITooltipFlag) {

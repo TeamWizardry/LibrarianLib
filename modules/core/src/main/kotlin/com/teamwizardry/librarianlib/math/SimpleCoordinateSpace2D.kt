@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.math
 
 import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.util.math.vector.Vector3d
+import net.minecraft.util.math.Vec3d
 
 public class SimpleCoordinateSpace2D: CoordinateSpace2D {
     override var parentSpace: CoordinateSpace2D? = null
@@ -30,8 +30,8 @@ public class SimpleCoordinateSpace2D: CoordinateSpace2D {
         private set
 
     private data class MatrixParams(val pos: Vec2d = Vec2d.ZERO,
-        val rotation: Quaternion = Quaternion.IDENTITY, val scale: Vector3d = vec(1, 1, 1),
-        val inverseRotation: Quaternion = Quaternion.IDENTITY, val inverseScale: Vector3d = vec(1, 1, 1))
+        val rotation: Quaternion = Quaternion.IDENTITY, val scale: Vec3d = vec(1, 1, 1),
+        val inverseRotation: Quaternion = Quaternion.IDENTITY, val inverseScale: Vec3d = vec(1, 1, 1))
 
     private var matrixParams = MatrixParams()
 

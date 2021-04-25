@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderOptions
 import net.minecraft.entity.Entity
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 
 object DiffuseLitSystem : TestSystem("diffuse_lit") {
     override fun configure() {

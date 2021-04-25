@@ -5,9 +5,8 @@ import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.*
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
 import com.teamwizardry.librarianlib.core.util.lerp.Lerper
@@ -1179,8 +1178,8 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 FlatLayerShader.renderMode.set(renderMode.ordinal)
                 FlatLayerShader.blendMode = blendMode
 
-                val maxU = (size.xf * rasterizationScale * Client.guiScaleFactor.toFloat()) / Client.window.framebufferWidth
-                val maxV = (size.yf * rasterizationScale * Client.guiScaleFactor.toFloat()) / Client.window.framebufferHeight
+                val maxU = (size.xf * rasterizationScale * Client.scaleFactor.toFloat()) / Client.window.framebufferWidth
+                val maxV = (size.yf * rasterizationScale * Client.scaleFactor.toFloat()) / Client.window.framebufferHeight
 
                 val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
                 val vb = buffer.getBuffer(flatLayerRenderType)

@@ -10,10 +10,10 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.block.Blocks
 import net.minecraft.client.renderer.WorldRenderer
-import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.Box
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.vector.Vector3d
-import net.minecraft.util.math.shapes.VoxelShape
+import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.chunk.ChunkSection
 import net.minecraft.world.chunk.ChunkStatus
 import net.minecraftforge.api.distmarker.Dist

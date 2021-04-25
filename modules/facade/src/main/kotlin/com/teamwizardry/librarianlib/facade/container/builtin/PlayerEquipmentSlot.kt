@@ -8,7 +8,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.inventory.EquipmentSlotType
 import net.minecraft.inventory.container.PlayerContainer
 import net.minecraft.item.ItemStack
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.items.IItemHandler
@@ -46,7 +46,7 @@ public class PlayerEquipmentSlot(
     }
 
     @OnlyIn(Dist.CLIENT)
-    override fun getBackground(): Pair<ResourceLocation, ResourceLocation>? {
+    override fun getBackground(): Pair<Identifier, Identifier>? {
         return EQUIPMENT_TYPE_TEXTURES[type.ordinal]?.let { Pair.of(AtlasTexture.LOCATION_BLOCKS_TEXTURE, it) }
     }
 

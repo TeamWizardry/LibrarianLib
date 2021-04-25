@@ -17,7 +17,7 @@ import kotlin.reflect.KMutableProperty0
 internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOptions) {
     var isOpen: Boolean = false
 
-    private val itemHeight: Int = Client.fontRenderer.FONT_HEIGHT + 1
+    private val itemHeight: Int = Client.textRenderer.FONT_HEIGHT + 1
 
     private val rows: List<OptionRow>
     private var width: Int = 0
@@ -124,19 +124,19 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
             if (i == hoveredIndex) {
                 AbstractGui.fill(matrixStack,
                     left - 1, rowY - 1,
-                    left + width + 1, rowY + Client.fontRenderer.FONT_HEIGHT,
+                    left + width + 1, rowY + Client.textRenderer.FONT_HEIGHT,
                     Color.darkGray.rgb
                 )
             }
 
-            Client.fontRenderer.drawStringWithShadow(matrixStack,
+            Client.textRenderer.drawStringWithShadow(matrixStack,
                 row.label,
                 left.toFloat() + (maxLabelWidth - row.labelWidth),
                 rowY.toFloat(),
                 Color.WHITE.rgb
             )
 
-            Client.fontRenderer.drawStringWithShadow(matrixStack,
+            Client.textRenderer.drawStringWithShadow(matrixStack,
                 row.stateText,
                 left.toFloat() + maxLabelWidth + 2,
                 rowY.toFloat(),
@@ -149,7 +149,7 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
                 matrixStack,
                 row.tooltip,
                 left - 12,
-                top + hoveredIndex * itemHeight + Client.fontRenderer.FONT_HEIGHT + 16
+                top + hoveredIndex * itemHeight + Client.textRenderer.FONT_HEIGHT + 16
             )
         }
     }
@@ -160,9 +160,9 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
         var stateText: String = ""
 
         val labelWidth: Int
-            get() = Client.fontRenderer.getStringWidth(label)
+            get() = Client.textRenderer.getStringWidth(label)
         val stateWidth: Int
-            get() = Client.fontRenderer.getStringWidth(stateText)
+            get() = Client.textRenderer.getStringWidth(stateText)
 
         abstract fun click()
         abstract fun computeStateText()

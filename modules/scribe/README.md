@@ -52,7 +52,7 @@
 - `net.minecraft.item.ItemStack`
 - `net.minecraft.potion.EffectInstance`
 - `net.minecraft.text.ITextComponent`
-- `net.minecraft.util.math.AxisAlignedBB`
+- `net.minecraft.util.math.Box`
 - `net.minecraft.util.math.BlockPos`
 - `net.minecraft.util.math.ChunkPos`
 - `net.minecraft.util.math.ColumnPos`
@@ -62,7 +62,7 @@
 - `net.minecraft.util.math.SectionPos`
 - `net.minecraft.util.math.Vec2f`
 - `net.minecraft.util.math.Vector3d`
-- `net.minecraft.util.ResourceLocation`
+- `net.minecraft.util.Identifier`
 - `net.minecraftforge.fluids.FluidStack`
 #### LibLib types
 - `com.teamwizardry.librarianlib.math.Matrix3d`

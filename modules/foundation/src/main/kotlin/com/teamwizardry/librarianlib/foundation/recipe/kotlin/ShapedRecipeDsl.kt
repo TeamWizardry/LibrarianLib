@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.item.crafting.Ingredient
 import net.minecraft.tags.ITag
 import net.minecraft.util.IItemProvider
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import java.util.function.Consumer
 
 /**
@@ -40,7 +40,7 @@ public class ShapedRecipeDsl(result: IItemProvider, count: Int) {
         RecipeCriteriaDsl(builder::addCriterion).config()
     }
 
-    public fun buildRecipe(consumer: Consumer<IFinishedRecipe>, id: ResourceLocation) {
+    public fun buildRecipe(consumer: Consumer<IFinishedRecipe>, id: Identifier) {
         builder.build(consumer, id)
     }
 }

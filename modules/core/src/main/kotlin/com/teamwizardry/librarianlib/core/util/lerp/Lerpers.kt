@@ -12,7 +12,7 @@ public object Lerpers: LerperMatcher() {
             FloatLerper, PrimitiveFloatLerper,
             IntLerper, PrimitiveIntLerper,
             LongLerper, PrimitiveLongLerper,
-            Vec2dLerper, Vector3dLerper, Rect2dLerper,
+            Vec2dLerper, Vec3dLerper, Rect2dLerper,
             ColorLerper
         )
     }

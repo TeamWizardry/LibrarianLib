@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.facade.container.FacadeContainer
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerType
 import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
@@ -27,7 +27,7 @@ class TestContainerSet(val name: String, config: Entry.Group.() -> Unit) {
         return types.associateWith { it.dataClass.newInstance() }
     }
 
-    fun getType(id: ResourceLocation): Type<*, *> {
+    fun getType(id: Identifier): Type<*, *> {
         return types.find { it.id == id }
             ?: throw IllegalArgumentException("No container type for id '$id'")
     }
@@ -70,7 +70,7 @@ class TestContainerSet(val name: String, config: Entry.Group.() -> Unit) {
         val containerClass: Class<C>,
         val screenFactory: ClientMetaSupplier<ContainerScreenFactory<C>>
     ) {
-        val id: ResourceLocation = loc("ll-facade-test", containerClass.simpleName.toLowerCase())
+        val id: Identifier = loc("ll-facade-test", containerClass.simpleName.toLowerCase())
         val containerType: FacadeContainerType<C> = FacadeContainerType(containerClass)
 
         init {

@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.facade.container.FacadeContainer
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerType
 import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.text.ITextComponent
 
 /**
@@ -36,8 +36,8 @@ public class ContainerSpec<T: FacadeContainer>(
     /**
      * The registry name of the tile entity type. The [mod ID][modid] is populated by the [RegistrationManager].
      */
-    public val registryName: ResourceLocation
-        get() = ResourceLocation(modid, id)
+    public val registryName: Identifier
+        get() = Identifier(modid, id)
 
 
     @get:JvmSynthetic

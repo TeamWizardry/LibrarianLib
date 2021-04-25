@@ -6,11 +6,11 @@ import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
 import mezz.jei.api.IModPlugin
 import mezz.jei.api.JeiPlugin
 import mezz.jei.api.registration.IGuiHandlerRegistration
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 
 @JeiPlugin
 internal class FacadeJeiPlugin: IModPlugin {
-    override fun getPluginUid(): ResourceLocation {
+    override fun getPluginUid(): Identifier {
         return loc("librarianlib:facade")
     }
 

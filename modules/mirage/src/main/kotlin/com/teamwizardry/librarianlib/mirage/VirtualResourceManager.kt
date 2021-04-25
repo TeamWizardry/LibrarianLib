@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourcePack
 import net.minecraft.resources.ResourcePackType
 import net.minecraft.resources.SimpleReloadableResourceManager
 import net.minecraft.resources.data.IMetadataSectionSerializer
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.text.LanguageMap
 import java.io.ByteArrayInputStream
 import java.io.FileNotFoundException
@@ -22,12 +22,12 @@ import kotlin.concurrent.write
 public class VirtualResourceManager(public val type: ResourcePackType) {
     public val mixinBridge: MixinBridge = MixinBridge()
     private val fallback = FallbackResourceManager(type, "librarianlib")
-    private val files = mutableMapOf<ResourceLocation, ByteArray>().synchronized()
-    private val generators = mutableMapOf<ResourceLocation, Supplier<ByteArray>>().synchronized()
+    private val files = mutableMapOf<Identifier, ByteArray>().synchronized()
+    private val generators = mutableMapOf<Identifier, Supplier<ByteArray>>().synchronized()
     private val packs = mutableListOf<VirtualResourcePack>().synchronized()
     private val lock = ReentrantReadWriteLock()
 
-    public fun remove(location: ResourceLocation): Boolean {
+    public fun remove(location: Identifier): Boolean {
         lock.write {
             var removed = false
             removed =
@@ -37,7 +37,7 @@ public class VirtualResourceManager(public val type: ResourcePackType) {
         }
     }
 
-    public fun removeFile(location: ResourceLocation): Boolean {
+    public fun removeFile(location: Identifier): Boolean {
         lock.write {
             if (files.remove(location) != null) {
                 logger.debug("Removed file $location")
@@ -47,7 +47,7 @@ public class VirtualResourceManager(public val type: ResourcePackType) {
         }
     }
 
-    public fun removeGenerator(location: ResourceLocation): Boolean {
+    public fun removeGenerator(location: Identifier): Boolean {
         lock.write {
             if (generators.remove(location) != null) {
                 logger.debug("Removed generator $location")
@@ -57,11 +57,11 @@ public class VirtualResourceManager(public val type: ResourcePackType) {
         }
     }
 
-    public fun add(location: ResourceLocation, text: String) {
+    public fun add(location: Identifier, text: String) {
         addRaw(location, text.toByteArray())
     }
 
-    public fun addRaw(location: ResourceLocation, data: ByteArray) {
+    public fun addRaw(location: Identifier, data: ByteArray) {
         lock.write {
             files[location] = data
             logger.debug("Added resource $location")
@@ -71,7 +71,7 @@ public class VirtualResourceManager(public val type: ResourcePackType) {
     /**
      * Note: the passed generator may be run on another thread
      */
-    public fun add(location: ResourceLocation, generator: Supplier<String>) {
+    public fun add(location: Identifier, generator: Supplier<String>) {
         addRaw(location) {
             generator.get().toByteArray()
         }
@@ -80,7 +80,7 @@ public class VirtualResourceManager(public val type: ResourcePackType) {
     /**
      * Note: the passed generator may be run on another thread
      */
-    public fun addRaw(location: ResourceLocation, generator: Supplier<ByteArray>) {
+    public fun addRaw(location: Identifier, generator: Supplier<ByteArray>) {
         lock.write {
             generators[location] = generator
             logger.debug("Added resource generator $location")
@@ -92,7 +92,7 @@ public class VirtualResourceManager(public val type: ResourcePackType) {
 
     public inner class MixinBridge {
 
-        public fun getResourceStream(location: ResourceLocation): InputStream? {
+        public fun getResourceStream(location: Identifier): InputStream? {
             return read {
                 files[location]?.also {
                     return@read ByteArrayInputStream(it)
@@ -109,14 +109,14 @@ public class VirtualResourceManager(public val type: ResourcePackType) {
             }
         }
 
-        public fun getAllResourceLocations(
+        public fun getAllIdentifiers(
             namespaceIn: String,
             pathIn: String,
             maxDepth: Int,
             filter: Predicate<String>
-        ): Collection<ResourceLocation> {
+        ): Collection<Identifier> {
             return read {
-                val locations = mutableSetOf<ResourceLocation>()
+                val locations = mutableSetOf<Identifier>()
 
                 locations.addAll(files.keys)
                 locations.addAll(generators.keys)
@@ -135,7 +135,7 @@ public class VirtualResourceManager(public val type: ResourcePackType) {
             }
         }
 
-        public fun resourceExists(location: ResourceLocation): Boolean {
+        public fun resourceExists(location: Identifier): Boolean {
             return read {
                 location in files || location in generators || packs.any { location in it }
             }

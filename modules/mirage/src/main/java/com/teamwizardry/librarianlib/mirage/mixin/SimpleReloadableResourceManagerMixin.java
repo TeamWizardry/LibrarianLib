@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.mirage.Mirage;
 import com.teamwizardry.librarianlib.mirage.VirtualResourceManager;
 import com.teamwizardry.librarianlib.mirage.bridge.MirageMixinBridge;
 import net.minecraft.resources.*;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,21 +25,21 @@ public class SimpleReloadableResourceManagerMixin {
     private ResourcePackType type;
 
     @Inject(method = "getResource", at = @At(value = "NEW", target = "java/io/FileNotFoundException"), cancellable = true)
-    private void getResourceMixin(ResourceLocation resourceLocationIn, CallbackInfoReturnable<IResource> cir) throws IOException {
+    private void getResourceMixin(Identifier IdentifierIn, CallbackInfoReturnable<IResource> cir) throws IOException {
         if (type != null)
-            cir.setReturnValue(MirageMixinBridge.INSTANCE.fallbackManager(type).getResource(resourceLocationIn));
+            cir.setReturnValue(MirageMixinBridge.INSTANCE.fallbackManager(type).getResource(IdentifierIn));
     }
 
     @Inject(method = "hasResource", at = @At(value = "RETURN"), cancellable = true)
-    private void hasResourceMixin(ResourceLocation path, CallbackInfoReturnable<Boolean> cir) {
+    private void hasResourceMixin(Identifier path, CallbackInfoReturnable<Boolean> cir) {
         if (type != null && !cir.getReturnValueZ())
             cir.setReturnValue(MirageMixinBridge.INSTANCE.fallbackManager(type).hasResource(path));
     }
 
     @Inject(method = "getAllResources", at = @At(value = "NEW", target = "java/io/FileNotFoundException"), cancellable = true)
-    private void getAllResourcesMixin(ResourceLocation resourceLocationIn, CallbackInfoReturnable<List<IResource>> cir) throws IOException {
+    private void getAllResourcesMixin(Identifier IdentifierIn, CallbackInfoReturnable<List<IResource>> cir) throws IOException {
         if (type != null)
-            cir.setReturnValue(MirageMixinBridge.INSTANCE.fallbackManager(type).getAllResources(resourceLocationIn));
+            cir.setReturnValue(MirageMixinBridge.INSTANCE.fallbackManager(type).getAllResources(IdentifierIn));
 
     }
 }

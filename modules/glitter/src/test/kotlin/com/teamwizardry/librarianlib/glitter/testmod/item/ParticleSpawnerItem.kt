@@ -13,7 +13,7 @@ import net.minecraft.item.UseAction
 import net.minecraft.util.ActionResult
 import net.minecraft.util.ActionResultType
 import net.minecraft.util.Hand
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.world.World
 
 class ParticleSpawnerItem(val type: String): Item(
@@ -23,7 +23,7 @@ class ParticleSpawnerItem(val type: String): Item(
 ) {
 
     init {
-        this.registryName = ResourceLocation(modid, "spawn_$type")
+        this.registryName = Identifier(modid, "spawn_$type")
     }
 
     override fun getUseAction(stack: ItemStack): UseAction {

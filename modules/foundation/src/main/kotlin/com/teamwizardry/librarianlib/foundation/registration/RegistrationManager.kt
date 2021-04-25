@@ -30,7 +30,7 @@ import net.minecraft.tags.ITag
 import net.minecraft.tileentity.SignTileEntity
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityType
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.SoundEvent
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
@@ -85,7 +85,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     private val entities = mutableListOf<EntitySpec<*>>()
     private val capabilities = mutableListOf<CapabilitySpec<*>>()
     private val containers = mutableListOf<ContainerSpec<*>>()
-    private val atlasSprites = mutableMapOf<ResourceLocation, MutableSet<ResourceLocation>>()
+    private val atlasSprites = mutableMapOf<Identifier, MutableSet<Identifier>>()
     private val sounds = mutableListOf<SoundEventSpec>()
 
     /**
@@ -150,7 +150,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
         return spec.lazy
     }
 
-    public fun addAtlasSprite(atlas: ResourceLocation, sprite: ResourceLocation) {
+    public fun addAtlasSprite(atlas: Identifier, sprite: Identifier) {
         atlasSprites.getOrPut(atlas) { mutableSetOf() }.add(sprite)
     }
 
@@ -525,7 +525,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
     }
 
     private inner class LootTableGeneration(gen: DataGenerator) : LootTableProvider(gen) {
-        override fun getTables(): List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> {
+        override fun getTables(): List<Pair<Supplier<Consumer<BiConsumer<Identifier, LootTable.Builder>>>, LootParameterSet>> {
 
             val blockTableGenerator = BlockLootTableGenerator()
             for (spec in blocks) {
@@ -545,7 +545,7 @@ public class RegistrationManager(public val modid: String, modEventBus: IEventBu
             }
         }
 
-        override fun validate(map: MutableMap<ResourceLocation, LootTable>, validationtracker: ValidationTracker) {
+        override fun validate(map: MutableMap<Identifier, LootTable>, validationtracker: ValidationTracker) {
             for ((name, table) in map) {
                 LootTableManager.validateLootTable(validationtracker, name, table)
             }

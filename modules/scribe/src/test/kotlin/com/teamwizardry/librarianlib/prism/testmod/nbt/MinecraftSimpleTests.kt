@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.prism.testmod.nbt
 
 import com.mojang.authlib.GameProfile
-import com.teamwizardry.librarianlib.core.util.kotlin.NBTBuilder
-import com.teamwizardry.librarianlib.prism.nbt.AxisAlignedBBSerializer
+import com.teamwizardry.librarianlib.core.util.kotlin.TagBuilder
+import com.teamwizardry.librarianlib.prism.nbt.BoxSerializer
 import com.teamwizardry.librarianlib.prism.nbt.BlockPosSerializer
 import com.teamwizardry.librarianlib.prism.nbt.BlockStateSerializer
 import com.teamwizardry.librarianlib.prism.nbt.ChunkPosSerializer
@@ -15,7 +15,7 @@ import com.teamwizardry.librarianlib.prism.nbt.INBTPassthroughSerializerFactory
 import com.teamwizardry.librarianlib.prism.nbt.ITextComponentSerializerFactory
 import com.teamwizardry.librarianlib.prism.nbt.ItemStackSerializer
 import com.teamwizardry.librarianlib.prism.nbt.MutableBoundingBoxSerializer
-import com.teamwizardry.librarianlib.prism.nbt.ResourceLocationSerializer
+import com.teamwizardry.librarianlib.prism.nbt.IdentifierSerializer
 import com.teamwizardry.librarianlib.prism.nbt.RotationsSerializer
 import com.teamwizardry.librarianlib.prism.nbt.SectionPosSerializer
 import com.teamwizardry.librarianlib.prism.nbt.TupleSerializerFactory
@@ -40,9 +40,9 @@ import net.minecraft.nbt.ShortNBT
 import net.minecraft.nbt.StringNBT
 import net.minecraft.potion.EffectInstance
 import net.minecraft.potion.Effects
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.Tuple
-import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.Box
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.math.ColumnPos
@@ -63,16 +63,16 @@ import java.util.UUID
 
 internal class MinecraftSimpleTests: NBTPrismTest() {
     @Test
-    fun `read+write for ResourceLocation should be symmetrical`()
-        = simple<ResourceLocation, ResourceLocationSerializer>(ResourceLocation("mod:name"), NBTBuilder.string("mod:name"))
+    fun `read+write for Identifier should be symmetrical`()
+        = simple<Identifier, IdentifierSerializer>(Identifier("mod:name"), TagBuilder.string("mod:name"))
 
     @Test
-    fun `read for ResourceLocation with no namespace should read minecraft namespace`()
-        = simpleRead<ResourceLocation, ResourceLocationSerializer>(ResourceLocation("minecraft:name"), NBTBuilder.string("name"))
+    fun `read for Identifier with no namespace should read minecraft namespace`()
+        = simpleRead<Identifier, IdentifierSerializer>(Identifier("minecraft:name"), TagBuilder.string("name"))
 
     @Test
     fun `read+write for Vector3d should be symmetrical`() {
-        simple<Vector3d, Vector3dSerializer>(Vector3d(1.0, 2.0, 3.0), NBTBuilder.compound {
+        simple<Vector3d, Vector3dSerializer>(Vector3d(1.0, 2.0, 3.0), TagBuilder.compound {
             "X" *= double(1.0)
             "Y" *= double(2.0)
             "Z" *= double(3.0)
@@ -81,7 +81,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
 
     @Test
     fun `read+write for Vector2f should be symmetrical`() {
-        simple<Vector2f, Vector2fSerializer>(Vector2f(1f, 2f), NBTBuilder.compound {
+        simple<Vector2f, Vector2fSerializer>(Vector2f(1f, 2f), TagBuilder.compound {
             "X" *= float(1f)
             "Y" *= float(2f)
         }, { a, b -> a.x == b.x && a.y == b.y })
@@ -89,7 +89,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
 
     @Test
     fun `read+write for BlockPos should be symmetrical`() {
-        simple<BlockPos, BlockPosSerializer>(BlockPos(1, 2, 3), NBTBuilder.compound {
+        simple<BlockPos, BlockPosSerializer>(BlockPos(1, 2, 3), TagBuilder.compound {
             "X" *= int(1)
             "Y" *= int(2)
             "Z" *= int(3)
@@ -98,7 +98,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
 
     @Test
     fun `read+write for ChunkPos should be symmetrical`() {
-        simple<ChunkPos, ChunkPosSerializer>(ChunkPos(1, 2), NBTBuilder.compound {
+        simple<ChunkPos, ChunkPosSerializer>(ChunkPos(1, 2), TagBuilder.compound {
             "X" *= int(1)
             "Z" *= int(2)
         })
@@ -106,7 +106,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
 
     @Test
     fun `read+write for ColumnPos should be symmetrical`() {
-        simple<ColumnPos, ColumnPosSerializer>(ColumnPos(1, 2), NBTBuilder.compound {
+        simple<ColumnPos, ColumnPosSerializer>(ColumnPos(1, 2), TagBuilder.compound {
             "X" *= int(1)
             "Z" *= int(2)
         })
@@ -114,7 +114,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
 
     @Test
     fun `read+write for SectionPos should be symmetrical`() {
-        simple<SectionPos, SectionPosSerializer>(SectionPos.from(ChunkPos(1, 3), 2), NBTBuilder.compound {
+        simple<SectionPos, SectionPosSerializer>(SectionPos.from(ChunkPos(1, 3), 2), TagBuilder.compound {
             "X" *= int(1)
             "Y" *= int(2)
             "Z" *= int(3)
@@ -123,7 +123,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
 
     @Test
     fun `read+write for Rotations should be symmetrical`() {
-        simple<Rotations, RotationsSerializer>(Rotations(1f, 2f, 3f), NBTBuilder.compound {
+        simple<Rotations, RotationsSerializer>(Rotations(1f, 2f, 3f), TagBuilder.compound {
             "X" *= float(1)
             "Y" *= float(2)
             "Z" *= float(3)
@@ -131,10 +131,10 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
     }
 
     @Test
-    fun `read+write for AxisAlignedBB should be symmetrical`() {
-        simple<AxisAlignedBB, AxisAlignedBBSerializer>(AxisAlignedBB(
+    fun `read+write for Box should be symmetrical`() {
+        simple<Box, BoxSerializer>(Box(
             -1.0, -2.0, -3.0, 1.0, 2.0, 3.0
-        ), NBTBuilder.compound {
+        ), TagBuilder.compound {
             "MinX" *= double(-1)
             "MinY" *= double(-2)
             "MinZ" *= double(-3)
@@ -145,10 +145,10 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
     }
 
     @Test
-    fun `read for AxisAlignedBB should correct minmax swaps`() {
-        simpleRead<AxisAlignedBB, AxisAlignedBBSerializer>(AxisAlignedBB(
+    fun `read for Box should correct minmax swaps`() {
+        simpleRead<Box, BoxSerializer>(Box(
             -1.0, -2.0, -3.0, 1.0, 2.0, 3.0
-        ), NBTBuilder.compound {
+        ), TagBuilder.compound {
             "MinX" *= double(1)
             "MinY" *= double(2)
             "MinZ" *= double(3)
@@ -162,7 +162,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
     fun `read+write for MutableBoundingBox should be symmetrical`() {
         simple<MutableBoundingBox, MutableBoundingBoxSerializer>(MutableBoundingBox(
             -1, -2, -3, 1, 2, 3
-        ), NBTBuilder.compound {
+        ), TagBuilder.compound {
             "MinX" *= int(-1)
             "MinY" *= int(-2)
             "MinZ" *= int(-3)
@@ -177,7 +177,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
 
     @Test
     fun `read+write for Tuple should be symmetrical`() {
-        simple<Tuple<String, Int>, TupleSerializerFactory.TupleSerializer>(Tuple("test", 10), NBTBuilder.compound {
+        simple<Tuple<String, Int>, TupleSerializerFactory.TupleSerializer>(Tuple("test", 10), TagBuilder.compound {
             "A" *= string("test")
             "B" *= int(10)
         }, { a, b -> a.a == b.a && a.b == b.b })
@@ -186,7 +186,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
     @Test
     fun `read+write for Tuple with a null value should exclude that key`() {
         @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS") // stupid @MethodsReturnNonnullByDefault
-        simple<Tuple<String, Int?>, TupleSerializerFactory.TupleSerializer>(Tuple<String, Int?>("test", null), NBTBuilder.compound {
+        simple<Tuple<String, Int?>, TupleSerializerFactory.TupleSerializer>(Tuple<String, Int?>("test", null), TagBuilder.compound {
             "A" *= string("test")
         }, { a, b -> a.a == b.a && a.b == b.b })
     }
@@ -212,19 +212,19 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
 
     @Test
     fun `read+write for CompoundNBT should return a copy of the tag`()
-        = nbtPassthroughTest(NBTBuilder.compound { "Foo" *= string("bar") }, true)
+        = nbtPassthroughTest(TagBuilder.compound { "Foo" *= string("bar") }, true)
     @Test
     fun `read+write for ListNBT should return a copy of the tag`()
-        = nbtPassthroughTest(NBTBuilder.list { +string("foo") }, true)
+        = nbtPassthroughTest(TagBuilder.list { +string("foo") }, true)
     @Test
     fun `read+write for LongArrayNBT should return a copy of the tag`()
-        = nbtPassthroughTest(NBTBuilder.longArray(1, 2, 3), true)
+        = nbtPassthroughTest(TagBuilder.longArray(1, 2, 3), true)
     @Test
     fun `read+write for IntArrayNBT should return a copy of the tag`()
-        = nbtPassthroughTest(NBTBuilder.intArray(1, 2, 3), true)
+        = nbtPassthroughTest(TagBuilder.intArray(1, 2, 3), true)
     @Test
     fun `read+write for ByteArrayNBT should return a copy of the tag`()
-        = nbtPassthroughTest(NBTBuilder.byteArray(1, 2, 3), true)
+        = nbtPassthroughTest(TagBuilder.byteArray(1, 2, 3), true)
 
     @Test
     fun `read+write for StringNBT should return the tag`()
@@ -272,7 +272,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
 
         simple<GameProfile, GameProfileSerializer>(
             GameProfile(uuid, "Notch"),
-            NBTBuilder.compound {
+            TagBuilder.compound {
                 "Id" *= intArray(
                     (most shr 32).toInt(), most.toInt(),
                     (least shr 32).toInt(), least.toInt()
@@ -286,7 +286,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
     fun `read+write for BlockState should be symmetrical`() {
         simple<BlockState, BlockStateSerializer>(
             Blocks.BONE_BLOCK.stateContainer.validStates[0],
-            NBTBuilder.compound {
+            TagBuilder.compound {
                 "Name" *= string("minecraft:bone_block")
                 "Properties" *= compound {
                     "axis" *= string("x")
@@ -300,7 +300,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
         val stack = ItemStack(Items.DIAMOND, 16)
         simple<ItemStack, ItemStackSerializer>(
             stack,
-            NBTBuilder.compound {
+            TagBuilder.compound {
                 "id" *= string("minecraft:diamond")
                 "Count" *= byte(16)
             },
@@ -311,12 +311,12 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
     @Test
     fun `read+write for ItemStack with NBT should be symmetrical`() {
         val stack = ItemStack(Items.DIAMOND, 16)
-        stack.tag = NBTBuilder.compound {
+        stack.tag = TagBuilder.compound {
             "Custom" *= string("value")
         }
         simple<ItemStack, ItemStackSerializer>(
             stack,
-            NBTBuilder.compound {
+            TagBuilder.compound {
                 "id" *= string("minecraft:diamond")
                 "Count" *= byte(16)
                 "tag" *= compound {
@@ -332,7 +332,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
         val stack = FluidStack(Fluids.WATER, 750)
         simple<FluidStack, FluidStackSerializer>(
             stack,
-            NBTBuilder.compound {
+            TagBuilder.compound {
                 "FluidName" *= string("minecraft:water")
                 "Amount" *= int(750)
             },
@@ -343,12 +343,12 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
     @Test
     fun `read+write for FluidStack with NBT should be symmetrical`() {
         val stack = FluidStack(Fluids.WATER, 750)
-        stack.tag = NBTBuilder.compound {
+        stack.tag = TagBuilder.compound {
             "Custom" *= string("value")
         }
         simple<FluidStack, FluidStackSerializer>(
             stack,
-            NBTBuilder.compound {
+            TagBuilder.compound {
                 "FluidName" *= string("minecraft:water")
                 "Amount" *= int(750)
                 "Tag" *= compound {
@@ -364,7 +364,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
         val stack = EffectInstance(Effects.JUMP_BOOST, 20, 2)
         simple<EffectInstance, EffectInstanceSerializer>(
             stack,
-            NBTBuilder.compound {
+            TagBuilder.compound {
                 "Id" *= byte(8)
                 "Amplifier" *= byte(2)
                 "Duration" *= int(20)
@@ -386,7 +386,7 @@ internal class MinecraftSimpleTests: NBTPrismTest() {
         val data = EnchantmentData(Enchantments.SHARPNESS, 3)
         simple<EnchantmentData, EnchantmentDataSerializer>(
             data,
-            NBTBuilder.compound {
+            TagBuilder.compound {
                 "Enchantment" *= string("minecraft:sharpness")
                 "Level" *= int(3)
             },

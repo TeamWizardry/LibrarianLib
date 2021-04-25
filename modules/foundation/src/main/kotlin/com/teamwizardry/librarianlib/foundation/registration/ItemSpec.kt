@@ -9,7 +9,7 @@ import net.minecraft.item.Rarity
 import net.minecraft.tags.ITag
 import net.minecraft.tags.Tag
 import net.minecraft.util.IItemProvider
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraftforge.client.model.generators.ItemModelProvider
 import net.minecraftforge.client.model.generators.ModelFile
 import net.minecraftforge.client.model.generators.ModelProvider
@@ -40,8 +40,8 @@ public class ItemSpec(
     /**
      * The registry name of the block. The [mod ID][modid] is populated by the [RegistrationManager].
      */
-    public val registryName: ResourceLocation
-        get() = ResourceLocation(modid, id)
+    public val registryName: Identifier
+        get() = Identifier(modid, id)
 
     /**
      * What item group this item should be in

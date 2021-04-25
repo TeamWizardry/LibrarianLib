@@ -2,24 +2,24 @@ package com.teamwizardry.librarianlib.foundation.registration
 
 import net.minecraft.resources.IResource
 import net.minecraft.resources.ResourcePackType
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraftforge.client.model.generators.ModelProvider
 import net.minecraftforge.common.data.ExistingFileHelper
 
 internal class FoundationExistingFileHelper(val wrapped: ExistingFileHelper): ExistingFileHelper(listOf(), setOf(), false) {
     val modelProviders: MutableList<ModelProvider<*>> = mutableListOf()
 
-    override fun exists(loc: ResourceLocation?, packType: ResourcePackType?): Boolean {
+    override fun exists(loc: Identifier?, packType: ResourcePackType?): Boolean {
         return wrapped.exists(loc, packType)
     }
 
-    override fun exists(loc: ResourceLocation?, type: IResourceType?): Boolean {
+    override fun exists(loc: Identifier?, type: IResourceType?): Boolean {
         if(type?.suffix == ".png")
             return true
         return wrapped.exists(loc, type)
     }
 
-    override fun exists(loc: ResourceLocation, type: ResourcePackType, pathSuffix: String, pathPrefix: String): Boolean {
+    override fun exists(loc: Identifier, type: ResourcePackType, pathSuffix: String, pathPrefix: String): Boolean {
         if(pathSuffix == ".png")
             return true
         if(modelProviders.any { it.generatedModels.containsKey(loc) })
@@ -27,12 +27,12 @@ internal class FoundationExistingFileHelper(val wrapped: ExistingFileHelper): Ex
         return wrapped.exists(loc, type, pathSuffix, pathPrefix)
     }
 
-    override fun trackGenerated(loc: ResourceLocation?, type: IResourceType?) {
+    override fun trackGenerated(loc: Identifier?, type: IResourceType?) {
         wrapped.trackGenerated(loc, type)
     }
 
     override fun trackGenerated(
-        loc: ResourceLocation?,
+        loc: Identifier?,
         packType: ResourcePackType?,
         pathSuffix: String?,
         pathPrefix: String?
@@ -41,7 +41,7 @@ internal class FoundationExistingFileHelper(val wrapped: ExistingFileHelper): Ex
     }
 
     override fun getResource(
-        loc: ResourceLocation?,
+        loc: Identifier?,
         packType: ResourcePackType?,
         pathSuffix: String?,
         pathPrefix: String?
@@ -49,7 +49,7 @@ internal class FoundationExistingFileHelper(val wrapped: ExistingFileHelper): Ex
         return wrapped.getResource(loc, packType, pathSuffix, pathPrefix)
     }
 
-    override fun getResource(loc: ResourceLocation?, packType: ResourcePackType?): IResource {
+    override fun getResource(loc: Identifier?, packType: ResourcePackType?): IResource {
         return wrapped.getResource(loc, packType)
     }
 

@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.facade.logger
 import dev.thecodewarrior.bitfont.data.Bitfont
 import net.minecraft.profiler.IProfiler
 import net.minecraft.resources.IResourceManager
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 
 public object Fonts {
     public var classic: Bitfont
@@ -33,7 +33,7 @@ public object Fonts {
         unifont = load(unifontLoc)
     }
 
-    private fun load(fontLocation: ResourceLocation): Bitfont {
+    private fun load(fontLocation: Identifier): Bitfont {
         try {
             logger.debug("Loading Bitfont font $fontLocation")
             val bytes = Client.minecraft.resourceManager.getResource(fontLocation).inputStream

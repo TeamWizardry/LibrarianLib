@@ -102,7 +102,7 @@ public class VanillaTooltip: GuiLayer() {
     public val lines_im: IMValue<List<String>?> = imValue()
     public var lines: List<String>? by lines_im
 
-    public val font_im: IMValue<FontRenderer> = imValue(Client.fontRenderer)
+    public val font_im: IMValue<FontRenderer> = imValue(Client.textRenderer)
     public var font: FontRenderer by font_im
 
     override fun draw(context: GuiDrawContext) {

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.prism.testmod.nbt
 
-import com.teamwizardry.librarianlib.core.util.kotlin.NBTBuilder
+import com.teamwizardry.librarianlib.core.util.kotlin.TagBuilder
 import com.teamwizardry.librarianlib.prism.nbt.IForgeRegistryEntrySerializerFactory
 import com.teamwizardry.librarianlib.prism.testmod.LibrarianLibPrismTestMod
 import com.teamwizardry.librarianlib.testcore.LibrarianLibTestBaseModule
@@ -20,7 +20,7 @@ internal class IForgeRegistryEntryTests: NBTPrismTest() {
     fun `read+write with a mod item should be symmetrical`() {
         simple<Item, IForgeRegistryEntrySerializerFactory.IForgeRegistryEntrySerializer>(
             LibrarianLibTestBaseModule.testTool,
-            NBTBuilder.string("librarianlib-testbase:test_tool")
+            TagBuilder.string("librarianlib-testbase:test_tool")
         )
     }
 
@@ -28,7 +28,7 @@ internal class IForgeRegistryEntryTests: NBTPrismTest() {
     fun `read+write with a vanilla item should be symmetrical`() {
         simple<Item, IForgeRegistryEntrySerializerFactory.IForgeRegistryEntrySerializer>(
             Items.STONE,
-            NBTBuilder.string("minecraft:stone")
+            TagBuilder.string("minecraft:stone")
         )
     }
 
@@ -36,7 +36,7 @@ internal class IForgeRegistryEntryTests: NBTPrismTest() {
     fun `read+write with a custom registry should be symmetrical`() {
         simple<UnitTestSuite, IForgeRegistryEntrySerializerFactory.IForgeRegistryEntrySerializer>(
             LibrarianLibPrismTestMod.primitiveTests,
-            NBTBuilder.string("ll-prism-test:nbt_primitives")
+            TagBuilder.string("ll-prism-test:nbt_primitives")
         )
     }
 
@@ -44,7 +44,7 @@ internal class IForgeRegistryEntryTests: NBTPrismTest() {
     fun `read+write with a vanilla block should be symmetrical`() {
         simple<Block, IForgeRegistryEntrySerializerFactory.IForgeRegistryEntrySerializer>(
             Blocks.STONE,
-            NBTBuilder.string("minecraft:stone")
+            TagBuilder.string("minecraft:stone")
         )
     }
 
@@ -52,14 +52,14 @@ internal class IForgeRegistryEntryTests: NBTPrismTest() {
     fun `read+write with a vanilla entity type should be symmetrical`() {
         simple<EntityType<*>, IForgeRegistryEntrySerializerFactory.IForgeRegistryEntrySerializer>(
             EntityType.PLAYER,
-            NBTBuilder.string("minecraft:player")
+            TagBuilder.string("minecraft:player")
         )
     }
 
     @Test
     fun `reading with a non-existent id and registry with no default value should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<UnitTestSuite>()].value.read(NBTBuilder.string("oops:oops"), null)
+            prism[Mirror.reflect<UnitTestSuite>()].value.read(TagBuilder.string("oops:oops"), null)
         }
     }
 }

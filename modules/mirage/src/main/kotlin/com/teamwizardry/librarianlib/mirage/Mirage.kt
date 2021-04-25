@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.mirage
 
 import net.minecraft.resources.*
 import net.minecraft.resources.data.IMetadataSectionSerializer
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.util.function.Predicate

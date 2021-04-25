@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.foundation.testmod.customtypes.client
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.loc
-import com.teamwizardry.librarianlib.core.util.kotlin.pos
 import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestTileEntity
 import net.minecraft.client.renderer.IRenderTypeBuffer
 import net.minecraft.client.renderer.RenderType

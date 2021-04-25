@@ -17,7 +17,7 @@ import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityType
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.util.text.TranslationTextComponent
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
@@ -71,7 +71,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
     public fun TestScreenConfig(id: String, name: String, block: TestScreenConfig.() -> Unit): TestScreenConfig = TestScreenConfig(id, name, itemGroup, block)
     public fun TestScreenConfig(id: String, name: String): TestScreenConfig = TestScreenConfig(id, name, itemGroup)
     public fun UnitTestSuite(id: String, block: UnitTestSuite.() -> Unit): UnitTestSuite = UnitTestSuite(id).also { it.block() }
-    public fun UnitTestSuite(id: String): UnitTestSuite = UnitTestSuite().also { it.registryName = ResourceLocation(modid, id) }
+    public fun UnitTestSuite(id: String): UnitTestSuite = UnitTestSuite().also { it.registryName = Identifier(modid, id) }
 
     public operator fun <T: Item> T.unaryPlus(): T {
         _items.add(this)
@@ -85,7 +85,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
             TestBlockItem(this, properties.maxStackSize(1))
         else
             BlockItem(this, properties)
-        item.registryName = ResourceLocation(this.registryName!!.namespace, this.registryName!!.path + "_block")
+        item.registryName = Identifier(this.registryName!!.namespace, this.registryName!!.path + "_block")
         _blocks.add(this)
         _items.add(item)
         return this
@@ -205,7 +205,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
             if (item is TestBlockItem) {
                 val name = item.registryName!!
                 Mirage.clientResources.add(
-                    ResourceLocation(name.namespace, "models/item/${name.path}.json"),
+                    Identifier(name.namespace, "models/item/${name.path}.json"),
                     """
                         {
                             "parent": "testcore:block/test_block/${item.block.modelName}"
@@ -215,7 +215,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
             } else if (item is ITestItem) {
                 val name = item.registryName!!
                 Mirage.clientResources.add(
-                    ResourceLocation(name.namespace, "models/item/${name.path}.json"),
+                    Identifier(name.namespace, "models/item/${name.path}.json"),
                     """
                         {
                             "parent": "testcore:item/test_tool"
@@ -231,7 +231,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
             val name = block.registryName!!
             val model = "block/test_block/${block.modelName}"
             Mirage.clientResources.add(
-                ResourceLocation(name.namespace, "blockstates/${name.path}.json"),
+                Identifier(name.namespace, "blockstates/${name.path}.json"),
                 if (block.config.directional) {
                     """
                         {

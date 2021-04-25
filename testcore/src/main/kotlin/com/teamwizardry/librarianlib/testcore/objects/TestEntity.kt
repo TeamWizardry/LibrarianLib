@@ -13,7 +13,7 @@ import net.minecraft.network.IPacket
 import net.minecraft.util.ActionResultType
 import net.minecraft.util.DamageSource
 import net.minecraft.util.Hand
-import net.minecraft.util.math.AxisAlignedBB
+import net.minecraft.util.math.Box
 import net.minecraft.util.math.RayTraceResult
 import net.minecraft.util.math.vector.Vector3d
 import net.minecraft.world.World
@@ -122,17 +122,17 @@ public open class TestEntity(public val config: TestEntityConfig, world: World):
         return 0f
     }
 
-    public val relativeBoundingBox: AxisAlignedBB = run {
+    public val relativeBoundingBox: Box = run {
         val size = this.getSize(Pose.STANDING)
         val width = size.width.toDouble()
         val height = size.height.toDouble()
-        AxisAlignedBB(
+        Box(
             -width / 2, -height / 2, -width / 2,
             +width / 2, +height / 2, +width / 2
         )
     }
 
-    override fun getBoundingBox(): AxisAlignedBB {
+    override fun getBoundingBox(): Box {
         return relativeBoundingBox.offset(this.posX, this.posY, this.posZ)
     }
 

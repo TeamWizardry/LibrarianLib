@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.foundation.loot
 
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import net.minecraft.loot.LootParameterSet
 import net.minecraft.loot.LootPool
 import net.minecraft.loot.LootTable
@@ -10,17 +10,17 @@ import java.util.function.Consumer
 import java.util.function.Supplier
 
 public open class LootTableGenerator(public val parameterSet: LootParameterSet) {
-    private val tables = mutableMapOf<ResourceLocation, LootTable.Builder>()
+    private val tables = mutableMapOf<Identifier, LootTable.Builder>()
 
     public open fun generateTables() {}
 
-    public fun addLootTable(name: ResourceLocation, table: LootTable.Builder) {
+    public fun addLootTable(name: Identifier, table: LootTable.Builder) {
         if (name in tables)
             throw IllegalArgumentException("Duplicate loot table name $name")
         tables[name] = table
     }
 
-    public fun addLootTable(name: ResourceLocation, vararg pools: LootPool.Builder) {
+    public fun addLootTable(name: Identifier, vararg pools: LootPool.Builder) {
         addLootTable(name, createTable(*pools))
     }
 
@@ -40,7 +40,7 @@ public open class LootTableGenerator(public val parameterSet: LootParameterSet) 
      * All this instead of just returning a `Map` with the loot tables in it.
      */
     @get:JvmSynthetic
-    internal val lootTableProviderSupplier: Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>> =
+    internal val lootTableProviderSupplier: Supplier<Consumer<BiConsumer<Identifier, LootTable.Builder>>> =
         Supplier {
             if(tables.isEmpty())
                 generateTables()

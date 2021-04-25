@@ -5,11 +5,9 @@ import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.SimpleRenderTypes
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.pos2d
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import net.minecraft.client.renderer.IRenderTypeBuffer
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -41,9 +39,9 @@ internal object BoolUniform: ShaderTest<BoolUniform.Test>() {
         shader.unbind()
     }
 
-    private val renderType = SimpleRenderTypes.flat(ResourceLocation("minecraft:missingno"), GL11.GL_QUADS)
+    private val renderType = SimpleRenderTypes.flat(Identifier("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("bool_tests", null, ResourceLocation("ll-albedo-test:shaders/bool_tests.frag")) {
+    class Test: Shader("bool_tests", null, Identifier("ll-albedo-test:shaders/bool_tests.frag")) {
         val primitive = GLSL.glBool()
         val vector2 = GLSL.bvec2()
         val vector3 = GLSL.bvec3()
