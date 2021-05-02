@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.etcetera.testmod
 
+/*
 import net.minecraft.client.particle.IAnimatedSprite
 import net.minecraft.client.particle.IParticleFactory
 import net.minecraft.client.particle.IParticleRenderType
@@ -63,3 +64,5 @@ class HitParticle private constructor(world: ClientWorld, x: Double, y: Double, 
     }
 
 }
+
+ */

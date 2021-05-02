@@ -6,15 +6,13 @@ import org.jetbrains.dokka.gradle.DokkaMultiModuleFileLayout
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
-import org.quiltmc.loom.LoomGradleExtension
-import org.quiltmc.loom.configuration.ide.RunConfigSettings
-import org.quiltmc.loom.task.RunGameTask
 
 plugins {
     id("java-library")
     id("kotlin-conventions")
     id("minecraft-conventions")
     id("publish-conventions")
+    id("testmod-conventions")
     id("com.github.johnrengelman.shadow")
 }
 
@@ -34,58 +32,9 @@ sourceSets {
     }
 }
 
-dependencies.attributesSchema {
-    attribute(LibLibAttributes.Target.attribute) {
-        compatibilityRules.add(LibLibAttributes.Rules.optional())
-    }
-}
-
 configurations {
 
     // ----- Providers -----
-
-    apiElements {
-        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.internal)
-    }
-
-    val devClasspath = create("devClasspath") {
-        description = "Libraries to put on the development environment classpath"
-        canBe(consumed = true, resolved = false)
-        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.devClasspath)
-    }
-
-    // files to copy into the mods directory
-    val clientMod = create("clientMod") {
-        description = "Mod jars to copy into the client mods/ directory. (not transitive!)"
-
-        canBe(consumed = true, resolved = false)
-        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.clientMods)
-        isTransitive = false
-    }
-    val serverMod = create("serverMod") {
-        description = "Mod jars to copy into the server mods/ directory. (not transitive!)"
-
-        canBe(consumed = true, resolved = false)
-        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.serverMods)
-        isTransitive = false
-    }
-    val dataMod = create("dataMod") {
-        description = "Mod jars to copy into the data mods/ directory. (not transitive!)"
-
-        canBe(consumed = true, resolved = false)
-        attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.dataMods)
-        isTransitive = false
-    }
-
-    val mod = create("mod") {
-        description = "Mod jars to copy into the client, server, and data mods/ directory. (not transitive!)"
-
-        canBe(consumed = false, resolved = false)
-        isTransitive = false
-        clientMod.extendsFrom(this)
-        serverMod.extendsFrom(this)
-        dataMod.extendsFrom(this)
-    }
 
     // ----- Consumers -----
 
@@ -93,14 +42,7 @@ configurations {
         description = "Dependencies to shade into the mod jar."
 
         canBe(consumed = false, resolved = true)
-        devClasspath.extendsFrom(this)
         api.get().extendsFrom(this)
-    }
-
-    listOf(compileClasspath, runtimeClasspath, testCompileClasspath, testRuntimeClasspath).forEach {
-        it {
-            attributes.attribute(LibLibAttributes.Target.attribute, LibLibAttributes.Target.internal)
-        }
     }
 
     val liblib = named("liblib") { // `named` because liblib is already created by the module plugin
@@ -108,72 +50,71 @@ configurations {
 
         canBe(consumed = false, resolved = false)
         api.get().extendsFrom(this)
-        getByName("publishedApi").extendsFrom(this)
+//        getByName("publishedApi").extendsFrom(this)
     }
 
 }
 
-//val validateMixinApplication = tasks.register<ValidateMixinApplication>("validateMixinApplication") {
-//    from(sourceSets.main)
-//    from(sourceSets.test)
-//}
-//
-//tasks.named("compileJava") {
-//    dependsOn(validateMixinApplication)
-//}
-//tasks.named("compileTestJava") {
-//    dependsOn(validateMixinApplication)
-//}
-
-configure<LoomGradleExtension> {
-    runConfigs {
-        create("testClient") {
-            client()
-            source(sourceSets["test"])
-        }
-        create("testServer") {
-            server()
-            source(sourceSets["test"])
-        }
-    }
+dependencies {
+    testImplementation(project(":testcore"))
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
-//region // Test mod file generation
-
+val generated: File = file("$buildDir/generated/main")
 val generatedTest: File = file("$buildDir/generated/test")
 
 sourceSets {
+    main {
+        java.srcDir(generated.resolve("java"))
+        resources.srcDir(generated.resolve("resources"))
+    }
     test {
         java.srcDir(generatedTest.resolve("java"))
         resources.srcDir(generatedTest.resolve("resources"))
     }
 }
 
-val generateTestMixinConnector = tasks.register<GenerateMixinConnector>("generateTestMixinConnector") {
-    from(sourceSets.test)
-    outputRoot.set(generatedTest.resolve("java"))
-    mixinName.set("gen.core.TestMixinConnector")
-}
-val generateTestCoremodsJson = tasks.register<GenerateCoremodsJson>("generateTestCoremodsJson") {
-    from(sourceSets.test)
-    outputRoot.set(generatedTest.resolve("resources"))
-}
-val generateTestModInfo = tasks.register<GenerateModInfo>("generateTestModInfo") {
-    modid.set("ll-${project.name}-test")
-    outputRoot.set(generatedTest.resolve("resources"))
+val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod") {
+    outputRoot.set(generated.resolve("resources"))
 }
 
-tasks.named("compileTestJava") {
-    dependsOn(generateTestMixinConnector)
+configureFabricModJson {
+    id.set(module.moduleInfo.modid)
+    version.set(commonConfig.version)
+
+    name.set(project.provider { "LibrarianLib: ${module.displayName}" })
+    description.set(project.provider { module.description })
+
+    depends("quilt_loader", project.property("fabricmodjson.depends.quilt_loader") as String)
+    depends("minecraft", project.property("fabricmodjson.depends.minecraft") as String)
+    depends("fabric-language-kotlin", "*")
+
+    module.moduleInfo.dependencies {
+        depends(it.modid, commonConfig.version)
+    }
 }
+
+tasks.named<ProcessResources>("processResources") {
+    dependsOn(generateFabricMod)
+}
+
+val generateFabricTestMod = tasks.register<GenerateFabricModJson>("generateFabricTestMod") {
+    outputRoot.set(generatedTest.resolve("resources"))
+
+    id.set(module.moduleInfo.modid + "-test")
+    version.set(commonConfig.version)
+
+    name.set(project.provider { "${module.displayName} Tests" })
+    description.set(project.provider { "Tests for ${module.displayName}" })
+
+    depends("quilt_loader", project.property("fabricmodjson.depends.quilt_loader") as String)
+    depends("minecraft", project.property("fabricmodjson.depends.minecraft") as String)
+    depends("fabric-language-kotlin", "*")
+    depends(module.moduleInfo.modid, commonConfig.version)
+}
+
 tasks.named<ProcessResources>("processTestResources") {
-    dependsOn(generateTestCoremodsJson)
-    dependsOn(generateTestModInfo)
+    dependsOn(generateFabricTestMod)
 }
-
-//endregion // Test mod file generation
-// ---------------------------------------------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Build configuration
@@ -281,20 +222,20 @@ val dokkaJar = tasks.register<Jar>("dokkaJar") {
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Publishing
 
-dependencies {
-//    "publishedRuntime"(project(":zzz:librarianlib"))
-}
-
-artifacts {
-    add("publishedApi", deobfJar)
-    add("publishedSources", sourcesJar)
-    add("publishedJavadoc", dokkaJar)
-    add("publishedObf", obfJar)
-}
-
-publishing.publications.named<MavenPublication>("maven") {
-    artifactId = module.name
-}
+//dependencies {
+////    "publishedRuntime"(project(":zzz:librarianlib"))
+//}
+//
+//artifacts {
+//    add("publishedApi", deobfJar)
+//    add("publishedSources", sourcesJar)
+//    add("publishedJavadoc", dokkaJar)
+//    add("publishedObf", obfJar)
+//}
+//
+//publishing.publications.named<MavenPublication>("maven") {
+//    artifactId = module.name
+//}
 
 //endregion // Publishing
 // ---------------------------------------------------------------------------------------------------------------------

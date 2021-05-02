@@ -22,14 +22,7 @@ open class ModuleInfo(val name: String, private val ctx: DslContext) {
      */
     val allDependencies: LiveCollection<ModuleInfo> = LiveCollection(mutableSetOf())
 
-    val testModid: String = "ll-$name-test"
-
-    val mainSources: Property<SourceSet> = ctx.property() {
-        project.the<SourceSetContainer>().getByName("main")
-    }
-    val testSources: Property<SourceSet> = ctx.property() {
-        project.the<SourceSetContainer>().getByName("test")
-    }
+    val modid: String = "liblib-$name"
 
     init {
         dependencies { dep ->

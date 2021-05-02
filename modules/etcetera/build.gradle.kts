@@ -1,12 +1,15 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import org.jetbrains.kotlin.gradle.plugin.ProjectLocalConfigurations
-
 plugins {
     `module-conventions`
 }
 
+module {
+    displayName = "Etcetera"
+    description = "Minor utilities that don't warrant their own modules"
+}
 val commonConfig = rootProject.the<CommonConfigExtension>()
+
+configureFabricModJson {
+}
 
 dependencies {
     liblib(project(":core"))

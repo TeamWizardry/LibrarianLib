@@ -24,6 +24,9 @@ open class ModuleExtension(private val ctx: DslContext) {
     val component: AdhocComponentWithVariants
         get() = ctx.project.components.getByName("module") as AdhocComponentWithVariants
 
+    var displayName: String = ""
+    var description: String = ""
+
     val shadowRules: List<ShadowRule> = _shadowRules
 
     /**

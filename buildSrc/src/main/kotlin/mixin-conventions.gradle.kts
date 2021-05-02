@@ -4,7 +4,7 @@ plugins {
 }
 
 //mixin {
-//    add(sourceSets.main.get(), "ll-${project.name}.refmap.json")
+//    add(sourceSets.main.get(), "liblib-${project.name}.refmap.json")
 //    add(sourceSets.test.get(), "ll-${project.name}-test.refmap.json")
 //}
 //

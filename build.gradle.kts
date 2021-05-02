@@ -47,6 +47,7 @@ configure<CommonConfigExtension> {
         create("mosaic")
 //        create("scribe")
     }
+
 }
 
 open class CreateModule: CopyFreemarker() {

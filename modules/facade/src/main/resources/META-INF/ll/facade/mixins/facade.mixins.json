@@ -3,7 +3,7 @@
   "required": true,
   "package": "com.teamwizardry.librarianlib.facade.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "ll-facade.refmap.json",
+  "refmap": "liblib-facade.refmap.json",
   "mixins": [
   ],
   "client": [

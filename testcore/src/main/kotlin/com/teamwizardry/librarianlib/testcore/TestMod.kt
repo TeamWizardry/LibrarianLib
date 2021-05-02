@@ -38,7 +38,7 @@ public abstract class TestMod() {
     public val modid: String = this.javaClass.getAnnotation(Mod::class.java)?.value
         ?: throw IllegalStateException("Could not find mod annotation on ${javaClass.canonicalName}")
     public val name: String = "${module.name}-test"
-    public val itemGroup: ItemGroup = object: ItemGroup("ll-$name") {
+    public val itemGroup: ItemGroup = object: ItemGroup("liblib-$name") {
         private val stack: ItemStack by lazy {
             val stack = ItemStack(LibrarianLibTestBaseModule.testTool)
             stack.orCreateTag.putString("mod", name)

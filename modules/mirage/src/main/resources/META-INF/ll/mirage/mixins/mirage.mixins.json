@@ -3,7 +3,7 @@
   "required": true,
   "package": "com.teamwizardry.librarianlib.mirage.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "ll-mirage.refmap.json",
+  "refmap": "liblib-mirage.refmap.json",
   "mixins": [
     "FallbackResourceManagerMixin",
     "SimpleReloadableResourceManagerMixin"

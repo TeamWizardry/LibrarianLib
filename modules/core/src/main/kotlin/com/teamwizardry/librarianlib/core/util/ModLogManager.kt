@@ -9,7 +9,7 @@ import org.apache.logging.log4j.core.config.Configurator
  * A class that creates nicely named mod loggers, and allows enabling debugging on a per-mod basis.
  *
  * The default (null) logger will be named `<humanName>`, and all others will either be named
- * `<humanName> (<custom name>)` or `<humanName> (<classname>)`, depending on which method was used to create it.
+ * `<humanName>|<custom name>` or `<humanName>|<classname>`, depending on which method was used to create it.
  *
  * Mods can have their loggers enabled by passing their comma-separated [mod IDs][modid] in the
  * `librarianlib.logging.debug` system property. For example, by adding `-Dlibrarianlib.logging.debug=someid,anotherid`
@@ -39,7 +39,7 @@ public class ModLogManager(private val modid: String, private val humanName: Str
      * Create a logger for the given class.
      */
     public fun makeLogger(clazz: Class<*>): Logger {
-        return makeLogger(clazz.simpleName)
+        return makeLogger(clazz.canonicalName.removePrefix(clazz.`package`.name + "."))
     }
 
     /**
@@ -54,7 +54,7 @@ public class ModLogManager(private val modid: String, private val humanName: Str
      */
     public fun makeLogger(label: String?): Logger {
         return modLoggers.getOrPut(label) {
-            val labelSuffix = label?.let { " ($it)" } ?: ""
+            val labelSuffix = label?.let { "|$it" } ?: ""
             val logger = LogManager.getLogger("$humanName$labelSuffix")
             registerLogger(logger)
             logger

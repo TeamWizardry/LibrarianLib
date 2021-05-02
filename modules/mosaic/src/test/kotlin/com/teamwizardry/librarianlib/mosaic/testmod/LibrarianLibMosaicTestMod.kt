@@ -2,6 +2,7 @@
 
 package com.teamwizardry.librarianlib.mosaic.testmod
 
+/*
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.math.Matrix4d
@@ -208,3 +209,6 @@ object LibrarianLibSpritesTestMod: TestMod(LibLibMosaic) {
 }
 
 internal val logger = LibrarianLibSpritesTestMod.makeLogger(null)
+
+
+ */

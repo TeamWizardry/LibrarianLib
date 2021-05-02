@@ -4,6 +4,7 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.kotlin.dsl.named
 
 typealias CommonConfigPlugin = com.teamwizardry.gradle.CommonConfigPlugin
 typealias CommonConfigExtension = com.teamwizardry.gradle.CommonConfigExtension
@@ -12,9 +13,7 @@ typealias ModuleExtension = com.teamwizardry.gradle.module.ModuleExtension
 typealias ModPublishingPlugin = com.teamwizardry.gradle.publish.ModPublishingPlugin
 typealias ModPublishingExtension = com.teamwizardry.gradle.publish.ModPublishingExtension
 
-typealias GenerateCoremodsJson = com.teamwizardry.gradle.task.GenerateCoremodsJson
-typealias GenerateMixinConnector = com.teamwizardry.gradle.task.GenerateMixinConnector
-typealias GenerateModInfo = com.teamwizardry.gradle.task.GenerateModInfo
+typealias GenerateFabricModJson = com.teamwizardry.gradle.task.GenerateFabricModJson
 typealias ValidateMixinApplication = com.teamwizardry.gradle.task.ValidateMixinApplication
 typealias ShadowSources = com.teamwizardry.gradle.task.ShadowSources
 typealias CopyFreemarker = com.teamwizardry.gradle.task.CopyFreemarker
@@ -38,4 +37,12 @@ fun DependencyHandler.shade(dependencyNotation: Any): Dependency? {
         dep.isTransitive = false
     }
     return dep
+}
+
+fun Project.configureFabricModJson(block: GenerateFabricModJson.() -> Unit) {
+    this.tasks.named("generateFabricMod", block)
+}
+
+fun Project.configureFabricTestModJson(block: GenerateFabricModJson.() -> Unit) {
+    this.tasks.named("generateFabricTestMod", block)
 }

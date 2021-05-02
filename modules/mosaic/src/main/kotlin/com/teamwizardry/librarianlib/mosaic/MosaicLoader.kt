@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.inconceivable
-import com.teamwizardry.librarianlib.core.util.id
 import com.teamwizardry.librarianlib.core.util.kotlin.tick
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.math.Vec2i
