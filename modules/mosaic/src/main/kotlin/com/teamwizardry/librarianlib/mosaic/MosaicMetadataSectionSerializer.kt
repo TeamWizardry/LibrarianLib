@@ -3,11 +3,11 @@ package com.teamwizardry.librarianlib.mosaic
 import com.google.gson.JsonObject
 import com.teamwizardry.librarianlib.core.util.kotlin.JsonParsingDSL
 import com.teamwizardry.librarianlib.core.util.kotlin.parse
-import net.minecraft.resources.data.IMetadataSectionSerializer
+import net.minecraft.resource.metadata.ResourceMetadataReader
 
-internal class MosaicMetadataSectionSerializer : IMetadataSectionSerializer<MosaicJson> {
+internal object MosaicMetadataReader : ResourceMetadataReader<MosaicJson> {
 
-    override fun deserialize(json: JsonObject): MosaicJson {
+    override fun fromJson(json: JsonObject): MosaicJson {
         return json.parse("mosaic") {
             val (width, height) = get("size") {
                 expectExactSize(2)
@@ -33,7 +33,7 @@ internal class MosaicMetadataSectionSerializer : IMetadataSectionSerializer<Mosa
         }
     }
 
-    override fun getSectionName(): String {
+    override fun getKey(): String {
         return "mosaic"
     }
 

@@ -10,14 +10,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftClient.class)
-public abstract class MinecraftClientMixin {
+abstract class MinecraftClientMixin {
     @Shadow public abstract boolean isPaused();
 
     @Shadow private float pausedTickDelta;
 
     @Inject(method = "render", at = @At("HEAD"))
     public void runGlResourceGc(boolean renderWorldIn, CallbackInfo ci) {
-        GlResourceGc.INSTANCE.releaseCollectedResources$core();
+        GlResourceGc.INSTANCE.releaseCollectedResourcesInternal();
 
         if(isPaused()) {
             // when the game is unpaused the delta will be updated by the RenderTickCounter

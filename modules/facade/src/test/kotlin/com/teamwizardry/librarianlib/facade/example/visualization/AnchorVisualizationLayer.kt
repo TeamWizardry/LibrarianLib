@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
 import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 
 class AnchorVisualizationLayer(val target: GuiLayer): GuiLayer() {
@@ -35,7 +35,7 @@ class AnchorVisualizationLayer(val target: GuiLayer): GuiLayer() {
 
         RenderSystem.lineWidth(3f)
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(SimpleRenderTypes.flatLines)
 
         // get into parent's space

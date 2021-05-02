@@ -1,12 +1,11 @@
 package com.teamwizardry.librarianlib.etcetera.testmod
 
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.etcetera.LibrarianLibEtceteraModule
+import com.teamwizardry.librarianlib.etcetera.LibLibEtcetera
 import com.teamwizardry.librarianlib.etcetera.Raycaster
-import com.teamwizardry.librarianlib.math.times
 import com.teamwizardry.librarianlib.testcore.TestMod
 import com.teamwizardry.librarianlib.testcore.objects.TestEntityConfig
-import com.teamwizardry.librarianlib.testcore.objects.TestItem
+import com.teamwizardry.librarianlib.testcore.objects.TestItemImpl
 import net.minecraft.entity.Entity
 import net.minecraft.particles.BlockParticleData
 import net.minecraft.particles.IParticleData
@@ -23,7 +22,7 @@ import net.minecraftforge.fml.common.Mod
 import java.util.function.Predicate
 
 @Mod("ll-etcetera-test")
-object LibrarianLibEtceteraTestMod: TestMod(LibrarianLibEtceteraModule) {
+object LibrarianLibEtceteraTestMod: TestMod(LibLibEtcetera) {
 
     init {
         +raycaster("raycast_collision", "Collision",
@@ -51,7 +50,7 @@ object LibrarianLibEtceteraTestMod: TestMod(LibrarianLibEtceteraModule) {
             Raycaster.BlockMode.COLLISION, Raycaster.FluidMode.ANY, Predicate { true }
         )
 
-        +TestItem(TestItemConfig("raycast_types", "Raycaster: Hit Types") {
+        +TestItemImpl(TestItemConfig("raycast_types", "Raycaster: Hit Types") {
             description = "Spawns a different particle type for each hit type"
             val serverRaycaster = Raycaster()
 

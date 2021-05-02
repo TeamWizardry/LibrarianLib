@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.testcore.objects
 
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.util.text.StringTextComponent
+import net.minecraft.text.LiteralText
 
 @TestObjectDslMarker
 public abstract class TestContext {
@@ -12,7 +12,7 @@ public abstract class TestContext {
  */
 public abstract class PlayerTestContext(player: PlayerEntity): TestContext() {
     private val _player: PlayerEntity = player
-    public val sneaking: Boolean get() = _player.isCrouching
+    public val sneaking: Boolean get() = _player.isSneaking
 
     public inline fun <T> sneaking(block: () -> T): T? {
         if (sneaking)
@@ -27,10 +27,10 @@ public abstract class PlayerTestContext(player: PlayerEntity): TestContext() {
     }
 
     public fun chat(text: String) {
-        _player.sendStatusMessage(StringTextComponent(text), false)
+        _player.sendMessage(LiteralText(text), false)
     }
 
     public fun status(text: String) {
-        _player.sendStatusMessage(StringTextComponent(text), true)
+        _player.sendMessage(LiteralText(text), true)
     }
 }

@@ -14,7 +14,7 @@ import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import org.lwjgl.glfw.GLFW
 import java.awt.Color
 import java.util.function.Predicate
@@ -330,7 +330,7 @@ public open class FacadeWidget(
         val minSafeX = (windowWidth - basisWidth) / 2
         val minSafeY = (windowHeight - basisHeight) / 2
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(SimpleRenderTypes.flatQuads)
 
         fun drawRect(minX: Double, minY: Double, maxX: Double, maxY: Double) {

@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.inconceivable
-import com.teamwizardry.librarianlib.core.util.loc
+import com.teamwizardry.librarianlib.core.util.id
 import com.teamwizardry.librarianlib.core.util.kotlin.tick
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.math.Vec2i
@@ -10,20 +10,22 @@ import com.teamwizardry.librarianlib.math.ceilInt
 import com.teamwizardry.librarianlib.math.floorInt
 import com.teamwizardry.librarianlib.core.util.ivec
 import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.client.resources.ReloadListener
-import net.minecraft.client.resources.data.AnimationMetadataSection
-import net.minecraft.profiler.IProfiler
-import net.minecraft.resources.IResource
-import net.minecraft.resources.IResourceManager
+import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener
+import net.minecraft.client.resource.metadata.AnimationResourceMetadata
+import net.minecraft.resource.Resource
+import net.minecraft.resource.ResourceManager
 import net.minecraft.util.Identifier
+import net.minecraft.util.profiler.Profiler
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.IOException
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executor
 import javax.imageio.ImageIO
 
-internal object MosaicLoader : ReloadListener<Map<Identifier, MosaicDefinition?>>() {
+internal object MosaicLoader : SimpleResourceReloadListener<Map<Identifier, MosaicDefinition?>> {
     private var definitions: MutableMap<Identifier, MosaicDefinition?> = mutableMapOf()
-    private var missingno = loc("librarianlib:mosaic/textures/missingno.png")
+    private var missingno = Identifier("librarianlib:mosaic/textures/missingno.png")
 
     val missingnoSheet: MosaicDefinition get() = getDefinition(missingno)
     val missingnoSprite: SpriteDefinition get() = getDefinition(missingno).sprites[0]
@@ -38,12 +40,27 @@ internal object MosaicLoader : ReloadListener<Map<Identifier, MosaicDefinition?>
         return def ?: getDefinition(missingno)
     }
 
-    override fun prepare(manager: IResourceManager, profiler: IProfiler): Map<Identifier, MosaicDefinition?> {
-        return profiler.tick { loadDefinitions(manager) }
+    override fun getFabricId(): Identifier = Identifier("liblib-mosaic:loader")
+
+    override fun load(
+        manager: ResourceManager,
+        profiler: Profiler,
+        executor: Executor
+    ): CompletableFuture<Map<Identifier, MosaicDefinition?>> {
+        return CompletableFuture.supplyAsync({
+            profiler.tick { loadDefinitions(manager) }
+        }, executor)
     }
 
-    override fun apply(result: Map<Identifier, MosaicDefinition?>, manager: IResourceManager, profiler: IProfiler) {
-        profiler.tick { updateDefinitions(result) }
+    override fun apply(
+        data: Map<Identifier, MosaicDefinition?>,
+        manager: ResourceManager,
+        profiler: Profiler,
+        executor: Executor
+    ): CompletableFuture<Void> {
+        return CompletableFuture.runAsync({
+            profiler.tick { updateDefinitions(data) }
+        }, executor)
     }
 
     internal fun updateDefinitions(result: Map<Identifier, MosaicDefinition?>) {
@@ -55,7 +72,7 @@ internal object MosaicLoader : ReloadListener<Map<Identifier, MosaicDefinition?>
         }
     }
 
-    internal fun loadDefinitions(manager: IResourceManager): Map<Identifier, MosaicDefinition?> {
+    internal fun loadDefinitions(manager: ResourceManager): Map<Identifier, MosaicDefinition?> {
         val locations = mutableSetOf<Identifier>()
         synchronized(Mosaic.textures) {
             Mosaic.textures.forEach {
@@ -67,7 +84,7 @@ internal object MosaicLoader : ReloadListener<Map<Identifier, MosaicDefinition?>
         }
     }
 
-    private fun load(manager: IResourceManager, location: Identifier): MosaicDefinition? {
+    private fun load(manager: ResourceManager, location: Identifier): MosaicDefinition? {
         val resource = try {
              manager.getResource(location)
         } catch (exception: IOException) {
@@ -78,7 +95,7 @@ internal object MosaicLoader : ReloadListener<Map<Identifier, MosaicDefinition?>
         val (json, image) = resource.use {
             val image = ImageIO.read(resource.inputStream)
             return@use Pair(
-                resource.getMetadata(MosaicJson.SERIALIZER),
+                resource.getMetadata(MosaicMetadataReader),
                 image
             )
         }
@@ -164,11 +181,11 @@ internal object MosaicLoader : ReloadListener<Map<Identifier, MosaicDefinition?>
         return color
     }
 
-    private fun loadRaw(location: Identifier, resource: IResource, image: BufferedImage): MosaicDefinition {
+    private fun loadRaw(location: Identifier, resource: Resource, image: BufferedImage): MosaicDefinition {
         val sheet = MosaicDefinition(location)
         sheet.singleSprite = true
 
-        val animation = resource.getMetadata(AnimationMetadataSection.SERIALIZER)
+        val animation = resource.getMetadata(AnimationResourceMetadata.READER)
 
         sheet.uvSize = ivec(image.width, image.height)
         sheet.image = image
@@ -183,15 +200,15 @@ internal object MosaicLoader : ReloadListener<Map<Identifier, MosaicDefinition?>
                 sprite.size = sheet.uvSize
                 sprite.frameUVs = listOf(sprite.uv).unmodifiableView()
             } else {
-                if(animation.isInterpolate) {
+                if(animation.shouldInterpolate()) {
                     logger.warn("Ignoring interpolation for raw animation of $location")
                 }
-                sprite.size = ivec(sheet.uvSize.x, sheet.uvSize.x * animation.getFrameHeight(1) / animation.getFrameWidth(1))
+                sprite.size = ivec(sheet.uvSize.x, sheet.uvSize.x * animation.getHeight(1) / animation.getWidth(1))
                 val offset = ivec(0, sprite.size.y)
                 val frames = mutableListOf<Vec2i>()
                 for(it in 0 until animation.frameCount) {
                     val index = animation.getFrameIndex(it)
-                    val duration = animation.getFrameTimeSingle(it)
+                    val duration = animation.getFrameTime(it)
                     val uv = sprite.uv + offset * index
 
                     repeat(duration) { frames.add(uv) }
@@ -223,4 +240,5 @@ internal object MosaicLoader : ReloadListener<Map<Identifier, MosaicDefinition?>
         return sheet
     }
 
+    private val logger = LibLibMosaic.makeLogger<MosaicLoader>()
 }

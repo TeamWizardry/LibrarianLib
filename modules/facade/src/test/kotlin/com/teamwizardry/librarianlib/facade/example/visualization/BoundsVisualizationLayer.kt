@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 
 class BoundsVisualizationLayer: GuiLayer() {
@@ -29,7 +29,7 @@ class BoundsVisualizationLayer: GuiLayer() {
     override fun draw(context: GuiDrawContext) {
         RenderSystem.lineWidth(2f)
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(SimpleRenderTypes.flatLineStrip)
 
         getBoundingBoxPoints().forEach {

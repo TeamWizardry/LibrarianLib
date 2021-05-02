@@ -4,7 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.foundation.testmod.customtypes.TestTileEntity
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
@@ -14,7 +14,7 @@ class TestTileEntityRenderer(rendererDispatcherIn: TileEntityRendererDispatcher)
 
     override fun render(
         tileEntityIn: TestTileEntity, partialTicks: Float, matrixStackIn: MatrixStack,
-        bufferIn: IRenderTypeBuffer, combinedLightIn: Int, combinedOverlayIn: Int
+        bufferIn: VertexConsumerProvider, combinedLightIn: Int, combinedOverlayIn: Int
     ) {
         val texture = Client.getBlockAtlasSprite(loc("block/dirt"))
         val builder = texture.wrapBuffer(bufferIn.getBuffer(RenderType.getCutout()))

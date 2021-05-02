@@ -6,6 +6,9 @@ import org.jetbrains.dokka.gradle.DokkaMultiModuleFileLayout
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaTaskPartial
+import org.quiltmc.loom.LoomGradleExtension
+import org.quiltmc.loom.configuration.ide.RunConfigSettings
+import org.quiltmc.loom.task.RunGameTask
 
 plugins {
     id("java-library")
@@ -121,6 +124,19 @@ configurations {
 //tasks.named("compileTestJava") {
 //    dependsOn(validateMixinApplication)
 //}
+
+configure<LoomGradleExtension> {
+    runConfigs {
+        create("testClient") {
+            client()
+            source(sourceSets["test"])
+        }
+        create("testServer") {
+            server()
+            source(sourceSets["test"])
+        }
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Test mod file generation

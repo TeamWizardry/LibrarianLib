@@ -1,34 +1,43 @@
 package com.teamwizardry.librarianlib.testcore.objects
 
-import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
+import com.teamwizardry.librarianlib.core.util.kotlin.makeTranslationKey
+import com.teamwizardry.librarianlib.core.util.registryId
 import net.minecraft.block.BlockState
-import net.minecraft.client.util.ITooltipFlag
+import net.minecraft.client.item.TooltipContext
 import net.minecraft.item.BlockItem
-import net.minecraft.item.BlockItemUseContext
+import net.minecraft.item.ItemPlacementContext
 import net.minecraft.item.ItemStack
-import net.minecraft.util.text.ITextComponent
-import net.minecraft.util.text.TextFormatting
-import net.minecraft.util.text.TranslationTextComponent
+import net.minecraft.text.Text
+import net.minecraft.text.TranslatableText
+import net.minecraft.util.Formatting
 import net.minecraft.world.World
 
-public open class TestBlockItem(block: TestBlock, builder: Properties): BlockItem(block, builder) {
-    override fun getBlock(): TestBlock {
-        return super.getBlock() as TestBlock
+public open class TestBlockItem(block: TestBlockImpl, builder: Settings): BlockItem(block, builder) {
+    public val config: TestBlock = block.config
+
+    override fun getBlock(): TestBlockImpl {
+        return super.getBlock() as TestBlockImpl
     }
 
-    override fun placeBlock(context: BlockItemUseContext, state: BlockState): Boolean {
-        if (super.placeBlock(context, state)) {
-            context.item.grow(1)
+    override fun place(context: ItemPlacementContext, state: BlockState): Boolean {
+        if(super.place(context, state)) {
+            context.stack.increment(1)
             return true
         }
         return false
     }
 
-    override fun addInformation(stack: ItemStack, worldIn: World?, tooltip: MutableList<ITextComponent>, flagIn: ITooltipFlag) {
-        super.addInformation(stack, worldIn, tooltip, flagIn)
+    override fun appendTooltip(
+        stack: ItemStack,
+        world: World?,
+        tooltip: MutableList<Text>,
+        context: TooltipContext
+    ) {
+        super.appendTooltip(stack, world, tooltip, context)
+
         if (block.config.description != null) {
-            val description = TranslationTextComponent(registryName!!.translationKey("block", "tooltip"))
-            description.style.applyFormatting(TextFormatting.GRAY)
+            val description = TranslatableText(block.registryId.makeTranslationKey("block", "tooltip"))
+            description.style.withFormatting(Formatting.GRAY)
             tooltip.add(description)
         }
     }

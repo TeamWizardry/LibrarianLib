@@ -5,7 +5,7 @@ fun includeModule(name: String) {
     project(":$name").projectDir = rootDir.resolve("modules/$name")
 }
 
-//include("testcore")
+include("testcore")
 //includeModule("albedo")
 includeModule("core")
 //includeModule("courier")
@@ -15,7 +15,7 @@ includeModule("etcetera")
 //includeModule("glitter")
 //includeModule("lieutenant")
 //includeModule("mirage")
-//includeModule("mosaic")
+includeModule("mosaic")
 //includeModule("scribe")
 
 // This is absolutely disgusting, but ForgeGradle has forced my hand here. Even though the `RunConfig`'s `ModConfig`

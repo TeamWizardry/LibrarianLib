@@ -4,11 +4,7 @@ internal class MosaicJson(
     var width: Int, var height: Int,
     var blur: Boolean, var mipmap: Boolean,
     var sprites: List<SpriteJson>, var colors: List<ColorJson>
-) {
-    companion object {
-        val SERIALIZER = MosaicMetadataSectionSerializer()
-    }
-}
+)
 
 internal class SpriteJson(var name: String) {
 

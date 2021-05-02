@@ -1,17 +1,16 @@
 package com.teamwizardry.librarianlib.mosaic
 
-import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.render.RenderLayer
 import java.awt.Color
 
 public class PinnedWrapper(
-    public val wrapped: ISprite,
+    public val wrapped: Sprite,
     override val pinTop: Boolean,
     override val pinBottom: Boolean,
     override val pinLeft: Boolean,
     override val pinRight: Boolean
-): ISprite {
+): Sprite {
 
     override fun minU(animFrames: Int): Float = wrapped.minU(animFrames)
     override fun minU(): Float = wrapped.minU()
@@ -29,11 +28,11 @@ public class PinnedWrapper(
         wrapped.draw(matrix, x, y, width, height, animTicks, tint)
     }
 
-    override fun pinnedWrapper(top: Boolean, bottom: Boolean, left: Boolean, right: Boolean): ISprite {
+    override fun pinnedWrapper(top: Boolean, bottom: Boolean, left: Boolean, right: Boolean): Sprite {
         return wrapped.pinnedWrapper(top, bottom, left, right)
     }
 
-    override val renderType: RenderType get() = wrapped.renderType
+    override val renderType: RenderLayer get() = wrapped.renderType
     override val width: Int get() = wrapped.width
     override val height: Int get() = wrapped.height
     override val uSize: Float get() = wrapped.uSize

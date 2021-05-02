@@ -1,8 +1,0 @@
-modLoader="kotlinforforge"
-loaderVersion="[1,)"
-license="LGPL-3.0"
-[[mods]]
-modId="testcore-test"
-version="0.0.0"
-displayName="Test Core Test"
-description="Tests for the Test Core"

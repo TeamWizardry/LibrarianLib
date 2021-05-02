@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "liblib-core",
+  "id": "ll-core",
   "version": "${version}",
 
   "name": "LibrarianLib Core",
@@ -21,7 +21,7 @@
     "main": [
       {
         "adapter": "kotlin",
-        "value": "com.teamwizardry.librarianlib.LibrarianLib"
+        "value": "com.teamwizardry.librarianlib.mosaic.LibLibMosaicClient"
       }
     ]
   },

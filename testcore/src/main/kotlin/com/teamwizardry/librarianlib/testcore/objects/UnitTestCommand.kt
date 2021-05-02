@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.testcore.objects
 
 import com.mojang.brigadier.Command
-import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.context.CommandContext
@@ -9,47 +8,44 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
+import com.teamwizardry.librarianlib.testcore.TestCore
 import com.teamwizardry.librarianlib.testcore.junit.TestResult
 import com.teamwizardry.librarianlib.testcore.junit.TestSuiteResult
 import com.teamwizardry.librarianlib.testcore.junit.UnitTestRunner
-import com.teamwizardry.librarianlib.testcore.logger
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback
 import net.minecraft.command.CommandSource
-import net.minecraft.command.Commands
-import net.minecraft.command.ISuggestionProvider
+import net.minecraft.server.command.CommandManager
+import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.text.*
+import net.minecraft.util.Formatting
 import net.minecraft.util.Identifier
-import net.minecraft.util.text.ITextComponent
-import net.minecraft.util.text.StringTextComponent
-import net.minecraft.util.text.Style
-import net.minecraft.util.text.TextFormatting
-import net.minecraft.util.text.TranslationTextComponent
-import net.minecraft.util.text.event.ClickEvent
-import net.minecraft.util.text.event.HoverEvent
-import net.minecraftforge.fml.common.registry.GameRegistry
 import org.junit.platform.engine.TestExecutionResult
 import java.util.concurrent.CompletableFuture
 
 public object UnitTestCommand {
-    public fun register(dispatcher: CommandDispatcher<CommandSource>) {
-        dispatcher.register(
-            Commands.literal("unittest").then(
-                Commands.argument("test", UnitTestArgument())
-                    .executes { context ->
-                        runTestSuite(context.source, context.input, UnitTestArgument.getUnitTest(context, "test"))
-                        Command.SINGLE_SUCCESS
-                    }
+    public fun register() {
+        CommandRegistrationCallback.EVENT.register { dispatcher, dedicated ->
+            dispatcher.register(
+                CommandManager.literal("unittest").then(
+                    CommandManager.argument("test", UnitTestArgument())
+                        .executes { context ->
+                            runTestSuite(context.source, context.input, UnitTestArgument.getUnitTest(context, "test"))
+                            Command.SINGLE_SUCCESS
+                        }
+                )
             )
-
-        )
+        }
     }
 
-    private fun runTestSuite(source: CommandSource, input: String, suite: UnitTestSuite) {
-        source.sendFeedback(StringTextComponent("Running §5${suite.registryName}§r tests..."), true)
+    private fun runTestSuite(source: ServerCommandSource, input: String, suite: UnitTestSuite) {
+        val suiteId = UnitTestSuite.REGISTRY.getId(suite)
+        source.sendFeedback(LiteralText("Running §5${suiteId}§r tests..."), true)
         val report = UnitTestRunner.runUnitTests(suite.tests)
-        logger.info("Unit tests for ${suite.registryName}\n" + report.roots.joinToString("\n") { UnitTestRunner.format(it) })
+        logger.info("Unit tests for ${suiteId}\n" + report.roots.joinToString("\n") { UnitTestRunner.format(it) })
         source.sendFeedback(makeTextComponent(input, report), true)
     }
 
-    private fun makeTextComponent(input: String, report: TestSuiteResult): ITextComponent {
+    private fun makeTextComponent(input: String, report: TestSuiteResult): Text {
         // [ $ tests found | $ tests passed | $ tests failed ]
         val fullCount = report.reports.asSequence().filter { it.key.isTest }.count()
         val passed = report.reports.filter { (key, value) ->
@@ -60,57 +56,54 @@ public object UnitTestCommand {
         }
 
         val passedStyle = Style.EMPTY
-            .applyFormatting(TextFormatting.GREEN)
-            .setHoverEvent(
+            .withFormatting(Formatting.GREEN)
+            .withHoverEvent(
                 HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    StringTextComponent("${passed.size} tests passed\n").mergeStyle(TextFormatting.GREEN)
-                        .append(StringTextComponent(passed.values.joinToString("\n") { it.displayPath.joinToString(" > ") }))
+                    LiteralText("${passed.size} tests passed\n").formatted(Formatting.GREEN)
+                        .append(LiteralText(passed.values.joinToString("\n") { it.displayPath.joinToString(" > ") }))
                 )
             )
         val failedStyle = Style.EMPTY
-            .applyFormatting(TextFormatting.RED)
-            .setHoverEvent(
+            .withFormatting(Formatting.RED)
+            .withHoverEvent(
                 HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                    StringTextComponent("${failed.size} tests failed\n").mergeStyle(TextFormatting.RED)
-                        .append(StringTextComponent(failed.values.joinToString("\n") { it.displayPath.joinToString(" > ") }))
+                    LiteralText("${failed.size} tests failed\n").formatted(Formatting.RED)
+                        .append(LiteralText(failed.values.joinToString("\n") { it.displayPath.joinToString(" > ") }))
                 )
             )
         val rerunStyle = Style.EMPTY
-            .applyFormatting(TextFormatting.BLUE)
-            .setUnderlined(true)
-            .setClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND, input))
+            .withFormatting(Formatting.BLUE)
+            .withUnderline(true)
+            .withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND, input))
 
-        return StringTextComponent("[ $fullCount tests found | ").append(
-                StringTextComponent("${passed.size} tests passed").setStyle(passedStyle)
-            ).appendString(" | ")
-            .append(
-                StringTextComponent("${failed.size} tests failed").setStyle(failedStyle)
-            ).appendString(" ] ")
-            .append(
-                StringTextComponent("(Rerun)").setStyle(rerunStyle)
-            )
+        return LiteralText("[ $fullCount tests found | ")
+            .append(LiteralText("${passed.size} tests passed").setStyle(passedStyle))
+            .append(" | ")
+            .append(LiteralText("${failed.size} tests failed").setStyle(failedStyle))
+            .append(" ] ")
+            .append(LiteralText("(Rerun)").setStyle(rerunStyle))
     }
+
+    private val logger = TestCore.logManager.makeLogger<UnitTestCommand>()
 }
 
 public class UnitTestArgument: ArgumentType<UnitTestSuite> {
-    private val registry = GameRegistry.findRegistry(UnitTestSuite::class.java)
-
     @Throws(CommandSyntaxException::class)
-    override fun parse(p_parse_1_: StringReader): UnitTestSuite {
-        val Identifier = Identifier.read(p_parse_1_)
-        return registry.getValue(Identifier)
-            ?: throw TEST_NOT_FOUND.create(Identifier)
+    override fun parse(reader: StringReader): UnitTestSuite {
+        val identifier = Identifier.fromCommandInput(reader)
+        return UnitTestSuite.REGISTRY.get(identifier)
+            ?: throw TEST_NOT_FOUND.create(identifier)
     }
 
-    override fun <S> listSuggestions(p_listSuggestions_1_: CommandContext<S>, p_listSuggestions_2_: SuggestionsBuilder): CompletableFuture<Suggestions> {
-        return ISuggestionProvider.suggestIterable(registry.keys, p_listSuggestions_2_)
+    override fun <S> listSuggestions(context: CommandContext<S>, suggestions: SuggestionsBuilder): CompletableFuture<Suggestions> {
+        return CommandSource.suggestIdentifiers(UnitTestSuite.REGISTRY.ids, suggestions)
     }
 
     public companion object {
-        public val TEST_NOT_FOUND: DynamicCommandExceptionType = DynamicCommandExceptionType { p_208663_0_: Any? -> TranslationTextComponent("testcore.unitTestNotFound", p_208663_0_) }
+        public val TEST_NOT_FOUND: DynamicCommandExceptionType = DynamicCommandExceptionType { function: Any? -> TranslatableText("testcore.unitTestNotFound", function) }
 
         @Throws(CommandSyntaxException::class)
-        public fun getUnitTest(context: CommandContext<CommandSource>, name: String): UnitTestSuite {
+        public fun getUnitTest(context: CommandContext<ServerCommandSource>, name: String): UnitTestSuite {
             return context.getArgument(name, UnitTestSuite::class.java)
         }
     }

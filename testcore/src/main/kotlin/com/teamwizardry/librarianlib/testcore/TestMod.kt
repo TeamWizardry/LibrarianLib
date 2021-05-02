@@ -1,8 +1,7 @@
 package com.teamwizardry.librarianlib.testcore
 
-import com.teamwizardry.librarianlib.LibrarianLibModule
+/*
 import com.teamwizardry.librarianlib.core.util.DistinctColors
-import com.teamwizardry.librarianlib.core.util.kotlin.translationKey
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.mirage.Mirage
 import com.teamwizardry.librarianlib.testcore.objects.*
@@ -35,7 +34,7 @@ import org.apache.logging.log4j.Logger
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 import java.awt.Color
 
-public abstract class TestMod(public val module: LibrarianLibModule) {
+public abstract class TestMod() {
     public val modid: String = this.javaClass.getAnnotation(Mod::class.java)?.value
         ?: throw IllegalStateException("Could not find mod annotation on ${javaClass.canonicalName}")
     public val name: String = "${module.name}-test"
@@ -64,8 +63,8 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
     public val unitTests: List<UnitTestSuite> = _unitTests.unmodifiableView()
 
     // auto-fill the item group
-    public fun TestItemConfig(id: String, name: String, block: TestItemConfig.() -> Unit): TestItemConfig = TestItemConfig(id, name, itemGroup, block)
-    public fun TestItemConfig(id: String, name: String): TestItemConfig = TestItemConfig(id, name, itemGroup)
+    public fun TestItemConfig(id: String, name: String, block: TestItem.() -> Unit): TestItem = TestItem(id, name, itemGroup, block)
+    public fun TestItemConfig(id: String, name: String): TestItem = TestItem(id, name, itemGroup)
     public fun TestEntityConfig(id: String, name: String, block: TestEntityConfig.() -> Unit): TestEntityConfig = TestEntityConfig(id, name, itemGroup, block)
     public fun TestEntityConfig(id: String, name: String): TestEntityConfig = TestEntityConfig(id, name, itemGroup)
     public fun TestScreenConfig(id: String, name: String, block: TestScreenConfig.() -> Unit): TestScreenConfig = TestScreenConfig(id, name, itemGroup, block)
@@ -81,7 +80,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
     public operator fun <T: Block> T.unaryPlus(): T {
         val properties = Item.Properties()
             .group(itemGroup)
-        val item = if (this is TestBlock)
+        val item = if (this is TestBlockImpl)
             TestBlockItem(this, properties.maxStackSize(1))
         else
             BlockItem(this, properties)
@@ -170,7 +169,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
         }
 
         blocks.forEach { block ->
-            if (block is TestBlock) {
+            if (block is TestBlockImpl) {
                 block.tileEntityRenderer?.also { renderer ->
                     @Suppress("UNCHECKED_CAST")
                     ClientRegistry.bindTileEntityRenderer(block.tileEntityType as TileEntityType<TileEntity>) {
@@ -185,7 +184,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
         generateLanguageAssets()
 
         blocks.forEach { block ->
-            if (block is TestBlock) {
+            if (block is TestBlockImpl) {
                 RenderTypeLookup.setRenderLayer(block, RenderType.getCutout())
             }
         }
@@ -227,7 +226,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
     }
 
     private fun generateBlockAssets() {
-        blocks.filterIsInstance<TestBlock>().forEach { block ->
+        blocks.filterIsInstance<TestBlockImpl>().forEach { block ->
             val name = block.registryName!!
             val model = "block/test_block/${block.modelName}"
             Mirage.clientResources.add(
@@ -278,7 +277,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
             }
         }
         blocks.forEach { block ->
-            if (block is TestBlock) {
+            if (block is TestBlockImpl) {
                 val registryName = block.registryName!!
                 keys[registryName.translationKey("block")] = block.config.name
                 block.config.description?.also {
@@ -302,7 +301,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
                 Color.WHITE.rgb
         }, *items.toTypedArray())
         colorHandlerEvent.blockColors.register({ state, _, _, tintIndex ->
-            if (tintIndex == 1 && state.block is TestBlock)
+            if (tintIndex == 1 && state.block is TestBlockImpl)
                 DistinctColors.forObject(state.block.registryName).rgb
             else
                 Color.WHITE.rgb
@@ -326,7 +325,7 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
     @SubscribeEvent
     public open fun registerTileEntities(e: RegistryEvent.Register<TileEntityType<*>>) {
         blocks.forEach { block ->
-            if (block is TestBlock) {
+            if (block is TestBlockImpl) {
                 block.tileEntityType?.also { type ->
                     e.registry.register(type)
                 }
@@ -348,3 +347,6 @@ public abstract class TestMod(public val module: LibrarianLibModule) {
         }
     }
 }
+
+
+ */

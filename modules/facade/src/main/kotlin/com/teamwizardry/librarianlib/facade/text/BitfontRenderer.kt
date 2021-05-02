@@ -7,13 +7,13 @@ import com.teamwizardry.librarianlib.math.Matrix4d
 import dev.thecodewarrior.bitfont.data.Glyph
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TypesetGlyph
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 
 public object BitfontRenderer {
     @JvmStatic
     public fun draw(matrix: Matrix4d, container: TextContainer, defaultColor: Color) {
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
         for (line in container.lines) {

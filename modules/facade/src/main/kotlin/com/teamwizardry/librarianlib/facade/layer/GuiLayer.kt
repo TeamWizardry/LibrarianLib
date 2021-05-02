@@ -44,7 +44,7 @@ import com.teamwizardry.librarianlib.facade.value.RMValueInt
 import com.teamwizardry.librarianlib.facade.value.RMValueLong
 import com.teamwizardry.librarianlib.mosaic.ISprite
 import dev.thecodewarrior.mirror.Mirror
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
@@ -1181,7 +1181,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 val maxU = (size.xf * rasterizationScale * Client.scaleFactor.toFloat()) / Client.window.framebufferWidth
                 val maxV = (size.yf * rasterizationScale * Client.scaleFactor.toFloat()) / Client.window.framebufferHeight
 
-                val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+                val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
                 val vb = buffer.getBuffer(flatLayerRenderType)
                 // why 1-maxV?
                 vb.pos2d(context.transform, 0, size.y).tex(0f, 1 - maxV).endVertex()
@@ -1234,7 +1234,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * buffer when rendering to a texture
      */
     private fun clearBounds(context: GuiDrawContext) {
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(clearBufferRenderType)
         vb.pos2d(context.transform, 0, size.y).endVertex()
         vb.pos2d(context.transform, size.x, size.y).endVertex()
@@ -1252,7 +1252,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
         val color = Color(1f, 0f, 1f, 0.5f)
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(flatColorFanRenderType)
 
         val points = getBoundingBoxPoints()
@@ -1311,7 +1311,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      */
     private fun drawLayerOverlay(context: GuiDrawContext, color: Color) {
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(flatColorFanRenderType)
 
         val points = getBoundingBoxPoints()
@@ -1329,7 +1329,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     private fun drawBoundingBox(context: GuiDrawContext, color: Color) {
         val points = getBoundingBoxPoints()
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(debugBoundingBoxRenderType)
 
         points.forEach {

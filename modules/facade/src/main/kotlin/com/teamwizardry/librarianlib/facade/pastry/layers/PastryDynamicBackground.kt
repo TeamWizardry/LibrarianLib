@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.facade.pastry.IBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.Rect2dUnion
 import com.teamwizardry.librarianlib.math.*
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.min
@@ -46,7 +46,7 @@ public class PastryDynamicBackground(style: IBackgroundStyle, vararg shapeLayers
     }
 
     override fun draw(context: GuiDrawContext) {
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(style.edges.renderType)
         for(element in elements) {
             element.draw(context.transform, vb)

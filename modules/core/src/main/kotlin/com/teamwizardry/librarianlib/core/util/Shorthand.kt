@@ -17,16 +17,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.Vec3i
 
-/**
-* Shorthand for `new Identifier(location)`
-*/
-public fun loc(location: String): Identifier = Identifier(location)
-
-/**
-* Shorthand for `new Identifier(namespace, path)`
-*/
-public fun loc(namespace: String, path: String): Identifier = Identifier(namespace, path)
-
 // Vec2d:
 
 /**

@@ -10,5 +10,5 @@ val commonConfig = rootProject.the<CommonConfigExtension>()
 
 dependencies {
     liblib(project(":core"))
-//    testApi(project(":testcore"))
+    testApi(project(":testcore"))
 }

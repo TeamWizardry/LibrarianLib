@@ -1,11 +1,11 @@
 package com.teamwizardry.librarianlib.mosaic
 
-import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
+import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
 import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
-import net.minecraft.client.renderer.RenderState
-import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.render.RenderPhase
+import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.VertexFormats
 import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -14,7 +14,7 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 /**
- * This class represents a texture and it's size. It is mostly used to create [Sprite]
+ * This class represents a texture and it's size. It is mostly used to create [MosaicSprite]
  * objects. If there is no mosaic mcmeta the texture will be loaded as a "raw"
  * texture, which contains a single sprite with an empty name (`""`).
  *
@@ -88,10 +88,10 @@ public class Mosaic(
     public val image: BufferedImage
         get() = definition.image
 
-    public lateinit var renderType: RenderType
+    public lateinit var renderType: RenderLayer
         private set
 
-    private var sprites: MutableMap<String, Sprite> = mutableMapOf()
+    private var sprites: MutableMap<String, MosaicSprite> = mutableMapOf()
     private var colors: MutableMap<String, TextureColor> = mutableMapOf()
 
     init {
@@ -103,7 +103,7 @@ public class Mosaic(
 
     internal fun loadDefinition() {
         definition = MosaicLoader.getDefinition(location)
-        renderType = createRenderType(RenderState.TextureState(location, definition.blur, definition.mipmap))
+        renderType = createRenderLayer(RenderPhase.Texture(location, definition.blur, definition.mipmap))
 
         sprites.forEach { (_, sprite) ->
             sprite.loadDefinition()
@@ -138,8 +138,8 @@ public class Mosaic(
     /**
      * Gets the sprite with the specified name
      */
-    public fun getSprite(name: String): Sprite {
-        return sprites.getOrPut(name) { Sprite(this, name) }
+    public fun getSprite(name: String): MosaicSprite {
+        return sprites.getOrPut(name) { MosaicSprite(this, name) }
     }
 
     /**
@@ -149,31 +149,30 @@ public class Mosaic(
         return colors.getOrPut(name) { TextureColor(this, name) }.color
     }
 
-    /**
-     * Gets a delegate that allows access to a sprite based on the property's name. The sprite is cached after the first
-     * access, so a separate delegate must be used for each property.
-     */
-    @get:JvmSynthetic
-    public val delegate: ReadOnlyProperty<Any?, Sprite>
-        get() = SpriteDelegate()
+    @JvmSynthetic
+    public operator fun provideDelegate(thisRef: Any?, property: KProperty<*>): SpriteDelegate {
+        return SpriteDelegate(getSprite(property.name))
+    }
 
     internal companion object {
+        private val logger = LibLibMosaic.makeLogger<Mosaic>()
+
         @get:JvmSynthetic
         internal val textures = weakSetOf<Mosaic>().synchronized()
 
-        private val types = mutableMapOf<RenderState.TextureState, RenderType>()
+        private val types = mutableMapOf<RenderPhase.Texture, RenderLayer>()
 
-        private fun createRenderType(texture: RenderState.TextureState): RenderType {
+        private fun createRenderLayer(texture: RenderPhase.Texture): RenderLayer {
             return types.getOrPut(texture) {
-                val renderState = RenderType.State.getBuilder()
+                val renderState = RenderLayer.MultiPhaseParameters.builder()
                     .texture(texture)
-                    .alpha(DefaultRenderStates.DEFAULT_ALPHA)
-                    .depthTest(DefaultRenderStates.DEPTH_LEQUAL)
-                    .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
+                    .alpha(DefaultRenderPhases.ONE_TENTH_ALPHA)
+                    .depthTest(DefaultRenderPhases.LEQUAL_DEPTH_TEST)
+                    .transparency(DefaultRenderPhases.TRANSLUCENT_TRANSPARENCY)
 
                 @Suppress("INACCESSIBLE_TYPE")
-                RenderType.makeType("sprite_type",
-                    DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, false, renderState.build(true)
+                RenderLayer.of("sprite_type",
+                    VertexFormats.POSITION_COLOR_TEXTURE, GL11.GL_QUADS, 256, false, false, renderState.build(true)
                 )
             }
         }
@@ -203,11 +202,7 @@ public class Mosaic(
         }
     }
 
-    private inner class SpriteDelegate: ReadOnlyProperty<Any?, Sprite> {
-        private var instance: Sprite? = null
-
-        override fun getValue(thisRef: Any?, property: KProperty<*>): Sprite {
-            return instance ?: this@Mosaic.getSprite(property.name).also { instance = it }
-        }
+    public class SpriteDelegate(private val sprite: MosaicSprite) {
+        public operator fun getValue(thisRef: Any?, property: KProperty<*>): MosaicSprite = sprite
     }
 }

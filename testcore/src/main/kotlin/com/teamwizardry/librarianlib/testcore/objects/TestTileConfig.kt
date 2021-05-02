@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.testcore.objects
 
+/*
 import com.teamwizardry.librarianlib.core.util.sided.ClientMetaSupplier
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.tileentity.TileEntityType
@@ -18,3 +19,5 @@ public class TestTileConfig<T: TileEntity>(internal val factory: (TileEntityType
         return this
     }
 }
+
+ */

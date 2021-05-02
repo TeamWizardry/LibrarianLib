@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.testcore.testmod
+package com.teamwizardry.librarianlib.testcore.test
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertTrue

@@ -1,5 +1,5 @@
 package com.teamwizardry.librarianlib.testcore.objects
-
+/*
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import com.teamwizardry.librarianlib.core.util.sided.clientOnly
@@ -141,3 +141,6 @@ public open class TestEntity(public val config: TestEntityConfig, world: World):
         private var configHolder: TestEntityConfig? by threadLocal()
     }
 }
+
+
+ */

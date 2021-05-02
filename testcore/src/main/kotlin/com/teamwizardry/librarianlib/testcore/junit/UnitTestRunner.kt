@@ -50,22 +50,13 @@ public object UnitTestRunner {
         }
         (result as? TestResult.Finished)?.result?.throwable?.ifPresent { exception ->
             val sw = StringWriter()
+            // remove everything above the test runner
+            exception.stackTrace = exception.stackTrace.asSequence()
+                .takeWhile { it.fileName != "UnitTestRunner.kt" }
+                .toList().toTypedArray()
             exception.printStackTrace(PrintWriter(sw))
 
-            // remove everything after the `runUnitTests` line
-            var skipping = false
-            val trace = sw.toString().lineSequence().filter { line ->
-                var shouldSkip = skipping
-                if (line.startsWith("\tat com.teamwizardry.librarianlib.testcore.junit.UnitTestRunner.runUnitTests"))
-                    skipping = true
-                if (!line.startsWith("\t")) {
-                    shouldSkip = false
-                    skipping = false
-                }
-                !shouldSkip
-            }.joinToString("\n")
-
-            text += "\n" + trace.trimEnd().prependIndent("││ ") + "\n╘╧════════════════════"
+            text += "\n" + sw.toString().trimEnd().prependIndent("││ ") + "\n╘╧════════════════════"
         }
         if (report.children.isNotEmpty())
             text += "\n" + report.children.joinToString("\n") {

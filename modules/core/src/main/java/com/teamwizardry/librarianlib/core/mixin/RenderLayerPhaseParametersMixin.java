@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.ArrayList;
 
 @Mixin(RenderLayer.MultiPhaseParameters.class)
-public abstract class RenderLayerPhaseParametersMixin implements IMutableRenderLayerPhaseParameters {
+abstract class RenderLayerPhaseParametersMixin implements IMutableRenderLayerPhaseParameters {
     @Override
     public void addState(RenderPhase state) {
         ArrayList<RenderPhase> states = new ArrayList<>(this.getPhases());

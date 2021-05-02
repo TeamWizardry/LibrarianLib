@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.facade.value.RMValueDouble
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.math.Axis2d
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -38,7 +38,7 @@ public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width:
 
 
         if (stops.isNotEmpty()) {
-            val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+            val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
             val vb = buffer.getBuffer(renderType)
 
             if (axis == Axis2d.X) {

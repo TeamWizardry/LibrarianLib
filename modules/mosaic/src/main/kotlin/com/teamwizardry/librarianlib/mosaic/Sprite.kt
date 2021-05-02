@@ -1,109 +1,186 @@
 package com.teamwizardry.librarianlib.mosaic
 
-import net.minecraft.client.renderer.RenderType
-import java.awt.image.BufferedImage
+import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.math.Matrix4d
+import net.minecraft.client.render.VertexConsumerProvider
+import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.VertexFormats
+import org.lwjgl.opengl.GL11
+import java.awt.Color
 
 /**
- * This class represents a section of a [Mosaic]
+ * Abstraction for Sprites.
+ * Most use cases will use the [MosaicSprite] implementation, however
+ * the [MinecraftAtlasSprite] is needed in some cases.
  */
-public class Sprite internal constructor(private val mosaic: Mosaic, public val name: String) : ISprite {
+public interface Sprite {
 
-    private lateinit var definition: SpriteDefinition
-    override val renderType: RenderType
-        get() = mosaic.renderType
+    /**
+     * The render type to be used when drawing. The renderer expects this type to be drawing [GL11.GL_QUADS]
+     * using [VertexFormats.POSITION_COLOR_TEXTURE]
+     */
+    public val renderType: RenderLayer
 
-    override var width: Int = 0
-        private set
-    override var height: Int = 0
-        private set
+    /**
+     * The logical width of this sprite.
+     */
+    public val width: Int
 
-    override var uSize: Float = 0f
-        private set
-    override var vSize: Float = 0f
-        private set
+    /**
+     * The logical height of this sprite.
+     */
+    public val height: Int
 
-    override var pinLeft: Boolean = true
-        private set
-    override var pinTop: Boolean = true
-        private set
-    override var pinRight: Boolean = true
-        private set
-    override var pinBottom: Boolean = true
-        private set
+    /**
+     * The UV width of this sprite.
+     */
+    public val uSize: Float
 
-    override var minUCap: Float = 0f
-        private set
-    override var minVCap: Float = 0f
-        private set
-    override var maxUCap: Float = 0f
-        private set
-    override var maxVCap: Float = 0f
-        private set
+    /**
+     * The UV height of this sprite.
+     */
+    public val vSize: Float
 
-    override var frameCount: Int = 1
-        private set
+    /**
+     * Frames for this sprite (if animated). Must be >= 1
+     */
+    public val frameCount: Int
 
-    public var images: List<BufferedImage> = emptyList()
-        private set
+    /**
+     * The fraction of the sprite along the minimum U edge that should not be distorted when stretching the sprite.
+     */
+    public val minUCap: Float get() = 0f
 
-    init {
-        loadDefinition()
-    }
+    /**
+     * The fraction of the sprite along the minimum V edge that should not be distorted when stretching the sprite.
+     */
+    public val minVCap: Float get() = 0f
 
-    internal fun loadDefinition() {
-        definition = mosaic.getSpriteDefinition(name)
+    /**
+     * The fraction of the sprite along the maximum U edge that should not be distorted when stretching the sprite.
+     */
+    public val maxUCap: Float get() = 0f
 
-        pinLeft = definition.minUPin
-        pinTop = definition.minVPin
-        pinRight = definition.maxUPin
-        pinBottom = definition.maxVPin
+    /**
+     * The fraction of the sprite along the maximum V edge that should not be distorted when stretching the sprite.
+     */
+    public val maxVCap: Float get() = 0f
 
-        minUCap = definition.minUCap / definition.size.xf
-        minVCap = definition.minVCap / definition.size.yf
-        maxUCap = definition.maxUCap / definition.size.xf
-        maxVCap = definition.maxVCap / definition.size.yf
+    /**
+     * Whether the top of this sprite should be pinned. If this is false the top of the texture will truncate or
+     * repeat if the sprite is drawn shorter or taller than normal.
+     *
+     * If both this and [pinBottom] are false, this sprite will render as if both were true
+     */
+    public val pinTop: Boolean get() = true
 
-        frameCount = definition.frameUVs.size
+    /**
+     * Whether the bottom of this sprite should be pinned. If this is false the bottom of the texture will truncate or
+     * repeat if the sprite is drawn shorter or taller than normal.
+     *
+     * If both this and [pinTop] are false, this sprite will render as if both were true
+     */
+    public val pinBottom: Boolean get() = true
 
-        width = mosaic.logicalU(definition.size.x)
+    /**
+     * Whether the left side of this sprite should be pinned. If this is false the left side of the texture will
+     * truncate or repeat if the sprite is drawn narrower or wider than normal.
+     *
+     * If both this and [pinRight] are false, this sprite will render as if both were true
+     */
+    public val pinLeft: Boolean get() = true
 
-        height = mosaic.logicalV(definition.size.y)
+    /**
+     * Whether the right side of this sprite should be pinned. If this is false the right side of the texture will
+     * truncate or repeat if the sprite is drawn narrower or wider than normal.
+     *
+     * If both this and [pinLeft] are false, this sprite will render as if both were true
+     */
+    public val pinRight: Boolean get() = true
 
-        uSize = definition.texU(definition.size.x)
-        vSize = definition.texV(definition.size.y)
-
-        images = definition.frameImages
-    }
+    /**
+     * The number of clockwise 90° rotations should be made when drawing this sprite.
+     */
+    public val rotation: Int get() = 0
 
     /**
      * The minimum U coordinate (0-1)
      */
-    override fun minU(animFrames: Int): Float {
-        return definition.texU(definition.frameUVs[animFrames % frameCount].x)
-    }
+    public fun minU(animFrames: Int): Float
+    public fun minU(): Float = minU(0)
 
     /**
      * The minimum V coordinate (0-1)
      */
-    override fun minV(animFrames: Int): Float {
-        return definition.texV(definition.frameUVs[animFrames % frameCount].y)
-    }
+    public fun minV(animFrames: Int): Float
+    public fun minV(): Float = minU(0)
 
     /**
      * The maximum U coordinate (0-1)
      */
-    override fun maxU(animFrames: Int): Float {
-        return definition.texU(definition.frameUVs[animFrames % frameCount].x + definition.size.x)
-    }
+    public fun maxU(animFrames: Int): Float
+    public fun maxU(): Float = minU(0)
 
     /**
      * The maximum V coordinate (0-1)
      */
-    override fun maxV(animFrames: Int): Float {
-        return definition.texV(definition.frameUVs[animFrames % frameCount].y + definition.size.y)
+    public fun maxV(animFrames: Int): Float
+    public fun maxV(): Float = minU(0)
+
+    /**
+     * Get the actual U coordinate for the specified U inside this sprite
+     */
+    public fun interpU(animFrames: Int, u: Float): Float = minU(animFrames) + uSize * u
+    public fun interpU(u: Float): Float = interpU(0, u)
+
+    /**
+     * Get the actval V coordinate for the specified V inside this sprite
+     */
+    public fun interpV(animFrames: Int, v: Float): Float = minV(animFrames) + vSize * v
+    public fun interpV(v: Float): Float = interpV(0, v)
+
+    /**
+     * Draws the sprite to the screen
+     * @param x The x position to draw at
+     * @param y The y position to draw at
+     */
+    public fun draw(matrix: Matrix4d, x: Float, y: Float) {
+        draw(matrix, x, y, width.toFloat(), height.toFloat(), 0, Color.WHITE)
     }
 
-    override fun toString(): String {
-        return "Sprite(texture=${mosaic.location}, name=$name)"
+    /**
+     * Draws the sprite to the screen
+     * @param x The x position to draw at
+     * @param y The y position to draw at
+     */
+    public fun draw(matrix: Matrix4d, x: Float, y: Float, animTicks: Int, tint: Color) {
+        draw(matrix, x, y, width.toFloat(), height.toFloat(), animTicks, tint)
+    }
+
+    /**
+     * Draws the sprite to the screen
+     * @param x The x position to draw at
+     * @param y The y position to draw at
+     */
+    public fun draw(matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float) {
+        draw(matrix, x, y, width, height, 0, Color.WHITE)
+    }
+
+    /**
+     * Draws the sprite to the screen with a custom width and height
+     * @param x The x position to draw at
+     * @param y The y position to draw at
+     * @param width The width to draw the sprite
+     * @param height The height to draw the sprite
+     */
+    public fun draw(matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animTicks: Int, tint: Color) {
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+        val builder = buffer.getBuffer(renderType)
+        DrawingUtil.draw(this, builder, matrix, x, y, width, height, animTicks, tint)
+        buffer.draw()
+    }
+
+    public fun pinnedWrapper(top: Boolean, bottom: Boolean, left: Boolean, right: Boolean): Sprite {
+        return PinnedWrapper(this, top, bottom, left, right)
     }
 }

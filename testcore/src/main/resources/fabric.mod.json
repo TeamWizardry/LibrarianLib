@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "testcore",
+  "version": "${version}",
+
+  "name": "Test Core",
+  "description": "Test Core",
+  "authors": [
+    "thecodewarrior"
+  ],
+  "contact": {
+    "homepage": "https://github.com/TeamWizardry/LibrarianLib",
+    "sources": "https://github.com/TeamWizardry/LibrarianLib"
+  },
+
+  "license": "LGPL-3.0",
+  "icon": "assets/modid/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "com.teamwizardry.librarianlib.testcore.LLTestCoreCommon"
+      }
+    ]
+  },
+  "mixins": [
+  ],
+  "depends": {
+    "quilt_loader": ">=0.12.0",
+    "fabric": "*",
+    "fabric-language-kotlin": "*",
+    "minecraft": "1.16.x"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}

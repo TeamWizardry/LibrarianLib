@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -43,7 +43,7 @@ internal object StructUniform: ShaderTest<StructUniform.Test>() {
         shader.simpleArray[1].embeddedArray[0].embed.set(25f)
         shader.simpleArray[1].embeddedArray[1].embed.set(26f)
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
         vb.pos2d(minX, maxY).color(c).tex(0f, 1f).endVertex()

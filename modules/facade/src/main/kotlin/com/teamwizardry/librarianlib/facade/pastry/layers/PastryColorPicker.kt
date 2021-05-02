@@ -15,7 +15,7 @@ import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.math.clamp
 import com.teamwizardry.librarianlib.mosaic.Mosaic
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.Identifier
@@ -130,7 +130,7 @@ public class PastryColorPicker : GuiLayer(0, 0, 80, 50) {
                 val maxX = size.xi.toDouble()
                 val maxY = size.yi.toDouble()
 
-                val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+                val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
 
                 ColorPickerShader.hue.set(hue)
 

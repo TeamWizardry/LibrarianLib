@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
  * know.
  */
 @Mixin(Matrix3f.class)
-public class Matrix3fMixin implements IMatrix3f {
+class Matrix3fMixin implements IMatrix3f {
     @Shadow protected float a00;
     @Shadow protected float a01;
     @Shadow protected float a02;

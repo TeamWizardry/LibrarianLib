@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.util.function.Consumer
 
-public object SimpleRenderTypes {
+public object SimpleRenderLayers {
     private val flatColorCache = mutableMapOf<Int, RenderLayer>()
     private val flatTextureCache = mutableMapOf<Pair<Identifier, Int>, RenderLayer>()
 
@@ -91,7 +91,7 @@ public object SimpleRenderTypes {
     }
 
     /**
-     * [RenderLayer.makeType] returns a package-private class [RenderLayer.Type] because... Mojang?
+     * [RenderLayer.of] returns a package-private class [RenderLayer.MultiPhase] because... Mojang?
      *
      * Also their caching is garbage that sometimes will give you back some other random render type with the wrong
      * primitive type or vertex format. To deal with this, this method works around the cache by adding a custom NOP

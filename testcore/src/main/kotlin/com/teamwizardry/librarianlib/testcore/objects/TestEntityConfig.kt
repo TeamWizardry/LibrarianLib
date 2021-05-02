@@ -1,5 +1,5 @@
 package com.teamwizardry.librarianlib.testcore.objects
-
+/*
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityClassification
@@ -173,7 +173,7 @@ public class TestEntityConfig(public val id: String, public val name: String, sp
         player.world.addEntity(entity)
     }
 
-    public var spawnerItem: TestItem = TestItem(TestItemConfig(this.id + "_entity", this.name, spawnerItemGroup) {
+    public var spawnerItem: TestItemImpl = TestItemImpl(TestItem(this.id + "_entity", this.name, spawnerItemGroup) {
         server {
             rightClick {
                 spawn(player)
@@ -181,3 +181,5 @@ public class TestEntityConfig(public val id: String, public val name: String, sp
         }
     })
 }
+
+ */

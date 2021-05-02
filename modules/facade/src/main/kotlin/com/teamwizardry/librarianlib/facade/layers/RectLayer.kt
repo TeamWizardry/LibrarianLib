@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.value.IMValue
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 
 public class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
@@ -25,7 +25,7 @@ public class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): G
 
         val c = color
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(SimpleRenderTypes.flatQuads)
 
         vb.pos2d(context.transform, minX, maxY).color(c).endVertex()

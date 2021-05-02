@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(RenderTickCounter.class)
-public class RenderTickCounterMixin {
+class RenderTickCounterMixin {
     @Shadow public float tickDelta;
 
     @Inject(method = "beginRenderTick", at = @At("RETURN"))

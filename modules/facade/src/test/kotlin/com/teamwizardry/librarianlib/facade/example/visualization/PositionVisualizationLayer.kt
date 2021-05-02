@@ -10,7 +10,7 @@ import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.text.BitfontFormatting
 import com.teamwizardry.librarianlib.core.util.vec
 import dev.thecodewarrior.bitfont.typesetting.MutableAttributedString
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 
 class PositionVisualizationLayer(val target: GuiLayer): GuiLayer() {
@@ -42,7 +42,7 @@ class PositionVisualizationLayer(val target: GuiLayer): GuiLayer() {
     override fun draw(context: GuiDrawContext) {
         RenderSystem.lineWidth(3f)
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(SimpleRenderTypes.flatLines)
 
         val xDrawColor = Color(xColor.red, xColor.green, xColor.blue, 190)

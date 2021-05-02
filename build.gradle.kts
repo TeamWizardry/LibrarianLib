@@ -19,6 +19,8 @@ allprojects {
         maven("https://repo.spongepowered.org/repository/maven-public/")
         maven("https://dvs1.progwml6.com/files/maven/") { name = "Progwml6 maven (JEI)" }
         maven("https://modmaven.k-4u.nl") { name = "ModMaven (JEI mirror)" }
+
+        maven("https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/") // for ARRP
     }
 }
 
@@ -42,7 +44,7 @@ configure<CommonConfigExtension> {
 //        create("glitter")
 //        create("lieutenant")
 //        create("mirage")
-//        create("mosaic")
+        create("mosaic")
 //        create("scribe")
     }
 }

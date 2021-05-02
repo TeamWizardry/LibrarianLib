@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.testcore.objects
 
+/*
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.sided.ClientMetaSupplier
@@ -202,7 +203,7 @@ public class TestScreenConfig(public val id: String, public val name: String, ac
         Client.displayGuiScreen(customScreen?.getClientFunction()?.create() ?: TestScreen(this))
     }
 
-    public var activatorItem: TestItem = TestItem(TestItemConfig(this.id + "_screen", this.name + " Screen", activatorItemGroup) {
+    public var activatorItem: TestItemImpl = TestItemImpl(TestItem(this.id + "_screen", this.name + " Screen", activatorItemGroup) {
         client {
             rightClick {
                 activate()
@@ -214,3 +215,6 @@ public class TestScreenConfig(public val id: String, public val name: String, ac
 public fun interface ScreenFactory: ClientSideFunction {
     public fun create(): Screen
 }
+
+
+ */

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
-import com.teamwizardry.librarianlib.core.LibrarianLibCoreModule
+import com.teamwizardry.librarianlib.core.LibLibCore
 import com.teamwizardry.librarianlib.core.util.lerp.Lerper
 import java.lang.IllegalStateException
 
@@ -119,6 +119,6 @@ public class KeyframeAnimation<T>(initialValue: T, private val lerper: Lerper<T>
     }
 
     private companion object {
-        val logger = LibrarianLibCoreModule.makeLogger<KeyframeAnimation<*>>()
+        val logger = LibLibCore.makeLogger<KeyframeAnimation<*>>()
     }
 }

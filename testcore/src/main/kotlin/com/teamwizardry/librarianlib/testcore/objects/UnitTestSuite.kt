@@ -1,9 +1,12 @@
 package com.teamwizardry.librarianlib.testcore.objects
 
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
-import net.minecraftforge.registries.ForgeRegistryEntry
+import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder
+import net.fabricmc.fabric.api.event.registry.RegistryAttribute
+import net.minecraft.util.Identifier
+import net.minecraft.util.registry.Registry
 
-public class UnitTestSuite: ForgeRegistryEntry<UnitTestSuite>() {
+public class UnitTestSuite(public val id: Identifier) {
     private val _tests = mutableListOf<Class<*>>()
     public val tests: List<Class<*>> = _tests.unmodifiableView()
 
@@ -20,5 +23,15 @@ public class UnitTestSuite: ForgeRegistryEntry<UnitTestSuite>() {
     public inline fun<reified T> add(): UnitTestSuite {
         this.addTests(T::class.java)
         return this
+    }
+
+    public companion object {
+        @JvmField
+        public val REGISTRY_ID: Identifier = Identifier("testcore:unit_tests")
+
+        @JvmField
+        public val REGISTRY: Registry<UnitTestSuite> = FabricRegistryBuilder
+            .createSimple(UnitTestSuite::class.java, REGISTRY_ID)
+            .buildAndRegister()
     }
 }

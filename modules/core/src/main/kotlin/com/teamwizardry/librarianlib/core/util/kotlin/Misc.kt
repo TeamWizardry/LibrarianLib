@@ -9,7 +9,7 @@ import kotlin.contracts.contract
 /**
  * Creates a translation key in the format `type.namespace.path[.suffix]`, e.g. `item.minecraft.iron_ingot`
  */
-public fun Identifier.translationKey(type: String, suffix: String? = null): String
+public fun Identifier.makeTranslationKey(type: String, suffix: String? = null): String
     = "$type.$namespace.$path${suffix?.let { ".$it" } ?: ""}"
 
 public fun<T> Optional<T>.getOrNull(): T? = this.orElse(null)

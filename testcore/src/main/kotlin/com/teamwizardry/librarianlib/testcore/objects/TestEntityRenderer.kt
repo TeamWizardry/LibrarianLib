@@ -1,9 +1,10 @@
 package com.teamwizardry.librarianlib.testcore.objects
 
+/*
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.vertex.IVertexBuilder
-import com.teamwizardry.librarianlib.core.util.loc
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import com.teamwizardry.librarianlib.core.util.id
+import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.util.math.vector.Matrix3f
 import net.minecraft.util.math.vector.Matrix4f
 import net.minecraft.client.renderer.RenderType
@@ -19,9 +20,9 @@ import kotlin.math.sqrt
 
 @OnlyIn(Dist.CLIENT)
 public class TestEntityRenderer(renderManagerIn: EntityRendererManager): EntityRenderer<TestEntity>(renderManagerIn) {
-    private val tex = loc("testcore:entity/testentity.png")
+    private val tex = Identifier("testcore:entity/testentity.png")
 
-    override fun render(entity: TestEntity, entityYaw: Float, partialTicks: Float, matrixStack: MatrixStack, buffer: IRenderTypeBuffer, packedLight: Int) {
+    override fun render(entity: TestEntity, entityYaw: Float, partialTicks: Float, matrixStack: MatrixStack, buffer: VertexConsumerProvider, packedLight: Int) {
         matrixStack.push()
         matrixStack.rotate(Vector3f.YN.rotationDegrees(MathHelper.lerp(partialTicks, entity.prevRotationYaw, entity.rotationYaw) + 90.0f))
         matrixStack.rotate(Vector3f.ZN.rotationDegrees(MathHelper.lerp(partialTicks, entity.prevRotationPitch, entity.rotationPitch)))
@@ -115,6 +116,9 @@ public class TestEntityRenderer(renderManagerIn: EntityRendererManager): EntityR
      */
     override fun getEntityTexture(entity: TestEntity): Identifier {
 //        return Identifier("textures/entity/projectiles/arrow.png")
-        return loc("testcore:textures/entity/testentity.png")
+        return Identifier("testcore:textures/entity/testentity.png")
     }
 }
+
+
+ */

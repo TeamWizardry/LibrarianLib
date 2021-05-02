@@ -1,24 +1,23 @@
 package com.teamwizardry.librarianlib.mosaic
 
-import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
-import com.teamwizardry.librarianlib.core.util.loc
-import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
 import com.teamwizardry.librarianlib.math.Matrix4d
-import net.minecraft.client.renderer.RenderState
-import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.render.RenderPhase
+import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.VertexFormats
+import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-public abstract class WrappedSprite: ISprite {
-    public abstract val wrapped: ISprite?
+public abstract class WrappedSprite: Sprite {
+    public abstract val wrapped: Sprite?
 
     override fun minU(animFrames: Int): Float = wrapped?.minU(animFrames) ?: 0f
     override fun minV(animFrames: Int): Float = wrapped?.minV(animFrames) ?: 0f
     override fun maxU(animFrames: Int): Float = wrapped?.maxU(animFrames) ?: 1f
     override fun maxV(animFrames: Int): Float = wrapped?.maxV(animFrames) ?: 1f
 
-    override val renderType: RenderType get() = wrapped?.renderType ?: missingType
+    override val renderType: RenderLayer get() = wrapped?.renderType ?: missingType
     override val width: Int get() = wrapped?.width ?: 1
     override val height: Int get() = wrapped?.height ?: 1
     override val uSize: Float get() = wrapped?.uSize ?: 1f
@@ -43,15 +42,15 @@ public abstract class WrappedSprite: ISprite {
 
     private companion object {
         @Suppress("INACCESSIBLE_TYPE")
-        val missingType: RenderType = run {
-            val renderState = RenderType.State.getBuilder()
-                .texture(RenderState.TextureState(loc("minecraft:missingno"), false, false))
-                .alpha(DefaultRenderStates.DEFAULT_ALPHA)
-                .depthTest(DefaultRenderStates.DEPTH_LEQUAL)
-                .transparency(DefaultRenderStates.TRANSLUCENT_TRANSPARENCY)
+        val missingType: RenderLayer = run {
+            val renderState = RenderLayer.MultiPhaseParameters.builder()
+                .texture(RenderPhase.Texture(Identifier("minecraft:missingno"), false, false))
+                .alpha(DefaultRenderPhases.ONE_TENTH_ALPHA)
+                .depthTest(DefaultRenderPhases.LEQUAL_DEPTH_TEST)
+                .transparency(DefaultRenderPhases.TRANSLUCENT_TRANSPARENCY)
 
-            RenderType.makeType("sprite_type",
-                DefaultVertexFormats.POSITION_COLOR_TEX, GL11.GL_QUADS, 256, false, false, renderState.build(true)
+            RenderLayer.of("sprite_type",
+                VertexFormats.POSITION_COLOR_TEXTURE, GL11.GL_QUADS, 256, false, false, renderState.build(true)
             )
         }
     }

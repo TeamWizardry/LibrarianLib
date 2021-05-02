@@ -21,7 +21,7 @@
  */
 package com.teamwizardry.librarianlib.core.util
 
-import com.teamwizardry.librarianlib.core.logger
+import com.teamwizardry.librarianlib.core.LibLibCore
 import java.lang.ref.PhantomReference
 import java.lang.ref.ReferenceQueue
 import java.util.function.Consumer
@@ -127,7 +127,7 @@ public object GlResourceGc {
      *
      * **INTERNAL USE ONLY**
      */
-    internal fun releaseCollectedResources() {
+    public fun releaseCollectedResourcesInternal() {
         generateSequence { referenceQueue.poll() as ResourceReference<*>? }.forEach {
             it.clear()
             it.remove()
@@ -215,4 +215,6 @@ public object GlResourceGc {
             var head: ResourceReference<*>? = null
         }
     }
+
+    private val logger = LibLibCore.makeLogger<GlResourceGc>()
 }

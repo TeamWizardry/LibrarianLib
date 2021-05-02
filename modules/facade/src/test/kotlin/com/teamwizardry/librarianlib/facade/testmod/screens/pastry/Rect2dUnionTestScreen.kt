@@ -17,7 +17,7 @@ import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import com.teamwizardry.librarianlib.facade.pastry.Rect2dUnion
 import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.math.Vec2d
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 import kotlin.math.max
@@ -110,7 +110,7 @@ internal class Rect2dUnionTestScreen(title: ITextComponent): FacadeScreen(title)
             val endColor = Color.RED
             val arrowColor = Color.RED
 
-            val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+            val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
             val vb = buffer.getBuffer(SimpleRenderTypes.flatLines)
 
             for(segment in rect2dUnion.horizontalSegments + rect2dUnion.verticalSegments) {

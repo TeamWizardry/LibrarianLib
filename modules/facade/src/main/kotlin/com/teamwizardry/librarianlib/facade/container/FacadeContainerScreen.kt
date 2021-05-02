@@ -19,7 +19,7 @@ import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryDynamicBackground
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.gui.screen.inventory.ContainerScreen
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.inventory.container.Container
@@ -133,7 +133,7 @@ public abstract class FacadeContainerScreen<T: Container>(
 
         RenderSystem.colorMask(false, false, false, false)
         RenderSystem.depthFunc(GL11.GL_ALWAYS)
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(depthClobberRenderType)
 
         val windowHeight = Client.window.scaledHeight

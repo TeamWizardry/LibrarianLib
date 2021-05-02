@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
 import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 
 class ScaleVisualizationLayer(gridSize: Double): GuiLayer() {
@@ -33,7 +33,7 @@ class ScaleVisualizationLayer(gridSize: Double): GuiLayer() {
     override fun draw(context: GuiDrawContext) {
         RenderSystem.lineWidth(2f)
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(SimpleRenderTypes.flatLines)
 
         val gridSize = this.gridSize

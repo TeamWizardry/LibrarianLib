@@ -9,7 +9,7 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.mixinCast
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.Identifier
@@ -35,7 +35,7 @@ internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
         val tex2 = Client.textureManager.getTexture(successLocation2)?.glTextureId ?: throw IllegalStateException("sampler_success2 not found")
         Client.textureManager.bindTexture(failureLocation)
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         var vb = buffer.getBuffer(renderType)
         vb.pos2d(minX, maxY).color(c).tex(0f, 1f).endVertex()
         vb.pos2d(maxX, maxY).color(c).tex(1f, 1f).endVertex()

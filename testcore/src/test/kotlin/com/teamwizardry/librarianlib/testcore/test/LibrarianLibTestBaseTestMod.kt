@@ -1,11 +1,12 @@
-package com.teamwizardry.librarianlib.testcore.testmod
+package com.teamwizardry.librarianlib.testcore.test
 
+/*
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.testcore.LibrarianLibTestBaseModule
 import com.teamwizardry.librarianlib.testcore.TestMod
+import com.teamwizardry.librarianlib.testcore.objects.TestBlockImpl
 import com.teamwizardry.librarianlib.testcore.objects.TestBlock
-import com.teamwizardry.librarianlib.testcore.objects.TestBlockConfig
-import com.teamwizardry.librarianlib.testcore.objects.TestItem
+import com.teamwizardry.librarianlib.testcore.objects.TestItemImpl
 import com.teamwizardry.librarianlib.testcore.objects.TestTileEntity
 import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.tileentity.TileEntityType
@@ -15,7 +16,7 @@ import net.minecraftforge.fml.common.Mod
 @Mod("testcore-test")
 object LibrarianLibTestBaseTestMod: TestMod(LibrarianLibTestBaseModule) {
     init {
-        +TestItem(TestItemConfig("right_click", "Right Click") {
+        +TestItemImpl(TestItemConfig("right_click", "Right Click") {
             common {
                 rightClick { chat("[Common] rightClick") }
                 rightClickAir { chat("[Common] rightClickAir") }
@@ -41,7 +42,7 @@ object LibrarianLibTestBaseTestMod: TestMod(LibrarianLibTestBaseModule) {
                 rightClickRelease { chat("[Server] rightClickRelease") }
             }
         })
-        +TestItem(TestItemConfig("left_click", "Left Click") {
+        +TestItemImpl(TestItemConfig("left_click", "Left Click") {
             common {
                 leftClickBlock { chat("[Common] leftClickBlock") }
                 leftClickEntity { chat("[Common] leftClickEntity") }
@@ -55,7 +56,7 @@ object LibrarianLibTestBaseTestMod: TestMod(LibrarianLibTestBaseModule) {
                 leftClickEntity { chat("[Server] leftClickEntity") }
             }
         })
-        +TestItem(TestItemConfig("inventory_tick", "Inventory Tick") {
+        +TestItemImpl(TestItemConfig("inventory_tick", "Inventory Tick") {
             common {
                 inventoryTick { sneaking { chat("[Common] inventoryTick") } }
                 tickInHand { sneaking { chat("[Common] tickInHand") } }
@@ -70,21 +71,21 @@ object LibrarianLibTestBaseTestMod: TestMod(LibrarianLibTestBaseModule) {
             }
         })
 
-        +TestBlock(TestBlockConfig("normal_solid", "Normal Solid Block") {
+        +TestBlockImpl(TestBlock("normal_solid", "Normal Solid Block") {
         })
-        +TestBlock(TestBlockConfig("normal_transparent", "Normal Transparent Block") {
+        +TestBlockImpl(TestBlock("normal_transparent", "Normal Transparent Block") {
             transparent = true
         })
 
-        +TestBlock(TestBlockConfig("directional_solid", "Directional Solid Block") {
+        +TestBlockImpl(TestBlock("directional_solid", "Directional Solid Block") {
             directional = true
         })
-        +TestBlock(TestBlockConfig("directional_transparent", "Directional Transparent Block") {
+        +TestBlockImpl(TestBlock("directional_transparent", "Directional Transparent Block") {
             directional = true
             transparent = true
         })
 
-        +TestBlock(TestBlockConfig("right_click", "Right Click Block") {
+        +TestBlockImpl(TestBlock("right_click", "Right Click Block") {
             client {
                 rightClick { chat("[Client] rightClick") }
             }
@@ -96,7 +97,7 @@ object LibrarianLibTestBaseTestMod: TestMod(LibrarianLibTestBaseModule) {
             }
         })
 
-        +TestBlock(TestBlockConfig("simple_tile", "Simple Tile Entity") {
+        +TestBlockImpl(TestBlock("simple_tile", "Simple Tile Entity") {
             class Tile(tileEntityTypeIn: TileEntityType<*>): TestTileEntity(tileEntityTypeIn), ITickableTileEntity {
                 var ticks: Int = 0
 
@@ -148,3 +149,4 @@ object LibrarianLibTestBaseTestMod: TestMod(LibrarianLibTestBaseModule) {
 }
 
 internal val logger = LibrarianLibTestBaseTestMod.makeLogger(null)
+ */

@@ -3,18 +3,18 @@
 package com.teamwizardry.librarianlib.mosaic.testmod
 
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.math.Matrix4d
-import com.teamwizardry.librarianlib.mosaic.ISprite
-import com.teamwizardry.librarianlib.mosaic.LibrarianLibMosaicModule
+import com.teamwizardry.librarianlib.mosaic.Sprite
+import com.teamwizardry.librarianlib.mosaic.LibLibMosaic
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import com.teamwizardry.librarianlib.testcore.TestMod
+import net.minecraft.util.Identifier
 import net.minecraftforge.fml.common.Mod
 import java.awt.Color
 
 @Mod("ll-mosaic-test")
-object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
+object LibrarianLibSpritesTestMod: TestMod(LibLibMosaic) {
     init {
         +TestScreenConfig("no_mcmeta", "No .mcmeta") {
             description = "A 32x32 texture with no .mcmeta file"
@@ -22,7 +22,7 @@ object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
             scale = 4
             lazyConfig {
                 client {
-                    val tex = Mosaic(loc("ll-mosaic-test:textures/gui/no_mcmeta.png"), 32, 32)
+                    val tex = Mosaic(Identifier("ll-mosaic-test:textures/gui/no_mcmeta.png"), 32, 32)
                     val sprite = tex.getSprite("")
 
                     draw {
@@ -40,7 +40,7 @@ object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
             scale = 2
             lazyConfig {
                 client {
-                    val tex = Mosaic(loc("ll-mosaic-test:textures/gui/two_sprites.png"), 64, 64)
+                    val tex = Mosaic(Identifier("ll-mosaic-test:textures/gui/two_sprites.png"), 64, 64)
                     val topLeftSprite = tex.getSprite("top_left")
                     val bottomRightSprite = tex.getSprite("bottom_right")
 
@@ -60,7 +60,7 @@ object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
             scale = 2
             lazyConfig {
                 client {
-                    val tex = Mosaic(loc("ll-mosaic-test:textures/gui/edge_pinning.png"), 128, 128)
+                    val tex = Mosaic(Identifier("ll-mosaic-test:textures/gui/edge_pinning.png"), 128, 128)
                     val background = tex.getSprite("bg")
                     size = vec(background.width, background.height)
 
@@ -104,7 +104,7 @@ object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
             scale = 2
             lazyConfig {
                 client {
-                    val tex = Mosaic(loc("ll-mosaic-test:textures/gui/sprite_caps.png"), 256, 128)
+                    val tex = Mosaic(Identifier("ll-mosaic-test:textures/gui/sprite_caps.png"), 256, 128)
                     val background = tex.getSprite("background")
                     size = vec(background.width, background.height)
 
@@ -164,7 +164,7 @@ object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
             scale = 2
             lazyConfig {
                 client {
-                    val tex = Mosaic(loc("ll-mosaic-test:textures/gui/sprite_animations.png"), 128, 256)
+                    val tex = Mosaic(Identifier("ll-mosaic-test:textures/gui/sprite_animations.png"), 128, 256)
                     val background = tex.getSprite("background")
                     size = vec(background.width, background.height)
 
@@ -187,22 +187,22 @@ object LibrarianLibSpritesTestMod: TestMod(LibrarianLibMosaicModule) {
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun ISprite.draw(matrix: Matrix4d, x: Number, y: Number, width: Number, height: Number, animTicks: Int, tint: Color) {
+    inline fun Sprite.draw(matrix: Matrix4d, x: Number, y: Number, width: Number, height: Number, animTicks: Int, tint: Color) {
         this.draw(matrix, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), animTicks, tint)
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun ISprite.draw(matrix: Matrix4d, x: Number, y: Number, width: Number, height: Number) {
+    inline fun Sprite.draw(matrix: Matrix4d, x: Number, y: Number, width: Number, height: Number) {
         this.draw(matrix, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun ISprite.draw(matrix: Matrix4d, x: Number, y: Number, animTicks: Int, tint: Color) {
+    inline fun Sprite.draw(matrix: Matrix4d, x: Number, y: Number, animTicks: Int, tint: Color) {
         this.draw(matrix, x.toFloat(), y.toFloat(), animTicks, tint)
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    inline fun ISprite.draw(matrix: Matrix4d, x: Number, y: Number) {
+    inline fun Sprite.draw(matrix: Matrix4d, x: Number, y: Number) {
         this.draw(matrix, x.toFloat(), y.toFloat())
     }
 }

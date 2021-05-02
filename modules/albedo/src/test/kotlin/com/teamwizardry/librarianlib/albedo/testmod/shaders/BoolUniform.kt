@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -26,7 +26,7 @@ internal object BoolUniform: ShaderTest<BoolUniform.Test>() {
         shader.vector3.set(true, false, true)
         shader.vector4.set(true, false, true, false)
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
         vb.pos2d(minX, maxY).color(c).tex(0f, 1f).endVertex()

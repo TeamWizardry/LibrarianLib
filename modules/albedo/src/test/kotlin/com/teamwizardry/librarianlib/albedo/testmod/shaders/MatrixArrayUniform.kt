@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
-import net.minecraft.client.renderer.IRenderTypeBuffer
+import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.util.math.vector.Matrix4f
 import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
@@ -130,7 +130,7 @@ internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>() {
             )
         }
 
-        val buffer = IRenderTypeBuffer.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
         vb.pos2d(minX, maxY).color(c).tex(0f, 1f).endVertex()

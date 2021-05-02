@@ -1,10 +1,10 @@
 package com.teamwizardry.librarianlib.testcore
 
-import com.teamwizardry.librarianlib.LibrarianLibModule
+/*
 import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 //import com.teamwizardry.librarianlib.testbase.objects.TestEntityRenderer
-import com.teamwizardry.librarianlib.testcore.objects.TestItem
+import com.teamwizardry.librarianlib.testcore.objects.TestItemImpl
 import com.teamwizardry.librarianlib.testcore.objects.UnitTestCommand
 import com.teamwizardry.librarianlib.testcore.objects.UnitTestSuite
 import net.minecraft.item.Item
@@ -25,7 +25,7 @@ import thedarkcolour.kotlinforforge.forge.MOD_BUS
 import java.awt.Color
 
 @Mod("testcore")
-public object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", "Test Base") {
+public object LibrarianLibTestBaseModule {
 
     init {
         MinecraftForge.EVENT_BUS.register(this)
@@ -75,7 +75,7 @@ public object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", "Test 
     internal fun blockBreak(event: BlockEvent.BreakEvent) {
         val stack = event.player.heldItemMainhand
         val item = stack.item
-        if(item is TestItem) {
+        if(item is TestItemImpl) {
             if(item.config.leftClickBlock.exists) {
                 event.isCanceled = true
             }
@@ -94,3 +94,5 @@ public object LibrarianLibTestBaseModule : LibrarianLibModule("testbase", "Test 
 }
 
 internal val logger = LibrarianLibTestBaseModule.makeLogger(null)
+
+ */

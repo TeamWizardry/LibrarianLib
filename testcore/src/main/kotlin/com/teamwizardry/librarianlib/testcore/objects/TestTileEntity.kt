@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.testcore.objects
 
+/*
 import com.teamwizardry.librarianlib.prism.Save
 import com.teamwizardry.librarianlib.prism.SimpleSerializer
 import com.teamwizardry.librarianlib.prism.Sync
@@ -45,3 +46,6 @@ public abstract class TestTileEntity(tileEntityTypeIn: TileEntityType<*>): TileE
         serializer.applyTag(tag, this, Sync::class.java)
     }
 }
+
+
+ */

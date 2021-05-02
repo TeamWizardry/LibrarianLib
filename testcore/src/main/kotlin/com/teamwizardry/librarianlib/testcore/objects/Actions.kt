@@ -1,52 +1,29 @@
 package com.teamwizardry.librarianlib.testcore.objects
 
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.fml.loading.FMLEnvironment
-
-public fun interface ClientCallback<T> {
-    public fun call(t: T) {
-        if (FMLEnvironment.dist.isClient) {
-            callClient(t)
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public fun callClient(t: T)
-}
-
 public class ClientAction<T> {
-    private var client: ClientCallback<T>? = null
-    public val exists: Boolean
-        get() = client != null
+    private var callback: (T.() -> Unit)? = null
 
     /**
      * Run the common and client or server callbacks, depending on [isClient]
      */
     public fun run(context: T) {
-        client?.call(context)
+        callback?.invoke(context)
     }
 
     public fun clear() {
-        client = null
-    }
-
-    @PublishedApi
-    internal fun addClientRaw(client: ClientCallback<T>) {
-        this.client = client
+        callback = null
     }
 
     /**
-     * Sets the client callback. This is only called on the logical client. This inlines to a [ClientCallback]
-     * SAM object, so client-only code is safe to call inside it.
+     * Sets the client callback. This is only called on the logical client.
      */
-    public inline operator fun invoke(crossinline client: T.() -> Unit) {
-        addClientRaw { it.client() }
+    public operator fun invoke(callback: T.() -> Unit) {
+        this.callback = callback
     }
 }
 
 public class SidedAction<T> {
-    private var client: ClientCallback<T>? = null
+    private var client: (T.() -> Unit)? = null
     private var server: (T.() -> Unit)? = null
     private var common: (T.() -> Unit)? = null
 
@@ -57,11 +34,11 @@ public class SidedAction<T> {
      * Run the common and client or server callbacks, depending on [isClient]
      */
     public fun run(isClient: Boolean, context: T) {
-        common?.also { context.it() }
+        common?.invoke(context)
         if(isClient)
-            client?.call(context)
+            client?.invoke(context)
         else
-            server?.also { context.it() }
+            server?.invoke(context)
     }
 
     public fun clear() {
@@ -73,15 +50,8 @@ public class SidedAction<T> {
     /**
      * Sets the client callback. This is only called on the logical client.
      */
-    public fun client(client: ClientCallback<T>) {
+    public fun client(client: T.() -> Unit) {
         this.client = client
-    }
-
-    /**
-     * Sets the client callback. This is only called on the logical client.
-     */
-    public inline fun client(crossinline client: T.() -> Unit) {
-        this.client(ClientCallback { it.client() })
     }
 
     /**
@@ -99,17 +69,17 @@ public class SidedAction<T> {
     }
 }
 
-public object ClientActions {
-    public inline operator fun <T> SidedAction<T>.invoke(crossinline block: T.() -> Unit) {
+public object ClientActionScope {
+    public operator fun <T> SidedAction<T>.invoke(block: T.() -> Unit) {
         this.client(block)
     }
 }
-public object ServerActions {
+public object ServerActionScope {
     public operator fun <T> SidedAction<T>.invoke(block: T.() -> Unit) {
         this.server(block)
     }
 }
-public object CommonActions {
+public object CommonActionScope {
     public operator fun <T> SidedAction<T>.invoke(block: T.() -> Unit) {
         this.common(block)
     }
