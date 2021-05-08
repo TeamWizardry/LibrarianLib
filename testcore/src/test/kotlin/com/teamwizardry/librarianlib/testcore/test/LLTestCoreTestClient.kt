@@ -8,7 +8,7 @@ import net.minecraft.client.MinecraftClient
 object LLTestCoreTestClient : ClientModInitializer {
     val manager: TestModContentManager = LLTestCoreTestCommon.manager
 
-    private val logger = TestCoreTest.logManager.makeLogger<LLTestCoreTestClient>()
+    private val logger = LLTestCoreTest.logManager.makeLogger<LLTestCoreTestClient>()
 
     override fun onInitializeClient() {
         manager.named<TestItem>("sided") {

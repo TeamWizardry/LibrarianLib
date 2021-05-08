@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.core.testmod.tests
+package com.teamwizardry.librarianlib.core.test.tests
 
 import com.teamwizardry.librarianlib.math.Easing
 import org.junit.jupiter.api.Assertions.assertEquals

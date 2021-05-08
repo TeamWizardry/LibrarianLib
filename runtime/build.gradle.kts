@@ -29,6 +29,8 @@ loom {
     runConfigs.configureEach {
         vmArg("-Dlibrarianlib.logging.debug=liblib-*")
     }
+
+    log4jConfigs.setFrom(file("log4j.xml"))
 }
 
 tasks.named("processResources") {

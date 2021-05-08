@@ -5,14 +5,12 @@ import com.teamwizardry.librarianlib.testcore.TestModContentManager
 import com.teamwizardry.librarianlib.testcore.objects.TestItem
 import com.teamwizardry.librarianlib.testcore.objects.UnitTestSuite
 import net.fabricmc.api.ModInitializer
-import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
-import org.apache.logging.log4j.Logger
 
 object LLTestCoreTestCommon : ModInitializer {
     val manager: TestModContentManager = TestModContentManager("liblib-testcore-test")
 
-    private val logger = TestCoreTest.logManager.makeLogger<LLTestCoreTestCommon>()
+    private val logger = LLTestCoreTest.logManager.makeLogger<LLTestCoreTestCommon>()
 
     override fun onInitialize() {
         Registry.register(UnitTestSuite.REGISTRY, manager.id("unit_tests"), UnitTestSuite().apply {

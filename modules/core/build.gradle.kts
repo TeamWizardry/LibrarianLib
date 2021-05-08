@@ -15,6 +15,10 @@ configureFabricModJson {
     mixin("ll/core/core.mixins.json")
 }
 
+configureFabricTestModJson {
+    entrypoint("main", adapter = "kotlin", value = "com.teamwizardry.librarianlib.core.test.LLCoreTestCommon")
+}
+
 dependencies {
     api("dev.thecodewarrior.mirror:mirror:1.0.0b1")
     include("dev.thecodewarrior.mirror:mirror:1.0.0b1")
