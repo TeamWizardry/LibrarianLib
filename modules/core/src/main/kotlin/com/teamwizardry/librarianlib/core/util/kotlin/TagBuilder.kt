@@ -3,6 +3,7 @@
 package com.teamwizardry.librarianlib.core.util.kotlin
 
 import net.minecraft.nbt.*
+import kotlin.jvm.JvmInline
 
 @DslMarker
 internal annotation class TagBuilderDslMarker
@@ -54,8 +55,9 @@ public object TagBuilder {
     public inline fun intArray(vararg value: Int): IntArrayTag = IntArrayTag(value)
 }
 
+@JvmInline
 @TagBuilderDslMarker
-public inline class CompoundTagBuilder(public val tag: CompoundTag) {
+public value class CompoundTagBuilder(public val tag: CompoundTag) {
     // configuring this tag
 
     public operator fun String.timesAssign(nbt: Tag) {
@@ -96,8 +98,9 @@ public inline class CompoundTagBuilder(public val tag: CompoundTag) {
     public inline fun intArray(vararg value: Int): IntArrayTag = IntArrayTag(value)
 }
 
+@JvmInline
 @TagBuilderDslMarker
-public inline class ListTagBuilder(public val tag: ListTag) {
+public value class ListTagBuilder(public val tag: ListTag) {
     // configuring this tag
 
     /**
