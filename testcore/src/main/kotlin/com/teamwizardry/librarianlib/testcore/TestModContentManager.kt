@@ -10,9 +10,11 @@ import kotlin.reflect.full.primaryConstructor
 /**
  * A DSL for creating test objects. Loosely based on gradle's Kotlin DSL.
  */
-public class TestModManager(public val modid: String) {
+public class TestModContentManager(public val modid: String) {
     private val logger = LogManager.getLogger("TestModManager($modid)")
-    private val objects = mutableMapOf<String, TestConfig>()
+    internal val objects = mutableMapOf<String, TestConfig>()
+
+    public fun id(name: String): Identifier = Identifier(modid, name)
 
     public fun hasObject(name: String): Boolean {
         return objects.contains(name)

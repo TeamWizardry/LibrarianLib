@@ -13,13 +13,14 @@ import org.apache.logging.log4j.core.config.Configurator
  *
  * Mods can have their loggers enabled by passing their comma-separated [mod IDs][modid] in the
  * `librarianlib.logging.debug` system property. For example, by adding `-Dlibrarianlib.logging.debug=someid,anotherid`
- * in the VM parameters.
+ * in the VM parameters. The elements can also use primitive glob expressions (e.g. `so*` would enable both `something`
+ * and `socool`)
  */
 public class ModLogManager(private val modid: String, private val humanName: String) {
     /**
      * Whether debugging is enabled for this module.
      */
-    public var debugEnabled: Boolean = modid in System.getProperty("librarianlib.logging.debug", "").split(",")
+    public var debugEnabled: Boolean = debugPatterns.any { it.matches(modid) }
         set(value) {
             if (field != value) {
                 registeredLoggers.forEach { (logger, level) ->
@@ -34,6 +35,8 @@ public class ModLogManager(private val modid: String, private val humanName: Str
      */
     private val registeredLoggers = mutableListOf<TrackedLogger>()
     private val modLoggers = mutableMapOf<String?, Logger>()
+
+    public val root: Logger = makeLogger(null)
 
     /**
      * Create a logger for the given class.
@@ -71,4 +74,14 @@ public class ModLogManager(private val modid: String, private val humanName: Str
     }
 
     private data class TrackedLogger(val logger: Logger, val initialLevel: Level)
+
+    private companion object {
+        private val debugPatterns: List<Regex> = System.getProperty("librarianlib.logging.debug", "")
+            .split(",")
+            .map { glob ->
+                Regex.escape(glob.replace("*", "\uE000"))
+                    .replace("\uE000", ".*")
+                    .toRegex(RegexOption.IGNORE_CASE)
+            }
+    }
 }

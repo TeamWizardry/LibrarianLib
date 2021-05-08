@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.event.registry.RegistryAttribute
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 
-public class UnitTestSuite(public val id: Identifier) {
+public class UnitTestSuite {
     private val _tests = mutableListOf<Class<*>>()
     public val tests: List<Class<*>> = _tests.unmodifiableView()
 

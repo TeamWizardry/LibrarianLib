@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.testcore.objects
 
-import com.teamwizardry.librarianlib.testcore.TestModManager
+import com.teamwizardry.librarianlib.testcore.TestModContentManager
 import net.minecraft.util.Identifier
 
-public abstract class TestConfig(public val manager: TestModManager, public val id: Identifier) {
+public sealed class TestConfig(public val manager: TestModContentManager, public val id: Identifier) {
     /**
      * Additional text to show in the item tooltip
      */

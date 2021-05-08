@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.testcore.objects
 
-import com.teamwizardry.librarianlib.testcore.TestModManager
+import com.teamwizardry.librarianlib.testcore.TestModContentManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
@@ -16,7 +16,7 @@ import net.minecraft.world.World
  * The DSL for configuring an item
  */
 @TestObjectDslMarker
-public class TestItem(manager: TestModManager, id: Identifier): TestConfig(manager, id) {
+public class TestItem(manager: TestModContentManager, id: Identifier): TestConfig(manager, id) {
     public var name: String = id.namespace
     public var group: ItemGroup? = null
 
@@ -121,6 +121,10 @@ public class TestItem(manager: TestModManager, id: Identifier): TestConfig(manag
      * @see Item.inventoryTick
      */
     public var tickInHand: SidedAction<InventoryTickContext> = SidedAction()
+
+    internal val instance: TestItemImpl by lazy {
+        TestItemImpl(this)
+    }
 
     public data class RightClickContext(val world: World, val player: PlayerEntity, val hand: Hand): PlayerTestContext(player) {
         val stack: ItemStack = player.getStackInHand(hand)

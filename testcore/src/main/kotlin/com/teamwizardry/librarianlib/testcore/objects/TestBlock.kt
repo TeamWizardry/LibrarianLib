@@ -1,14 +1,11 @@
 package com.teamwizardry.librarianlib.testcore.objects
 
-import com.teamwizardry.librarianlib.testcore.TestModManager
-import net.minecraft.block.AbstractBlock
-import net.minecraft.block.BlockState
-import net.minecraft.block.Material
-import net.minecraft.block.MaterialColor
-import net.minecraft.block.entity.BlockEntity
-import net.minecraft.block.entity.BlockEntityType
+import com.teamwizardry.librarianlib.testcore.TestModContentManager
+import net.minecraft.block.*
 import net.minecraft.block.piston.PistonBehavior
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.item.BlockItem
+import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.util.Hand
 import net.minecraft.util.Identifier
@@ -17,7 +14,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
 @TestObjectDslMarker
-public class TestBlock(manager: TestModManager, id: Identifier): TestConfig(manager, id) {
+public class TestBlock(manager: TestModContentManager, id: Identifier): TestConfig(manager, id) {
     public val properties: AbstractBlock.Settings = AbstractBlock.Settings.of(testMaterial)
 
     init {
@@ -46,6 +43,13 @@ public class TestBlock(manager: TestModManager, id: Identifier): TestConfig(mana
 //        tileConfig = config
 //        return config
 //    }
+
+    internal val instance: TestBlockImpl by lazy {
+        TestBlockImpl(this)
+    }
+    internal val itemInstance: TestBlockItem by lazy {
+        TestBlockItem(instance, Item.Settings())
+    }
 
     public data class RightClickContext(
         val state: BlockState, val world: World, val pos: BlockPos,
