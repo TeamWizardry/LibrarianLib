@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "testcore",
+  "id": "liblib-testcore",
   "version": "0.0.0",
 
   "name": "Test Core",
@@ -14,7 +14,7 @@
   },
 
   "license": "LGPL-3.0",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/liblib-testcore/logo_128.png",
 
   "environment": "*",
   "entrypoints": {
@@ -32,7 +32,16 @@
     "fabric-language-kotlin": "*",
     "minecraft": "1.16.x"
   },
-  "suggests": {
-    "flamingo": "*"
+  "custom": {
+    "modmenu": {
+      "badges": ["library"],
+      "parent": {
+        "id": "librarianlib-test",
+        "name": "LibrarianLib Test Mods",
+        "description": "The test mods for the various librarianlib modules",
+        "icon": "assets/liblib-testcore/logo_128.png",
+        "badges": []
+      }
+    }
   }
 }

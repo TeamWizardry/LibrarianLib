@@ -8,7 +8,9 @@ import org.gradle.api.tasks.*
 import java.io.File
 
 import com.teamwizardry.gradle.util.DslContext
+import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
 
 open class GenerateFabricModJson : DefaultTask() {
     private val ctx = DslContext(project)
@@ -40,6 +42,9 @@ open class GenerateFabricModJson : DefaultTask() {
     @Internal
     val dependencies: ListProperty<Dependency> = ctx.listProperty() { listOf() }
 
+    @Nested
+    val modMenu: ModMenuData = ModMenuData()
+
     fun entrypoint(type: String, adapter: String? = null, value: String) {
         entrypoints.add(Entrypoint(type, adapter, value))
     }
@@ -55,20 +60,45 @@ open class GenerateFabricModJson : DefaultTask() {
     @get:Input
     protected val inputEntrypoints: List<String>
         get() = entrypoints.get().map { "${it.type}\uE000${it.adapter}\uE000${it.value}" }
+
     @get:Input
     protected val inputDependencies: List<String>
         get() = dependencies.get().map { "${it.id}\uE000${it.version}" }
-    @get:OutputFile
-    protected val outputFile: File
-        get() = outputRoot.get().resolve("fabric.mod.json")
+
+    @get:OutputFiles
+    protected val outputFile: FileCollection
+        get() {
+            val root = outputRoot.get()
+            return ctx.project.files(
+                root.resolve("fabric.mod.json"),
+                root.resolve("assets/${id.get()}/logo_64.png"),
+                root.resolve("assets/${id.get()}/logo_128.png"),
+                root.resolve("assets/${id.get()}/logo_256.png"),
+                root.resolve("assets/${id.get()}/logo_512.png")
+            )
+        }
 
     @TaskAction
     private fun runTask() {
-        outputFile.writeText(makeJson())
+        val root = outputRoot.get()
+        root.mkdirs()
+        root.resolve("fabric.mod.json").writeText(makeJson())
+        val assetRoot = root.resolve("assets/${id.get()}")
+        assetRoot.mkdirs()
+        for(scale in iconScales) {
+            GenerateFabricModJson::class.java.getResourceAsStream("logo/logo_$scale.png")?.use {
+                assetRoot.resolve("logo_$scale.png").writeBytes(it.readBytes())
+            }
+        }
     }
 
     private fun makeJson(): String {
         val entrypoints = this.entrypoints.get().groupBy { it.type }
+        /*
+        |  "icon": {
+        |${iconScales.joinToString(",\n") { "\"$it\": \"assets/${id.get()}/logo_$it.png\"" }.prependIndent("    ")}
+        |  },
+        */
         return """
         |{
         |  "schemaVersion": 1,
@@ -86,7 +116,7 @@ open class GenerateFabricModJson : DefaultTask() {
         |  },
         |
         |  "license": "LGPL-3.0",
-        |  "icon": "assets/modid/icon.png",
+        |  "icon": "assets/${id.get()}/logo_128.png",
         |
         |  "environment": "*",
         |  "entrypoints": {
@@ -97,6 +127,9 @@ open class GenerateFabricModJson : DefaultTask() {
         |  ],
         |  "depends": {
         |${dependencies.get().joinToString(",\n") { "\"${it.id}\": \"${it.version}\"" }.prependIndent("    ")}
+        |  },
+        |  "custom": {
+        |${makeModMenuJson().prependIndent("    ")}
         |  }
         |}
         """.trimMargin()
@@ -111,7 +144,7 @@ open class GenerateFabricModJson : DefaultTask() {
     }
 
     private fun makeEntrypointJson(entrypoint: Entrypoint): String {
-        return if(entrypoint.adapter == null) {
+        return if (entrypoint.adapter == null) {
             "\"${entrypoint.value}\""
         } else {
             """
@@ -123,6 +156,97 @@ open class GenerateFabricModJson : DefaultTask() {
         }
     }
 
+    private fun makeModMenuJson(): String {
+
+        val links = modMenu.links.get()
+        val linkBlock = if(links.isEmpty())
+            null
+        else
+            """
+            |"links": {
+            |${links.entries.joinToString(",\n") { "\"${it.key}\": \"${it.value}\"" }.prependIndent("  ")}
+            |}
+            """.trimMargin()
+
+        val badges = modMenu.badges.get()
+        val badgeBlock = if (badges.isEmpty())
+            null
+        else
+            """
+            |"badges": [${badges.joinToString(", ") { "\"$it\"" }}]
+            """.trimMargin()
+
+        val parent = modMenu.parent.get()
+        val fakeParent = modMenu.fakeParent
+        val parentBlock = if(fakeParent.id.get() != "") {
+            """
+            |"parent": {
+            |  "id": "${fakeParent.id.get()}",
+            |  "name": "${fakeParent.name.get()}",
+            |  "description": "${fakeParent.description.get()}",
+            |  "icon": "assets/${id.get()}/logo_128.png",
+            |  "badges": [${fakeParent.badges.get().joinToString(", ") { "\"$it\"" }}]
+            |}
+            """.trimMargin()
+        } else if(parent != "") {
+            "\"parent\": \"$parent\""
+        } else {
+            null
+        }
+
+        return """
+        |"modmenu": {
+        |${listOfNotNull(linkBlock, badgeBlock, parentBlock).joinToString(",\n").prependIndent("  ")}
+        |}
+        """.trimMargin()
+
+    }
+
     data class Dependency(val id: String, val version: String)
     data class Entrypoint(val type: String, val adapter: String?, val value: String)
+
+    inner class ModMenuData {
+        @Input
+        val links: MapProperty<String, String> = ctx.mapProperty() { mapOf() }
+
+        @Input
+        val badges: ListProperty<String> = ctx.listProperty() { listOf() }
+
+        @Input
+        val parent: Property<String> = ctx.property() { "" }
+
+        @Nested
+        val fakeParent: FakeParentData = FakeParentData()
+
+        fun parent(id: String) {
+            parent.set(id)
+            fakeParent.id.set("")
+        }
+
+        fun parent(id: String, name: String, description: String, badges: List<String>) {
+            parent.set("")
+            fakeParent.id.set(id)
+            fakeParent.name.set(name)
+            fakeParent.description.set(description)
+            fakeParent.badges.set(badges)
+        }
+    }
+
+    inner class FakeParentData {
+        @Input
+        val id: Property<String> = ctx.property() { "" }
+
+        @Input
+        val name: Property<String> = ctx.property() { "" }
+
+        @Input
+        val description: Property<String> = ctx.property() { "" }
+
+        @Input
+        val badges: ListProperty<String> = ctx.listProperty() { listOf() }
+    }
+
+    companion object {
+        val iconScales: List<Int> = listOf(64, 128, 256, 512)
+    }
 }

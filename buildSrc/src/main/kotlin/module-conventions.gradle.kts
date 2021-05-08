@@ -91,6 +91,13 @@ configureFabricModJson {
     module.moduleInfo.dependencies {
         depends(it.modid, commonConfig.version)
     }
+    modMenu.badges.add("library")
+    modMenu.parent(
+        id = project.property("fabricmodjson.modmenu.liblib_id") as String,
+        name = project.property("fabricmodjson.modmenu.liblib_name") as String,
+        description = project.property("fabricmodjson.modmenu.liblib_description") as String,
+        badges = listOf("library")
+    )
 }
 
 tasks.named<ProcessResources>("processResources") {
@@ -110,6 +117,14 @@ val generateFabricTestMod = tasks.register<GenerateFabricModJson>("generateFabri
     depends("minecraft", project.property("fabricmodjson.depends.minecraft") as String)
     depends("fabric-language-kotlin", "*")
     depends(module.moduleInfo.modid, commonConfig.version)
+
+    modMenu.badges.add("library")
+    modMenu.parent(
+        id = "librarianlib-test",
+        name = "LibrarianLib Test Mods",
+        description = "The test mods for the various librarianlib modules",
+        badges = listOf()
+    )
 }
 
 tasks.named<ProcessResources>("processTestResources") {

@@ -21,6 +21,7 @@ allprojects {
         maven("https://modmaven.k-4u.nl") { name = "ModMaven (JEI mirror)" }
 
         maven("https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/") // for ARRP
+        maven("https://maven.terraformersmc.com/releases") // for ModMenu
     }
 }
 

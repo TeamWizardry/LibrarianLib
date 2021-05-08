@@ -13,6 +13,7 @@ dependencies {
         runtimeOnly(provider { it.sourceSets.main.get().output })
         runtimeOnly(provider { it.sourceSets.test.get().output })
     }
+    modRuntime("com.terraformersmc:modmenu:1.16.5")
 }
 
 tasks.named("processResources") {
