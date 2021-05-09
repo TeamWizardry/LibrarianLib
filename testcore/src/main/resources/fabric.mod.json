@@ -26,6 +26,7 @@
     ]
   },
   "mixins": [
+    "liblib-testcore.mixins.json"
   ],
   "depends": {
     "quilt_loader": ">=0.12.0",

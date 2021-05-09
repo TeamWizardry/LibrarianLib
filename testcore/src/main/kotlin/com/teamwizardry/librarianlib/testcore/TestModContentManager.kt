@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.testcore
 
-import com.teamwizardry.librarianlib.testcore.objects.TestConfig
+import com.teamwizardry.librarianlib.core.util.ModLogManager
+import com.teamwizardry.librarianlib.testcore.content.TestConfig
 import net.minecraft.util.Identifier
 import org.apache.logging.log4j.LogManager
 import java.lang.IllegalStateException
@@ -10,9 +11,33 @@ import kotlin.reflect.full.primaryConstructor
 /**
  * A DSL for creating test objects. Loosely based on gradle's Kotlin DSL.
  */
-public class TestModContentManager(public val modid: String) {
-    private val logger = LogManager.getLogger("TestModManager($modid)")
-    internal val objects = mutableMapOf<String, TestConfig>()
+public class TestModContentManager(public val modid: String, logManager: ModLogManager) {
+    private val logger = logManager.makeLogger("TestModContentManager")
+    private val objects = mutableMapOf<String, TestConfig>()
+
+    public fun registerCommon() {
+        logger.info("Performing common registration")
+        for(config in objects.values) {
+            logger.info("Registering ${config.id}")
+            config.registerCommon()
+        }
+    }
+
+    public fun registerClient() {
+        logger.info("Performing client registration")
+        for(config in objects.values) {
+            logger.info("Registering ${config.id}")
+            config.registerClient()
+        }
+    }
+
+    public fun registerServer() {
+        logger.info("Performing server registration")
+        for(config in objects.values) {
+            logger.info("Registering ${config.id}")
+            config.registerServer()
+        }
+    }
 
     public fun id(name: String): Identifier = Identifier(modid, name)
 

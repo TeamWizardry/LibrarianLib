@@ -29,6 +29,12 @@
         "adapter": "kotlin",
         "value": "com.teamwizardry.librarianlib.testcore.test.LLTestCoreTestClient"
       }
+    ],
+    "server": [
+      {
+        "adapter": "kotlin",
+        "value": "com.teamwizardry.librarianlib.testcore.test.LLTestCoreTestServer"
+      }
     ]
   },
   "mixins": [

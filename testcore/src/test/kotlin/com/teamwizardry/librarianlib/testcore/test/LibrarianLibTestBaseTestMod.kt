@@ -4,9 +4,9 @@ package com.teamwizardry.librarianlib.testcore.test
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.testcore.LibrarianLibTestBaseModule
 import com.teamwizardry.librarianlib.testcore.TestMod
-import com.teamwizardry.librarianlib.testcore.objects.TestBlockImpl
-import com.teamwizardry.librarianlib.testcore.objects.TestBlock
-import com.teamwizardry.librarianlib.testcore.objects.TestItemImpl
+import com.teamwizardry.librarianlib.testcore.content.impl.TestBlockImpl
+import com.teamwizardry.librarianlib.testcore.content.TestBlock
+import com.teamwizardry.librarianlib.testcore.content.impl.TestItemImpl
 import com.teamwizardry.librarianlib.testcore.objects.TestTileEntity
 import net.minecraft.tileentity.ITickableTileEntity
 import net.minecraft.tileentity.TileEntityType

@@ -1,0 +1,15 @@
+{
+  "minVersion": "0.8.2",
+  "required": true,
+  "package": "com.teamwizardry.librarianlib.testcore.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "liblib-core.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "EntitySpawningMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

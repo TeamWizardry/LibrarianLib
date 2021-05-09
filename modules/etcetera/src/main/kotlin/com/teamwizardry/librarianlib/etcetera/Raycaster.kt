@@ -438,7 +438,7 @@ public class Raycaster {
      */
     private fun castEntities(world: World, entityFilter: Predicate<Entity>) {
         val fullBoundingBox = Box(startX, startY, startZ, endX, endY, endZ)
-        val radius = QUILT_TODO<Double>("world.maxEntityRadius", "forge patch")
+        val radius = 2.0 // Vanilla hard-codes 2.0, forge had a custom patch that would allow mods to increase this.
         visitedEntityChunks.clear()
         // iterate the chunks four times, skipping any duplicates. This should eliminate cases where an entity's
         // bounding box extends outside its chunk

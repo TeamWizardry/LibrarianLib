@@ -17,6 +17,8 @@ configureFabricModJson {
 
 configureFabricTestModJson {
     entrypoint("main", adapter = "kotlin", value = "com.teamwizardry.librarianlib.core.test.LLCoreTestCommon")
+    entrypoint("client", adapter = "kotlin", value = "com.teamwizardry.librarianlib.core.test.LLCoreTestClient")
+    entrypoint("server", adapter = "kotlin", value = "com.teamwizardry.librarianlib.core.test.LLCoreTestServer")
 }
 
 dependencies {

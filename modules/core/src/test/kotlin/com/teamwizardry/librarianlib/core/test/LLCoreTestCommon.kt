@@ -2,17 +2,13 @@ package com.teamwizardry.librarianlib.core.test
 
 import com.teamwizardry.librarianlib.core.test.tests.EasingTests
 import com.teamwizardry.librarianlib.core.test.tests.LogLevelTests
-import com.teamwizardry.librarianlib.testcore.CommonContentHandler
 import com.teamwizardry.librarianlib.testcore.TestModContentManager
-import com.teamwizardry.librarianlib.testcore.objects.TestItem
-import com.teamwizardry.librarianlib.testcore.objects.UnitTestSuite
+import com.teamwizardry.librarianlib.testcore.junit.UnitTestSuite
 import net.fabricmc.api.ModInitializer
-import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
-import org.apache.logging.log4j.Logger
 
-object LLCoreTestCommon : ModInitializer {
-    val manager: TestModContentManager = TestModContentManager("liblib-core-test")
+internal object LLCoreTestCommon : ModInitializer {
+    val manager: TestModContentManager = TestModContentManager("liblib-core-test", LLCoreTest.logManager)
 
     private val logger = LLCoreTest.logManager.makeLogger<LLCoreTestCommon>()
 
@@ -24,6 +20,6 @@ object LLCoreTestCommon : ModInitializer {
             add<LogLevelTests>()
         })
 
-        CommonContentHandler.register(manager)
+        manager.registerCommon()
     }
 }

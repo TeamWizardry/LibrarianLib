@@ -1,14 +1,14 @@
 package com.teamwizardry.librarianlib.testcore.test
 
-import com.teamwizardry.librarianlib.testcore.CommonContentHandler
 import com.teamwizardry.librarianlib.testcore.TestModContentManager
-import com.teamwizardry.librarianlib.testcore.objects.TestItem
-import com.teamwizardry.librarianlib.testcore.objects.UnitTestSuite
+import com.teamwizardry.librarianlib.testcore.content.TestEntity
+import com.teamwizardry.librarianlib.testcore.content.TestItem
+import com.teamwizardry.librarianlib.testcore.junit.UnitTestSuite
 import net.fabricmc.api.ModInitializer
 import net.minecraft.util.registry.Registry
 
-object LLTestCoreTestCommon : ModInitializer {
-    val manager: TestModContentManager = TestModContentManager("liblib-testcore-test")
+internal object LLTestCoreTestCommon : ModInitializer {
+    val manager: TestModContentManager = TestModContentManager("liblib-testcore-test", LLTestCoreTest.logManager)
 
     private val logger = LLTestCoreTest.logManager.makeLogger<LLTestCoreTestCommon>()
 
@@ -17,7 +17,7 @@ object LLTestCoreTestCommon : ModInitializer {
             add<UnitTestTests>()
         })
 
-        manager.create<TestItem>("right_click") {
+        manager.create<TestItem>("right_click_item") {
             name = "Right Click"
 
             common {
@@ -46,7 +46,7 @@ object LLTestCoreTestCommon : ModInitializer {
             }
         }
 
-        manager.create<TestItem>("left_click") {
+        manager.create<TestItem>("left_click_item") {
             name = "Left Click"
             common {
                 leftClickBlock { chat("[Common] leftClickBlock") }
@@ -62,7 +62,7 @@ object LLTestCoreTestCommon : ModInitializer {
             }
         }
 
-        manager.create<TestItem>("inventory_tick") {
+        manager.create<TestItem>("inventory_tick_item") {
             name = "Inventory Tick"
             common {
                 inventoryTick { sneaking { chat("[Common] inventoryTick") } }
@@ -78,7 +78,7 @@ object LLTestCoreTestCommon : ModInitializer {
             }
         }
 
-        manager.create<TestItem>("sided") {
+        manager.create<TestItem>("sided_item") {
             name = "Right Click"
 
             common {
@@ -88,6 +88,10 @@ object LLTestCoreTestCommon : ModInitializer {
             }
         }
 
-        CommonContentHandler.register(manager)
+        manager.create<TestEntity>("simple_entity") {
+            name = "A simple entity"
+        }
+
+        manager.registerCommon()
     }
 }
