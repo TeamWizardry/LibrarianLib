@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.testcore.content
 
+import com.teamwizardry.librarianlib.core.util.append
 import com.teamwizardry.librarianlib.testcore.TestModContentManager
+import com.teamwizardry.librarianlib.testcore.TestModResourceManager
 import com.teamwizardry.librarianlib.testcore.util.PlayerTestContext
 import com.teamwizardry.librarianlib.testcore.content.impl.TestItemImpl
 import com.teamwizardry.librarianlib.testcore.objects.TestObjectDslMarker
@@ -150,7 +152,14 @@ public class TestItem(manager: TestModContentManager, id: Identifier): TestConfi
     public data class RightClickEntityContext(val stack: ItemStack, val player: PlayerEntity, val target: LivingEntity, val hand: Hand): PlayerTestContext(player)
     public data class InventoryTickContext(val stack: ItemStack, val world: World, val player: PlayerEntity, val itemSlot: Int, val isSelected: Boolean): PlayerTestContext(player)
 
-    override fun registerCommon() {
+    override fun registerCommon(resources: TestModResourceManager) {
         Registry.register(Registry.ITEM, id, instance)
+    }
+
+    override fun registerClient(resources: TestModResourceManager) {
+        resources.lang.item(id, name)
+        description?.also {
+            resources.lang.item(id.append(".tooltip"), it)
+        }
     }
 }

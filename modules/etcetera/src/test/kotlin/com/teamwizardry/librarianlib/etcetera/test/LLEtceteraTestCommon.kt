@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos
 import java.util.function.Predicate
 
 internal object LLEtceteraTestCommon : ModInitializer {
-    val manager: TestModContentManager = TestModContentManager("liblib-etcetera-test", LLEtceteraTest.logManager)
+    val manager: TestModContentManager = TestModContentManager("liblib-etcetera-test", "Etcetera", LLEtceteraTest.logManager)
 
     private val logger = LLEtceteraTest.logManager.makeLogger<LLEtceteraTestCommon>()
 

@@ -5,10 +5,20 @@ import net.minecraft.util.Identifier
 import java.net.URI
 
 /**
+ * Append the given string to this identifier's path.
+ *
+ * ```
+ * Identifier("mymod:my/path").append("_file.png") == Identifier("mymod:my/path_file.png")
+ * ```
+ */
+public fun Identifier.append(suffix: String): Identifier {
+    return Identifier(this.namespace, this.path + suffix)
+}
+
+/**
  * Resolve the specified path relative to this `Identifier`, normalizing `.` and `..` components.
  *
  * ```
- * Identifier("mymod:my/path").resolve("file.png") == Identifier("mymod:my/path/file.png")
  * Identifier("mymod:my/path").resolve("file.png") == Identifier("mymod:my/path/file.png")
  * ```
  */

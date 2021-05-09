@@ -11,16 +11,12 @@ val liblibModules = commonConfig.modules
 
 val allTestProjects = liblibModules.map { it.project } + listOf(project(":testcore"))
 dependencies {
-
-    // used by testcore. I can't use `include` because of transitive dependencies.
-    runtimeOnly("org.junit.jupiter:junit-jupiter-api:5.6.2")
-    runtimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
-    runtimeOnly("org.junit.platform:junit-platform-launcher:1.6.2")
-
     allTestProjects.forEach {
         runtimeOnly(it.sourceSets.main.get().output)
         runtimeOnly(it.sourceSets.test.get().output)
         runtimeOnly(project(it.path, configuration = "include"))
+        runtimeOnly(project(it.path, configuration = "devClasspath"))
+        modRuntime(project(it.path, configuration = "devMod"))
     }
     modRuntime("com.terraformersmc:modmenu:1.16.5")
 }

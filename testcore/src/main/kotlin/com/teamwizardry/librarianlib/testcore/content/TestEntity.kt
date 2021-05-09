@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.testcore.content
 
 import com.teamwizardry.librarianlib.testcore.TestModContentManager
+import com.teamwizardry.librarianlib.testcore.TestModResourceManager
 import com.teamwizardry.librarianlib.testcore.bridge.TestCoreEntityTypes
 import com.teamwizardry.librarianlib.testcore.content.impl.TestEntityImpl
 import com.teamwizardry.librarianlib.testcore.content.impl.TestEntityRenderer
@@ -112,14 +113,18 @@ public class TestEntity(manager: TestModContentManager, id: Identifier) : TestCo
         player.world.spawnEntity(entity)
     }
 
-    override fun registerCommon() {
+    override fun registerCommon(resources: TestModResourceManager) {
         Registry.register(Registry.ENTITY_TYPE, this.id, this.type)
         TestCoreEntityTypes.types.add(this.type)
     }
 
-    override fun registerClient() {
+    override fun registerClient(resources: TestModResourceManager) {
         EntityRendererRegistry.INSTANCE.register(this.type) { dispatcher, _ ->
             TestEntityRenderer(dispatcher)
         }
+
+        resources.lang
+            .entity(id, name)
+            .item(spawnerItem.id, name)
     }
 }

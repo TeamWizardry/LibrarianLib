@@ -36,6 +36,17 @@ configurations {
 
     // ----- Providers -----
 
+    create("devClasspath") {
+        description = "Dependencies to put on the development runtime classpath"
+
+        canBe(consumed = true, resolved = false)
+    }
+    create("devMod") {
+        description = "Mods to put on the development runtime classpath"
+
+        canBe(consumed = true, resolved = false)
+    }
+
     // ----- Consumers -----
 
     val shade = create("shade") {

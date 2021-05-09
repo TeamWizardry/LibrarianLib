@@ -1,6 +1,8 @@
 package com.teamwizardry.librarianlib.testcore.content
 
+import com.teamwizardry.librarianlib.core.util.append
 import com.teamwizardry.librarianlib.testcore.TestModContentManager
+import com.teamwizardry.librarianlib.testcore.TestModResourceManager
 import com.teamwizardry.librarianlib.testcore.content.impl.TestBlockImpl
 import com.teamwizardry.librarianlib.testcore.content.impl.TestBlockItem
 import com.teamwizardry.librarianlib.testcore.objects.TestObjectDslMarker
@@ -56,9 +58,16 @@ public class TestBlock(manager: TestModContentManager, id: Identifier): TestConf
         TestBlockItem(instance, Item.Settings().group(manager.itemGroup))
     }
 
-    override fun registerCommon() {
+    override fun registerCommon(resources: TestModResourceManager) {
         Registry.register(Registry.BLOCK, id, instance)
         Registry.register(Registry.ITEM, id, itemInstance)
+    }
+
+    override fun registerClient(resources: TestModResourceManager) {
+        resources.lang.block(id, name)
+        description?.also {
+            resources.lang.block(id.append(".tooltip"), it)
+        }
     }
 
     public data class RightClickContext(

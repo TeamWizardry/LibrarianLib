@@ -14,35 +14,43 @@ import kotlin.reflect.full.primaryConstructor
 /**
  * A DSL for creating test objects. Loosely based on gradle's Kotlin DSL.
  */
-public class TestModContentManager(public val modid: String, logManager: ModLogManager) {
+public class TestModContentManager(public val modid: String, itemGroupName: String, logManager: ModLogManager) {
     private val logger = logManager.makeLogger("TestModContentManager")
     private val objects = mutableMapOf<String, TestConfig>()
 
     public var itemGroupIcon: ItemStack = ItemStack(Items.STICK)
     public val itemGroup: ItemGroup = FabricItemGroupBuilder.build(Identifier(modid, "item_group")) { itemGroupIcon }
 
+    private val resources: TestModResourceManager = TestModResourceManager(modid, logManager)
+    init {
+        resources.lang.itemGroup(Identifier(modid, "item_group"), itemGroupName)
+    }
+
     public fun registerCommon() {
         logger.info("Performing common registration")
         for(config in objects.values) {
             logger.info("Registering ${config.id}")
-            config.registerCommon()
+            config.registerCommon(resources)
         }
+        resources.writeLang()
     }
 
     public fun registerClient() {
         logger.info("Performing client registration")
         for(config in objects.values) {
             logger.info("Registering ${config.id}")
-            config.registerClient()
+            config.registerClient(resources)
         }
+        resources.writeLang()
     }
 
     public fun registerServer() {
         logger.info("Performing server registration")
         for(config in objects.values) {
             logger.info("Registering ${config.id}")
-            config.registerServer()
+            config.registerServer(resources)
         }
+        resources.writeLang()
     }
 
     public fun id(name: String): Identifier = Identifier(modid, name)

@@ -8,7 +8,7 @@ import net.fabricmc.api.ModInitializer
 import net.minecraft.util.registry.Registry
 
 internal object LLCoreTestCommon : ModInitializer {
-    val manager: TestModContentManager = TestModContentManager("liblib-core-test", LLCoreTest.logManager)
+    val manager: TestModContentManager = TestModContentManager("liblib-core-test", "Core", LLCoreTest.logManager)
 
     private val logger = LLCoreTest.logManager.makeLogger<LLCoreTestCommon>()
 

@@ -7,7 +7,8 @@
   "mixins": [
   ],
   "client": [
-    "EntitySpawningMixin"
+    "EntitySpawningMixin",
+    "TranslationInjectionMixin"
   ],
   "injectors": {
     "defaultRequire": 1
