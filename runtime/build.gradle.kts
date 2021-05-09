@@ -18,9 +18,9 @@ dependencies {
     runtimeOnly("org.junit.platform:junit-platform-launcher:1.6.2")
 
     allTestProjects.forEach {
-        runtimeOnly(provider { it.sourceSets.main.get().output })
-        runtimeOnly(provider { it.sourceSets.test.get().output })
-        runtimeOnly(provider { project(it.path, configuration = "include") })
+        runtimeOnly(it.sourceSets.main.get().output)
+        runtimeOnly(it.sourceSets.test.get().output)
+        runtimeOnly(project(it.path, configuration = "include"))
     }
     modRuntime("com.terraformersmc:modmenu:1.16.5")
 }

@@ -1,5 +1,21 @@
 import java.util.*
 
+// loom expects the decompiler to be in the buildscript classpath. However, it seems that applying the plugin in
+// buildSrc scripts means loom isn't properly in the buildscript classpath.
+buildscript {
+    val gradle_loom_version = "0.7.15" // plugin version duplicated from buildsrc
+
+    repositories {
+        maven { url = uri("https://maven.quiltmc.org/repository/release/") }
+        jcenter()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath("org.quiltmc:loom:$gradle_loom_version")
+    }
+}
+
 plugins {
     `minecraft-conventions`
 }

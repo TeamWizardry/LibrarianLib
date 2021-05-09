@@ -47,3 +47,11 @@ dependencies {
     "modImplementation"("net.fabricmc.fabric-api:fabric-api:$fabric_version")
     "modImplementation"("org.quiltmc:fabric-language-kotlin:$fabric_kotlin_version.local")
 }
+
+// The genSources task demands that loom be on the buildscript classpath. However, applying the plugin through buildSrc
+// doesn't seem to do that. We manually add it to the classpath of the root project, so we only enable genSources for
+// that project.
+tasks.whenTaskAdded {
+    if(name.startsWith("genSources"))
+        enabled = project == project.rootProject
+}
