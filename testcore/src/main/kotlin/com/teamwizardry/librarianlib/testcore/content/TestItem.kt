@@ -22,8 +22,6 @@ import net.minecraft.world.World
  */
 @TestObjectDslMarker
 public class TestItem(manager: TestModContentManager, id: Identifier): TestConfig(manager, id) {
-    public var group: ItemGroup? = null
-
     /**
      * The maximum stack size. Defaults to 1
      */
@@ -52,7 +50,7 @@ public class TestItem(manager: TestModContentManager, id: Identifier): TestConfi
      * constructor.
      */
     public val properties: Item.Settings = Item.Settings()
-        .group(group)
+        .group(manager.itemGroup)
         .maxCount(maxCount)
 
     /**

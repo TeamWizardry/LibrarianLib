@@ -53,7 +53,7 @@ public class TestBlock(manager: TestModContentManager, id: Identifier): TestConf
         TestBlockImpl(this)
     }
     internal val itemInstance: TestBlockItem by lazy {
-        TestBlockItem(instance, Item.Settings())
+        TestBlockItem(instance, Item.Settings().group(manager.itemGroup))
     }
 
     override fun registerCommon() {

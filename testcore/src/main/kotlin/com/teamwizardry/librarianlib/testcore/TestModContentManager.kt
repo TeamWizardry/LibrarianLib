@@ -2,8 +2,11 @@ package com.teamwizardry.librarianlib.testcore
 
 import com.teamwizardry.librarianlib.core.util.ModLogManager
 import com.teamwizardry.librarianlib.testcore.content.TestConfig
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder
+import net.minecraft.item.ItemGroup
+import net.minecraft.item.ItemStack
+import net.minecraft.item.Items
 import net.minecraft.util.Identifier
-import org.apache.logging.log4j.LogManager
 import java.lang.IllegalStateException
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
@@ -14,6 +17,9 @@ import kotlin.reflect.full.primaryConstructor
 public class TestModContentManager(public val modid: String, logManager: ModLogManager) {
     private val logger = logManager.makeLogger("TestModContentManager")
     private val objects = mutableMapOf<String, TestConfig>()
+
+    public var itemGroupIcon: ItemStack = ItemStack(Items.STICK)
+    public val itemGroup: ItemGroup = FabricItemGroupBuilder.build(Identifier(modid, "item_group")) { itemGroupIcon }
 
     public fun registerCommon() {
         logger.info("Performing common registration")
