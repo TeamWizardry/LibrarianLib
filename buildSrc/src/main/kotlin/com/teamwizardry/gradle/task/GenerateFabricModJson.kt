@@ -31,6 +31,9 @@ open class GenerateFabricModJson : DefaultTask() {
     val name: Property<String> = ctx.property() { project.displayName }
 
     @Input
+    val icon: Property<String> = ctx.property() { "" }
+
+    @Input
     val description: Property<String> = ctx.property() { "" }
 
     @Internal
@@ -70,11 +73,7 @@ open class GenerateFabricModJson : DefaultTask() {
         get() {
             val root = outputRoot.get()
             return ctx.project.files(
-                root.resolve("fabric.mod.json"),
-                root.resolve("assets/${id.get()}/logo_64.png"),
-                root.resolve("assets/${id.get()}/logo_128.png"),
-                root.resolve("assets/${id.get()}/logo_256.png"),
-                root.resolve("assets/${id.get()}/logo_512.png")
+                root.resolve("fabric.mod.json")
             )
         }
 
@@ -83,13 +82,6 @@ open class GenerateFabricModJson : DefaultTask() {
         val root = outputRoot.get()
         root.mkdirs()
         root.resolve("fabric.mod.json").writeText(makeJson())
-        val assetRoot = root.resolve("assets/${id.get()}")
-        assetRoot.mkdirs()
-        for(scale in iconScales) {
-            GenerateFabricModJson::class.java.getResourceAsStream("logo/logo_$scale.png")?.use {
-                assetRoot.resolve("logo_$scale.png").writeBytes(it.readBytes())
-            }
-        }
     }
 
     private fun makeJson(): String {
@@ -116,7 +108,7 @@ open class GenerateFabricModJson : DefaultTask() {
         |  },
         |
         |  "license": "LGPL-3.0",
-        |  "icon": "assets/${id.get()}/logo_128.png",
+        |  "icon": "${icon.get()}",
         |
         |  "environment": "*",
         |  "entrypoints": {
@@ -184,7 +176,7 @@ open class GenerateFabricModJson : DefaultTask() {
             |  "id": "${fakeParent.id.get()}",
             |  "name": "${fakeParent.name.get()}",
             |  "description": "${fakeParent.description.get()}",
-            |  "icon": "assets/${id.get()}/logo_128.png",
+            |  "icon": "${icon.get()}",
             |  "badges": [${fakeParent.badges.get().joinToString(", ") { "\"$it\"" }}]
             |}
             """.trimMargin()

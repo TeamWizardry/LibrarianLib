@@ -11,11 +11,17 @@
 implemented using Mixins or hooks for Mixins/ASM.
 
 ### Classes
-- `com.teamwizardry.librarianlib.<module id>.LibrarianLib<ModuleName>Module` - Main module class
+- `com.teamwizardry.librarianlib.<module id>.LibLib<ModuleName>` - Main module class
+- `com.teamwizardry.librarianlib.<module id>.LibLib<ModuleName>.Common`/`Client`/`Server` - The common, client, and 
+  server entry points for the module. 
 
 ### Resources
-- `META-INF/ll/<module id>/module.json` - Module metadata
-- `META-INF/ll/<module id>/mixins/*.mixins.json` - [Mixin configuration files](https://github.com/SpongePowered/Mixin/wiki/Introduction-to-Mixins---The-Mixin-Environment#mixin-configuration-files)
-- `META-INF/ll/<module id>/asm/*.asm.js` - Forge coremods. The `coremods.json` file will be automatically generated. To 
-avoid conflicts, transformer names should use this format: `ll.<module id>.<transformer name>`
-    
+- `ll/<module id>/<module id>.mixins.json` – [Mixin configuration files](https://github.com/SpongePowered/Mixin/wiki/Introduction-to-Mixins---The-Mixin-Environment#mixin-configuration-files)
+- `ll/<module id>/<module id>-refmap.json` – The location of the generated mixin refmap.
+- `ll/<module id>/icon.png` – An optional 128x128px mod icon. The default uses a global liblib icon, so to use a custom
+  icon, update the `icon` property in the `configureFabricModJson` block in the `build.gradle.kts` file)
+
+### Test
+- `com.teamwizardry.librarianlib.<module id>.test.LibLib<ModuleName>Test` - Main module test class
+- `com.teamwizardry.librarianlib.<module id>.test.LibLib<ModuleName>Test.Common`/`Client`/`Server` - The common, client 
+  and server points for the test mod.

@@ -56,17 +56,19 @@ open class CopyFreemarker : DefaultTask() {
         val files = listFiles()
         val outputs = remapPaths(files)
 
-        files.zip(outputs).forEach { (input, output) ->
+        for((input, output) in files.zip(outputs)) {
             val realInput = inputRoot.resolve(input)
             val realOutput = outputRoot.resolve(output)
 
             if(realInput.isDirectory) {
                 realOutput.mkdirs()
             } else {
-                val template = cfg.getTemplate(input.toString())
                 realOutput.parentFile.mkdirs()
-                realOutput.writer().use { writer ->
-                    template.process(model.get(), writer)
+                if(input.name != ".keep") {
+                    val template = cfg.getTemplate(input.toString())
+                    realOutput.writer().use { writer ->
+                        template.process(model.get(), writer)
+                    }
                 }
             }
         }

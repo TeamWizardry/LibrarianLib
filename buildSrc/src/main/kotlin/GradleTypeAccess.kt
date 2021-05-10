@@ -14,7 +14,6 @@ typealias ModPublishingPlugin = com.teamwizardry.gradle.publish.ModPublishingPlu
 typealias ModPublishingExtension = com.teamwizardry.gradle.publish.ModPublishingExtension
 
 typealias GenerateFabricModJson = com.teamwizardry.gradle.task.GenerateFabricModJson
-typealias ValidateMixinApplication = com.teamwizardry.gradle.task.ValidateMixinApplication
 typealias ShadowSources = com.teamwizardry.gradle.task.ShadowSources
 typealias CopyFreemarker = com.teamwizardry.gradle.task.CopyFreemarker
 typealias RestyleDokka = com.teamwizardry.gradle.task.RestyleDokka

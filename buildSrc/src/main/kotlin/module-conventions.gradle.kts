@@ -84,6 +84,10 @@ sourceSets {
     }
 }
 
+minecraft {
+    refmapName = "ll/${project.name}/${project.name}-refmap.json"
+}
+
 val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod") {
     outputRoot.set(generated.resolve("resources"))
 }
@@ -94,6 +98,7 @@ configureFabricModJson {
 
     name.set(project.provider { "LibrarianLib: ${module.displayName}" })
     description.set(project.provider { module.description })
+    icon.set("ll/icon.png")
 
     depends("quilt_loader", project.property("fabricmodjson.depends.quilt_loader") as String)
     depends("minecraft", project.property("fabricmodjson.depends.minecraft") as String)
@@ -123,6 +128,7 @@ val generateFabricTestMod = tasks.register<GenerateFabricModJson>("generateFabri
 
     name.set(project.provider { "${module.displayName} Tests" })
     description.set(project.provider { "Tests for ${module.displayName}" })
+    icon.set("ll/test_icon.png")
 
     depends("quilt_loader", project.property("fabricmodjson.depends.quilt_loader") as String)
     depends("minecraft", project.property("fabricmodjson.depends.minecraft") as String)

@@ -1,12 +1,14 @@
 {
   "minVersion": "0.8.2",
   "required": true,
-  "package": "com.teamwizardry.librarianlib.mosaic.mixin",
+  "package": "com.teamwizardry.librarianlib.${lowername}.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "ll/mosaic/mosaic-refmap.json",
+  "refmap": "ll/${lowername}/${lowername}.refmap.json",
   "mixins": [
   ],
   "client": [
+  ],
+  "server": [
   ],
   "injectors": {
     "defaultRequire": 1

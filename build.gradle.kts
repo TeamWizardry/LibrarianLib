@@ -70,7 +70,15 @@ configure<CommonConfigExtension> {
 open class CreateModule: CopyFreemarker() {
     @Option(option = "name", description = "The name of the module in Title Case. e.g. 'Cool Thing'. " +
             "The PascalCase and lowercase names will be inferred from this")
-    var humanName: Property<String> = project.objects.property()
+    var moduleName: Property<String> = project.objects.property()
+
+    @Option(option = "desc", description = "The description of the module. e.g. 'Automatic Cool object generation'")
+    var moduleDescription: Property<String> = project.objects.property()
+
+    val humanName: String get() = moduleName.get()
+    val pascalName: String get() = humanName.replace(" ", "")
+    val camelName: String get() = pascalName.substring(0, 1).toLowerCase(Locale.ROOT) + pascalName.substring(1)
+    val lowerName: String get() = pascalName.toLowerCase(Locale.ROOT)
 }
 
 // use `./gradlew createModule --name=Whatever`
@@ -78,18 +86,25 @@ tasks.register<CreateModule>("createModule") {
     template.set(project.file("modules/_template"))
     outputDirectory.set(project.file("modules"))
     model {
-        "humanName" %= humanName.get()
-        "PascalName" %= humanName.get().replace(" ", "")
-        "lowername" %= humanName.get().replace(" ", "").toLowerCase(Locale.ROOT)
+        "humanName" %= humanName
+        "PascalName" %= pascalName
+        "camelName" %= camelName
+        "lowername" %= lowerName
+        "description" %= moduleDescription.get()
+    }
+    doFirst {
+        val moduleDirectory = outputDirectory.get().resolve(lowerName)
+        if(moduleDirectory.exists())
+            throw IllegalArgumentException("Target directory `$moduleDirectory` already exists")
     }
     doLast {
-        val lowerName = humanName.get().replace(" ", "").toLowerCase(Locale.ROOT)
         logger.warn("############################################################################")
         logger.warn("# Some manual actions are still required when adding a module!             #")
         logger.warn("# - Set the maven_description in the new module's gradle.properties        #")
         logger.warn("# - Add `includeModule(\"$lowerName\")` to the settings.gradle.kts file    #")
         logger.warn("# - Add `create(\"$lowerName\")` to the root build.gradle.kts commonConfig #")
-        logger.warn("# - Add an item describing the module in the root README.md file           #")
+        logger.warn("# - Add an item describing the module in the root README.md file. e.g.     #")
+        logger.warn("- `$lowerName` – ${moduleDescription.get()}")
         logger.warn("############################################################################")
     }
 }

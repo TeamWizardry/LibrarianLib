@@ -1,0 +1,19 @@
+{
+  "minVersion": "0.8.2",
+  "required": true,
+  "package": "com.teamwizardry.librarianlib.core.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "ll/core/core-refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "RenderTickCounterMixin",
+    "Matrix3fMixin",
+    "Matrix4fMixin",
+    "MinecraftClientMixin",
+    "RenderLayerPhaseParametersMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

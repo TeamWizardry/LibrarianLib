@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.core.test.tests
 
-import com.teamwizardry.librarianlib.core.test.LLCoreTest
+import com.teamwizardry.librarianlib.core.test.LibLibCoreTest
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -8,7 +8,7 @@ import org.apache.logging.log4j.core.config.Configurator
 import org.junit.jupiter.api.Test
 
 class LogLevelTests {
-    private val classLogger = LLCoreTest.logManager.makeLogger<LogLevelTests>()
+    private val classLogger = LibLibCoreTest.logManager.makeLogger<LogLevelTests>()
     private val levels = listOf(
         Level.TRACE,
         Level.DEBUG,
