@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.facade.container.slot
 import com.teamwizardry.librarianlib.core.util.mapSrgName
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.inventory.container.Slot
+import net.minecraft.screen.slot.Slot
 import net.minecraftforge.items.IItemHandler
 import net.minecraftforge.items.SlotItemHandler
 

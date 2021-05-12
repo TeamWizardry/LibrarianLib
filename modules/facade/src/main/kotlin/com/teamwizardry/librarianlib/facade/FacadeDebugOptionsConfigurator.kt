@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.facade
 
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layer.FacadeDebugOptions
 import com.teamwizardry.librarianlib.facade.provided.VanillaTooltipRenderer
 import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.client.gui.AbstractGui
+import net.minecraft.client.gui.DrawableHelper
+import net.minecraft.client.util.math.MatrixStack
 import org.lwjgl.glfw.GLFW
 import java.awt.Color
 import kotlin.reflect.KMutableProperty0
@@ -17,7 +17,7 @@ import kotlin.reflect.KMutableProperty0
 internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOptions) {
     var isOpen: Boolean = false
 
-    private val itemHeight: Int = Client.textRenderer.FONT_HEIGHT + 1
+    private val itemHeight: Int = Client.textRenderer.fontHeight + 1
 
     private val rows: List<OptionRow>
     private var width: Int = 0
@@ -102,12 +102,12 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
         val top = (Client.window.scaledHeight - height) / 2
         val maxLabelWidth = rows.maxOf { it.labelWidth }
 
-        AbstractGui.fill(matrixStack,
+        DrawableHelper.fill(matrixStack,
             left - 6, top - 6,
             left + width + 6, top + height + 6,
             Color.lightGray.rgb
         )
-        AbstractGui.fill(matrixStack,
+        DrawableHelper.fill(matrixStack,
             left - 5, top - 5,
             left + width + 5, top + height + 5,
             Color.black.rgb
@@ -122,21 +122,21 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
             val row = rows[i]
             val rowY = top + i * itemHeight
             if (i == hoveredIndex) {
-                AbstractGui.fill(matrixStack,
+                DrawableHelper.fill(matrixStack,
                     left - 1, rowY - 1,
-                    left + width + 1, rowY + Client.textRenderer.FONT_HEIGHT,
+                    left + width + 1, rowY + Client.textRenderer.fontHeight,
                     Color.darkGray.rgb
                 )
             }
 
-            Client.textRenderer.drawStringWithShadow(matrixStack,
+            Client.textRenderer.drawWithShadow(matrixStack,
                 row.label,
                 left.toFloat() + (maxLabelWidth - row.labelWidth),
                 rowY.toFloat(),
                 Color.WHITE.rgb
             )
 
-            Client.textRenderer.drawStringWithShadow(matrixStack,
+            Client.textRenderer.drawWithShadow(matrixStack,
                 row.stateText,
                 left.toFloat() + maxLabelWidth + 2,
                 rowY.toFloat(),
@@ -149,7 +149,7 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
                 matrixStack,
                 row.tooltip,
                 left - 12,
-                top + hoveredIndex * itemHeight + Client.textRenderer.FONT_HEIGHT + 16
+                top + hoveredIndex * itemHeight + Client.textRenderer.fontHeight + 16
             )
         }
     }
@@ -160,9 +160,9 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
         var stateText: String = ""
 
         val labelWidth: Int
-            get() = Client.textRenderer.getStringWidth(label)
+            get() = Client.textRenderer.getWidth(label)
         val stateWidth: Int
-            get() = Client.textRenderer.getStringWidth(stateText)
+            get() = Client.textRenderer.getWidth(stateText)
 
         abstract fun click()
         abstract fun computeStateText()

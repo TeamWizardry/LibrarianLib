@@ -5,9 +5,9 @@ import com.teamwizardry.librarianlib.facade.container.slot.FacadeSlot
 import com.teamwizardry.librarianlib.facade.container.transfer.TransferSlot
 import com.teamwizardry.librarianlib.facade.container.transfer.TransferState
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.inventory.container.ClickType
-import net.minecraft.inventory.container.Container
 import net.minecraft.item.ItemStack
+import net.minecraft.screen.ScreenHandler
+import net.minecraft.screen.slot.SlotActionType
 import net.minecraftforge.items.IItemHandler
 import kotlin.math.min
 
@@ -28,16 +28,16 @@ public open class GhostSlot(itemHandler: IItemHandler, index: Int) : FacadeSlot(
     }
 
     override fun handleClick(
-        container: Container,
+        container: ScreenHandler,
         mouseButton: Int,
-        clickType: ClickType,
+        clickType: SlotActionType,
         player: PlayerEntity
     ): ItemStack? {
         val ghostStack = player.inventory.itemStack
         val isValid = isItemValid(ghostStack)
 
         when(clickType) {
-            ClickType.PICKUP -> {
+            SlotActionType.PICKUP -> {
                 if(mouseButton == 0 && isValid) {
                     acceptGhostStack(ghostStack)
                 }
@@ -50,7 +50,7 @@ public open class GhostSlot(itemHandler: IItemHandler, index: Int) : FacadeSlot(
         return ItemStack.EMPTY
     }
 
-    override fun isStackSimilar(stack: ItemStack): Boolean = Container.areItemsAndTagsEqual(stack, this.stack)
+    override fun isStackSimilar(stack: ItemStack): Boolean = ScreenHandler.canStacksCombine(stack, this.stack)
 
     override fun transferIntoSlot(transfer: TransferState) {
         if(isStackSimilar(transfer.stack)) {

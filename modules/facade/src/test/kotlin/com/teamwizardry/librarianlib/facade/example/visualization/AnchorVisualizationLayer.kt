@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.facade.example.visualization
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
@@ -35,8 +36,8 @@ class AnchorVisualizationLayer(val target: GuiLayer): GuiLayer() {
 
         RenderSystem.lineWidth(3f)
 
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(SimpleRenderTypes.flatLines)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(SimpleRenderLayers.flatLines)
 
         // get into parent's space
         context.matrix *= inverseTransform

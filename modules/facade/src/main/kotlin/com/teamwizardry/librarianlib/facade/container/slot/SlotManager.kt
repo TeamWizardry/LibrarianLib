@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.facade.container.slot
 
 import com.teamwizardry.librarianlib.facade.container.builtin.PlayerInventorySlotManager
-import net.minecraft.inventory.IInventory
+import net.minecraft.inventory.Inventory
 import net.minecraftforge.items.IItemHandler
 import net.minecraftforge.items.wrapper.InvWrapper
 
@@ -13,7 +13,7 @@ import net.minecraftforge.items.wrapper.InvWrapper
  * provides fields for armor slots, the hotbar, the main inventory, etc.
  */
 public open class SlotManager(private val inventory: IItemHandler) {
-    public constructor(inventory: IInventory): this(InvWrapper(inventory))
+    public constructor(inventory: Inventory): this(InvWrapper(inventory))
 
     public val all: SlotRegion = SlotRegion.create(inventory)
 }

@@ -8,10 +8,10 @@ import com.teamwizardry.librarianlib.facade.text.SpriteEmbed
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import dev.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import dev.thecodewarrior.bitfont.typesetting.TextAttribute
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.text.Text
 import java.awt.Color
 
-class TextEmbedsTestScreen(title: ITextComponent): FacadeScreen(title) {
+class TextEmbedsTestScreen(title: Text): FacadeScreen(title) {
     init {
         val dirt = Mosaic(loc("minecraft:textures/block/dirt.png"), 8, 8)
         val dirtEmbed = SpriteEmbed(9, 7, 1, 0, -7, dirt.getSprite(""), false)

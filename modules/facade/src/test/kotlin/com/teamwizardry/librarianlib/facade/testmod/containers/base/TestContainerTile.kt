@@ -2,12 +2,14 @@ package com.teamwizardry.librarianlib.facade.testmod.containers.base
 
 import com.teamwizardry.librarianlib.prism.Save
 import com.teamwizardry.librarianlib.testcore.objects.TestTileEntity
-import net.minecraft.nbt.CompoundNBT
+import net.minecraft.block.entity.BlockEntityType
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.tileentity.ITickableTileEntity
-import net.minecraft.tileentity.TileEntityType
+import net.minecraft.util.Tickable
 import net.minecraftforge.common.util.INBTSerializable
 
-class TestContainerTile(tileEntityTypeIn: TileEntityType<*>, val containerSet: TestContainerSet) : TestTileEntity(tileEntityTypeIn), ITickableTileEntity {
+class TestContainerTile(tileEntityTypeIn: BlockEntityType<*>, val containerSet: TestContainerSet) : TestTileEntity(tileEntityTypeIn),
+    Tickable {
     @Save
     val data: ContainerDataSet = ContainerDataSet(containerSet)
 
@@ -20,7 +22,7 @@ class TestContainerTile(tileEntityTypeIn: TileEntityType<*>, val containerSet: T
     }
 
     class ContainerDataSet(val containerSet: TestContainerSet) :
-        INBTSerializable<CompoundNBT> {
+        INBTSerializable<CompoundTag> {
 
         val dataByType: Map<TestContainerSet.Type<*, *>, TestContainerData> = containerSet.createData()
         val dataByClass: Map<Class<*>, TestContainerData> = dataByType.mapKeys { it.key.dataClass }
@@ -30,15 +32,15 @@ class TestContainerTile(tileEntityTypeIn: TileEntityType<*>, val containerSet: T
             return dataByClass.getValue(dataType) as T
         }
 
-        override fun serializeNBT(): CompoundNBT {
-            val tag = CompoundNBT()
+        override fun serializeNBT(): CompoundTag {
+            val tag = CompoundTag()
             for ((type, data) in dataByType) {
                 tag.put(type.id.toString(), data.serializeNBT())
             }
             return tag
         }
 
-        override fun deserializeNBT(nbt: CompoundNBT) {
+        override fun deserializeNBT(nbt: CompoundTag) {
             for ((type, data) in dataByType) {
                 if (nbt.contains(type.id.toString())) {
                     data.deserializeNBT(nbt.getCompound(type.id.toString()))

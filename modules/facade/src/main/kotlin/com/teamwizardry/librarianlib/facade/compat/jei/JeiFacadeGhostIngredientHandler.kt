@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
 import com.teamwizardry.librarianlib.facade.container.builtin.GhostSlot
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler
 import net.minecraft.client.renderer.Rectangle2d
+import net.minecraft.client.util.Rect2i
 import net.minecraft.item.ItemStack
 
 private typealias IGhostTarget<I> = IGhostIngredientHandler.Target<I>
@@ -36,8 +37,8 @@ internal object JeiFacadeGhostIngredientHandler : IGhostIngredientHandler<Facade
         private val gui: FacadeContainerScreen<*>,
         private val slot: GhostSlot
     ) : IGhostTarget<ItemStack> {
-        override fun getArea(): Rectangle2d {
-            return Rectangle2d(gui.guiLeft + slot.xPos, gui.guiTop + slot.yPos, 16, 16)
+        override fun getArea(): Rect2i {
+            return Rect2i(gui.guiLeft + slot.xPos, gui.guiTop + slot.yPos, 16, 16)
         }
 
         override fun accept(ingredient: ItemStack) {

@@ -5,12 +5,12 @@ import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
 import com.teamwizardry.librarianlib.facade.container.layers.SlotGridLayer
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.text.Text
 
 class BackpackContainerScreen(
     container: BackpackContainer,
     inventory: PlayerInventory,
-    title: ITextComponent
+    title: Text
 ): FacadeContainerScreen<BackpackContainer>(container, inventory, title) {
     init {
         val stack = StackLayout.build(5, 5)

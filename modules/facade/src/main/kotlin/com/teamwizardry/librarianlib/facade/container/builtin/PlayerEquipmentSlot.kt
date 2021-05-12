@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair
 import com.teamwizardry.librarianlib.facade.container.slot.FacadeSlot
 import net.minecraft.client.renderer.texture.AtlasTexture
 import net.minecraft.enchantment.EnchantmentHelper
+import net.minecraft.entity.EquipmentSlot
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.inventory.EquipmentSlotType
 import net.minecraft.inventory.container.PlayerContainer
@@ -16,7 +17,7 @@ import net.minecraftforge.items.SlotItemHandler
 
 public class PlayerEquipmentSlot(
     itemHandler: IItemHandler, index: Int,
-    public var player: PlayerEntity, public var type: EquipmentSlotType
+    public var player: PlayerEntity, public var type: EquipmentSlot
 ) : FacadeSlot(itemHandler, index) {
 
     /**

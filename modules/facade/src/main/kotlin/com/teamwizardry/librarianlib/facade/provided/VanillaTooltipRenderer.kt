@@ -3,10 +3,17 @@ package com.teamwizardry.librarianlib.facade.provided
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
+import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.item.ItemStack
+import net.minecraft.text.LiteralText
+import net.minecraft.text.OrderedText
+import net.minecraft.text.StringVisitable
+import net.minecraft.text.Text
 import net.minecraft.util.IReorderingProcessor
+import net.minecraft.util.Language
 import net.minecraft.util.text.ITextComponent
 import net.minecraft.util.text.ITextProperties
 import net.minecraft.util.text.LanguageMap
@@ -18,7 +25,7 @@ import net.minecraft.util.text.StringTextComponent
 public object VanillaTooltipRenderer {
     @JvmStatic
     public fun renderTooltip(matrixStack: MatrixStack, text: String, mouseX: Int, mouseY: Int) {
-        TooltipProvider.renderTooltip(matrixStack, StringTextComponent(text), mouseX, mouseY)
+        TooltipProvider.renderTooltip(matrixStack, LiteralText(text), mouseX, mouseY)
     }
 
     @JvmStatic
@@ -27,11 +34,11 @@ public object VanillaTooltipRenderer {
         text: List<String>,
         mouseX: Int,
         mouseY: Int,
-        font: FontRenderer
+        font: TextRenderer
     ) {
         TooltipProvider.renderToolTip(
             matrixStack,
-            LanguageMap.getInstance().func_244260_a(text.map { ITextProperties.func_240652_a_(it) }),
+            Language.getInstance().reorder(text.map { StringVisitable.plain(it) }),
             mouseX,
             mouseY,
             font
@@ -43,7 +50,7 @@ public object VanillaTooltipRenderer {
         TooltipProvider.renderTooltip(matrixStack, stack, mouseX, mouseY)
     }
 
-    private object TooltipProvider : Screen(StringTextComponent("")) {
+    private object TooltipProvider : Screen(LiteralText("")) {
         init {
             this.init(Client.minecraft, Client.window.scaledWidth, Client.window.scaledHeight)
         }
@@ -55,7 +62,7 @@ public object VanillaTooltipRenderer {
 
         public override fun renderTooltip(
             matrixStack: MatrixStack,
-            text: ITextComponent,
+            text: Text,
             p_renderTooltip_2_: Int,
             p_renderTooltip_3_: Int
         ) {
@@ -63,22 +70,22 @@ public object VanillaTooltipRenderer {
             super.renderTooltip(matrixStack, text, p_renderTooltip_2_, p_renderTooltip_3_)
         }
 
-        public override fun renderTooltip(
+        public override fun renderOrderedTooltip(
             matrixStack: MatrixStack,
-            tooltips: List<IReorderingProcessor>,
+            tooltips: List<OrderedText>,
             p_renderTooltip_2_: Int,
             p_renderTooltip_3_: Int
         ) {
             initIfNeeded()
-            super.renderTooltip(matrixStack, tooltips, p_renderTooltip_2_, p_renderTooltip_3_)
+            super.renderOrderedTooltip(matrixStack, tooltips, p_renderTooltip_2_, p_renderTooltip_3_)
         }
 
         public override fun renderToolTip(
             matrixStack: MatrixStack,
-            tooltips: List<IReorderingProcessor>,
+            tooltips: List<OrderedText>,
             p_renderTooltip_2_: Int,
             p_renderTooltip_3_: Int,
-            font: FontRenderer
+            font: TextRenderer
         ) {
             initIfNeeded()
             super.renderToolTip(matrixStack, tooltips, p_renderTooltip_2_, p_renderTooltip_3_, font)

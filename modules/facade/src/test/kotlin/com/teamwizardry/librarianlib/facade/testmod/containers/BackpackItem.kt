@@ -8,6 +8,9 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.CompoundNBT
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.LiteralText
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Direction
 import net.minecraft.util.Hand
@@ -20,24 +23,24 @@ import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.ItemStackHandler
 
-class BackpackItem(group: ItemGroup): Item(Properties().group(group).maxStackSize(1)), ITestItem {
+class BackpackItem(group: ItemGroup): Item(Settings().group(group).maxStackSize(1)), ITestItem {
     override val itemName: String
         get() = "Backpack"
     override val itemDescription: String?
         get() = "A simple backpack"
 
     override fun onItemRightClick(world: World, player: PlayerEntity, hand: Hand): ActionResult<ItemStack> {
-        if(!player.world.isRemote) {
+        if(!player.world.isClient) {
             LibrarianLibFacadeTestMod.backpackContainerType.open(
                 player as ServerPlayerEntity,
-                StringTextComponent("Backpack"),
+                LiteralText("Backpack"),
                 hand
             )
         }
         return ActionResult.resultSuccess(player.getHeldItem(hand))
     }
 
-    override fun initCapabilities(stack: ItemStack, nbt: CompoundNBT?): ICapabilityProvider? {
+    override fun initCapabilities(stack: ItemStack, nbt: CompoundTag?): ICapabilityProvider? {
         return ItemData()
     }
 
@@ -51,11 +54,11 @@ class BackpackItem(group: ItemGroup): Item(Properties().group(group).maxStackSiz
             return LazyOptional.empty()
         }
 
-        override fun serializeNBT(): CompoundNBT {
+        override fun serializeNBT(): CompoundTag {
             return inventory.serializeNBT()
         }
 
-        override fun deserializeNBT(nbt: CompoundNBT) {
+        override fun deserializeNBT(nbt: CompoundTag) {
             inventory.deserializeNBT(nbt)
         }
     }

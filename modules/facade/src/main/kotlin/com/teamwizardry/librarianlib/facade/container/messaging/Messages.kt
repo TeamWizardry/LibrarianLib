@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.courier.CourierBuffer
 import com.teamwizardry.librarianlib.courier.PacketType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.CompoundNBT
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.PacketBuffer
 import net.minecraftforge.fml.network.NetworkDirection
 import net.minecraftforge.fml.network.NetworkEvent
@@ -24,7 +25,7 @@ public enum class MessageSide {
     }
 }
 
-public data class MessagePacket(val windowId: Int, val name: String, val payload: CompoundNBT) {
+public data class MessagePacket(val windowId: Int, val name: String, val payload: CompoundTag) {
     var side: MessageSide = MessageSide.BOTH
 }
 

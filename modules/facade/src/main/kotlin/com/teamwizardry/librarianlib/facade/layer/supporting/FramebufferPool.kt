@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.facade.layer.supporting
 
 import com.teamwizardry.librarianlib.core.util.Client
-import net.minecraft.client.Minecraft
-import net.minecraft.client.shader.Framebuffer
-import java.util.LinkedList
+import net.minecraft.client.MinecraftClient
+import net.minecraft.client.gl.Framebuffer
+import java.util.*
 import java.util.function.Consumer
 
 internal object FramebufferPool {
@@ -22,10 +22,10 @@ internal object FramebufferPool {
     fun getFramebuffer(): Framebuffer {
         val fbo = bufferPool.pollFirst() ?: createFramebuffer()
         if (
-            fbo.framebufferWidth != Client.window.framebufferWidth ||
-            fbo.framebufferHeight != Client.window.framebufferHeight
+            fbo.viewportWidth != Client.window.framebufferWidth ||
+            fbo.viewportHeight != Client.window.framebufferHeight
         ) {
-            fbo.resize(Client.window.framebufferWidth, Client.window.framebufferHeight, Minecraft.IS_RUNNING_ON_MAC)
+            fbo.resize(Client.window.framebufferWidth, Client.window.framebufferHeight, MinecraftClient.IS_SYSTEM_MAC)
         }
 
         return fbo
@@ -59,9 +59,9 @@ internal object FramebufferPool {
 
     private fun useFramebuffer(framebuffer: Framebuffer?) {
         if (framebuffer == null) {
-            Client.minecraft.framebuffer.bindFramebuffer(true)
+            Client.minecraft.framebuffer.beginWrite(true)
         } else {
-            framebuffer.bindFramebuffer(true)
+            framebuffer.beginWrite(true)
         }
         current = framebuffer
     }
@@ -69,7 +69,7 @@ internal object FramebufferPool {
     private fun createFramebuffer(): Framebuffer {
         if (createdBuffers == maxFramebufferCount)
             throw IllegalStateException("Exceeded maximum of $maxFramebufferCount nested framebuffers")
-        val fbo = Framebuffer(Client.window.framebufferWidth, Client.window.framebufferHeight, true, Minecraft.IS_RUNNING_ON_MAC)
+        val fbo = Framebuffer(Client.window.framebufferWidth, Client.window.framebufferHeight, true, MinecraftClient.IS_SYSTEM_MAC)
         fbo.enableStencil()
         fbo.setFramebufferColor(0f, 0f, 0f, 0f)
         createdBuffers++

@@ -2,17 +2,17 @@ package com.teamwizardry.librarianlib.facade.testmod.containers
 
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
-import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.container.layers.SlotGridLayer
+import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import com.teamwizardry.librarianlib.math.Easing
 import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.text.Text
 
 class JeiExclusionAreasScreen(
     container: JeiExclusionAreasContainer,
     inventory: PlayerInventory,
-    title: ITextComponent
+    title: Text
 ): FacadeContainerScreen<JeiExclusionAreasContainer>(container, inventory, title) {
 
     init {

@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.facade.container.slot
 
 import net.minecraft.inventory.container.Slot
+import net.minecraft.screen.slot.Slot
 import net.minecraftforge.items.IItemHandler
 import net.minecraftforge.items.ItemStackHandler
 import java.lang.IllegalStateException

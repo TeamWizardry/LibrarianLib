@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens
 
 import com.teamwizardry.librarianlib.facade.FacadeScreen
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.text.Text
 
-class EmptyTestScreen(title: ITextComponent): FacadeScreen(title) {
+class EmptyTestScreen(title: Text): FacadeScreen(title) {
 }

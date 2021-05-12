@@ -1,16 +1,17 @@
 package com.teamwizardry.librarianlib.facade.example.gettingstarted;
 
+import java.awt.Color;
+
+import net.minecraft.text.TranslatableText;
+
 import com.teamwizardry.librarianlib.facade.FacadeScreen;
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer;
 import com.teamwizardry.librarianlib.facade.layers.RectLayer;
 import com.teamwizardry.librarianlib.math.Vec2d;
-import net.minecraft.util.text.TranslationTextComponent;
-
-import java.awt.Color;
 
 public class SquaresAllTheWayDownScreen extends FacadeScreen {
     public SquaresAllTheWayDownScreen() {
-        super(new TranslationTextComponent("modid.screen.squares_all_the_way_down.title"));
+        super(new TranslatableText("modid.screen.squares_all_the_way_down.title"));
 
         getMain().setSize(new Vec2d(115, 115));
         getMain().add(new SquareInSquareLayer(Color.RED,   0,  0));

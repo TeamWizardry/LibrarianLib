@@ -2,8 +2,10 @@ package com.teamwizardry.librarianlib.facade
 
 import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.facade.layer.supporting.StencilUtil
 import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.layer.FacadeDebugOptions
@@ -142,7 +144,7 @@ public open class FacadeWidget(
                     debugConfigurator.isOpen = false
                 } else {
                     if (screen.shouldCloseOnEsc()) {
-                        screen.closeScreen()
+                        screen.onClose()
                         return true
                     }
                 }
@@ -330,14 +332,14 @@ public open class FacadeWidget(
         val minSafeX = (windowWidth - basisWidth) / 2
         val minSafeY = (windowHeight - basisHeight) / 2
 
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(SimpleRenderTypes.flatQuads)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(SimpleRenderLayers.flatQuads)
 
         fun drawRect(minX: Double, minY: Double, maxX: Double, maxY: Double) {
-            vb.pos(minX, maxY, 0.0).color(color).endVertex()
-            vb.pos(maxX, maxY, 0.0).color(color).endVertex()
-            vb.pos(maxX, minY, 0.0).color(color).endVertex()
-            vb.pos(minX, minY, 0.0).color(color).endVertex()
+            vb.vertex(minX, maxY, 0.0).color(color).next()
+            vb.vertex(maxX, maxY, 0.0).color(color).next()
+            vb.vertex(maxX, minY, 0.0).color(color).next()
+            vb.vertex(minX, minY, 0.0).color(color).next()
         }
 
         drawRect(0.0, 0.0, windowWidth, minSafeY)

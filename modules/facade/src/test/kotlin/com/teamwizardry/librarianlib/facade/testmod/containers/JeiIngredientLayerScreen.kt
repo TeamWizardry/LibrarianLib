@@ -9,12 +9,12 @@ import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.text.Text
 
 class JeiIngredientLayerScreen(
     container: JeiIngredientLayerContainer,
     inventory: PlayerInventory,
-    title: ITextComponent
+    title: Text
 ) : FacadeContainerScreen<JeiIngredientLayerContainer>(container, inventory, title) {
 
     init {

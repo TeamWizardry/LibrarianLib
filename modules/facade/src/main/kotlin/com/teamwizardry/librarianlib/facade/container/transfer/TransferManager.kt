@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.facade.container.transfer
 
-import net.minecraft.inventory.container.Slot
 import net.minecraft.item.ItemStack
+import net.minecraft.screen.slot.Slot
 
 public class TransferManager {
     private val rules = mutableListOf<TransferRule>()
@@ -49,7 +49,7 @@ public class TransferManager {
                 // it would be much easier for poorly implemented rules to create item duplication glitches.
                 stack = result.remaining
                 if (result.successful) {
-                    slot.putStack(stack)
+                    slot.stack = stack
                     break
                 }
             }

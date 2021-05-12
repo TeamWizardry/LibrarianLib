@@ -4,10 +4,10 @@ import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.example.visualization.CrosshairsLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.text.Text
 import java.awt.Color
 
-open class TransformExampleScreen(title: ITextComponent): FacadeScreen(title) {
+open class TransformExampleScreen(title: Text): FacadeScreen(title) {
     val origin: GuiLayer = GuiLayer()
     val bottomCrosshairs: CrosshairsLayer
     val topCrosshairs: CrosshairsLayer

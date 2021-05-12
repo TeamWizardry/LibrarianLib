@@ -5,14 +5,18 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
 import com.teamwizardry.librarianlib.core.util.vec
+import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.text.LiteralText
+import net.minecraft.text.OrderedText
 import net.minecraft.util.IReorderingProcessor
 import net.minecraft.util.text.StringTextComponent
 import java.awt.Color
 import kotlin.math.min
 
-public class SafetyNetErrorScreen(private val message: String, private val e: Exception): Screen(StringTextComponent("§4§nSafety net caught an exception:")) {
+public class SafetyNetErrorScreen(private val message: String, private val e: Exception): Screen(LiteralText("§4§nSafety net caught an exception:")) {
     private val guiWidth: Int
     private val guiHeight: Int
 
@@ -24,7 +28,7 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
     init {
         val maxWidth = 300
 
-        parts.add(TextScreenPart(title.unformattedComponentText, maxWidth))
+        parts.add(TextScreenPart(title.string, maxWidth))
         parts.add(TextScreenPart("§1§l${e.javaClass.simpleName}"))
         parts.add(TextScreenPart("Exception caught while $message", maxWidth))
         e.message?.also { exceptionMessage ->
@@ -68,8 +72,8 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
         RenderSystem.popMatrix()
     }
 
-    private fun drawCenteredStringNoShadow(matrixStack: MatrixStack, fontRenderer: FontRenderer, text: String, x: Int, y: Int, color: Int) {
-        fontRenderer.drawString(matrixStack, text, x - fontRenderer.getStringWidth(text) / 2f, y.toFloat(), color)
+    private fun drawCenteredStringNoShadow(matrixStack: MatrixStack, fontRenderer: TextRenderer, text: String, x: Int, y: Int, color: Int) {
+        fontRenderer.draw(matrixStack, text, x - fontRenderer.getWidth(text) / 2f, y.toFloat(), color)
     }
 
     private abstract class ScreenPart {
@@ -88,19 +92,19 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
     private inner class TextScreenPart(val text: String, maxWidth: Int? = null): ScreenPart() {
         override val height: Int
         override val width: Int
-        val lines: List<IReorderingProcessor>
+        val lines: List<OrderedText>
         val widths: List<Int>
 
         init {
-            val fontRenderer = Client.minecraft.fontRenderer
+            val fontRenderer = Client.minecraft.textRenderer
             if (maxWidth == null) {
-                lines = listOf(StringTextComponent(text).func_241878_f())
+                lines = listOf(LiteralText(text).func_241878_f())
             } else {
-                lines = fontRenderer.trimStringToWidth(StringTextComponent(text), maxWidth)
+                lines = fontRenderer.wrapLines(LiteralText(text), maxWidth)
             }
-            widths = lines.map { fontRenderer.func_243245_a(it) }
+            widths = lines.map { fontRenderer.getWidth(it) }
 
-            height = lines.size * fontRenderer.FONT_HEIGHT + // line height
+            height = lines.size * fontRenderer.fontHeight + // line height
                 (lines.size - 1) // 1px between lines
 
             width = (widths.maxOrNull() ?: 0) / 2 * 2
@@ -108,16 +112,16 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
 
         override fun render(matrixStack: MatrixStack, yPos: Int) {
             var y = yPos
-            val fontRenderer = Client.minecraft.fontRenderer
+            val fontRenderer = Client.minecraft.textRenderer
 
             if (lines.isNotEmpty()) {
                 if (lines.size == 1) {
-                    fontRenderer.func_238422_b_(matrixStack, lines[0], -widths[0] / 2f, y.toFloat(), 0)
-                    y += fontRenderer.FONT_HEIGHT + 1
+                    fontRenderer.draw(matrixStack, lines[0], -widths[0] / 2f, y.toFloat(), 0)
+                    y += fontRenderer.fontHeight + 1
                 } else {
                     lines.forEach { line ->
-                        fontRenderer.func_238422_b_(matrixStack, line, -guiWidth / 2f, y.toFloat(), 0)
-                        y += fontRenderer.FONT_HEIGHT + 1
+                        fontRenderer.draw(matrixStack, line, -guiWidth / 2f, y.toFloat(), 0)
+                        y += fontRenderer.fontHeight + 1
                     }
                 }
             }

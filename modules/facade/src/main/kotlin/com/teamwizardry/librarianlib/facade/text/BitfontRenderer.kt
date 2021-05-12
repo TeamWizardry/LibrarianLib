@@ -49,7 +49,7 @@ public object BitfontRenderer {
 
     private class DeferredTextEmbed(val glyph: TypesetGlyph, val embed: FacadeTextEmbed, val posX: Int, val posY: Int)
 
-    private fun drawGlyph(matrix: Matrix4d, vb: IVertexBuilder, typesetGlyph: TypesetGlyph, textObject: Glyph, posX: Int, posY: Int, defaultColor: Color) {
+    private fun drawGlyph(matrix: Matrix4d, vb: VertexConsumer, typesetGlyph: TypesetGlyph, textObject: Glyph, posX: Int, posY: Int, defaultColor: Color) {
         val solid = BitfontAtlas.solidTex()
         val font = textObject.font
         val obf = typesetGlyph[BitfontFormatting.obfuscated] == true

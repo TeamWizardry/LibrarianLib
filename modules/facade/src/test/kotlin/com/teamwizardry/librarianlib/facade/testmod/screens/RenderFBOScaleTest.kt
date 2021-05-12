@@ -5,14 +5,11 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.supporting.RenderMode
 import com.teamwizardry.librarianlib.facade.layers.ArcLayer
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
-import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
-import com.teamwizardry.librarianlib.math.Easing
-import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.text.Text
 import java.awt.Color
 import kotlin.math.PI
 
-class RenderFBOScaleTest(title: ITextComponent): FacadeScreen(title) {
+class RenderFBOScaleTest(title: Text): FacadeScreen(title) {
     init {
         val bg = RectLayer(Color.WHITE, 0, 0, 200, 100)
         main.size = bg.size

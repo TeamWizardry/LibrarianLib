@@ -1,15 +1,13 @@
 package com.teamwizardry.librarianlib.facade.container.layers
 
-import com.teamwizardry.librarianlib.core.util.mapSrgName
+import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.facade.container.slot.FacadeSlot
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.supporting.ContainerSpace
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
-import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.facade.container.slot.FacadeSlot
-import dev.thecodewarrior.mirror.Mirror
-import net.minecraft.inventory.container.Slot
+import net.minecraft.screen.slot.Slot
 
 /**
  * A layer that defines the position and visibility of a container slot

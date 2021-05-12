@@ -4,10 +4,10 @@ import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.text.BitfontFormatting
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.text.Text
 import java.awt.Color
 
-class SimpleTextTestScreen(title: ITextComponent): FacadeScreen(title) {
+class SimpleTextTestScreen(title: Text): FacadeScreen(title) {
     init {
         val bg = RectLayer(Color.WHITE, 0, 0, 200, 300)
         // https://minecraft.gamepedia.com/File:Minecraft_Formatting.gif

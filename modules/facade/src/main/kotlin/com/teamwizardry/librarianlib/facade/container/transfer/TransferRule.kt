@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.facade.container.transfer
 
 import com.teamwizardry.librarianlib.facade.container.slot.SlotRegion
-import net.minecraft.inventory.container.Container
-import net.minecraft.inventory.container.Slot
 import net.minecraft.item.ItemStack
+import net.minecraft.screen.ScreenHandler
+import net.minecraft.screen.slot.Slot
 import kotlin.math.max
 import kotlin.math.min
 
@@ -53,21 +53,21 @@ public interface TransferRule {
          * @see TransferSlot.isStackSimilar
          */
         private fun defaultIsStackSimilar(slot: Slot, stack: ItemStack): Boolean {
-            return Container.areItemsAndTagsEqual(stack, slot.stack)
+            return ScreenHandler.canStacksCombine(stack, slot.stack)
         }
 
         /**
          * @see TransferSlot.transferIntoSlot
          */
         private fun defaultTransferIntoSlot(slot: Slot, transfer: TransferState) {
-            if (!slot.isItemValid(transfer.stack))
+            if (!slot.canInsert(transfer.stack))
                 return
             val slotStack = slot.stack
 
             // if it's the same item, we should try stacking. if it's empty, we'll just stack onto that zero.
-            if (Container.areItemsAndTagsEqual(transfer.stack, slotStack) || slotStack.isEmpty) {
+            if (ScreenHandler.canStacksCombine(transfer.stack, slotStack) || slotStack.isEmpty) {
                 // compute how much to actually transfer
-                val maxStackSize = min(slot.getItemStackLimit(transfer.stack), transfer.stack.maxStackSize)
+                val maxStackSize = min(slot.getMaxItemCount(transfer.stack), transfer.stack.count)
                 val transferLimit = max(0, maxStackSize - slotStack.count)
                 val transferAmount = min(transfer.stack.count, transferLimit)
 
@@ -80,7 +80,7 @@ public interface TransferRule {
                 // we copy the transferring stack instead of the current stack so we can seamlessly handle empty slots
                 val insert = transfer.stack.copy()
                 insert.count = slotStack.count + transferAmount
-                slot.putStack(insert)
+                slot.stack = insert
 
                 // decrement the remaining stack appropriately. `isEmpty` returns true when the count is zero
                 transfer.stack.count -= transferAmount

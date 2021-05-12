@@ -9,10 +9,11 @@ import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.testmod.LibrarianLibFacadeTestMod
 import com.teamwizardry.librarianlib.mosaic.Mosaic
+import net.minecraft.text.Text
 import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 
-class EventPriorityScreen(title: ITextComponent): FacadeScreen(title) {
+class EventPriorityScreen(title: Text): FacadeScreen(title) {
     init {
         val dirt = Mosaic(loc("minecraft:textures/block/dirt.png"), 16, 16)
 

@@ -14,7 +14,7 @@ class SimpleInventoryContainer(
     val contentsSlots: SlotManager
 
     init {
-        val tile = player.world.getTileEntity(pos) as SimpleInventoryTile
+        val tile = player.world.getBlockEntity(pos) as SimpleInventoryTile
         contentsSlots = SlotManager(tile.inventory)
 
         addSlots(playerSlots.hotbar)
@@ -25,7 +25,7 @@ class SimpleInventoryContainer(
         createTransferRule().from(contentsSlots.all).into(playerSlots.main).into(playerSlots.hotbar)
     }
 
-    override fun canInteractWith(playerIn: PlayerEntity): Boolean {
+    override fun canUse(playerIn: PlayerEntity): Boolean {
         return true
     }
 }

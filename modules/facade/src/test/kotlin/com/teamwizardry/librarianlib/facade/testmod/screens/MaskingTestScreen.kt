@@ -9,11 +9,12 @@ import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import com.teamwizardry.librarianlib.mosaic.Sprite
+import net.minecraft.text.Text
 import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 import kotlin.math.PI
 
-class MaskingTestScreen(title: ITextComponent): FacadeScreen(title) {
+class MaskingTestScreen(title: Text): FacadeScreen(title) {
     init {
         val bg = RectLayer(Color.WHITE, 0, 0, 250, 100)
         main.size = bg.size

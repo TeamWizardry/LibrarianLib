@@ -1,22 +1,22 @@
 package com.teamwizardry.librarianlib.facade.testmod.containers.base
 
-import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
-import com.teamwizardry.librarianlib.facade.layers.StackLayout
-import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
 import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
+import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
 import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.util.text.ITextComponent
-import net.minecraft.util.text.StringTextComponent
+import net.minecraft.text.LiteralText
+import net.minecraft.text.Text
 import kotlin.math.max
 
 class TestContainerSelectorScreen(
     container: TestContainerSelectorContainer,
     inventory: PlayerInventory,
-    title: ITextComponent
+    title: Text
 ): FacadeContainerScreen<TestContainerSelectorContainer>(container, inventory, title) {
 
     private val stack = StackLayout.build(0, 0)
@@ -46,7 +46,7 @@ class TestContainerSelectorScreen(
         val button = PastryButton("Click me!", 0, 0)
         button.hook<PastryButton.ClickEvent> {
             val position = vec(button.mousePos.xi, button.mousePos.yi)
-            player.sendStatusMessage(StringTextComponent("[GUI] mouse click event: $position"), false)
+            player.sendMessage(LiteralText("[GUI] mouse click event: $position"), false)
             sendMessage("buttonClick", position)
         }
 

@@ -6,8 +6,10 @@ import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.facade.logger
 import dev.thecodewarrior.bitfont.data.Bitfont
 import net.minecraft.profiler.IProfiler
+import net.minecraft.resource.ResourceManager
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.Identifier
+import net.minecraft.util.profiler.Profiler
 
 public object Fonts {
     public var classic: Bitfont
@@ -19,11 +21,11 @@ public object Fonts {
         val classicLoc = loc("librarianlib:facade/fonts/mcclassicplus.bitfont")
         val unifontLoc = loc("librarianlib:facade/fonts/unifont.bitfont")
         Client.resourceReloadHandler.register(object: ISimpleReloadListener<Pair<Bitfont, Bitfont>> {
-            override fun prepare(resourceManager: IResourceManager, profiler: IProfiler): Pair<Bitfont, Bitfont> {
+            override fun prepare(resourceManager: ResourceManager, profiler: Profiler): Pair<Bitfont, Bitfont> {
                 return load(classicLoc) to load(unifontLoc)
             }
 
-            override fun apply(result: Pair<Bitfont, Bitfont>, resourceManager: IResourceManager, profiler: IProfiler) {
+            override fun apply(result: Pair<Bitfont, Bitfont>, resourceManager: ResourceManager, profiler: Profiler) {
                 classic = result.first
                 unifont = result.second
             }

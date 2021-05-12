@@ -9,10 +9,11 @@ import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
 import com.teamwizardry.librarianlib.math.Easing
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
+import net.minecraft.text.Text
 import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 
-class AnimationTestScreen(title: ITextComponent): FacadeScreen(title) {
+class AnimationTestScreen(title: Text): FacadeScreen(title) {
     init {
         val bg = RectLayer(Color.WHITE, 0, 0, 200, 100)
         main.size = bg.size

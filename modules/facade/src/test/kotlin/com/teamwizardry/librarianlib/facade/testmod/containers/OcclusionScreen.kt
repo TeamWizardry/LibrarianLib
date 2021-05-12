@@ -2,19 +2,19 @@ package com.teamwizardry.librarianlib.facade.testmod.containers
 
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
-import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.container.layers.SlotGridLayer
+import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryCheckbox
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryLabel
 import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.text.Text
 import java.awt.Color
 
 class OcclusionScreen(
     container: OcclusionContainer,
     inventory: PlayerInventory,
-    title: ITextComponent
+    title: Text
 ): FacadeContainerScreen<OcclusionContainer>(container, inventory, title) {
 
     init {
