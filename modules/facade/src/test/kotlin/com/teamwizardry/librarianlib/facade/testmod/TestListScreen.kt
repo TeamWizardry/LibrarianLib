@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.clamp
 import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.text.StringTextComponent
 import java.awt.Color
 import kotlin.math.max

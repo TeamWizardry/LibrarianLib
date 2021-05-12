@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.facade.bridge;
 
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.screen.slot.Slot;
 
 public interface FacadeContainerScreenHooks {
     /**

@@ -1,12 +1,13 @@
 package com.teamwizardry.librarianlib.facade.example;
 
+import java.awt.Color;
+
+import net.minecraft.text.TranslatableText;
+
 import com.teamwizardry.librarianlib.facade.FacadeScreen;
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents;
 import com.teamwizardry.librarianlib.facade.layers.RectLayer;
 import com.teamwizardry.librarianlib.math.Vec2d;
-import net.minecraft.util.text.TranslationTextComponent;
-
-import java.awt.*;
 
 public class GuessingGameScreen extends FacadeScreen {
     private final boolean[] currentState = new boolean[5];
@@ -14,7 +15,7 @@ public class GuessingGameScreen extends FacadeScreen {
     private final RectLayer outputRect;
 
     public GuessingGameScreen() {
-        super(new TranslationTextComponent("modid.screen.guessing_game.title"));
+        super(new TranslatableText("modid.screen.guessing_game.title"));
 
         getMain().setSize(new Vec2d(20 * 5 + 2 * 4, 32));
 

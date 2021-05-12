@@ -35,5 +35,5 @@ public class DirtSetterContainer extends FacadeContainer {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) { return true; }
+    public boolean canUse(PlayerEntity player) { return true; }
 }

@@ -5,12 +5,12 @@ import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
 import com.teamwizardry.librarianlib.facade.container.layers.SlotGridLayer
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.text.Text
 
 class SingleSlotScreen(
     container: SingleSlotContainer,
     inventory: PlayerInventory,
-    title: ITextComponent
+    title: Text
 ): FacadeContainerScreen<SingleSlotContainer>(container, inventory, title) {
 
     init {

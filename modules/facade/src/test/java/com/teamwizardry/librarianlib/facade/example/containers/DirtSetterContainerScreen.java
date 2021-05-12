@@ -6,14 +6,14 @@ import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton;
 import com.teamwizardry.librarianlib.math.Align2d;
 import com.teamwizardry.librarianlib.math.Vec2d;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
 public class DirtSetterContainerScreen extends FacadeContainerScreen<DirtSetterContainer> {
     public DirtSetterContainerScreen(
             @NotNull DirtSetterContainer container,
             @NotNull PlayerInventory inventory,
-            @NotNull ITextComponent title
+            @NotNull Text title
     ) {
         super(container, inventory, title);
 

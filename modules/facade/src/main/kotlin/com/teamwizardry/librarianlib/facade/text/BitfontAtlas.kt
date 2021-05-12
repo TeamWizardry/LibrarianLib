@@ -2,18 +2,18 @@ package com.teamwizardry.librarianlib.facade.text
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.core.util.rect
+import com.teamwizardry.librarianlib.math.Rect2d
 import dev.thecodewarrior.bitfont.data.BitGrid
 import dev.thecodewarrior.bitfont.utils.RectanglePacker
-import net.minecraft.client.renderer.texture.NativeImage
-import net.minecraft.client.renderer.texture.Texture
-import net.minecraft.client.renderer.texture.TextureUtil
-import net.minecraft.resources.IResourceManager
+import net.minecraft.client.texture.AbstractTexture
+import net.minecraft.client.texture.NativeImage
+import net.minecraft.client.texture.TextureUtil
+import net.minecraft.resource.ResourceManager
 import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 
-public object BitfontAtlas: Texture() {
+public object BitfontAtlas: AbstractTexture() {
     public val ATLAS_LOCATION: Identifier = Identifier("librarianlib:textures/atlas/bitfont.png")
 
     public var width: Int = 128
@@ -28,7 +28,7 @@ public object BitfontAtlas: Texture() {
     private var solidRect: Rect2d = Rect2d.ZERO
 
     init {
-        Client.textureManager.loadTexture(ATLAS_LOCATION, this)
+        Client.textureManager.registerTexture(ATLAS_LOCATION, this)
     }
 
     public fun solidTex(): Rect2d {
@@ -69,13 +69,13 @@ public object BitfontAtlas: Texture() {
         for (x in 0 until image.width) {
             for (y in 0 until image.height) {
                 if (image[x, y]) {
-                    native.setPixelRGBA(x, y, 0.inv())
+                    native.setPixelColor(x, y, 0.inv())
                 }
             }
         }
 
         this.bindTexture()
-        native.uploadTextureSub(0, xOrigin, yOrigin, false)
+        native.uploadInternal(0, xOrigin, yOrigin, false)
         native.close()
     }
 
@@ -86,19 +86,19 @@ public object BitfontAtlas: Texture() {
             throw IllegalStateException("Ran out of atlas space! OpenGL max texture size: " +
                 "$gpuMaxTexSize x $gpuMaxTexSize and managed to fit ${rects.size} glyphs.")
         packer.expand(width, height)
-        TextureUtil.prepareImage(glTextureId, width, height)
+        TextureUtil.prepareImage(glId, width, height)
         rects.forEach { (image, rect) ->
             draw(image, rect.x, rect.y)
         }
     }
 
-    override fun loadTexture(manager: IResourceManager) {
+    override fun load(manager: ResourceManager) {
         packer = RectanglePacker<BitGrid>(width, height, 1)
         rects.clear()
         this.bindTexture()
-        TextureUtil.prepareImage(glTextureId, width, height)
+        TextureUtil.allocate(glId, width, height)
         val native = NativeImage(width, height, true)
-        native.uploadTextureSub(0, 0, 0, false)
+        native.uploadInternal(0, 0, 0, false)
         native.close()
 
         val solidGrid = BitGrid(3, 3)

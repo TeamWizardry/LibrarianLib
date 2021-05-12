@@ -6,6 +6,7 @@ import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.ConstructorMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.PrismException
+import net.fabricmc.fabric.api.util.NbtType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.entity.player.ServerPlayerEntity
@@ -13,8 +14,16 @@ import net.minecraft.inventory.container.Container
 import net.minecraft.inventory.container.ContainerType
 import net.minecraft.inventory.container.INamedContainerProvider
 import net.minecraft.nbt.CompoundNBT
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListNBT
+import net.minecraft.nbt.ListTag
 import net.minecraft.network.PacketBuffer
+import net.minecraft.network.PacketByteBuf
+import net.minecraft.screen.NamedScreenHandlerFactory
+import net.minecraft.screen.ScreenHandler
+import net.minecraft.screen.ScreenHandlerType
+import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.Text
 import net.minecraft.util.text.ITextComponent
 import net.minecraftforge.common.util.Constants
 import net.minecraftforge.fml.network.IContainerFactory
@@ -24,16 +33,16 @@ import kotlin.math.min
 
 public class FacadeContainerType<T: FacadeContainer> private constructor(
     private val factory: FacadeContainerFactory<T>
-): ContainerType<T>(factory) {
+): ScreenHandlerType<T>(factory) {
     public constructor(clazz: Class<T>): this(FacadeContainerFactory(clazz))
 
-    public fun open(player: ServerPlayerEntity, title: ITextComponent, vararg arguments: Any?) {
-        NetworkHooks.openGui(player, object: INamedContainerProvider {
-            override fun createMenu(windowId: Int, playerInv: PlayerInventory, player: PlayerEntity): Container? {
+    public fun open(player: ServerPlayerEntity, title: Text, vararg arguments: Any?) {
+        NetworkHooks.openGui(player, object: NamedScreenHandlerFactory {
+            override fun createMenu(windowId: Int, playerInv: PlayerInventory, player: PlayerEntity): ScreenHandler? {
                 return factory.create(windowId, player, arguments)
             }
 
-            override fun getDisplayName(): ITextComponent {
+            override fun getDisplayName(): Text {
                 return title
             }
         }) { buffer ->
@@ -70,24 +79,24 @@ private class FacadeContainerFactory<T: FacadeContainer>(clazz: Class<T>): ICont
         }
     }
 
-    override fun create(windowId: Int, playerInv: PlayerInventory, extraData: PacketBuffer): T {
+    override fun create(windowId: Int, playerInv: PlayerInventory, extraData: PacketByteBuf): T {
         return create(windowId, playerInv.player, readArguments(extraData))
     }
 
-    fun writeArguments(arguments: Array<out Any?>, buffer: PacketBuffer) {
-        val list = ListNBT()
+    fun writeArguments(arguments: Array<out Any?>, buffer: PacketByteBuf) {
+        val list = ListTag()
         argumentSerializers.mapIndexed { i, serializer ->
-            val tag = CompoundNBT()
+            val tag = CompoundTag()
             arguments[i]?.also {
                 tag.put("V", serializer.write(it))
             }
             list.add(tag)
         }.toTypedArray()
-        buffer.writeCompoundTag(CompoundNBT().also { it.put("ll", list) })
+        buffer.writeCompoundTag(CompoundTag().also { it.put("ll", list) })
     }
 
-    fun readArguments(buffer: PacketBuffer): Array<Any?> {
-        val list = buffer.readCompoundTag()!!.getList("ll", Constants.NBT.TAG_COMPOUND)
+    fun readArguments(buffer: PacketByteBuf): Array<Any?> {
+        val list = buffer.readCompoundTag()!!.getList("ll", NbtType.COMPOUND)
         return argumentSerializers.mapIndexed { i, serializer ->
             list.getCompound(i).get("V")?.let {
                 serializer.read(it, null)

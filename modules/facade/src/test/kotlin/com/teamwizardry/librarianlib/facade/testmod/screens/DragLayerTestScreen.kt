@@ -1,14 +1,14 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens
 
+import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layers.DragLayer
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.math.clamp
-import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.text.Text
 import java.awt.Color
 
-class DragLayerTestScreen(title: ITextComponent): FacadeScreen(title) {
+class DragLayerTestScreen(title: Text): FacadeScreen(title) {
     init {
         val background = RectLayer(Color.lightGray, 0, 0, 250, 150)
         main.add(background)

@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.facade.container.transfer
 
 import com.teamwizardry.librarianlib.facade.container.slot.SlotRegion
-import net.minecraft.inventory.container.Slot
 import net.minecraft.item.ItemStack
+import net.minecraft.screen.slot.Slot
 import java.util.function.Predicate
 
 public class BasicTransferRule: TransferRule {

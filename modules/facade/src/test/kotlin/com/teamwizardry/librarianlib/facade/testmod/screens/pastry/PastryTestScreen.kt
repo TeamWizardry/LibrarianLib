@@ -1,21 +1,20 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens.pastry
 
-import com.teamwizardry.librarianlib.facade.FacadeScreen
+import com.teamwizardry.librarianlib.core.util.rect
+import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
-import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.Pastry
+import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
+import com.teamwizardry.librarianlib.facade.pastry.PastryScreen
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryLabel
-import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
-import com.teamwizardry.librarianlib.core.util.rect
-import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.facade.pastry.PastryScreen
 import com.teamwizardry.librarianlib.facade.testmod.screens.pastry.tests.*
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.text.Text
 
-class PastryTestScreen(title: ITextComponent): PastryScreen(title) {
+class PastryTestScreen(title: Text): PastryScreen(title) {
     val tests: Map<Class<*>, String> = mutableMapOf(
         PastryTestButton::class.java to "Button",
         PastryTestDropdown::class.java to "Dropdown",

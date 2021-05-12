@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.facade.testmod.screens.pastry
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.facade.FacadeScreen
@@ -18,12 +19,13 @@ import com.teamwizardry.librarianlib.facade.pastry.Rect2dUnion
 import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.client.render.VertexConsumerProvider
+import net.minecraft.text.Text
 import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 
-internal class Rect2dUnionTestScreen(title: ITextComponent): FacadeScreen(title) {
+internal class Rect2dUnionTestScreen(title: Text): FacadeScreen(title) {
     val background = PastryBackground(0, 0, 1, 1)
     val contentBackground = PastryBackground(PastryBackgroundStyle.LIGHT_INSET, 0, 0, 0, 0)
     val segmentViewer = SegmentViewerLayer()
@@ -110,8 +112,8 @@ internal class Rect2dUnionTestScreen(title: ITextComponent): FacadeScreen(title)
             val endColor = Color.RED
             val arrowColor = Color.RED
 
-            val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
-            val vb = buffer.getBuffer(SimpleRenderTypes.flatLines)
+            val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+            val vb = buffer.getBuffer(SimpleRenderLayers.flatLines)
 
             for(segment in rect2dUnion.horizontalSegments + rect2dUnion.verticalSegments) {
                 segment ?: continue

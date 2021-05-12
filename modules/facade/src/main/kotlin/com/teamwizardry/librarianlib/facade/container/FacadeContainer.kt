@@ -17,14 +17,18 @@ import net.minecraft.inventory.container.ClickType
 import net.minecraft.inventory.container.Container
 import net.minecraft.inventory.container.ContainerType
 import net.minecraft.item.ItemStack
+import net.minecraft.screen.ScreenHandler
+import net.minecraft.screen.ScreenHandlerType
+import net.minecraft.screen.slot.SlotActionType
+import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fml.network.PacketDistributor
 
 public abstract class FacadeContainer(
-    type: ContainerType<*>,
+    type: ScreenHandlerType<*>,
     windowId: Int,
     public val player: PlayerEntity
-) : Container(type, windowId), MessageHandler {
+) : ScreenHandler(type, windowId), MessageHandler {
     public val isClientContainer: Boolean = player !is ServerPlayerEntity
 
     public val transferManager: TransferManager = TransferManager()
@@ -98,21 +102,21 @@ public abstract class FacadeContainer(
         return transferManager.createBasicRule()
     }
 
-    override fun transferStackInSlot(playerIn: PlayerEntity, index: Int): ItemStack {
-        return transferManager.transferStackInSlot(inventorySlots[index])
+    override fun transferSlot(playerIn: PlayerEntity, index: Int): ItemStack {
+        return transferManager.transferStackInSlot(slots[index])
     }
 
-    override fun slotClick(slotId: Int, mouseButton: Int, clickTypeIn: ClickType, player: PlayerEntity): ItemStack {
+    override fun onSlotClick(slotId: Int, mouseButton: Int, clickTypeIn: SlotActionType, player: PlayerEntity): ItemStack {
         val customClickResult =
-            (inventorySlots.getOrNull(slotId) as? CustomClickSlot?)?.handleClick(this, mouseButton, clickTypeIn, player)
+            (slots.getOrNull(slotId) as? CustomClickSlot?)?.handleClick(this, mouseButton, clickTypeIn, player)
         if (customClickResult != null) {
             return customClickResult
         }
-        return super.slotClick(slotId, mouseButton, clickTypeIn, player)
+        return super.onSlotClick(slotId, mouseButton, clickTypeIn, player)
     }
 
-    override fun detectAndSendChanges() {
-        super.detectAndSendChanges()
+    override fun sendContentUpdates() {
+        super.sendContentUpdates()
 
         for(i in fluidSlots.indices) {
             val slot = fluidSlots[i]
@@ -131,7 +135,7 @@ public abstract class FacadeContainer(
 
     @Message
     private fun acceptJeiGhostStack(slotNumber: Int, stack: ItemStack) {
-        val slot = inventorySlots[slotNumber]
+        val slot = slots[slotNumber]
         if(slot is GhostSlot && !slot.disableJeiGhostIntegration)
             slot.acceptJeiGhostStack(stack)
     }

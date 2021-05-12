@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.facade.example.visualization
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DistinctColors
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
@@ -29,14 +30,14 @@ class BoundsVisualizationLayer: GuiLayer() {
     override fun draw(context: GuiDrawContext) {
         RenderSystem.lineWidth(2f)
 
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(SimpleRenderTypes.flatLineStrip)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(SimpleRenderLayers.flatLineStrip)
 
         getBoundingBoxPoints().forEach {
             vb.pos2d(context.transform, it.x, it.y).color(color).endVertex()
         }
 
-        buffer.finish()
+        buffer.draw()
         RenderSystem.lineWidth(1f)
     }
 }

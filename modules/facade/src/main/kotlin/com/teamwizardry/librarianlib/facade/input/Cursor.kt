@@ -4,9 +4,12 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
 import com.teamwizardry.librarianlib.core.util.loc
 import net.minecraft.client.renderer.texture.TextureUtil
+import net.minecraft.client.texture.TextureUtil
 import net.minecraft.profiler.IProfiler
+import net.minecraft.resource.ResourceManager
 import net.minecraft.resources.IResourceManager
 import net.minecraft.util.Identifier
+import net.minecraft.util.profiler.Profiler
 import org.apache.commons.io.IOUtils
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWImage
@@ -55,7 +58,7 @@ public class Cursor @JvmOverloads constructor(
         val stream = Client.resourceManager.getResource(Identifier).inputStream
         var bytebuffer: ByteBuffer? = null
         try {
-            bytebuffer = TextureUtil.readToBuffer(stream)
+            bytebuffer = TextureUtil.readAllToByteBuffer(stream)
             bytebuffer!!.rewind()
 
             MemoryStack.stackPush().use { stack ->
@@ -76,11 +79,11 @@ public class Cursor @JvmOverloads constructor(
         }
     }
 
-    override fun prepare(resourceManager: IResourceManager, profiler: IProfiler) {
+    override fun prepare(resourceManager: ResourceManager, profiler: Profiler) {
         // nop
     }
 
-    override fun apply(result: Unit, resourceManager: IResourceManager, profiler: IProfiler) {
+    override fun apply(result: Unit, resourceManager: ResourceManager, profiler: Profiler) {
         loadCursor()
     }
 

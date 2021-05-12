@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.facade.layer.supporting
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
+import net.minecraft.client.gl.Framebuffer
 import net.minecraft.client.shader.Framebuffer
 import org.lwjgl.opengl.GL11.*
 

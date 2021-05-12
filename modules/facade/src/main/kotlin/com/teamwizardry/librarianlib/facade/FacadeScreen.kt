@@ -1,10 +1,9 @@
 package com.teamwizardry.librarianlib.facade
 
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.gui.screen.inventory.ContainerScreen
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.text.Text
 
 /**
  * The base class for all LibrarianLib GUIs.
@@ -21,7 +20,7 @@ import net.minecraft.util.text.ITextComponent
  * Any crashes from the GUI code will be caught and displayed as an error screen instead of crashing the game. However,
  * it is impossible to wrap subclass constructors in try-catch statements so those may still crash.
  */
-public open class FacadeScreen(title: ITextComponent): Screen(title /* todo behavior #2 */) {
+public open class FacadeScreen(title: Text): Screen(title /* todo behavior #2 */) {
     @Suppress("LeakingThis")
     public val facade: FacadeWidget = FacadeWidget(this)
 

@@ -13,11 +13,11 @@ abstract class TestContainer<T: TestContainerData>(
     val data: T
 
     init {
-        val tile = player.world.getTileEntity(pos) as TestContainerTile
+        val tile = player.world.getBlockEntity(pos) as TestContainerTile
         data = tile.getData(dataType)
     }
 
-    override fun canInteractWith(playerIn: PlayerEntity): Boolean {
+    override fun canUse(playerIn: PlayerEntity): Boolean {
         return true
     }
 }

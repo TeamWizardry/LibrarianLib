@@ -25,6 +25,8 @@ import net.minecraft.client.gui.ScreenManager
 import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.inventory.container.ContainerType
 import net.minecraft.item.Item
+import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.LiteralText
 import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.event.RegistryEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -128,7 +130,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
             rightClick.server {
                 simpleInventoryContainerType.open(
                     player as ServerPlayerEntity,
-                    StringTextComponent("Simple Inventory"),
+                    LiteralText("Simple Inventory"),
                     pos
                 )
             }

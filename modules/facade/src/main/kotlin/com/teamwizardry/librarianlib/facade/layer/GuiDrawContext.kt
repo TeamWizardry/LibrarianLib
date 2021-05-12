@@ -1,8 +1,11 @@
 package com.teamwizardry.librarianlib.facade.layer
 
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.math.*
+import com.teamwizardry.librarianlib.math.Matrix3d
+import com.teamwizardry.librarianlib.math.Matrix3dStack
+import com.teamwizardry.librarianlib.math.Matrix4d
+import com.teamwizardry.librarianlib.math.MutableMatrix4d
+import net.minecraft.client.util.math.MatrixStack
 
 public class GuiDrawContext(
     rootStack: MatrixStack,
@@ -14,9 +17,9 @@ public class GuiDrawContext(
         @JvmSynthetic
         internal set
 
-    private val rootTransform = Matrix4d(rootStack.last.matrix)
+    private val rootTransform = Matrix4d(rootStack.peek().model)
     private val combinedTransform = MutableMatrix4d()
-    private val normal = Matrix3d(rootStack.last.normal) // this won't change, since our transforms are 2d
+    private val normal = Matrix3d(rootStack.peek().normal) // this won't change, since our transforms are 2d
     private val managedStack = MatrixStack()
     private var lastMatrixVersion = -1
 
@@ -52,9 +55,9 @@ public class GuiDrawContext(
      */
     public val transformStack: MatrixStack
         get() {
-            transform.copyToMatrix4f(managedStack.last.matrix)
+            transform.copyToMatrix4f(managedStack.peek().model)
             // at the moment we only do 3d transforms, so the normal is always the same
-            normal.copyToMatrix3f(managedStack.last.normal)
+            normal.copyToMatrix3f(managedStack.peek().normal)
             return managedStack
         }
 

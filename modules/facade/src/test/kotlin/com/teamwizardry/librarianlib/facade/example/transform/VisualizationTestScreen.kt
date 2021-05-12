@@ -1,15 +1,14 @@
 package com.teamwizardry.librarianlib.facade.example.transform
 
-import com.teamwizardry.librarianlib.core.util.DistinctColors
-import com.teamwizardry.librarianlib.facade.FacadeScreen
-import com.teamwizardry.librarianlib.facade.example.visualization.*
-import com.teamwizardry.librarianlib.facade.layer.GuiLayer
-import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.util.text.ITextComponent
+import com.teamwizardry.librarianlib.facade.example.visualization.AnchorVisualizationLayer
+import com.teamwizardry.librarianlib.facade.example.visualization.PositionVisualizationLayer
+import com.teamwizardry.librarianlib.facade.example.visualization.ScaleVisualizationLayer
+import com.teamwizardry.librarianlib.facade.layers.RectLayer
+import net.minecraft.text.Text
 import java.awt.Color
 
-class VisualizationTestScreen(title: ITextComponent): TransformExampleScreen(title) {
+class VisualizationTestScreen(title: Text): TransformExampleScreen(title) {
     init {
         val box = RectLayer(Color.LIGHT_GRAY, -50, -30, 80, 80)
         box.anchor = vec(0.2, 0.2)

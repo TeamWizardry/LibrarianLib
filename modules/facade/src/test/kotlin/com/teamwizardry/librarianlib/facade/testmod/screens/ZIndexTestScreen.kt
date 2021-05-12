@@ -8,10 +8,11 @@ import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.testmod.FacadeTestScreen
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
+import net.minecraft.text.Text
 import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 
-class ZIndexTestScreen(title: ITextComponent): FacadeScreen(title) {
+class ZIndexTestScreen(title: Text): FacadeScreen(title) {
     init {
         val bg = RectLayer(Color.WHITE, 0, 0, 100, 100)
         main.size = bg.size

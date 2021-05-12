@@ -15,8 +15,8 @@ internal object FramebufferClearShader: Shader("framebuffer_clear", null, Identi
         RenderSystem.disableAlphaTest()
         RenderSystem.disableDepthTest()
         RenderSystem.blendFuncSeparate(
-            GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO,
-            GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
+            GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO,
+            GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
         )
         StencilUtil.enable()
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0x00, 0x00)
