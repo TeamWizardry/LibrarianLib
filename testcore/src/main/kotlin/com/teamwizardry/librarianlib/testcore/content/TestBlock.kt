@@ -8,6 +8,10 @@ import com.teamwizardry.librarianlib.testcore.content.impl.TestBlockItem
 import com.teamwizardry.librarianlib.testcore.objects.TestObjectDslMarker
 import com.teamwizardry.librarianlib.testcore.util.PlayerTestContext
 import com.teamwizardry.librarianlib.testcore.util.SidedAction
+import net.devtech.arrp.json.blockstate.JBlockModel
+import net.devtech.arrp.json.blockstate.JState
+import net.devtech.arrp.json.blockstate.JVariant
+import net.devtech.arrp.json.models.JModel
 import net.minecraft.block.*
 import net.minecraft.block.piston.PistonBehavior
 import net.minecraft.entity.player.PlayerEntity
@@ -61,13 +65,38 @@ public class TestBlock(manager: TestModContentManager, id: Identifier): TestConf
     override fun registerCommon(resources: TestModResourceManager) {
         Registry.register(Registry.BLOCK, id, instance)
         Registry.register(Registry.ITEM, id, itemInstance)
-    }
 
-    override fun registerClient(resources: TestModResourceManager) {
         resources.lang.block(id, name)
         description?.also {
             resources.lang.block(id.append(".tooltip"), it)
         }
+    }
+
+    override fun registerClient(resources: TestModResourceManager) {
+        val model = Identifier("liblib-testcore:block/test_block/${instance.modelName}")
+        val state = JState.state()
+        if(directional) {
+            state.add(
+                JVariant()
+                    .put("facing", "up", JBlockModel(model))
+                    .put("facing", "down", JBlockModel(model).x(180))
+                    .put("facing", "east", JBlockModel(model).y(90).x(90))
+                    .put("facing", "south", JBlockModel(model).y(180).x(90))
+                    .put("facing", "west", JBlockModel(model).y(270).x(90))
+                    .put("facing", "north", JBlockModel(model).y(0).x(90))
+            )
+        } else {
+            state.add(
+                JVariant()
+                    .put("", JBlockModel(model))
+            )
+        }
+        resources.arrp.addBlockState(state, Identifier(id.namespace, "blockstates/${id.path}"))
+
+        resources.arrp.addModel(
+            JModel.model().parent("$model"),
+            Identifier(id.namespace, "item/${id.path}")
+        )
     }
 
     public data class RightClickContext(

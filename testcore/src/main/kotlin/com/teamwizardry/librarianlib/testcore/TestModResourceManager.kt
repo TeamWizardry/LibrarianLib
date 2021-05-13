@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier
 public class TestModResourceManager(public val modid: String, logManager: ModLogManager) {
     private val logger = logManager.makeLogger("TestModContentManager")
 
-    public val arrp: RuntimeResourcePack = RuntimeResourcePack.create(modid + "_testcore")
+    public val arrp: RuntimeResourcePack = RuntimeResourcePack.create("$modid:test_resources")
     public val lang: JLang = JLang.lang()
 
     /**

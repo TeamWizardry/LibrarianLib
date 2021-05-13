@@ -5,8 +5,12 @@ import com.teamwizardry.librarianlib.testcore.TestModContentManager
 import com.teamwizardry.librarianlib.testcore.TestModResourceManager
 import com.teamwizardry.librarianlib.testcore.util.PlayerTestContext
 import com.teamwizardry.librarianlib.testcore.content.impl.TestItemImpl
+import com.teamwizardry.librarianlib.testcore.content.impl.TestItemModel
 import com.teamwizardry.librarianlib.testcore.objects.TestObjectDslMarker
 import com.teamwizardry.librarianlib.testcore.util.SidedAction
+import net.devtech.arrp.json.models.JModel
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry
+import net.minecraft.client.color.item.ItemColorProvider
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
@@ -154,12 +158,20 @@ public class TestItem(manager: TestModContentManager, id: Identifier): TestConfi
 
     override fun registerCommon(resources: TestModResourceManager) {
         Registry.register(Registry.ITEM, id, instance)
-    }
-
-    override fun registerClient(resources: TestModResourceManager) {
         resources.lang.item(id, name)
         description?.also {
             resources.lang.item(id.append(".tooltip"), it)
         }
     }
+
+    override fun registerClient(resources: TestModResourceManager) {
+        val testModel = TestItemModel(id)
+        resources.arrp.addModel(
+            testModel.model,
+            Identifier(id.namespace, "item/${id.path}")
+        )
+        ColorProviderRegistry.ITEM.register(testModel.colorProvider, instance)
+    }
+
+
 }

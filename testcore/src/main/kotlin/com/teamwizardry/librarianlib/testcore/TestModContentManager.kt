@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.testcore
 
 import com.teamwizardry.librarianlib.core.util.ModLogManager
 import com.teamwizardry.librarianlib.testcore.content.TestConfig
+import net.devtech.arrp.api.RRPCallback
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
@@ -32,7 +33,6 @@ public class TestModContentManager(public val modid: String, itemGroupName: Stri
             logger.info("Registering ${config.id}")
             config.registerCommon(resources)
         }
-        resources.writeLang()
     }
 
     public fun registerClient() {
@@ -42,6 +42,10 @@ public class TestModContentManager(public val modid: String, itemGroupName: Stri
             config.registerClient(resources)
         }
         resources.writeLang()
+        resources.arrp.dump()
+        RRPCallback.EVENT.register {
+            it.add(resources.arrp)
+        }
     }
 
     public fun registerServer() {
@@ -51,6 +55,10 @@ public class TestModContentManager(public val modid: String, itemGroupName: Stri
             config.registerServer(resources)
         }
         resources.writeLang()
+        resources.arrp.dump()
+        RRPCallback.EVENT.register {
+            it.add(resources.arrp)
+        }
     }
 
     public fun id(name: String): Identifier = Identifier(modid, name)
