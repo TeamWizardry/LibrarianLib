@@ -130,7 +130,7 @@ public class TestItem(manager: TestModContentManager, id: Identifier): TestConfi
      */
     public var tickInHand: SidedAction<InventoryTickContext> = SidedAction()
 
-    internal val instance: TestItemImpl by lazy {
+    public val instance: Item by lazy {
         TestItemImpl(this)
     }
 

@@ -40,6 +40,9 @@ public object UnitTestCommand {
     private fun runTestSuite(source: ServerCommandSource, input: String, suite: UnitTestSuite) {
         val suiteId = UnitTestSuite.REGISTRY.getId(suite)
         source.sendFeedback(LiteralText("Running §5${suiteId}§r tests..."), true)
+        suite.description?.also {
+            source.sendFeedback(LiteralText("§7> ${it}§r"), true)
+        }
         val report = UnitTestRunner.runUnitTests(suite.tests)
         logger.info("Unit tests for ${suiteId}\n" + report.roots.joinToString("\n") { UnitTestRunner.format(it) })
         source.sendFeedback(makeTextComponent(input, report), true)

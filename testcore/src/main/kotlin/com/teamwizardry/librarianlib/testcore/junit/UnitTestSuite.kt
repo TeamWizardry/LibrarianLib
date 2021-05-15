@@ -9,6 +9,13 @@ public class UnitTestSuite {
     private val _tests = mutableListOf<Class<*>>()
     public val tests: List<Class<*>> = _tests.unmodifiableView()
 
+    public var description: String? = null
+
+    public constructor() {}
+    public constructor(block: UnitTestSuite.() -> Unit) {
+        this.apply(block)
+    }
+
     public fun addTests(vararg testClasses: Class<*>): UnitTestSuite {
         this._tests.addAll(testClasses)
         return this

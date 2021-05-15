@@ -62,7 +62,7 @@ configure<CommonConfigExtension> {
 //        create("lieutenant")
 //        create("mirage")
         create("mosaic")
-//        create("scribe")
+        create("scribe")
     }
 
 }

@@ -16,7 +16,7 @@ class UnitTestTests {
 
     @Test
     fun simpleThrowsTest() {
-        assertThrows<KotlinNullPointerException> { null!! }
+        assertThrows<NullPointerException> { null!! }
     }
 
     @Test
