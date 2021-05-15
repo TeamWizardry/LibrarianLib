@@ -1,11 +1,24 @@
 package com.teamwizardry.librarianlib.testcore.util
 
+public class Action<T> {
+    private var callback: (T.() -> Unit)? = null
+
+    public fun run(context: T) {
+        callback?.invoke(context)
+    }
+
+    public fun clear() {
+        callback = null
+    }
+
+    public operator fun invoke(callback: T.() -> Unit) {
+        this.callback = callback
+    }
+}
+
 public class ClientAction<T> {
     private var callback: (T.() -> Unit)? = null
 
-    /**
-     * Run the common and client or server callbacks, depending on [isClient]
-     */
     public fun run(context: T) {
         callback?.invoke(context)
     }

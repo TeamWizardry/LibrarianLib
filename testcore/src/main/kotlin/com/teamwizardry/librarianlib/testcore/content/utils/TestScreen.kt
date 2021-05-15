@@ -1,15 +1,15 @@
-package com.teamwizardry.librarianlib.testcore.objects
+package com.teamwizardry.librarianlib.testcore.content.utils
 
-/*
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.item.ItemStack
-import net.minecraft.util.text.StringTextComponent
-import net.minecraft.util.text.Style
+import net.minecraft.text.LiteralText
+import net.minecraft.text.Style
 
-public open class TestScreen(public val config: TestScreenConfig): Screen(StringTextComponent(config.title)) {
+public open class TestScreen(public val config: TestScreenConfig): Screen(LiteralText(config.title)) {
+    public constructor(configure: TestScreenConfig.() -> Unit) : this(TestScreenConfig(configure))
 
     override fun shouldCloseOnEsc(): Boolean = config.closeOnEsc
     override fun isPauseScreen(): Boolean = config.pausesGame
@@ -88,55 +88,31 @@ public open class TestScreen(public val config: TestScreenConfig): Screen(String
 
     // make these rendering helpers public
 
-    public override fun renderComponentHoverEffect(
-        matrixStack: MatrixStack,
-        style: Style?,
-        p_renderComponentHoverEffect_2_: Int,
-        p_renderComponentHoverEffect_3_: Int
-    ) {
-        super.renderComponentHoverEffect(matrixStack, style, p_renderComponentHoverEffect_2_, p_renderComponentHoverEffect_3_)
+    public override fun drawHorizontalLine(matrices: MatrixStack, x1: Int, x2: Int, y: Int, color: Int) {
+        super.drawHorizontalLine(matrices, x1, x2, y, color)
     }
 
-    public override fun renderTooltip(
-        matrixStack: MatrixStack,
-        p_renderTooltip_1_: ItemStack,
-        p_renderTooltip_2_: Int,
-        p_renderTooltip_3_: Int
-    ) {
-        super.renderTooltip(matrixStack, p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_)
-    }
-
-    public override fun vLine(
-        matrixStack: MatrixStack,
-        p_vLine_1_: Int,
-        p_vLine_2_: Int,
-        p_vLine_3_: Int,
-        p_vLine_4_: Int
-    ) {
-        super.vLine(matrixStack, p_vLine_1_, p_vLine_2_, p_vLine_3_, p_vLine_4_)
-    }
-
-    public override fun hLine(
-        matrixStack: MatrixStack,
-        p_hLine_1_: Int,
-        p_hLine_2_: Int,
-        p_hLine_3_: Int,
-        p_hLine_4_: Int
-    ) {
-        super.hLine(matrixStack, p_hLine_1_, p_hLine_2_, p_hLine_3_, p_hLine_4_)
+    public override fun drawVerticalLine(matrices: MatrixStack, x: Int, y1: Int, y2: Int, color: Int) {
+        super.drawVerticalLine(matrices, x, y1, y2, color)
     }
 
     public override fun fillGradient(
-        matrixStack: MatrixStack,
-        p_fillGradient_1_: Int,
-        p_fillGradient_2_: Int,
-        p_fillGradient_3_: Int,
-        p_fillGradient_4_: Int,
-        p_fillGradient_5_: Int,
-        p_fillGradient_6_: Int
+        matrices: MatrixStack,
+        xStart: Int,
+        yStart: Int,
+        xEnd: Int,
+        yEnd: Int,
+        colorStart: Int,
+        colorEnd: Int
     ) {
-        super.fillGradient(matrixStack, p_fillGradient_1_, p_fillGradient_2_, p_fillGradient_3_, p_fillGradient_4_, p_fillGradient_5_, p_fillGradient_6_)
+        super.fillGradient(matrices, xStart, yStart, xEnd, yEnd, colorStart, colorEnd)
+    }
+
+    public override fun renderTooltip(matrices: MatrixStack, stack: ItemStack, x: Int, y: Int) {
+        super.renderTooltip(matrices, stack, x, y)
+    }
+
+    public override fun renderTextHoverEffect(matrices: MatrixStack, style: Style?, x: Int, y: Int) {
+        super.renderTextHoverEffect(matrices, style, x, y)
     }
 }
-
- */

@@ -89,7 +89,19 @@ internal object LLTestCoreTestCommon : ModInitializer {
         }
 
         manager.create<TestEntity>("simple_entity") {
-            name = "A simple entity"
+            name = "Simple Entity"
+        }
+
+        manager.create<TestItem>("empty_screen") {
+            name = "Empty Screen"
+        }
+        manager.create<TestItem>("simple_screen") {
+            name = "Simple Screen"
+            description = "(0, 0) should be located at the center of the screen"
+        }
+        manager.create<TestItem>("sized_screen") {
+            name = "Sized Screen"
+            description = "The (20, 20) size means (10, 10) should be located at the center of the screen"
         }
 
         manager.registerCommon()
