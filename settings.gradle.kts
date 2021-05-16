@@ -13,8 +13,6 @@ includeModule("etcetera")
 //includeModule("facade")
 //includeModule("foundation")
 includeModule("glitter")
-//includeModule("lieutenant")
-//includeModule("mirage")
 includeModule("mosaic")
 includeModule("scribe")
 

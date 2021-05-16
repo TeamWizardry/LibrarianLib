@@ -59,8 +59,6 @@ configure<CommonConfigExtension> {
 //        create("facade")
 //        create("foundation")
         create("glitter")
-//        create("lieutenant")
-//        create("mirage")
         create("mosaic")
         create("scribe")
     }
