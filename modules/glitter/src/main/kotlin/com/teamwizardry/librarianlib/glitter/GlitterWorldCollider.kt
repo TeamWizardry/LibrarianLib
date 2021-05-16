@@ -10,22 +10,16 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.block.Blocks
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.vector.Vector3d
 import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.chunk.ChunkSection
 import net.minecraft.world.chunk.ChunkStatus
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.event.TickEvent
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 
 /**
  * A class designed to efficiently raytrace collisions with the world. This class uses custom raytracing code to
- * eliminate short-lived objects such as [Vector3d]s.
+ * eliminate short-lived objects such as [Vec3d]s.
  *
  * This class makes two main sacrifices in the name of speed:
  *
@@ -33,7 +27,6 @@ import kotlin.math.min
  * clear the caches immediately if needed.
  * 2. It doesn't handle collision boxes that extend outside the bounds of their block.
  */
-@OnlyIn(Dist.CLIENT)
 public object GlitterWorldCollider {
 
     private val blockCache = Long2ObjectOpenHashMap<List<Box>>()
@@ -64,7 +57,7 @@ public object GlitterWorldCollider {
      * This method _immediately_ clears all the caches, meaning calling it repeatedly between [collide] calls can
      * severely impact performance.
      */
-    public fun clearCache() {
+    public fun clearCaches() {
         blockCache.clear()
         shapeCache.clear()
         airCache.clear()
@@ -187,12 +180,12 @@ public object GlitterWorldCollider {
             return emptyList()
 
         // check if the sub-chunk is known to be empty
-        sectionPos.setPos(x shr 4, y shr 4, z shr 4)
-        if (airCache.contains(sectionPos.toLong()))
+        sectionPos.set(x shr 4, y shr 4, z shr 4)
+        if (airCache.contains(sectionPos.asLong()))
             return emptyList()
 
-        mutablePos.setPos(x, y, z)
-        val toLong = mutablePos.toLong()
+        mutablePos.set(x, y, z)
+        val toLong = mutablePos.asLong()
         // we can't use getOrPut because it uses the boxed Long
         blockCache.get(toLong)?.let { return it }
 
@@ -201,28 +194,28 @@ public object GlitterWorldCollider {
         if (chunk == null) {
             // the entire chunk is unloaded. Mark all its sub-chunks as empty
             for (i in 0 until 16) {
-                sectionPos.setPos(x shr 4, i, z shr 4)
-                airCache.add(sectionPos.toLong())
+                sectionPos.set(x shr 4, i, z shr 4)
+                airCache.add(sectionPos.asLong())
             }
             return emptyList()
         }
 
-        val section = chunk.sections[y shr 4]
+        val section = chunk.sectionArray[y shr 4]
         if (ChunkSection.isEmpty(section)) {
             // if the section is empty, make note of that for future calls
-            airCache.add(sectionPos.toLong())
+            airCache.add(sectionPos.asLong())
             return emptyList()
         }
 
         val state = section.getBlockState(x and 15, y and 15, z and 15)
 
-        val boxes = if (state == Blocks.AIR.defaultState || state.isAir(world, mutablePos)
+        val boxes = if (state == Blocks.AIR.defaultState || state.isAir
             || state.material.let { !it.blocksMovement() || it.isLiquid }) {
             // ignore air, non-solid, and liquid blocks
             emptyList()
         } else {
             val shape = state.getCollisionShape(world, mutablePos)
-            shapeCache.getOrPut(shape) { shape.toBoundingBoxList() }
+            shapeCache.getOrPut(shape) { shape.boundingBoxes }
         }
 
         // we survived the gauntlet, now cache the resulting list for next time
@@ -230,18 +223,10 @@ public object GlitterWorldCollider {
         return boxes
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    @SubscribeEvent
-    public fun tick(e: TickEvent.ClientTickEvent) {
+    public fun tickCaches() {
         blockCacheManager.tick()
         shapeCacheManager.tick()
         airCacheManager.tick()
-    }
-
-    @Suppress("UNUSED_PARAMETER")
-    @SubscribeEvent
-    public fun unloadWorld(e: WorldEvent.Unload) {
-        clearCache()
     }
 
     public class CacheManager(public var interval: Int, private val clearFunction: () -> Unit) {

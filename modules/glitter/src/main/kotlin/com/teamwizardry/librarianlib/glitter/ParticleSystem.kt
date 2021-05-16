@@ -1,12 +1,11 @@
 package com.teamwizardry.librarianlib.glitter
 
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding
 import com.teamwizardry.librarianlib.glitter.bindings.VariableBinding
 import com.teamwizardry.librarianlib.glitter.modules.DepthSortModule
-import net.minecraft.util.math.vector.Matrix4f
-import net.minecraft.client.settings.ParticleStatus
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
+import net.minecraft.client.options.ParticlesMode
 import org.magicwerk.brownies.collections.GapList
 import java.lang.RuntimeException
 import java.util.*
@@ -35,9 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * sampling to find which hotspots are slowing down the game. It is often surprising what small things have a large
  * impact.
  *
- * After creating a particle system, [addToGame] will add the system the game for rendering and updates directly. Calling
- * [removeFromGame] will, as the name implies, remove the particle system from the game, at which point it will no
- * longer render or receive updates
+ * After creating a particle system, add it to the [ParticleSystemManager].
  */
 public abstract class ParticleSystem {
 
@@ -99,8 +96,6 @@ public abstract class ParticleSystem {
     private var currentSpawnChance: Double = 1.0
 
     private var systemInitialized: Boolean = false
-    private var registered: Boolean = false
-    private var registerWarned: Boolean = false
 
     internal val queuedAdditions = ConcurrentLinkedQueue<DoubleArray>()
     internal val shouldQueue = AtomicBoolean(false)
@@ -193,10 +188,6 @@ public abstract class ParticleSystem {
      * @param params an array of values to initialize the particle array with.
      */
     protected fun addParticle(lifetime: Int, vararg params: Double): DoubleArray {
-        if (!registered && !registerWarned) {
-            logger.warn("Adding particles to an unregistered system", RuntimeException())
-            registerWarned = true
-        }
         if (!systemInitialized) {
             reload()
             systemInitialized = true
@@ -231,23 +222,6 @@ public abstract class ParticleSystem {
             updateModules[i].init(particle)
         }
         return particle
-    }
-
-    /**
-     * Adds the particle system to the game for rendering and updates.
-     */
-    public fun addToGame() {
-        ParticleSystemManager.add(this)
-        registered = true
-    }
-
-    /**
-     * Removes the particle system from the game, meaning it will no longer render or receive updates.
-     */
-    public fun removeFromGame() {
-        ParticleSystemManager.remove(this)
-        registered = false
-        registerWarned = false
     }
 
     /**
@@ -305,10 +279,10 @@ public abstract class ParticleSystem {
         }
         shouldQueue.set(false)
         @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-        currentSpawnChance = when (Client.minecraft.gameSettings.particles) {
-            ParticleStatus.ALL -> 1.0
-            ParticleStatus.DECREASED -> decreasedSpawnChance
-            ParticleStatus.MINIMAL -> minimalSpawnChance
+        currentSpawnChance = when (Client.minecraft.options.particles) {
+            ParticlesMode.ALL -> 1.0
+            ParticlesMode.DECREASED -> decreasedSpawnChance
+            ParticlesMode.MINIMAL -> minimalSpawnChance
         }
     }
 
@@ -318,18 +292,29 @@ public abstract class ParticleSystem {
         }
     }
 
-    internal fun render(stack: MatrixStack, projectionMatrix: Matrix4f) {
+    internal fun render(context: WorldRenderContext) {
         shouldQueue.set(true)
         while (true) {
             particles.add(queuedAdditions.poll() ?: break)
         }
         for (i in 0 until renderModules.size) {
-            renderModules[i].render(stack, projectionMatrix, particles, renderPrepModules)
+            renderModules[i].render(context, particles, renderPrepModules)
+        }
+        shouldQueue.set(false)
+    }
+
+    internal fun renderDirect(context: WorldRenderContext) {
+        shouldQueue.set(true)
+        while (true) {
+            particles.add(queuedAdditions.poll() ?: break)
+        }
+        for (i in 0 until renderModules.size) {
+            renderModules[i].renderDirect(context, particles, renderPrepModules)
         }
         shouldQueue.set(false)
     }
 
     private companion object {
-        private val logger = LibrarianLibGlitterModule.makeLogger<ParticleSystem>()
+        private val logger = LibLibGlitter.makeLogger<ParticleSystem>()
     }
 }

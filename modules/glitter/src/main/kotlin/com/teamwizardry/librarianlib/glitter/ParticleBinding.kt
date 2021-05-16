@@ -6,7 +6,6 @@
 package com.teamwizardry.librarianlib.glitter
 
 import com.teamwizardry.librarianlib.glitter.bindings.*
-import net.minecraft.util.math.vector.Vector3d
 import java.awt.Color
 
 /**

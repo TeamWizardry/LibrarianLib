@@ -4,7 +4,6 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.glitter.ParticleGlobalUpdateModule
 import com.teamwizardry.librarianlib.glitter.ReadParticleBinding
 import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding
-import net.minecraft.client.Minecraft
 
 /**
  * A simple module that performs a depth sort based on the player's look vector.
@@ -29,11 +28,13 @@ public class DepthSortModule(
     }
 
     override fun update(particles: MutableList<DoubleArray>) {
-        val player = Minecraft.getInstance().player!!
-        val normal = player.lookVec
-        val eyeX = Client.worldTime.interp(player.prevPosX, player.posX)
-        val eyeY = Client.worldTime.interp(player.prevPosY, player.posY) + player.eyeHeight
-        val eyeZ = Client.worldTime.interp(player.prevPosZ, player.posZ)
+        val player = Client.player!!
+        val normal = player.rotationVector
+        val eyeX = Client.worldTime.interp(player.prevX, player.x)
+        val eyeY = Client.worldTime.interp(player.prevY, player.y) + player.standingEyeHeight
+        val eyeZ = Client.worldTime.interp(player.prevZ, player.z)
+
+//        Client.minecraft.gameRenderer.camera.pos
 
         //dot(particle-eye,normal)
 

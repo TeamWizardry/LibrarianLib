@@ -41,6 +41,13 @@ public class TestEntity(manager: TestModContentManager, id: Identifier) : TestCo
         }
     }
 
+    override var name: String
+        get() = super.name
+        set(value) {
+            super.name = value
+            spawnerItem.name = value
+        }
+
     override var description: String?
         get() = super.description
         set(value) {

@@ -14,17 +14,17 @@ public class CallbackBinding implements ReadParticleBinding {
 
     @NotNull
     @Override
-    public double[] getContents() {
+    public double @NotNull [] getContents() {
         return contents;
     }
 
     @Override
-    public void load(@NotNull double[] particle) {
+    public void load(double @NotNull [] particle) {
         callback.call(particle, contents);
     }
 
     @FunctionalInterface
     public interface Callback {
-        void call(@NotNull double[] particle, @NotNull double[] contents);
+        void call(double @NotNull [] particle, double @NotNull [] contents);
     }
 }

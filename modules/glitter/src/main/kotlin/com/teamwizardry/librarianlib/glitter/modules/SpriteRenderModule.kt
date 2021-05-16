@@ -1,15 +1,15 @@
 package com.teamwizardry.librarianlib.glitter.modules
 
 import com.google.common.collect.ImmutableList
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
+import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.kotlin.builder
+import com.teamwizardry.librarianlib.core.util.kotlin.normal
 import com.teamwizardry.librarianlib.core.util.kotlin.unreachable
 import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.glitter.GlitterLightingCache
@@ -18,15 +18,12 @@ import com.teamwizardry.librarianlib.glitter.ParticleUpdateModule
 import com.teamwizardry.librarianlib.glitter.ReadParticleBinding
 import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.math.floorInt
-import net.minecraft.client.renderer.RenderState
-import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.renderer.vertex.VertexFormat
-import net.minecraft.client.renderer.vertex.VertexFormatElement
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
+import net.minecraft.client.render.*
+import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.client.util.math.Vector3f
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.vector.Matrix4f
-import net.minecraft.util.math.vector.Vector4f
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.function.Consumer
@@ -98,17 +95,23 @@ public class SpriteRenderModule private constructor(
 ) : ParticleRenderModule {
 
     @Suppress("LocalVariableName")
-    override fun render(
-        matrixStack: MatrixStack,
-        projectionMatrix: Matrix4f,
+    override fun renderDirect(
+        context: WorldRenderContext,
         particles: List<DoubleArray>,
         prepModules: List<ParticleUpdateModule>
     ) {
-        val modelViewMatrix = matrixStack.last.matrix
-        val buffer = Client.minecraft.renderTypeBuffers.bufferSource
-        val builder = buffer.getBuffer(renderOptions.renderType)
+        if(particles.isEmpty())
+            return
 
-        val normalMatrix = mixinCast<IMatrix3f>(matrixStack.last.normal)
+        val stack = MatrixStack()
+        val viewPos = Client.minecraft.gameRenderer.camera.pos
+        stack.translate(-viewPos.x, -viewPos.y, -viewPos.z)
+
+        val modelViewMatrix = stack.peek().model
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+        val builder = buffer.getBuffer(renderOptions.renderLayer)
+
+        val normalMatrix = mixinCast<IMatrix3f>(context.matrixStack().peek().normal)
         val nm00 = normalMatrix.m00
         val nm01 = normalMatrix.m01
         val nm02 = normalMatrix.m02
@@ -133,17 +136,19 @@ public class SpriteRenderModule private constructor(
         val tm22 = transformMatrix.m22
         val tm23 = transformMatrix.m23
 
-        // `w = 0` means we won't apply translation when we use the matrix later
-        val lookRightVec = Vector4f(-1f, 0f, 0f, 0f)
-        val lookUpVec = Vector4f(0f, 1f, 0f, 0f)
-        val lookVec = Vector4f(0f, 0f, 1f, 0f)
+        val camera = Client.minecraft.gameRenderer.camera
 
-        val billboardedMatrix = modelViewMatrix.copy()
-        val renderInfo = Client.minecraft.gameRenderer.activeRenderInfo
+        val cameraX = camera.pos.x
+        val cameraY = camera.pos.y
+        val cameraZ = camera.pos.z
 
-        val cameraX = renderInfo.projectedView.x
-        val cameraY = renderInfo.projectedView.y
-        val cameraZ = renderInfo.projectedView.z
+        val lookRightVec = Vector3f(-1f, 0f, 0f)
+        val lookUpVec = Vector3f(0f, 1f, 0f)
+        val lookVec = Vector3f(0f, 0f, -1f)
+
+        lookRightVec.rotate(camera.rotation)
+        lookUpVec.rotate(camera.rotation)
+        lookVec.rotate(camera.rotation)
 
         val spriteSize = 1f / spriteSheetSize
         val spriteIndexMask = spriteSheetSize - 1
@@ -168,17 +173,17 @@ public class SpriteRenderModule private constructor(
                 posZ = Client.worldTime.interp(previousPosition.contents[2], posZ)
             }
 
-            var rightX = 1.0
-            var rightY = 0.0
-            var rightZ = 0.0
+            var rightX = lookRightVec.x.toDouble()
+            var rightY = lookRightVec.y.toDouble()
+            var rightZ = lookRightVec.z.toDouble()
 
-            var upX = 0.0
-            var upY = 1.0
-            var upZ = 0.0
+            var upX = lookUpVec.x.toDouble()
+            var upY = lookUpVec.y.toDouble()
+            var upZ = lookUpVec.z.toDouble()
 
-            var normalX = 0.0
-            var normalY = 0.0
-            var normalZ = 1.0
+            var normalX = lookVec.x.toDouble()
+            var normalY = lookVec.y.toDouble()
+            var normalZ = lookVec.z.toDouble()
 
             // compute local axes
             if (facingVector != null || upVector != null) {
@@ -221,7 +226,7 @@ public class SpriteRenderModule private constructor(
                             rightY = 0.0
                             rightZ = -facingX
                             // the Y axis will always be zero here, so we can do a 2d normalization
-                            val rightInvLength = MathHelper.fastInvSqrt(rightX * rightX + rightZ * rightZ)
+                            val rightInvLength = MathHelper.fastInverseSqrt(rightX * rightX + rightZ * rightZ)
                             rightX *= rightInvLength
                             rightZ *= rightInvLength
 
@@ -230,7 +235,7 @@ public class SpriteRenderModule private constructor(
                             upX = facingY * rightZ
                             upY = facingZ * rightX - facingX * rightZ
                             upZ = -facingY * rightX
-                            val upInvLength = MathHelper.fastInvSqrt(upX * upX + upY * upY + upZ * upZ)
+                            val upInvLength = MathHelper.fastInverseSqrt(upX * upX + upY * upY + upZ * upZ)
                             upX *= upInvLength
                             upY *= upInvLength
                             upZ *= upInvLength
@@ -243,7 +248,7 @@ public class SpriteRenderModule private constructor(
                     upX = upVector.contents[0]
                     upY = upVector.contents[1]
                     upZ = upVector.contents[2]
-                    val upInvLength = MathHelper.fastInvSqrt(upX * upX + upY * upY + upZ * upZ)
+                    val upInvLength = MathHelper.fastInverseSqrt(upX * upX + upY * upY + upZ * upZ)
                     upX *= upInvLength
                     upY *= upInvLength
                     upZ *= upInvLength
@@ -252,7 +257,7 @@ public class SpriteRenderModule private constructor(
                     rightX = facingY * upZ - facingZ * upY
                     rightY = facingZ * upX - facingX * upZ
                     rightZ = facingX * upY - facingY * upX
-                    val rightInvLength = MathHelper.fastInvSqrt(rightX * rightX + rightY * rightY + rightZ * rightZ)
+                    val rightInvLength = MathHelper.fastInverseSqrt(rightX * rightX + rightY * rightY + rightZ * rightZ)
                     rightX *= -rightInvLength
                     rightY *= -rightInvLength
                     rightZ *= -rightInvLength
@@ -351,44 +356,83 @@ public class SpriteRenderModule private constructor(
                 0
             }
 
-            builder.pos(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ)
+            builder.vertex(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ)
                 .color(r, g, b, a)
-                .tex(minU, maxV)
+                .texture(minU, maxV)
             if(renderOptions.worldLight)
-                builder.lightmap(lightmap)
+                builder.light(lightmap)
             if(renderOptions.diffuseLight)
                 builder.normal(normalX, normalY, normalZ)
-            builder.endVertex()
+            builder.next()
 
-            builder.pos(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ)
+            builder.vertex(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ)
                 .color(r, g, b, a)
-                .tex(maxU, maxV)
+                .texture(maxU, maxV)
             if(renderOptions.worldLight)
-                builder.lightmap(lightmap)
+                builder.light(lightmap)
             if(renderOptions.diffuseLight)
                 builder.normal(normalX, normalY, normalZ)
-            builder.endVertex()
+            builder.next()
 
-            builder.pos(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ)
+            builder.vertex(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ)
                 .color(r, g, b, a)
-                .tex(maxU, minV)
+                .texture(maxU, minV)
             if(renderOptions.worldLight)
-                builder.lightmap(lightmap)
+                builder.light(lightmap)
             if(renderOptions.diffuseLight)
                 builder.normal(normalX, normalY, normalZ)
-            builder.endVertex()
+            builder.next()
 
-            builder.pos(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ)
+            builder.vertex(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ)
                 .color(r, g, b, a)
-                .tex(minU, minV)
+                .texture(minU, minV)
             if(renderOptions.worldLight)
-                builder.lightmap(lightmap)
+                builder.light(lightmap)
             if(renderOptions.diffuseLight)
                 builder.normal(normalX, normalY, normalZ)
-            builder.endVertex()
+            builder.next()
+
+            if(renderOptions.diffuseLight && !renderOptions.cull) {
+
+                builder.vertex(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ)
+                    .color(r, g, b, a)
+                    .texture(minU, minV)
+                if(renderOptions.worldLight)
+                    builder.light(lightmap)
+                if(renderOptions.diffuseLight)
+                    builder.normal(normalX, normalY, normalZ)
+                builder.next()
+
+                builder.vertex(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ)
+                    .color(r, g, b, a)
+                    .texture(maxU, minV)
+                if(renderOptions.worldLight)
+                    builder.light(lightmap)
+                if(renderOptions.diffuseLight)
+                    builder.normal(normalX, normalY, normalZ)
+                builder.next()
+
+                builder.vertex(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ)
+                    .color(r, g, b, a)
+                    .texture(maxU, maxV)
+                if(renderOptions.worldLight)
+                    builder.light(lightmap)
+                if(renderOptions.diffuseLight)
+                    builder.normal(normalX, normalY, normalZ)
+                builder.next()
+
+                builder.vertex(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ)
+                    .color(r, g, b, a)
+                    .texture(minU, maxV)
+                if(renderOptions.worldLight)
+                    builder.light(lightmap)
+                if(renderOptions.diffuseLight)
+                    builder.normal(normalX, normalY, normalZ)
+                builder.next()
+            }
         }
 
-        buffer.finish()
+        buffer.draw()
     }
 
     public companion object {
@@ -564,7 +608,7 @@ public class SpriteRenderModule private constructor(
 }
 
 public class SpriteRenderOptions private constructor(
-    public val renderType: RenderType,
+    public val renderLayer: RenderLayer,
     public val cull: Boolean,
     public val worldLight: Boolean,
     public val diffuseLight: Boolean,
@@ -580,7 +624,7 @@ public class SpriteRenderOptions private constructor(
         private var blendMode: BlendMode? = BlendMode.NORMAL
         private var writeDepth: Boolean = true
         private var blur: Boolean = false
-        private var extraConfig: Consumer<RenderType.State.Builder>? = null
+        private var extraConfig: Consumer<RenderLayer.MultiPhaseParameters.Builder>? = null
 
         private var cull: Boolean = true
         private var worldLight: Boolean = false
@@ -645,24 +689,24 @@ public class SpriteRenderOptions private constructor(
         /**
          * Additional configurations for the render type.
          */
-        public fun extraConfig(value: Consumer<RenderType.State.Builder>): Builder = builder {
+        public fun extraConfig(value: Consumer<RenderLayer.MultiPhaseParameters.Builder>): Builder = builder {
             extraConfig = value
         }
 
         public fun build(): SpriteRenderOptions {
-            val renderState = RenderType.State.getBuilder()
-                .texture(RenderState.TextureState(sprite, blur, false))
-                .alpha(DefaultRenderStates.DEFAULT_ALPHA)
+            val renderState = RenderLayer.MultiPhaseParameters.builder()
+                .texture(RenderPhase.Texture(sprite, blur, false))
+                .alpha(DefaultRenderPhases.ONE_TENTH_ALPHA)
 
             if (cull || diffuseLight) {
                 // when using diffuse lighting we always cull. If culling is disabled we render two quads with different normals
-                renderState.cull(DefaultRenderStates.CULL_ENABLED)
+                renderState.cull(DefaultRenderPhases.ENABLE_CULLING)
             } else {
-                renderState.cull(DefaultRenderStates.CULL_DISABLED)
+                renderState.cull(DefaultRenderPhases.DISABLE_CULLING)
             }
 
             blendMode?.let { blendMode ->
-                renderState.transparency(RenderState.TransparencyState("particle_transparency", {
+                renderState.transparency(RenderPhase.Transparency("particle_transparency", {
                     RenderSystem.enableBlend()
                     blendMode.glApply()
                 }, {
@@ -671,13 +715,13 @@ public class SpriteRenderOptions private constructor(
                 }))
             }
 
-            if (worldLight) renderState.lightmap(DefaultRenderStates.LIGHTMAP_ENABLED)
-            if (diffuseLight) renderState.diffuseLighting(DefaultRenderStates.DIFFUSE_LIGHTING_ENABLED)
-            if (!writeDepth) renderState.writeMask(DefaultRenderStates.COLOR_WRITE)
+            if (worldLight) renderState.lightmap(DefaultRenderPhases.ENABLE_LIGHTMAP)
+            if (diffuseLight) renderState.diffuseLighting(DefaultRenderPhases.ENABLE_DIFFUSE_LIGHTING)
+            if (!writeDepth) renderState.writeMaskState(DefaultRenderPhases.COLOR_MASK)
 
             extraConfig?.accept(renderState)
 
-            val renderType = SimpleRenderTypes.makeType(
+            val renderType = SimpleRenderLayers.makeType(
                 "particle_type",
                 vertexFormatForLighting(worldLight, diffuseLight),
                 GL11.GL_QUADS,
@@ -694,40 +738,40 @@ public class SpriteRenderOptions private constructor(
             @JvmStatic
             public val positionColorTexFormat: VertexFormat = VertexFormat(
                 ImmutableList.builder<VertexFormatElement>()
-                    .add(DefaultVertexFormats.POSITION_3F) // position
-                    .add(DefaultVertexFormats.COLOR_4UB) // color
-                    .add(DefaultVertexFormats.TEX_2F) // tex
+                    .add(VertexFormats.POSITION_ELEMENT) // position
+                    .add(VertexFormats.COLOR_ELEMENT) // color
+                    .add(VertexFormats.TEXTURE_ELEMENT) // tex
                     .build()
             )
 
             @JvmStatic
             public val positionColorTexLightmapFormat: VertexFormat = VertexFormat(
                 ImmutableList.builder<VertexFormatElement>()
-                    .add(DefaultVertexFormats.POSITION_3F) // position
-                    .add(DefaultVertexFormats.COLOR_4UB) // color
-                    .add(DefaultVertexFormats.TEX_2F) // tex
-                    .add(DefaultVertexFormats.TEX_2SB) // lightmap
+                    .add(VertexFormats.POSITION_ELEMENT) // position
+                    .add(VertexFormats.COLOR_ELEMENT) // color
+                    .add(VertexFormats.TEXTURE_ELEMENT) // tex
+                    .add(VertexFormats.LIGHT_ELEMENT) // lightmap
                     .build()
             )
 
             @JvmStatic
             public val positionColorTexNormalFormat: VertexFormat = VertexFormat(
                 ImmutableList.builder<VertexFormatElement>()
-                    .add(DefaultVertexFormats.POSITION_3F) // position
-                    .add(DefaultVertexFormats.COLOR_4UB) // color
-                    .add(DefaultVertexFormats.TEX_2F) // tex
-                    .add(DefaultVertexFormats.NORMAL_3B) // normal
+                    .add(VertexFormats.POSITION_ELEMENT) // position
+                    .add(VertexFormats.COLOR_ELEMENT) // color
+                    .add(VertexFormats.TEXTURE_ELEMENT) // tex
+                    .add(VertexFormats.NORMAL_ELEMENT) // normal
                     .build()
             )
 
             @JvmStatic
             public val positionColorTexLightmapNormalFormat: VertexFormat = VertexFormat(
                 ImmutableList.builder<VertexFormatElement>()
-                    .add(DefaultVertexFormats.POSITION_3F) // position
-                    .add(DefaultVertexFormats.COLOR_4UB) // color
-                    .add(DefaultVertexFormats.TEX_2F) // tex
-                    .add(DefaultVertexFormats.TEX_2SB) // lightmap
-                    .add(DefaultVertexFormats.NORMAL_3B) // normal
+                    .add(VertexFormats.POSITION_ELEMENT) // position
+                    .add(VertexFormats.COLOR_ELEMENT) // color
+                    .add(VertexFormats.TEXTURE_ELEMENT) // tex
+                    .add(VertexFormats.LIGHT_ELEMENT) // lightmap
+                    .add(VertexFormats.NORMAL_ELEMENT) // normal
                     .build()
             )
 

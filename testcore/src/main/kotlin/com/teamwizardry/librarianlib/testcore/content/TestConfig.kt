@@ -12,7 +12,7 @@ public sealed class TestConfig(public val manager: TestModContentManager, public
     /**
      * Human-readable name. Defaults to the id's path component
      */
-    public var name: String = id.path
+    public open var name: String = id.path
     /**
      * Additional description text. Used in the item tooltip and potentially elsewhere in the future
      */

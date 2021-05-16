@@ -1,0 +1,17 @@
+{
+  "minVersion": "0.8.2",
+  "required": true,
+  "package": "com.teamwizardry.librarianlib.glitter.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "ll/glitter/glitter.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "MinecraftClientHooks"
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
