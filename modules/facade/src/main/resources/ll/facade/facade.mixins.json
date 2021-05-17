@@ -1,0 +1,17 @@
+{
+  "minVersion": "0.8.2",
+  "required": true,
+  "package": "com.teamwizardry.librarianlib.facade.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "ll/facade/facade.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "ContainerScreenMixin"
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

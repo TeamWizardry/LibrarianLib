@@ -56,7 +56,7 @@ configure<CommonConfigExtension> {
         create("core")
         create("courier")
         create("etcetera")
-//        create("facade")
+        create("facade")
 //        create("foundation")
         create("glitter")
         create("mosaic")
