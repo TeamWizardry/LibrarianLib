@@ -1,5 +1,5 @@
 package com.teamwizardry.librarianlib.courier.example;
-
+/*
 import com.teamwizardry.librarianlib.core.util.Client;
 import com.teamwizardry.librarianlib.courier.CourierBuffer;
 import com.teamwizardry.librarianlib.courier.CourierPacket;
@@ -59,3 +59,6 @@ public class ExamplePrismPacket implements CourierPacket {
         }
     }
 }
+
+
+ */

@@ -1,15 +1,24 @@
 package com.teamwizardry.librarianlib.courier
 
-import net.minecraft.network.PacketBuffer
-import net.minecraftforge.fml.network.NetworkEvent
-import java.util.function.Supplier
+import net.minecraft.util.Identifier
 
-public abstract class PacketType<T>(public val type: Class<T>) {
-    @get:JvmSynthetic
-    @set:JvmSynthetic
-    internal var index: Int = 0
-
+public abstract class PacketType<T : Any>(
+    /**
+     * The packet channel
+     */
+    public val channel: Identifier,
+    /**
+     * The packet class
+     */
+    public val type: Class<T>,
+) {
+    /**
+     * Encode the [packet] into the given buffer
+     */
     public abstract fun encode(packet: T, buffer: CourierBuffer)
+
+    /**
+     * Decode a new packet from the given buffer
+     */
     public abstract fun decode(buffer: CourierBuffer): T
-    public abstract fun handle(packet: T, context: Supplier<NetworkEvent.Context>)
 }

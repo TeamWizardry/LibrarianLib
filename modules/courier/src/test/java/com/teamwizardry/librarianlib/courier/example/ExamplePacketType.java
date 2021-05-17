@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.courier.example;
 
+/*
 import com.teamwizardry.librarianlib.core.util.Client;
 import com.teamwizardry.librarianlib.courier.CourierBuffer;
 import com.teamwizardry.librarianlib.courier.PacketType;
@@ -62,3 +63,6 @@ public class ExamplePacketType extends PacketType<ExamplePacketType.Packet> {
         }
     }
 }
+
+
+ */
