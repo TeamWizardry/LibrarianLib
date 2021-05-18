@@ -1,15 +1,16 @@
-package com.teamwizardry.librarianlib.albedo.testmod.shaders
+package com.teamwizardry.librarianlib.albedo.test.shaders
 
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
-import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
+import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.util.math.vector.Matrix4f
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -60,12 +61,12 @@ internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>() {
                     ))
                 }
                 else -> {
-                    shader.matrix4x4.set(i, Matrix4f(floatArrayOf(
+                    shader.matrix4x4.set(i, Matrix4d(
                         d + 00f, d + 01f, d + 02f, d + 03f,
                         d + 10f, d + 11f, d + 12f, d + 13f,
                         d + 20f, d + 21f, d + 22f, d + 23f,
                         d + 30f, d + 31f, d + 32f, d + 33f
-                    )))
+                    ).toMatrix4f())
                 }
             }
             shader.matrix4x3.set(i,
@@ -130,40 +131,40 @@ internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>() {
             )
         }
 
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
-        vb.pos2d(minX, maxY).color(c).tex(0f, 1f).endVertex()
-        vb.pos2d(maxX, maxY).color(c).tex(1f, 1f).endVertex()
-        vb.pos2d(maxX, minY).color(c).tex(1f, 0f).endVertex()
-        vb.pos2d(minX, minY).color(c).tex(0f, 0f).endVertex()
+        vb.vertex2d(minX, maxY).color(c).texture(0f, 1f).next()
+        vb.vertex2d(maxX, maxY).color(c).texture(1f, 1f).next()
+        vb.vertex2d(maxX, minY).color(c).texture(1f, 0f).next()
+        vb.vertex2d(minX, minY).color(c).texture(0f, 0f).next()
 
         shader.bind()
-        buffer.finish()
+        buffer.draw()
         shader.unbind()
 
-        val fr = Client.minecraft.fontRenderer
+        val fr = Client.minecraft.textRenderer
         val cellSize = 16
-        fr.drawString(matrixStack, mat4Label,
-            (minX + cellSize * 2 - fr.getStringWidth(mat4Label)/2).toInt().toFloat(),
+        fr.draw(matrixStack, mat4Label,
+            (minX + cellSize * 2 - fr.getWidth(mat4Label)/2).toInt().toFloat(),
             (minY + cellSize * 2 - 4).toInt().toFloat(),
             Color.WHITE.rgb
         )
-        fr.drawString(matrixStack, mat3Label,
-            (minX + cellSize * 5.5 - fr.getStringWidth(mat3Label)/2).toInt().toFloat(),
+        fr.draw(matrixStack, mat3Label,
+            (minX + cellSize * 5.5 - fr.getWidth(mat3Label)/2).toInt().toFloat(),
             (minY + cellSize * 5.5 - 4).toInt().toFloat(),
             Color.WHITE.rgb
         )
-        fr.drawString(matrixStack, "$index",
-            (maxX - 2 - fr.getStringWidth("$index")).toInt().toFloat(),
+        fr.draw(matrixStack, "$index",
+            (maxX - 2 - fr.getWidth("$index")).toInt().toFloat(),
             minY.toFloat() + 11,
             Color.WHITE.rgb
         )
     }
 
-    private val renderType = SimpleRenderTypes.flat(Identifier("minecraft:missingno"), GL11.GL_QUADS)
+    private val renderType = SimpleRenderLayers.flat(Identifier("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("matrix_array_tests", null, Identifier("ll-albedo-test:shaders/matrix_array_tests.frag")) {
+    class Test: Shader("matrix_array_tests", null, Identifier("liblib-albedo-test:shaders/matrix_array_tests.frag")) {
         val index = GLSL.glInt()
 
         val matrix4x4 = GLSL.mat4[2]

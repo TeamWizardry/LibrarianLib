@@ -61,6 +61,10 @@ public object Client {
     @JvmStatic
     public val worldTime: GameTime = GameTime()
 
+    public fun openScreen(screen: Screen?) {
+        minecraft.openScreen(screen)
+    }
+
     public class GameTime {
         public var ticks: Int = 0
             private set

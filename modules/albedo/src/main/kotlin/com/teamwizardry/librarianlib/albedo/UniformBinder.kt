@@ -111,4 +111,6 @@ internal object UniformBinder {
     }
 
     private data class UniformInfo(val name: String, val type: Int, val size: Int, val location: Int)
+
+    private val logger = LibLibAlbedo.makeLogger<UniformBinder>()
 }

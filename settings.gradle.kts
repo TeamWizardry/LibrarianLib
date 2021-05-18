@@ -6,7 +6,7 @@ fun includeModule(name: String) {
 }
 
 include("testcore")
-//includeModule("albedo")
+includeModule("albedo")
 includeModule("core")
 includeModule("courier")
 includeModule("etcetera")

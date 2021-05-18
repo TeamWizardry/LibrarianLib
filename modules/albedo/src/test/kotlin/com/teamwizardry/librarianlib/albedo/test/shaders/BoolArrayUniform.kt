@@ -1,14 +1,16 @@
 @file:Suppress("BooleanLiteralArgument")
 
-package com.teamwizardry.librarianlib.albedo.testmod.shaders
+package com.teamwizardry.librarianlib.albedo.test.shaders
 
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
-import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
+import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import net.minecraft.client.render.VertexConsumerProvider
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -34,29 +36,29 @@ internal object BoolArrayUniform: ShaderTest<BoolArrayUniform.Test>() {
         shader.vector4.set(0, true, false, true, false)
         shader.vector4.set(1, false, true, false, true)
 
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
-        vb.pos2d(minX, maxY).color(c).tex(0f, 1f).endVertex()
-        vb.pos2d(maxX, maxY).color(c).tex(1f, 1f).endVertex()
-        vb.pos2d(maxX, minY).color(c).tex(1f, 0f).endVertex()
-        vb.pos2d(minX, minY).color(c).tex(0f, 0f).endVertex()
+        vb.vertex2d(minX, maxY).color(c).texture(0f, 1f).next()
+        vb.vertex2d(maxX, maxY).color(c).texture(1f, 1f).next()
+        vb.vertex2d(maxX, minY).color(c).texture(1f, 0f).next()
+        vb.vertex2d(minX, minY).color(c).texture(0f, 0f).next()
 
         shader.bind()
-        buffer.finish()
+        buffer.draw()
         shader.unbind()
 
-        val fr = Client.minecraft.fontRenderer
-        fr.drawString(matrixStack, "$index",
-            (maxX - 2 - fr.getStringWidth("$index")).toInt().toFloat(),
+        val fr = Client.minecraft.textRenderer
+        fr.draw(matrixStack, "$index",
+            (maxX - 2 - fr.getWidth("$index")).toInt().toFloat(),
             minY.toFloat() + 11,
             Color.WHITE.rgb
         )
     }
 
-    private val renderType = SimpleRenderTypes.flat(Identifier("minecraft:missingno"), GL11.GL_QUADS)
+    private val renderType = SimpleRenderLayers.flat(Identifier("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("bool_array_tests", null, Identifier("ll-albedo-test:shaders/bool_array_tests.frag")) {
+    class Test: Shader("bool_array_tests", null, Identifier("liblib-albedo-test:shaders/bool_array_tests.frag")) {
         val index = GLSL.glInt()
         val primitive = GLSL.glBool[2]
         val vector2 = GLSL.bvec2[2]

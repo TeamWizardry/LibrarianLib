@@ -1,13 +1,15 @@
-package com.teamwizardry.librarianlib.albedo.testmod.shaders
+package com.teamwizardry.librarianlib.albedo.test.shaders
 
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.GLSLStruct
 import com.teamwizardry.librarianlib.albedo.Shader
-import com.teamwizardry.librarianlib.albedo.testmod.ShaderTest
+import com.teamwizardry.librarianlib.albedo.test.ShaderTest
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import net.minecraft.client.render.VertexConsumerProvider
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -43,22 +45,22 @@ internal object StructUniform: ShaderTest<StructUniform.Test>() {
         shader.simpleArray[1].embeddedArray[0].embed.set(25f)
         shader.simpleArray[1].embeddedArray[1].embed.set(26f)
 
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
         val vb = buffer.getBuffer(renderType)
 
-        vb.pos2d(minX, maxY).color(c).tex(0f, 1f).endVertex()
-        vb.pos2d(maxX, maxY).color(c).tex(1f, 1f).endVertex()
-        vb.pos2d(maxX, minY).color(c).tex(1f, 0f).endVertex()
-        vb.pos2d(minX, minY).color(c).tex(0f, 0f).endVertex()
+        vb.vertex2d(minX, maxY).color(c).texture(0f, 1f).next()
+        vb.vertex2d(maxX, maxY).color(c).texture(1f, 1f).next()
+        vb.vertex2d(maxX, minY).color(c).texture(1f, 0f).next()
+        vb.vertex2d(minX, minY).color(c).texture(0f, 0f).next()
 
         shader.bind()
-        buffer.finish()
+        buffer.draw()
         shader.unbind()
     }
 
-    private val renderType = SimpleRenderTypes.flat(Identifier("minecraft:missingno"), GL11.GL_QUADS)
+    private val renderType = SimpleRenderLayers.flat(Identifier("minecraft:missingno"), GL11.GL_QUADS)
 
-    class Test: Shader("struct_tests", null, Identifier("ll-albedo-test:shaders/struct_tests.frag")) {
+    class Test: Shader("struct_tests", null, Identifier("liblib-albedo-test:shaders/struct_tests.frag")) {
         val simple = GLSL.struct<Simple>()
         val simpleArray = GLSL.struct<Simple>(2)
 

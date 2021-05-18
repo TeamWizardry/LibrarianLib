@@ -2,21 +2,23 @@ package com.teamwizardry.librarianlib.albedo
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
-import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
 import com.teamwizardry.librarianlib.core.util.resolveSibling
-import net.minecraft.client.renderer.RenderState
-import net.minecraft.client.renderer.RenderType
-import net.minecraft.profiler.IProfiler
-import net.minecraft.resources.IResourceManager
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper
+import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener
+import net.minecraft.client.render.RenderPhase
+import net.minecraft.resource.ResourceManager
+import net.minecraft.resource.ResourceType
 import net.minecraft.util.Identifier
+import net.minecraft.util.profiler.Profiler
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20.*
 import java.util.LinkedList
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executor
 import kotlin.math.min
 
 public abstract class Shader(
@@ -64,7 +66,7 @@ public abstract class Shader(
      * RenderType type = RenderType.makeState(..., renderState);
      * ```
      */
-    public val renderState: RenderState = object: RenderState("enable_$shaderName", {
+    public val renderState: RenderPhase = object: RenderPhase("enable_$shaderName", {
         bind()
     }, {
         unbind()
@@ -205,7 +207,7 @@ public abstract class Shader(
         compile(Client.resourceManager)
     }
 
-    private fun compile(resourceManager: IResourceManager) {
+    private fun compile(resourceManager: ResourceManager) {
         logger.info("Compiling shader program $shaderName")
         if (uniforms != null) {
             UniformBinder.unbindAllUniforms(this)
@@ -238,7 +240,7 @@ public abstract class Shader(
     }
 
     private fun readShader(
-        resourceManager: IResourceManager, name: Identifier,
+        resourceManager: ResourceManager, name: Identifier,
         files: MutableMap<Identifier, Int>,
         stack: LinkedList<Identifier> = LinkedList()
     ): String {
@@ -250,7 +252,7 @@ public abstract class Shader(
         val sourceNumber = files.getOrPut(name) { sourceNumberBase + files.size }
         val includeRegex = """^\s*#pragma\s+include\s*<\s*(\S*)\s*>\s*$""".toRegex()
 
-        val text = Client.getResourceText(resourceManager, name)
+        val text = resourceManager.getResource(name).inputStream.bufferedReader().readText()
         var out = ""
         text.lineSequence().forEachIndexed { i, line ->
             val lineNumber = i + 1
@@ -369,15 +371,34 @@ public abstract class Shader(
         private var currentlyBound: Shader? = null
         private val allShaders = weakSetOf<Shader>()
         init {
-            Client.resourceReloadHandler.register(object: ISimpleReloadListener<Any?> {
-                override fun prepare(resourceManager: IResourceManager, profiler: IProfiler): Any? = null
+            ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(object: SimpleResourceReloadListener<Unit> {
+                override fun getFabricId(): Identifier {
+                    return Identifier("liblib-albedo:shaders")
+                }
 
-                override fun apply(result: Any?, resourceManager: IResourceManager, profiler: IProfiler) {
-                    allShaders.forEach { shader ->
-                        shader.compile(resourceManager)
+                override fun load(
+                    manager: ResourceManager,
+                    profiler: Profiler,
+                    executor: Executor
+                ): CompletableFuture<Unit> {
+                    return CompletableFuture.supplyAsync { Unit }
+                }
+
+                override fun apply(
+                    data: Unit,
+                    manager: ResourceManager,
+                    profiler: Profiler,
+                    executor: Executor
+                ): CompletableFuture<Void> {
+                    return CompletableFuture.runAsync {
+                        allShaders.forEach { shader ->
+                            shader.compile(manager)
+                        }
                     }
                 }
             })
         }
+
+        private val logger = LibLibAlbedo.makeLogger<Shader>()
     }
 }

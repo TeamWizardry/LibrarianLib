@@ -52,7 +52,7 @@ configure<CommonConfigExtension> {
     version = snapshotVersion ?: mod_version
 
     modules {
-//        create("albedo")
+        create("albedo")
         create("core")
         create("courier")
         create("etcetera")

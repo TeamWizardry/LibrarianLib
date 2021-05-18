@@ -1,9 +1,9 @@
-package com.teamwizardry.librarianlib.albedo.testmod
+package com.teamwizardry.librarianlib.albedo.test
 
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.teamwizardry.librarianlib.albedo.Shader
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.ConstructorMirror
+import net.minecraft.client.util.math.MatrixStack
 
 abstract class ShaderTest<T: Shader> {
     protected abstract fun doDraw(matrixStack: MatrixStack)

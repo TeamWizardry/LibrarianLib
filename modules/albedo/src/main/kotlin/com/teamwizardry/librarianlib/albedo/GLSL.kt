@@ -7,9 +7,9 @@ import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.core.util.vec
 import dev.thecodewarrior.mirror.Mirror
-import net.minecraft.util.math.vector.Matrix3f
-import net.minecraft.util.math.vector.Matrix4f
-import net.minecraft.util.math.vector.Vector3d
+import net.minecraft.util.math.Matrix3f
+import net.minecraft.util.math.Matrix4f
+import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL12
 import org.lwjgl.opengl.GL13
@@ -259,14 +259,14 @@ public abstract class GLSL(public val glConstant: Int) {
         public var y: Float = 0f
         public var z: Float = 0f
 
-        public fun get(): Vector3d = vec(x, y, z)
+        public fun get(): Vec3d = vec(x, y, z)
         public fun set(x: Float, y: Float, z: Float) {
             this.x = x
             this.y = y
             this.z = z
         }
 
-        public fun set(value: Vector3d) {
+        public fun set(value: Vec3d) {
             set(value.x.toFloat(), value.y.toFloat(), value.z.toFloat())
         }
 
@@ -298,8 +298,8 @@ public abstract class GLSL(public val glConstant: Int) {
                 setZ(index, z)
             }
 
-            public operator fun get(index: Int): Vector3d = vec(values[index * 3], values[index * 3 + 1], values[index * 3 + 2])
-            public operator fun set(index: Int, value: Vector3d) {
+            public operator fun get(index: Int): Vec3d = vec(values[index * 3], values[index * 3 + 1], values[index * 3 + 2])
+            public operator fun set(index: Int, value: Vec3d) {
                 set(index, value.x.toFloat(), value.y.toFloat(), value.z.toFloat())
             }
 
@@ -978,14 +978,14 @@ public abstract class GLSL(public val glConstant: Int) {
         /**
          * Get the specified column as a vector
          */
-        public operator fun get(column: Int): Vector3d {
+        public operator fun get(column: Int): Vec3d {
             return vec(this[column, 0], this[column, 1], this[column, 2])
         }
 
         /**
          * Set the specified column as a vector
          */
-        public operator fun set(column: Int, value: Vector3d) {
+        public operator fun set(column: Int, value: Vec3d) {
             this[column, 0] = value.x.toFloat()
             this[column, 1] = value.y.toFloat()
             this[column, 2] = value.z.toFloat()
@@ -1118,14 +1118,14 @@ public abstract class GLSL(public val glConstant: Int) {
             /**
              * Get the specified column as a vector
              */
-            public operator fun get(index: Int, column: Int): Vector3d {
+            public operator fun get(index: Int, column: Int): Vec3d {
                 return vec(this[index, column, 0], this[index, column, 1], this[index, column, 2])
             }
 
             /**
              * Set the specified column as a vector
              */
-            public operator fun set(index: Int, column: Int, value: Vector3d) {
+            public operator fun set(index: Int, column: Int, value: Vec3d) {
                 this[index, column, 0] = value.x.toFloat()
                 this[index, column, 1] = value.y.toFloat()
                 this[index, column, 2] = value.z.toFloat()
@@ -1432,14 +1432,14 @@ public abstract class GLSL(public val glConstant: Int) {
             /**
              * Get the specified column as a vector
              */
-            public operator fun get(index: Int, column: Int): Vector3d {
+            public operator fun get(index: Int, column: Int): Vec3d {
                 return vec(this[index, column, 0], this[index, column, 1], this[index, column, 2])
             }
 
             /**
              * Set the specified column as a vector
              */
-            public operator fun set(index: Int, column: Int, value: Vector3d) {
+            public operator fun set(index: Int, column: Int, value: Vec3d) {
                 this[index, column, 0] = value.x.toFloat()
                 this[index, column, 1] = value.y.toFloat()
                 this[index, column, 2] = value.z.toFloat()
@@ -1561,14 +1561,14 @@ public abstract class GLSL(public val glConstant: Int) {
         /**
          * Get the specified column as a vector
          */
-        public operator fun get(column: Int): Vector3d {
+        public operator fun get(column: Int): Vec3d {
             return vec(this[column, 0], this[column, 1], this[column, 2])
         }
 
         /**
          * Set the specified column as a vector
          */
-        public operator fun set(column: Int, value: Vector3d) {
+        public operator fun set(column: Int, value: Vec3d) {
             this[column, 0] = value.x.toFloat()
             this[column, 1] = value.y.toFloat()
             this[column, 2] = value.z.toFloat()
@@ -1633,14 +1633,14 @@ public abstract class GLSL(public val glConstant: Int) {
             /**
              * Get the specified column as a vector
              */
-            public operator fun get(index: Int, column: Int): Vector3d {
+            public operator fun get(index: Int, column: Int): Vec3d {
                 return vec(this[index, column, 0], this[index, column, 1], this[index, column, 2])
             }
 
             /**
              * Set the specified column as a vector
              */
-            public operator fun set(index: Int, column: Int, value: Vector3d) {
+            public operator fun set(index: Int, column: Int, value: Vec3d) {
                 this[index, column, 0] = value.x.toFloat()
                 this[index, column, 1] = value.y.toFloat()
                 this[index, column, 2] = value.z.toFloat()
@@ -2495,14 +2495,14 @@ public abstract class GLSL(public val glConstant: Int) {
         /**
          * Get the specified column as a vector
          */
-        public operator fun get(column: Int): Vector3d {
+        public operator fun get(column: Int): Vec3d {
             return vec(this[column, 0], this[column, 1], this[column, 2])
         }
 
         /**
          * Set the specified column as a vector
          */
-        public operator fun set(column: Int, value: Vector3d) {
+        public operator fun set(column: Int, value: Vec3d) {
             this[column, 0] = value.x.toFloat()
             this[column, 1] = value.y.toFloat()
             this[column, 2] = value.z.toFloat()
@@ -2612,14 +2612,14 @@ public abstract class GLSL(public val glConstant: Int) {
             /**
              * Get the specified column as a vector
              */
-            public operator fun get(index: Int, column: Int): Vector3d {
+            public operator fun get(index: Int, column: Int): Vec3d {
                 return vec(this[index, column, 0], this[index, column, 1], this[index, column, 2])
             }
 
             /**
              * Set the specified column as a vector
              */
-            public operator fun set(index: Int, column: Int, value: Vector3d) {
+            public operator fun set(index: Int, column: Int, value: Vec3d) {
                 this[index, column, 0] = value.x.toFloat()
                 this[index, column, 1] = value.y.toFloat()
                 this[index, column, 2] = value.z.toFloat()
