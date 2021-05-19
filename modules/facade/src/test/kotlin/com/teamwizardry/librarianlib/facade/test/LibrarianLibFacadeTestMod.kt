@@ -4,8 +4,8 @@ package com.teamwizardry.librarianlib.facade.test
 
 import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
-import com.teamwizardry.librarianlib.facade.container.FacadeContainer
-import com.teamwizardry.librarianlib.facade.container.FacadeContainerType
+import com.teamwizardry.librarianlib.facade.container.FacadeController
+import com.teamwizardry.librarianlib.facade.container.FacadeScreenHandlerType
 import com.teamwizardry.librarianlib.facade.example.*
 import com.teamwizardry.librarianlib.facade.example.containers.DirtSetterItem
 import com.teamwizardry.librarianlib.facade.example.gettingstarted.*
@@ -22,7 +22,6 @@ import com.teamwizardry.librarianlib.testcore.objects.TestBlockConfig
 import com.teamwizardry.librarianlib.testcore.objects.TestItem
 import com.teamwizardry.librarianlib.testcore.objects.TestScreenConfig
 import net.minecraft.client.gui.ScreenManager
-import net.minecraft.entity.player.ServerPlayerEntity
 import net.minecraft.inventory.container.ContainerType
 import net.minecraft.item.Item
 import net.minecraft.server.network.ServerPlayerEntity
@@ -96,21 +95,21 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
     // note: the container and data classes are inferred from the screen
     val containerSets: Map<String, TestContainerSet> = mapOf(
         "basic" to TestContainerSet("Basic") {
-            container("Single Slot", SingleSlotContainer::class.java) { ContainerScreenFactory(::SingleSlotScreen) }
-            container("Slot Occlusion", OcclusionContainer::class.java) { ContainerScreenFactory(::OcclusionScreen) }
-            container("Fluid Slot", FluidSlotContainer::class.java) { ContainerScreenFactory(::FluidSlotScreen) }
+            container("Single Slot", SingleSlotController::class.java) { ContainerScreenFactory(::SingleSlotScreen) }
+            container("Slot Occlusion", OcclusionController::class.java) { ContainerScreenFactory(::OcclusionScreen) }
+            container("Fluid Slot", FluidSlotController::class.java) { ContainerScreenFactory(::FluidSlotScreen) }
         },
         "jei_compat" to TestContainerSet("JEI Compat") {
-            container("Exclusion Areas", JeiExclusionAreasContainer::class.java) { ContainerScreenFactory(::JeiExclusionAreasScreen) }
-            container("Ghost Slots", GhostSlotContainer::class.java) { ContainerScreenFactory(::GhostSlotScreen) }
-            container("Ingredient Layers", JeiIngredientLayerContainer::class.java) { ContainerScreenFactory(::JeiIngredientLayerScreen) }
+            container("Exclusion Areas", JeiExclusionAreasController::class.java) { ContainerScreenFactory(::JeiExclusionAreasScreen) }
+            container("Ghost Slots", GhostSlotController::class.java) { ContainerScreenFactory(::GhostSlotScreen) }
+            container("Ingredient Layers", JeiIngredientLayerController::class.java) { ContainerScreenFactory(::JeiIngredientLayerScreen) }
         },
     )
 
-    val simpleContainerType: FacadeContainerType<SimpleContainer>
-    val simpleInventoryContainerType: FacadeContainerType<SimpleInventoryContainer>
-    val testContainerSelectorContainerType: FacadeContainerType<TestContainerSelectorContainer>
-    val backpackContainerType: FacadeContainerType<BackpackContainer>
+    val simpleContainerType: FacadeScreenHandlerType<SimpleController>
+    val simpleInventoryContainerType: FacadeScreenHandlerType<SimpleInventoryController>
+    val testContainerSelectorContainerType: FacadeScreenHandlerType<TestContainerSelectorController>
+    val backpackContainerType: FacadeScreenHandlerType<BackpackController>
     val backpackItem: Item
 
     init {
@@ -122,7 +121,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
             }
         }
 
-        simpleInventoryContainerType = FacadeContainerType(SimpleInventoryContainer::class.java)
+        simpleInventoryContainerType = FacadeScreenHandlerType(SimpleInventoryController::class.java)
         simpleInventoryContainerType.registryName = loc("ll-facade-test", "simple_inventory")
         +TestBlock(TestBlockConfig("simple_inventory", "Simple Inventory") {
             tile(::SimpleInventoryTile)
@@ -136,7 +135,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
             }
         })
 
-        simpleContainerType = FacadeContainerType(SimpleContainer::class.java)
+        simpleContainerType = FacadeScreenHandlerType(SimpleController::class.java)
         simpleContainerType.registryName = loc("ll-facade-test", "simple_container")
         +TestItem(TestItemConfig("simple_container", "Simple Container") {
             rightClick.server {
@@ -144,7 +143,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
             }
         })
 
-        testContainerSelectorContainerType = FacadeContainerType(TestContainerSelectorContainer::class.java)
+        testContainerSelectorContainerType = FacadeScreenHandlerType(TestContainerSelectorController::class.java)
         testContainerSelectorContainerType.registryName = loc("ll-facade-test", "container_selector")
         containerSets.forEach { (id, containerSet) ->
             +TestBlock(TestBlockConfig(id + "_container_set", "${containerSet.name} Container Set") {
@@ -160,7 +159,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
             })
         }
 
-        backpackContainerType = FacadeContainerType(BackpackContainer::class.java)
+        backpackContainerType = FacadeScreenHandlerType(BackpackController::class.java)
         backpackContainerType.registryName = loc("ll-facade-test", "backpack")
         backpackItem = BackpackItem(itemGroup)
         backpackItem.registryName = loc("ll-facade-test", "backpack")
@@ -191,17 +190,17 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
 
     override fun clientSetup(event: FMLClientSetupEvent) {
         super.clientSetup(event)
-        ScreenManager.registerFactory(simpleContainerType, ::SimpleContainerScreen)
-        ScreenManager.registerFactory(simpleInventoryContainerType, ::SimpleInventoryContainerScreen)
-        ScreenManager.registerFactory(testContainerSelectorContainerType, ::TestContainerSelectorScreen)
-        ScreenManager.registerFactory(backpackContainerType, ::BackpackContainerScreen)
+        ScreenManager.registerFactory(simpleContainerType, ::SimpleView)
+        ScreenManager.registerFactory(simpleInventoryContainerType, ::SimpleInventoryView)
+        ScreenManager.registerFactory(testContainerSelectorContainerType, ::TestView)
+        ScreenManager.registerFactory(backpackContainerType, ::BackpackView)
         for ((_, containerSet) in containerSets) {
             for (type in containerSet.types) {
                 @Suppress("UNCHECKED_CAST")
                 ScreenManager.registerFactory(
-                    type.containerType as ContainerType<FacadeContainer>
+                    type.containerType as ContainerType<FacadeController>
                 ) { container, inventory, title ->
-                    (type.screenFactory.getClientFunction() as ContainerScreenFactory<FacadeContainer>)
+                    (type.screenFactory.getClientFunction() as ContainerScreenFactory<FacadeController>)
                         .create(container, inventory, title)
                 }
             }

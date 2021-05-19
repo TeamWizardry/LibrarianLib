@@ -5,26 +5,22 @@ import com.teamwizardry.librarianlib.facade.container.slot.FacadeSlot
 import com.teamwizardry.librarianlib.facade.container.transfer.TransferSlot
 import com.teamwizardry.librarianlib.facade.container.transfer.TransferState
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.inventory.Inventory
 import net.minecraft.item.ItemStack
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.slot.SlotActionType
-import net.minecraftforge.items.IItemHandler
 import kotlin.math.min
 
-public open class GhostSlot(itemHandler: IItemHandler, index: Int) : FacadeSlot(itemHandler, index), CustomClickSlot, TransferSlot {
-    /**
-     * Whether to disable JEI ghost slot integration
-     */
-    public var disableJeiGhostIntegration: Boolean = false
-
-    override fun getSlotStackLimit(): Int {
+public open class GhostSlot(inventory: Inventory, index: Int) : FacadeSlot(inventory, index), CustomClickSlot, TransferSlot {
+    override fun getMaxItemCount(): Int {
         return 1
     }
 
     protected open fun acceptGhostStack(stack: ItemStack) {
+        if(!canInsert(stack)) return
         val ghostStack = stack.copy()
-        ghostStack.count = min(slotStackLimit, ghostStack.count)
-        this.putStack(ghostStack)
+        ghostStack.count = min(getMaxItemCount(ghostStack), ghostStack.count)
+        setStack(ghostStack)
     }
 
     override fun handleClick(
@@ -33,8 +29,8 @@ public open class GhostSlot(itemHandler: IItemHandler, index: Int) : FacadeSlot(
         clickType: SlotActionType,
         player: PlayerEntity
     ): ItemStack? {
-        val ghostStack = player.inventory.itemStack
-        val isValid = isItemValid(ghostStack)
+        val ghostStack = player.inventory.cursorStack
+        val isValid = canInsert(ghostStack)
 
         when(clickType) {
             SlotActionType.PICKUP -> {
@@ -57,16 +53,10 @@ public open class GhostSlot(itemHandler: IItemHandler, index: Int) : FacadeSlot(
             transfer.foundSpot = true
             transfer.halt = true
         }
-        if(this.stack.isEmpty && isItemValid(transfer.stack)) {
+        if(this.stack.isEmpty && canInsert(transfer.stack)) {
             acceptGhostStack(transfer.stack)
             transfer.foundSpot = true
             transfer.halt = true
-        }
-    }
-
-    public open fun acceptJeiGhostStack(stack: ItemStack) {
-        if(isItemValid(stack)) {
-            acceptGhostStack(stack)
         }
     }
 }

@@ -1,16 +1,16 @@
 package com.teamwizardry.librarianlib.facade.test.containers
 
-import com.teamwizardry.librarianlib.facade.container.FacadeContainer
+import com.teamwizardry.librarianlib.facade.container.FacadeController
 import com.teamwizardry.librarianlib.facade.container.slot.SlotManager
 import com.teamwizardry.librarianlib.facade.test.LibrarianLibFacadeTestMod
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.math.BlockPos
 
-class SimpleInventoryContainer(
+class SimpleInventoryController(
     windowId: Int,
     player: PlayerEntity,
     pos: BlockPos
-): FacadeContainer(LibrarianLibFacadeTestMod.simpleInventoryContainerType, windowId, player) {
+): FacadeController(LibrarianLibFacadeTestMod.simpleInventoryContainerType, windowId, player) {
     val contentsSlots: SlotManager
 
     init {

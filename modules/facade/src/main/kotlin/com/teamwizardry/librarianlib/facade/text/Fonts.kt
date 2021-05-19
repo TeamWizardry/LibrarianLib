@@ -1,15 +1,16 @@
 package com.teamwizardry.librarianlib.facade.text
 
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
-import com.teamwizardry.librarianlib.core.util.loc
-import com.teamwizardry.librarianlib.facade.logger
+import com.teamwizardry.librarianlib.facade.LibLibFacade
 import dev.thecodewarrior.bitfont.data.Bitfont
-import net.minecraft.profiler.IProfiler
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper
+import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener
 import net.minecraft.resource.ResourceManager
-import net.minecraft.resources.IResourceManager
+import net.minecraft.resource.ResourceType
 import net.minecraft.util.Identifier
 import net.minecraft.util.profiler.Profiler
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executor
 
 public object Fonts {
     public var classic: Bitfont
@@ -18,27 +19,42 @@ public object Fonts {
         private set
 
     init {
-        val classicLoc = loc("librarianlib:facade/fonts/mcclassicplus.bitfont")
-        val unifontLoc = loc("librarianlib:facade/fonts/unifont.bitfont")
-        Client.resourceReloadHandler.register(object: ISimpleReloadListener<Pair<Bitfont, Bitfont>> {
-            override fun prepare(resourceManager: ResourceManager, profiler: Profiler): Pair<Bitfont, Bitfont> {
-                return load(classicLoc) to load(unifontLoc)
+        val classicLoc = Identifier("liblib-facade:fonts/mcclassicplus.bitfont")
+        val unifontLoc = Identifier("liblib-facade:fonts/unifont.bitfont")
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(object: SimpleResourceReloadListener<Pair<Bitfont, Bitfont>> {
+            override fun getFabricId(): Identifier = Identifier("liblib-facade:bitfont-fonts")
+
+            override fun load(
+                manager: ResourceManager,
+                profiler: Profiler,
+                executor: Executor
+            ): CompletableFuture<Pair<Bitfont, Bitfont>> {
+                return CompletableFuture.supplyAsync {
+                    load(manager, classicLoc) to load(manager, unifontLoc)
+                }
             }
 
-            override fun apply(result: Pair<Bitfont, Bitfont>, resourceManager: ResourceManager, profiler: Profiler) {
-                classic = result.first
-                unifont = result.second
+            override fun apply(
+                data: Pair<Bitfont, Bitfont>,
+                manager: ResourceManager,
+                profiler: Profiler,
+                executor: Executor
+            ): CompletableFuture<Void> {
+                return CompletableFuture.runAsync {
+                    classic = data.first
+                    unifont = data.second
+                }
             }
         })
 
-        classic = load(classicLoc)
-        unifont = load(unifontLoc)
+        classic = load(Client.minecraft.resourceManager, classicLoc)
+        unifont = load(Client.minecraft.resourceManager, unifontLoc)
     }
 
-    private fun load(fontLocation: Identifier): Bitfont {
+    private fun load(manager: ResourceManager, fontLocation: Identifier): Bitfont {
         try {
             logger.debug("Loading Bitfont font $fontLocation")
-            val bytes = Client.minecraft.resourceManager.getResource(fontLocation).inputStream
+            val bytes = manager.getResource(fontLocation).inputStream
             val font = Bitfont.unpack(bytes)
             logger.debug("Finished loading font")
             return font
@@ -47,4 +63,6 @@ public object Fonts {
             return Bitfont("<err>", 10, 4, 9, 6, 2)
         }
     }
+
+    private val logger = LibLibFacade.makeLogger<Fonts>()
 }

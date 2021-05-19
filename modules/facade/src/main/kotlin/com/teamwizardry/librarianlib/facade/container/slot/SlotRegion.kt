@@ -1,13 +1,12 @@
 package com.teamwizardry.librarianlib.facade.container.slot
 
-import net.minecraft.inventory.container.Slot
+import com.teamwizardry.librarianlib.facade.container.DefaultInventoryImpl
+import net.minecraft.inventory.Inventory
 import net.minecraft.screen.slot.Slot
-import net.minecraftforge.items.IItemHandler
-import net.minecraftforge.items.ItemStackHandler
 import java.lang.IllegalStateException
 
 public fun interface SlotFactory {
-    public fun createSlot(inventory: IItemHandler, index: Int): Slot
+    public fun createSlot(inventory: Inventory, index: Int): Slot
 }
 
 /**
@@ -156,14 +155,14 @@ public class SlotRegion private constructor(private val slots: List<LazySlot>) :
          * Create a region containing the slots in the given inventory.
          */
         @JvmStatic
-        public fun create(inventory: IItemHandler): SlotRegion {
-            return SlotRegion((0 until inventory.slots).map {
+        public fun create(inventory: Inventory): SlotRegion {
+            return SlotRegion((0 until inventory.size()).map {
                 LazySlot(inventory, it) { inv, i -> FacadeSlot(inv, i) }
             })
         }
     }
 
-    private class LazySlot(val inventory: IItemHandler, val index: Int, factory: SlotFactory) {
+    private class LazySlot(val inventory: Inventory, val index: Int, factory: SlotFactory) {
         constructor(slot: Slot) : this(EMPTY_INVENTORY, 0, { _, _ -> slot }) {
             _slot = slot
         }
@@ -193,7 +192,7 @@ public class SlotRegion private constructor(private val slots: List<LazySlot>) :
         }
 
         companion object {
-            private val EMPTY_INVENTORY = ItemStackHandler(0)
+            private val EMPTY_INVENTORY = DefaultInventoryImpl.ofSize(0)
         }
     }
 }

@@ -104,7 +104,7 @@ public object SimpleRenderLayers {
         bufferSizeIn: Int, useDelegate: Boolean, needsSorting: Boolean,
         renderPhase: RenderLayer.MultiPhaseParameters
     ): RenderLayer {
-        mixinCast<IMutableRenderLayerPhaseParameters>(renderPhase).addState(
+        mixinCast<IMutableRenderLayerPhaseParameters>(renderPhase).addPhase(
             CacheFixerRenderPhase(
                 vertexFormatIn, glMode, bufferSizeIn, useDelegate, needsSorting
             )

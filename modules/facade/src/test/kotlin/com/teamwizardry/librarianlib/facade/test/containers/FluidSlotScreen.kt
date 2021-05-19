@@ -1,8 +1,7 @@
 package com.teamwizardry.librarianlib.facade.test.containers
 
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
-import com.teamwizardry.librarianlib.facade.container.layers.FluidSlotLayer
+import com.teamwizardry.librarianlib.facade.container.FacadeView
 import com.teamwizardry.librarianlib.facade.container.layers.SlotGridLayer
 import com.teamwizardry.librarianlib.facade.container.layers.SlotLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
@@ -11,10 +10,10 @@ import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.text.Text
 
 class FluidSlotScreen(
-    container: FluidSlotContainer,
+    container: FluidSlotController,
     inventory: PlayerInventory,
     title: Text
-) : FacadeContainerScreen<FluidSlotContainer>(container, inventory, title) {
+) : FacadeView<FluidSlotController>(container, inventory, title) {
 
     init {
         val contents = GuiLayer(0, 0, 36, 54)

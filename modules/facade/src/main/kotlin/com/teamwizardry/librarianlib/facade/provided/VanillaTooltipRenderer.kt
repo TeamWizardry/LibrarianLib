@@ -1,10 +1,7 @@
 package com.teamwizardry.librarianlib.facade.provided
 
-import com.mojang.blaze3d.matrix.MatrixStack
-import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import net.minecraft.client.font.TextRenderer
-import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.item.ItemStack
@@ -12,12 +9,7 @@ import net.minecraft.text.LiteralText
 import net.minecraft.text.OrderedText
 import net.minecraft.text.StringVisitable
 import net.minecraft.text.Text
-import net.minecraft.util.IReorderingProcessor
 import net.minecraft.util.Language
-import net.minecraft.util.text.ITextComponent
-import net.minecraft.util.text.ITextProperties
-import net.minecraft.util.text.LanguageMap
-import net.minecraft.util.text.StringTextComponent
 
 /**
  * Public access to the protected tooltip rendering methods in [Screen]
@@ -33,15 +25,13 @@ public object VanillaTooltipRenderer {
         matrixStack: MatrixStack,
         text: List<String>,
         mouseX: Int,
-        mouseY: Int,
-        font: TextRenderer
+        mouseY: Int
     ) {
-        TooltipProvider.renderToolTip(
+        TooltipProvider.renderOrderedTooltip(
             matrixStack,
             Language.getInstance().reorder(text.map { StringVisitable.plain(it) }),
             mouseX,
-            mouseY,
-            font
+            mouseY
         )
     }
 
@@ -60,45 +50,26 @@ public object VanillaTooltipRenderer {
                 this.init(Client.minecraft, Client.window.scaledWidth, Client.window.scaledHeight)
         }
 
-        public override fun renderTooltip(
-            matrixStack: MatrixStack,
-            text: Text,
-            p_renderTooltip_2_: Int,
-            p_renderTooltip_3_: Int
-        ) {
-            initIfNeeded()
-            super.renderTooltip(matrixStack, text, p_renderTooltip_2_, p_renderTooltip_3_)
+        public override fun renderTooltip(matrices: MatrixStack, stack: ItemStack, x: Int, y: Int) {
+            super.renderTooltip(matrices, stack, x, y)
         }
 
-        public override fun renderOrderedTooltip(
-            matrixStack: MatrixStack,
-            tooltips: List<OrderedText>,
-            p_renderTooltip_2_: Int,
-            p_renderTooltip_3_: Int
-        ) {
-            initIfNeeded()
-            super.renderOrderedTooltip(matrixStack, tooltips, p_renderTooltip_2_, p_renderTooltip_3_)
+        override fun renderTooltip(matrices: MatrixStack, text: Text, x: Int, y: Int) {
+            super.renderTooltip(matrices, text, x, y)
         }
 
-        public override fun renderToolTip(
-            matrixStack: MatrixStack,
-            tooltips: List<OrderedText>,
-            p_renderTooltip_2_: Int,
-            p_renderTooltip_3_: Int,
-            font: TextRenderer
-        ) {
-            initIfNeeded()
-            super.renderToolTip(matrixStack, tooltips, p_renderTooltip_2_, p_renderTooltip_3_, font)
+        override fun renderTooltip(matrices: MatrixStack, lines: MutableList<Text>, x: Int, y: Int) {
+            super.renderTooltip(matrices, lines, x, y)
         }
 
-        public override fun renderTooltip(
-            matrixStack: MatrixStack,
-            p_renderTooltip_1_: ItemStack,
-            p_renderTooltip_2_: Int,
-            p_renderTooltip_3_: Int
+        override fun renderOrderedTooltip(
+            matrices: MatrixStack,
+            lines: MutableList<out OrderedText>,
+            x: Int,
+            y: Int
         ) {
             initIfNeeded()
-            super.renderTooltip(matrixStack, p_renderTooltip_1_, p_renderTooltip_2_, p_renderTooltip_3_)
+            super.renderOrderedTooltip(matrices, lines, x, y)
         }
     }
 }

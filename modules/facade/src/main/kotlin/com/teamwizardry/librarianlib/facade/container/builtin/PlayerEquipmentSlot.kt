@@ -2,63 +2,61 @@ package com.teamwizardry.librarianlib.facade.container.builtin
 
 import com.mojang.datafixers.util.Pair
 import com.teamwizardry.librarianlib.facade.container.slot.FacadeSlot
-import net.minecraft.client.renderer.texture.AtlasTexture
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EquipmentSlot
+import net.minecraft.entity.mob.MobEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.inventory.EquipmentSlotType
-import net.minecraft.inventory.container.PlayerContainer
+import net.minecraft.inventory.Inventory
 import net.minecraft.item.ItemStack
+import net.minecraft.screen.PlayerScreenHandler
 import net.minecraft.util.Identifier
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.items.IItemHandler
-import net.minecraftforge.items.SlotItemHandler
 
 public class PlayerEquipmentSlot(
-    itemHandler: IItemHandler, index: Int,
+    inventory: Inventory, index: Int,
     public var player: PlayerEntity, public var type: EquipmentSlot
-) : FacadeSlot(itemHandler, index) {
+) : FacadeSlot(inventory, index) {
 
     /**
      * Returns the maximum stack size for a given slot (usually the same as getInventoryStackLimit(), but 1 in
      * the case of armor slots)
      */
-    override fun getSlotStackLimit(): Int {
+    override fun getMaxItemCount(): Int {
         return 1
     }
 
     /**
      * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
      */
-    override fun isItemValid(stack: ItemStack): Boolean {
-        return stack.canEquip(type, player)
+    override fun canInsert(stack: ItemStack): Boolean {
+        return MobEntity.getPreferredEquipmentSlot(stack) == type
     }
 
     /**
      * Return whether this slot's stack can be taken from this slot.
      */
-    override fun canTakeStack(playerIn: PlayerEntity): Boolean {
-        val itemstack = this.stack
-        return if (!itemstack.isEmpty && !playerIn.isCreative && EnchantmentHelper.hasBindingCurse(itemstack))
+    override fun canTakeItems(playerEntity: PlayerEntity): Boolean {
+        val itemStack = this.stack
+        return if (!itemStack.isEmpty && !playerEntity.isCreative && EnchantmentHelper.hasBindingCurse(itemStack))
             false
         else
-            super.canTakeStack(playerIn)
+            super.canTakeItems(playerEntity)
     }
 
-    @OnlyIn(Dist.CLIENT)
-    override fun getBackground(): Pair<Identifier, Identifier>? {
-        return EQUIPMENT_TYPE_TEXTURES[type.ordinal]?.let { Pair.of(AtlasTexture.LOCATION_BLOCKS_TEXTURE, it) }
+    @Environment(EnvType.CLIENT)
+    override fun getBackgroundSprite(): Pair<Identifier, Identifier>? {
+        return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, EMPTY_ARMOR_SLOT_TEXTURES[type.entitySlotId])
     }
 
     private companion object {
-        private val EQUIPMENT_TYPE_TEXTURES = listOf(
+        private val EMPTY_ARMOR_SLOT_TEXTURES = listOf(
             null, // main hand has no icon
-            PlayerContainer.EMPTY_ARMOR_SLOT_SHIELD,
-            PlayerContainer.EMPTY_ARMOR_SLOT_BOOTS,
-            PlayerContainer.EMPTY_ARMOR_SLOT_LEGGINGS,
-            PlayerContainer.EMPTY_ARMOR_SLOT_CHESTPLATE,
-            PlayerContainer.EMPTY_ARMOR_SLOT_HELMET
+            PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT,
+            PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE,
+            PlayerScreenHandler.EMPTY_LEGGINGS_SLOT_TEXTURE,
+            PlayerScreenHandler.EMPTY_CHESTPLATE_SLOT_TEXTURE,
+            PlayerScreenHandler.EMPTY_HELMET_SLOT_TEXTURE
         )
     }
 }

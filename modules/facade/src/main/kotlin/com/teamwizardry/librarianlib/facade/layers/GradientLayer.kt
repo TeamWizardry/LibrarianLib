@@ -1,7 +1,9 @@
 package com.teamwizardry.librarianlib.facade.layers
 
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.facade.value.RMValue
 import com.teamwizardry.librarianlib.facade.value.RMValueDouble
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
@@ -38,42 +40,42 @@ public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width:
 
 
         if (stops.isNotEmpty()) {
-            val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
+            val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
             val vb = buffer.getBuffer(renderType)
 
             if (axis == Axis2d.X) {
                 if (stops.first().location != 0.0) {
-                    vb.pos2d(context.transform, minX, minY).color(stops.first().color).endVertex()
-                    vb.pos2d(context.transform, minX, maxY).color(stops.first().color).endVertex()
+                    vb.vertex2d(context.transform, minX, minY).color(stops.first().color).next()
+                    vb.vertex2d(context.transform, minX, maxY).color(stops.first().color).next()
                 }
 
                 stops.forEach { stop ->
-                    vb.pos2d(context.transform, minX + (maxX - minX) * stop.location, minY).color(stop.color).endVertex()
-                    vb.pos2d(context.transform, minX + (maxX - minX) * stop.location, maxY).color(stop.color).endVertex()
+                    vb.vertex2d(context.transform, minX + (maxX - minX) * stop.location, minY).color(stop.color).next()
+                    vb.vertex2d(context.transform, minX + (maxX - minX) * stop.location, maxY).color(stop.color).next()
                 }
 
                 if (stops.last().location != 1.0) {
-                    vb.pos2d(context.transform, maxX, minY).color(stops.last().color).endVertex()
-                    vb.pos2d(context.transform, maxX, maxY).color(stops.last().color).endVertex()
+                    vb.vertex2d(context.transform, maxX, minY).color(stops.last().color).next()
+                    vb.vertex2d(context.transform, maxX, maxY).color(stops.last().color).next()
                 }
             } else {
                 if (stops.first().location != 0.0) {
-                    vb.pos2d(context.transform, minX, minY).color(stops.first().color).endVertex()
-                    vb.pos2d(context.transform, maxX, minY).color(stops.first().color).endVertex()
+                    vb.vertex2d(context.transform, minX, minY).color(stops.first().color).next()
+                    vb.vertex2d(context.transform, maxX, minY).color(stops.first().color).next()
                 }
 
                 stops.forEach { stop ->
-                    vb.pos2d(context.transform, minX, minY + (maxY - minY) * stop.location).color(stop.color).endVertex()
-                    vb.pos2d(context.transform, maxX, minY + (maxY - minY) * stop.location).color(stop.color).endVertex()
+                    vb.vertex2d(context.transform, minX, minY + (maxY - minY) * stop.location).color(stop.color).next()
+                    vb.vertex2d(context.transform, maxX, minY + (maxY - minY) * stop.location).color(stop.color).next()
                 }
 
                 if (stops.last().location != 1.0) {
-                    vb.pos2d(context.transform, minX, maxY).color(stops.last().color).endVertex()
-                    vb.pos2d(context.transform, maxX, maxY).color(stops.last().color).endVertex()
+                    vb.vertex2d(context.transform, minX, maxY).color(stops.last().color).next()
+                    vb.vertex2d(context.transform, maxX, maxY).color(stops.last().color).next()
                 }
             }
 
-            buffer.finish()
+            buffer.draw()
         }
     }
 
@@ -105,6 +107,6 @@ public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width:
     }
 
     private companion object {
-        private val renderType = SimpleRenderTypes.flat(GL11.GL_QUADS)
+        private val renderType = SimpleRenderLayers.flat(GL11.GL_QUADS)
     }
 }

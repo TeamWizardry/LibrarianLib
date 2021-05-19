@@ -1,18 +1,14 @@
 package com.teamwizardry.librarianlib.facade.provided
 
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
 import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.facade.LibLibFacade
 import net.minecraft.client.font.TextRenderer
-import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.LiteralText
 import net.minecraft.text.OrderedText
-import net.minecraft.util.IReorderingProcessor
-import net.minecraft.util.text.StringTextComponent
 import java.awt.Color
 import kotlin.math.min
 
@@ -98,7 +94,7 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
         init {
             val fontRenderer = Client.minecraft.textRenderer
             if (maxWidth == null) {
-                lines = listOf(LiteralText(text).func_241878_f())
+                lines = listOf(LiteralText(text).asOrderedText())
             } else {
                 lines = fontRenderer.wrapLines(LiteralText(text), maxWidth)
             }
@@ -129,6 +125,6 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
     }
 
     private companion object {
-        private val logger = LibrarianLibFacadeModule.makeLogger("Safety Net")
+        private val logger = LibLibFacade.makeLogger("Safety Net")
     }
 }

@@ -1,8 +1,10 @@
 package com.teamwizardry.librarianlib.facade.layers
 
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
@@ -77,12 +79,12 @@ public class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): Gu
 
         val c = color
 
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(renderType)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(renderLayer)
 
         context.matrix.translate(size.x / 2, size.y / 2)
 
-        vb.pos2d(context.transform, 0, 0).color(c).endVertex()
+        vb.vertex2d(context.transform, 0, 0).color(c).next()
 
         // we go from end to start because while the angles are measured clockwise, we need the vertices to be in
         // counterclockwise order
@@ -90,20 +92,20 @@ public class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): Gu
         while (a > start) {
             val cos = cos(a)
             val sin = sin(a)
-            vb.pos2d(context.transform, rX * sin, rY * -cos).color(c).endVertex()
+            vb.vertex2d(context.transform, rX * sin, rY * -cos).color(c).next()
             a -= segmentSize
         }
 
         if (a != start) {
             val cos = cos(start)
             val sin = sin(start)
-            vb.pos2d(context.transform, rX * sin, rY * -cos).color(c).endVertex()
+            vb.vertex2d(context.transform, rX * sin, rY * -cos).color(c).next()
         }
 
-        buffer.finish()
+        buffer.draw()
     }
 
     private companion object {
-        private val renderType = SimpleRenderTypes.flat(GL11.GL_TRIANGLE_FAN)
+        private val renderLayer = SimpleRenderLayers.flat(GL11.GL_TRIANGLE_FAN)
     }
 }

@@ -1,15 +1,15 @@
 package com.teamwizardry.librarianlib.facade.test.containers
 
 import com.teamwizardry.librarianlib.facade.container.slot.SlotManager
-import com.teamwizardry.librarianlib.facade.test.containers.base.TestContainer
+import com.teamwizardry.librarianlib.facade.test.containers.base.TestController
 import com.teamwizardry.librarianlib.facade.test.containers.base.TestContainerData
 import com.teamwizardry.librarianlib.prism.Save
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.items.ItemStackHandler
 
-class JeiExclusionAreasContainer(windowId: Int, player: PlayerEntity, pos: BlockPos) :
-    TestContainer<JeiExclusionAreasContainer.Data>(Data::class.java, windowId, player, pos) {
+class OcclusionController(windowId: Int, player: PlayerEntity, pos: BlockPos) :
+    TestController<OcclusionController.Data>(Data::class.java, windowId, player, pos) {
     val contentsSlots: SlotManager = SlotManager(data.inventory)
 
     init {
@@ -23,6 +23,6 @@ class JeiExclusionAreasContainer(windowId: Int, player: PlayerEntity, pos: Block
 
     class Data: TestContainerData() {
         @Save
-        val inventory: ItemStackHandler = ItemStackHandler(1)
+        val inventory: ItemStackHandler = ItemStackHandler(5)
     }
 }

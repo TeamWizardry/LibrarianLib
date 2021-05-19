@@ -70,8 +70,7 @@ internal object FramebufferPool {
         if (createdBuffers == maxFramebufferCount)
             throw IllegalStateException("Exceeded maximum of $maxFramebufferCount nested framebuffers")
         val fbo = Framebuffer(Client.window.framebufferWidth, Client.window.framebufferHeight, true, MinecraftClient.IS_SYSTEM_MAC)
-        fbo.enableStencil()
-        fbo.setFramebufferColor(0f, 0f, 0f, 0f)
+        fbo.setClearColor(0f, 0f, 0f, 0f)
         createdBuffers++
         return fbo
     }

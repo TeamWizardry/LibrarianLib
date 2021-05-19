@@ -1,30 +1,21 @@
 package com.teamwizardry.librarianlib.facade.container
 
-import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
-import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
-import com.teamwizardry.librarianlib.facade.container.builtin.GhostSlot
+import com.teamwizardry.librarianlib.facade.LibLibFacade
 import com.teamwizardry.librarianlib.facade.container.builtin.PlayerInventorySlotManager
 import com.teamwizardry.librarianlib.facade.container.messaging.*
 import com.teamwizardry.librarianlib.facade.container.slot.CustomClickSlot
-import com.teamwizardry.librarianlib.facade.container.slot.FluidSlot
 import com.teamwizardry.librarianlib.facade.container.slot.SlotRegion
 import com.teamwizardry.librarianlib.facade.container.transfer.BasicTransferRule
 import com.teamwizardry.librarianlib.facade.container.transfer.TransferManager
 import com.teamwizardry.librarianlib.facade.container.transfer.TransferRule
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.entity.player.ServerPlayerEntity
-import net.minecraft.inventory.container.ClickType
-import net.minecraft.inventory.container.Container
-import net.minecraft.inventory.container.ContainerType
 import net.minecraft.item.ItemStack
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.ScreenHandlerType
 import net.minecraft.screen.slot.SlotActionType
 import net.minecraft.server.network.ServerPlayerEntity
-import net.minecraftforge.fluids.FluidStack
-import net.minecraftforge.fml.network.PacketDistributor
 
-public abstract class FacadeContainer(
+public abstract class FacadeController(
     type: ScreenHandlerType<*>,
     windowId: Int,
     public val player: PlayerEntity
@@ -34,13 +25,11 @@ public abstract class FacadeContainer(
     public val transferManager: TransferManager = TransferManager()
     public val playerSlots: PlayerInventorySlotManager = PlayerInventorySlotManager(player.inventory)
 
-    private val messageDirection: PacketDistributor.PacketTarget = if (player is ServerPlayerEntity)
-        PacketDistributor.PLAYER.with { player }
-    else
-        PacketDistributor.SERVER.noArg()
-
-    private val _fluidSlots: MutableList<FluidSlot> = mutableListOf()
-    public val fluidSlots: List<FluidSlot> = _fluidSlots.unmodifiableView()
+    private val messageSender: MessageSender =
+        if (player is ServerPlayerEntity)
+            MessageSender.ServerToClient(player)
+        else
+            MessageSender.ClientToServer
 
     private val encoder = MessageEncoder(javaClass, windowId)
     private val decoder = MessageDecoder(this, windowId)
@@ -50,7 +39,7 @@ public abstract class FacadeContainer(
      * checked using [isClientContainer].
      */
     protected fun sendMessage(name: String, vararg arguments: Any?) {
-        LibrarianLibFacadeModule.channel.send(messageDirection, encoder.encode(name, arguments))
+        messageSender.send(encoder.encode(name, arguments))
         encoder.invoke(this, name, arguments)
     }
 
@@ -63,7 +52,7 @@ public abstract class FacadeContainer(
             logger.warn("Tried to send a client message '$name' from the client.", RuntimeException())
             return
         }
-        LibrarianLibFacadeModule.channel.send(messageDirection, encoder.encode(name, arguments))
+        messageSender.send(encoder.encode(name, arguments))
     }
 
     /**
@@ -75,7 +64,7 @@ public abstract class FacadeContainer(
             logger.warn("Tried to send a server message '$name' from the server.", RuntimeException())
             return
         }
-        LibrarianLibFacadeModule.channel.send(messageDirection, encoder.encode(name, arguments))
+        messageSender.send(encoder.encode(name, arguments))
     }
 
     override fun receiveMessage(packet: MessagePacket) {
@@ -86,11 +75,6 @@ public abstract class FacadeContainer(
         region.forEach {
             addSlot(it)
         }
-    }
-
-    public fun addSlot(fluidSlot: FluidSlot) {
-        fluidSlot.slotNumber = _fluidSlots.size
-        _fluidSlots.add(fluidSlot)
     }
 
     public fun <T : TransferRule> addTransferRule(rule: T): T {
@@ -115,32 +99,7 @@ public abstract class FacadeContainer(
         return super.onSlotClick(slotId, mouseButton, clickTypeIn, player)
     }
 
-    override fun sendContentUpdates() {
-        super.sendContentUpdates()
-
-        for(i in fluidSlots.indices) {
-            val slot = fluidSlots[i]
-            val actual = slot.getActualFluid()
-            if(!actual.isFluidStackIdentical(slot.fluid)) {
-                slot.setCachedContents(actual.copy())
-                sendClientMessage("syncFluidSlot", slot.slotNumber, slot.fluid)
-            }
-        }
-    }
-
-    @Message(side = MessageSide.CLIENT)
-    private fun syncFluidSlot(slotNumber: Int, stack: FluidStack) {
-        fluidSlots[slotNumber].setCachedContents(stack)
-    }
-
-    @Message
-    private fun acceptJeiGhostStack(slotNumber: Int, stack: ItemStack) {
-        val slot = slots[slotNumber]
-        if(slot is GhostSlot && !slot.disableJeiGhostIntegration)
-            slot.acceptJeiGhostStack(stack)
-    }
-
     public companion object {
-        private val logger = LibrarianLibFacadeModule.makeLogger<FacadeContainer>()
+        private val logger = LibLibFacade.makeLogger<FacadeController>()
     }
 }

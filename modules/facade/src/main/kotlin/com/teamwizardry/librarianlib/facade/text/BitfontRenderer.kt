@@ -1,20 +1,23 @@
 package com.teamwizardry.librarianlib.facade.text
 
-import com.mojang.blaze3d.vertex.IVertexBuilder
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.texture
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.math.Matrix4d
 import dev.thecodewarrior.bitfont.data.Glyph
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TypesetGlyph
+import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 
 public object BitfontRenderer {
     @JvmStatic
     public fun draw(matrix: Matrix4d, container: TextContainer, defaultColor: Color) {
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(renderType)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(renderLayer)
 
         for (line in container.lines) {
             for (glyph in line) {
@@ -39,7 +42,7 @@ public object BitfontRenderer {
             }
         }
 
-        buffer.finish()
+        buffer.draw()
 
         deferredEmbeds.forEach {
             val color = it.glyph[BitfontFormatting.color] ?: defaultColor
@@ -67,10 +70,10 @@ public object BitfontRenderer {
         var maxV = tex.y + tex.height
         val color = typesetGlyph[BitfontFormatting.color] ?: defaultColor
 
-        vb.pos2d(matrix, minX, maxY).color(color).tex(minU, maxV).endVertex()
-        vb.pos2d(matrix, maxX, maxY).color(color).tex(maxU, maxV).endVertex()
-        vb.pos2d(matrix, maxX, minY).color(color).tex(maxU, minV).endVertex()
-        vb.pos2d(matrix, minX, minY).color(color).tex(minU, minV).endVertex()
+        vb.vertex2d(matrix, minX, maxY).color(color).texture(minU, maxV).next()
+        vb.vertex2d(matrix, maxX, maxY).color(color).texture(maxU, maxV).next()
+        vb.vertex2d(matrix, maxX, minY).color(color).texture(maxU, minV).next()
+        vb.vertex2d(matrix, minX, minY).color(color).texture(minU, minV).next()
 
         var underline = typesetGlyph[BitfontFormatting.underline]
         if (underline != null && typesetGlyph.codepoint !in newlines) {
@@ -85,21 +88,21 @@ public object BitfontRenderer {
             maxU = solid.x + solid.width
             maxV = solid.y + solid.height
 
-            vb.pos2d(matrix, minX, maxY).color(underline).tex(minU, maxV).endVertex()
-            vb.pos2d(matrix, maxX, maxY).color(underline).tex(maxU, maxV).endVertex()
-            vb.pos2d(matrix, maxX, minY).color(underline).tex(maxU, minV).endVertex()
-            vb.pos2d(matrix, minX, minY).color(underline).tex(minU, minV).endVertex()
+            vb.vertex2d(matrix, minX, maxY).color(underline).texture(minU, maxV).next()
+            vb.vertex2d(matrix, maxX, maxY).color(underline).texture(maxU, maxV).next()
+            vb.vertex2d(matrix, maxX, minY).color(underline).texture(maxU, minV).next()
+            vb.vertex2d(matrix, minX, minY).color(underline).texture(minU, minV).next()
         }
     }
 
-    private val renderType = SimpleRenderTypes.flat(BitfontAtlas.ATLAS_LOCATION)
+    private val renderLayer = SimpleRenderLayers.flat(BitfontAtlas.ATLAS_LOCATION)
     private val newlines = intArrayOf(
-        '\u000a'.toInt(),
-        '\u000b'.toInt(),
-        '\u000c'.toInt(),
-        '\u000d'.toInt(),
-        '\u0085'.toInt(),
-        '\u2028'.toInt(),
-        '\u2029'.toInt()
+        '\u000a'.code,
+        '\u000b'.code,
+        '\u000c'.code,
+        '\u000d'.code,
+        '\u0085'.code,
+        '\u2028'.code,
+        '\u2029'.code
     )
 }

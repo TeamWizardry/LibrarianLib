@@ -75,7 +75,7 @@ public object BitfontAtlas: AbstractTexture() {
         }
 
         this.bindTexture()
-        native.uploadInternal(0, xOrigin, yOrigin, false)
+        native.upload(0, xOrigin, yOrigin, false)
         native.close()
     }
 
@@ -86,7 +86,7 @@ public object BitfontAtlas: AbstractTexture() {
             throw IllegalStateException("Ran out of atlas space! OpenGL max texture size: " +
                 "$gpuMaxTexSize x $gpuMaxTexSize and managed to fit ${rects.size} glyphs.")
         packer.expand(width, height)
-        TextureUtil.prepareImage(glId, width, height)
+        TextureUtil.allocate(glId, width, height)
         rects.forEach { (image, rect) ->
             draw(image, rect.x, rect.y)
         }
@@ -98,7 +98,7 @@ public object BitfontAtlas: AbstractTexture() {
         this.bindTexture()
         TextureUtil.allocate(glId, width, height)
         val native = NativeImage(width, height, true)
-        native.uploadInternal(0, 0, 0, false)
+        native.upload(0, 0, 0, false)
         native.close()
 
         val solidGrid = BitGrid(3, 3)

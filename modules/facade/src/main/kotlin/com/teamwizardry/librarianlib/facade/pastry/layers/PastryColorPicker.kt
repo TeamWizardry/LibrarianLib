@@ -3,9 +3,11 @@ package com.teamwizardry.librarianlib.facade.pastry.layers
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
-import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.bridge.IMutableRenderLayerPhaseParameters
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.*
+import com.teamwizardry.librarianlib.core.util.kotlin.texture
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
@@ -15,9 +17,9 @@ import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.math.clamp
 import com.teamwizardry.librarianlib.mosaic.Mosaic
+import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.render.VertexFormats
 import net.minecraft.util.Identifier
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
@@ -130,17 +132,17 @@ public class PastryColorPicker : GuiLayer(0, 0, 80, 50) {
                 val maxX = size.xi.toDouble()
                 val maxY = size.yi.toDouble()
 
-                val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
+                val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
 
                 ColorPickerShader.hue.set(hue)
 
                 val vb = buffer.getBuffer(colorPickerRenderType)
                 // u/v is saturation/brightness
-                vb.pos2d(context.transform, minX, minY).tex(0, 1).endVertex()
-                vb.pos2d(context.transform, minX, maxY).tex(0, 0).endVertex()
-                vb.pos2d(context.transform, maxX, maxY).tex(1, 0).endVertex()
-                vb.pos2d(context.transform, maxX, minY).tex(1, 1).endVertex()
-                buffer.finish()
+                vb.vertex2d(context.transform, minX, minY).texture(0, 1).next()
+                vb.vertex2d(context.transform, minX, maxY).texture(0, 0).next()
+                vb.vertex2d(context.transform, maxX, maxY).texture(1, 0).next()
+                vb.vertex2d(context.transform, maxX, minY).texture(1, 1).next()
+                buffer.draw()
             }
         }
     }
@@ -152,7 +154,7 @@ public class PastryColorPicker : GuiLayer(0, 0, 80, 50) {
 
         init {
             Client.minecraft.textureManager.bindTexture(hueLoc)
-            Client.minecraft.textureManager.getTexture(hueLoc)?.setBlurMipmap(false, false)
+            Client.minecraft.textureManager.getTexture(hueLoc)?.setFilter(false, false)
 
             add(background, sprite)
 
@@ -207,7 +209,7 @@ public class PastryColorPicker : GuiLayer(0, 0, 80, 50) {
      * draws the saturation/brightness box
      */
     private object ColorPickerShader :
-        Shader("color_picker", null, Identifier("librarianlib:facade/shaders/color_picker.frag")) {
+        Shader("color_picker", null, Identifier("liblib-facade:shaders/color_picker.frag")) {
         val hue = GLSL.glFloat()
 
         override fun setupState() {
@@ -220,17 +222,17 @@ public class PastryColorPicker : GuiLayer(0, 0, 80, 50) {
     }
 
     private companion object {
-        val hueLoc = loc("librarianlib:facade/textures/pastry/colorpicker_hue.png")
+        val hueLoc = Identifier("liblib-facade:textures/pastry/colorpicker_hue.png")
         val hueSprite = Mosaic(hueLoc, 8, 256).getSprite("")
 
-        private val colorPickerRenderType: RenderType = run {
-            val renderState = RenderType.State.getBuilder()
+        private val colorPickerRenderType: RenderLayer = run {
+            val renderState = RenderLayer.MultiPhaseParameters.builder()
                 .build(false)
 
-            mixinCast<IMutableRenderTypeState>(renderState).addState(ColorPickerShader.renderState)
+            mixinCast<IMutableRenderLayerPhaseParameters>(renderState).addPhase(ColorPickerShader.renderPhase)
 
-            SimpleRenderTypes.makeType("librarianlib.facade.color_picker",
-                DefaultVertexFormats.POSITION_TEX, GL11.GL_QUADS, 256, false, false, renderState
+            SimpleRenderLayers.makeType("librarianlib.facade.color_picker",
+                VertexFormats.POSITION_TEXTURE, GL11.GL_QUADS, 256, false, false, renderState
             )
         }
     }

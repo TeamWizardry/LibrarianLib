@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.facade.test.containers
 
-import com.teamwizardry.librarianlib.core.util.kotlin.getOrNull
-import com.teamwizardry.librarianlib.facade.container.FacadeContainer
+import com.teamwizardry.librarianlib.facade.container.FacadeController
 import com.teamwizardry.librarianlib.facade.container.builtin.ContainerLock
 import com.teamwizardry.librarianlib.facade.container.builtin.LockingSlot
 import com.teamwizardry.librarianlib.facade.container.slot.SlotManager
@@ -9,14 +8,13 @@ import com.teamwizardry.librarianlib.facade.test.LibrarianLibFacadeTestMod
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.Hand
 import net.minecraftforge.items.CapabilityItemHandler
-import net.minecraftforge.items.IItemHandler
 import java.lang.IllegalStateException
 
-class BackpackContainer(
+class BackpackController(
     windowId: Int,
     player: PlayerEntity,
     hand: Hand
-): FacadeContainer(LibrarianLibFacadeTestMod.backpackContainerType, windowId, player) {
+): FacadeController(LibrarianLibFacadeTestMod.backpackContainerType, windowId, player) {
     val contentsSlots: SlotManager
     val lock: ContainerLock.ConsistencyLock
 

@@ -1,20 +1,21 @@
 package com.teamwizardry.librarianlib.facade.layer
 
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.bridge.IMutableRenderTypeState
+import com.teamwizardry.librarianlib.core.bridge.IMutableRenderLayerPhaseParameters
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.*
+import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
 import com.teamwizardry.librarianlib.core.util.lerp.Lerper
 import com.teamwizardry.librarianlib.core.util.lerp.Lerpers
 import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.facade.layer.supporting.StencilUtil
 import com.teamwizardry.librarianlib.facade.layer.supporting.*
-import com.teamwizardry.librarianlib.facade.logger
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.facade.value.IMValueBoolean
 import com.teamwizardry.librarianlib.facade.value.RMValue
@@ -33,6 +34,7 @@ import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.etcetera.eventbus.EventBus
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.FacadeWidget
+import com.teamwizardry.librarianlib.facade.LibLibFacade
 import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBasicTooltip
 import com.teamwizardry.librarianlib.facade.value.ChangeListener
@@ -42,12 +44,13 @@ import com.teamwizardry.librarianlib.facade.value.IMValueLong
 import com.teamwizardry.librarianlib.facade.value.RMValueBoolean
 import com.teamwizardry.librarianlib.facade.value.RMValueInt
 import com.teamwizardry.librarianlib.facade.value.RMValueLong
-import com.teamwizardry.librarianlib.mosaic.ISprite
+import com.teamwizardry.librarianlib.mosaic.Sprite
 import dev.thecodewarrior.mirror.Mirror
+import net.minecraft.client.gl.Framebuffer
+import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.renderer.RenderType
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.client.shader.Framebuffer
+import net.minecraft.client.render.VertexFormats
+import net.minecraft.client.util.math.MatrixStack
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import java.awt.Color
@@ -1043,7 +1046,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      *
      * If [clippingSprite] is nonnull, it will override this sprite.
      */
-    public var clippingSprite: ISprite? = null
+    public var clippingSprite: Sprite? = null
 
     /**
      * An opacity value in the range [0, 1]. If this is not equal to 1 the layer will be rendered to an FBO and drawn
@@ -1171,8 +1174,8 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
 //                layerFilter?.filter(this.layer, layerFBO, maskFBO) TODO: add back filters?
 
-                FlatLayerShader.layerImage.set(layerFBO.func_242996_f()) // func_242996_f = getFramebufferTexture
-                FlatLayerShader.maskImage.set(maskFBO?.func_242996_f() ?: 0)
+                FlatLayerShader.layerImage.set(layerFBO.fbo) // func_242996_f = getFramebufferTexture
+                FlatLayerShader.maskImage.set(maskFBO?.fbo ?: 0)
                 FlatLayerShader.alphaMultiply.set(opacity.toFloat())
                 FlatLayerShader.maskMode.set(maskMode.ordinal)
                 FlatLayerShader.renderMode.set(renderMode.ordinal)
@@ -1181,14 +1184,14 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 val maxU = (size.xf * rasterizationScale * Client.scaleFactor.toFloat()) / Client.window.framebufferWidth
                 val maxV = (size.yf * rasterizationScale * Client.scaleFactor.toFloat()) / Client.window.framebufferHeight
 
-                val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
-                val vb = buffer.getBuffer(flatLayerRenderType)
+                val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+                val vb = buffer.getBuffer(flatLayerRenderLayer)
                 // why 1-maxV?
-                vb.pos2d(context.transform, 0, size.y).tex(0f, 1 - maxV).endVertex()
-                vb.pos2d(context.transform, size.x, size.y).tex(maxU, 1 - maxV).endVertex()
-                vb.pos2d(context.transform, size.x, 0).tex(maxU, 1f).endVertex()
-                vb.pos2d(context.transform, 0, 0).tex(0f, 1f).endVertex()
-                buffer.finish()
+                vb.vertex2d(context.transform, 0, size.y).texture(0f, 1 - maxV).next()
+                vb.vertex2d(context.transform, size.x, size.y).texture(maxU, 1 - maxV).next()
+                vb.vertex2d(context.transform, size.x, 0).texture(maxU, 1f).next()
+                vb.vertex2d(context.transform, 0, 0).texture(0f, 1f).next()
+                buffer.draw()
                 GlStateManager.activeTexture(GL13.GL_TEXTURE0)
                 GlStateManager.disableTexture()
                 GlStateManager.enableTexture()
@@ -1234,13 +1237,13 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * buffer when rendering to a texture
      */
     private fun clearBounds(context: GuiDrawContext) {
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(clearBufferRenderType)
-        vb.pos2d(context.transform, 0, size.y).endVertex()
-        vb.pos2d(context.transform, size.x, size.y).endVertex()
-        vb.pos2d(context.transform, size.x, 0).endVertex()
-        vb.pos2d(context.transform, 0, 0).endVertex()
-        buffer.finish()
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(clearBufferRenderLayer)
+        vb.vertex2d(context.transform, 0, size.y).next()
+        vb.vertex2d(context.transform, size.x, size.y).next()
+        vb.vertex2d(context.transform, size.x, 0).next()
+        vb.vertex2d(context.transform, 0, 0).next()
+        buffer.draw()
     }
 
     private fun stencil(context: GuiDrawContext) {
@@ -1252,16 +1255,16 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
         val color = Color(1f, 0f, 1f, 0.5f)
 
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(flatColorFanRenderType)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(flatColorFanRenderLayer)
 
         val points = getBoundingBoxPoints()
-        vb.pos2d(context.transform, size.x / 2, size.y / 2).color(color).endVertex()
+        vb.vertex2d(context.transform, size.x / 2, size.y / 2).color(color).next()
         points.reversed().forEach {
-            vb.pos2d(context.transform, it.x, it.y).color(color).endVertex()
+            vb.vertex2d(context.transform, it.x, it.y).color(color).next()
         }
 
-        buffer.finish()
+        buffer.draw()
     }
 
     public fun shouldDrawSkeleton(): Boolean = false
@@ -1311,16 +1314,16 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      */
     private fun drawLayerOverlay(context: GuiDrawContext, color: Color) {
 
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(flatColorFanRenderType)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(flatColorFanRenderLayer)
 
         val points = getBoundingBoxPoints()
-        vb.pos2d(context.transform, size.x / 2, size.y / 2).color(color).endVertex()
+        vb.vertex2d(context.transform, size.x / 2, size.y / 2).color(color).next()
         points.reversed().forEach {
-            vb.pos2d(context.transform, it.x, it.y).color(color).endVertex()
+            vb.vertex2d(context.transform, it.x, it.y).color(color).next()
         }
 
-        buffer.finish()
+        buffer.draw()
     }
 
     /**
@@ -1329,14 +1332,14 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     private fun drawBoundingBox(context: GuiDrawContext, color: Color) {
         val points = getBoundingBoxPoints()
 
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(debugBoundingBoxRenderType)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(debugBoundingBoxRenderLayer)
 
         points.forEach {
-            vb.pos2d(context.transform, it.x, it.y).color(color).endVertex()
+            vb.vertex2d(context.transform, it.x, it.y).color(color).next()
         }
 
-        buffer.finish()
+        buffer.draw()
     }
 
     public var cornerRadius: Double = 0.0
@@ -1775,27 +1778,27 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         @JvmStatic
         public val UNDERLAY_Z: Double = -1e10
 
-        private val debugBoundingBoxRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_LINE_LOOP)
-        private val flatColorFanRenderType: RenderType = SimpleRenderTypes.flat(GL11.GL_TRIANGLE_FAN)
-        private val flatLayerRenderType: RenderType = run {
-            val renderState = RenderType.State.getBuilder()
+        private val debugBoundingBoxRenderLayer: RenderLayer = SimpleRenderLayers.flat(GL11.GL_LINE_LOOP)
+        private val flatColorFanRenderLayer: RenderLayer = SimpleRenderLayers.flat(GL11.GL_TRIANGLE_FAN)
+        private val flatLayerRenderLayer: RenderLayer = run {
+            val renderState = RenderLayer.MultiPhaseParameters.builder()
                 .build(false)
-            mixinCast<IMutableRenderTypeState>(renderState).addState(FlatLayerShader.renderState)
+            mixinCast<IMutableRenderLayerPhaseParameters>(renderState).addPhase(FlatLayerShader.renderPhase)
 
-            SimpleRenderTypes.makeType("librarianlib.facade.flat_layer",
-                DefaultVertexFormats.POSITION_TEX, GL11.GL_QUADS, 256, false, false, renderState
+            SimpleRenderLayers.makeType("librarianlib.facade.flat_layer",
+                VertexFormats.POSITION_TEXTURE, GL11.GL_QUADS, 256, false, false, renderState
             )
         }
 
-        private val clearBufferRenderType: RenderType = run {
-            val renderState = RenderType.State.getBuilder()
-                .depthTest(DefaultRenderStates.DEPTH_ALWAYS)
+        private val clearBufferRenderLayer: RenderLayer = run {
+            val renderState = RenderLayer.MultiPhaseParameters.builder()
+                .depthTest(DefaultRenderPhases.ALWAYS_DEPTH_TEST)
                 .build(false)
 
-            mixinCast<IMutableRenderTypeState>(renderState).addState(FramebufferClearShader.renderState)
+            mixinCast<IMutableRenderLayerPhaseParameters>(renderState).addPhase(FramebufferClearShader.renderPhase)
 
-            SimpleRenderTypes.makeType("librarianlib.facade.clear_buffer",
-                DefaultVertexFormats.POSITION, GL11.GL_QUADS, 256, false, false, renderState
+            SimpleRenderLayers.makeType("librarianlib.facade.clear_buffer",
+                VertexFormats.POSITION, GL11.GL_QUADS, 256, false, false, renderState
             )
         }
 
@@ -1808,6 +1811,8 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             RenderSystem.alphaFunc(GL11.GL_GREATER, 1 / 255f)
             RenderSystem.disableLighting()
         }
+
+        private val logger = LibLibFacade.makeLogger<GuiLayer>()
     }
 
     public class DebuggerTree(public val layer: GuiLayer, public val children: List<DebuggerTree>) {

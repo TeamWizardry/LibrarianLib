@@ -15,7 +15,7 @@ public fun safetyNet(action: String, block: Runnable) {
     try {
         block.run()
     } catch (e: Exception) {
-        Client.displayGuiScreen(SafetyNetErrorScreen(action, e))
+        Client.openScreen(SafetyNetErrorScreen(action, e))
     }
 }
 
@@ -30,7 +30,7 @@ public fun <T> safetyNet(action: String, defaultValue: Supplier<T>, block: Suppl
     try {
         return block.get()
     } catch (e: Exception) {
-        Client.displayGuiScreen(SafetyNetErrorScreen(action, e))
+        Client.openScreen(SafetyNetErrorScreen(action, e))
         return defaultValue.get()
     }
 }
@@ -46,7 +46,7 @@ public inline fun safetyNet(action: String, block: () -> Unit) {
     try {
         block()
     } catch (e: Exception) {
-        Client.displayGuiScreen(SafetyNetErrorScreen(action, e))
+        Client.openScreen(SafetyNetErrorScreen(action, e))
     }
 }
 
@@ -62,7 +62,7 @@ public inline fun <T> safetyNet(action: String, defaultValue: () -> T, block: ()
     try {
         return block()
     } catch (e: Exception) {
-        Client.displayGuiScreen(SafetyNetErrorScreen(action, e))
+        Client.openScreen(SafetyNetErrorScreen(action, e))
         return defaultValue()
     }
 }

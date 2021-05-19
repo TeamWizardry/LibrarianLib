@@ -1,7 +1,8 @@
 package com.teamwizardry.librarianlib.facade.pastry.layers
 
-import com.mojang.blaze3d.vertex.IVertexBuilder
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
@@ -9,6 +10,7 @@ import com.teamwizardry.librarianlib.facade.pastry.IBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.Rect2dUnion
 import com.teamwizardry.librarianlib.math.*
+import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 import kotlin.math.abs
@@ -46,12 +48,12 @@ public class PastryDynamicBackground(style: IBackgroundStyle, vararg shapeLayers
     }
 
     override fun draw(context: GuiDrawContext) {
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
         val vb = buffer.getBuffer(style.edges.renderType)
         for(element in elements) {
             element.draw(context.transform, vb)
         }
-        buffer.finish()
+        buffer.draw()
     }
 
     // yes this creates a lot of temporary Vec2d objects, but efficiency be damned this is hard enough as it is and
@@ -149,13 +151,13 @@ public class PastryDynamicBackground(style: IBackgroundStyle, vararg shapeLayers
         val maxX: Double get() = pos.x + size.x
         val maxY: Double get() = pos.y + size.y
 
-        fun draw(matrix: Matrix4d, vb: IVertexBuilder) {
+        fun draw(matrix: Matrix4d, vb: VertexConsumer) {
             val tint = Color.WHITE
 
-            vb.pos2d(matrix, minX, maxY).color(tint).tex(minU, maxV).endVertex()
-            vb.pos2d(matrix, maxX, maxY).color(tint).tex(maxU, maxV).endVertex()
-            vb.pos2d(matrix, maxX, minY).color(tint).tex(maxU, minV).endVertex()
-            vb.pos2d(matrix, minX, minY).color(tint).tex(minU, minV).endVertex()
+            vb.vertex2d(matrix, minX, maxY).color(tint).texture(minU, maxV).next()
+            vb.vertex2d(matrix, maxX, maxY).color(tint).texture(maxU, maxV).next()
+            vb.vertex2d(matrix, maxX, minY).color(tint).texture(maxU, minV).next()
+            vb.vertex2d(matrix, minX, minY).color(tint).texture(minU, minV).next()
         }
     }
 }

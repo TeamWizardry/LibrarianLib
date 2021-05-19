@@ -72,7 +72,7 @@ internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
             .transparency(DefaultRenderPhases.TRANSLUCENT_TRANSPARENCY)
             .build(true)
 
-        mixinCast<IMutableRenderLayerPhaseParameters>(renderState).addState("albedo", { shader.bind() }, { shader.unbind() })
+        mixinCast<IMutableRenderLayerPhaseParameters>(renderState).addPhase("albedo", { shader.bind() }, { shader.unbind() })
 
         renderType = SimpleRenderLayers.makeType("sampler_array",
             VertexFormats.POSITION_COLOR_TEXTURE, GL11.GL_QUADS, 256, false, false, renderState

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.facade.example.containers;
 
-import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen;
+import com.teamwizardry.librarianlib.facade.container.FacadeView;
 import com.teamwizardry.librarianlib.facade.layers.StackLayout;
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton;
 import com.teamwizardry.librarianlib.math.Align2d;
@@ -9,9 +9,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
-public class DirtSetterContainerScreen extends FacadeContainerScreen<DirtSetterContainer> {
-    public DirtSetterContainerScreen(
-            @NotNull DirtSetterContainer container,
+public class DirtSetterView extends FacadeView<DirtSetterController> {
+    public DirtSetterView(
+            @NotNull DirtSetterController container,
             @NotNull PlayerInventory inventory,
             @NotNull Text title
     ) {

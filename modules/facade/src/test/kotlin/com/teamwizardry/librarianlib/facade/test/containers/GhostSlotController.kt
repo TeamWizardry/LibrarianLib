@@ -2,15 +2,15 @@ package com.teamwizardry.librarianlib.facade.test.containers
 
 import com.teamwizardry.librarianlib.facade.container.builtin.GhostSlot
 import com.teamwizardry.librarianlib.facade.container.slot.SlotManager
-import com.teamwizardry.librarianlib.facade.test.containers.base.TestContainer
+import com.teamwizardry.librarianlib.facade.test.containers.base.TestController
 import com.teamwizardry.librarianlib.facade.test.containers.base.TestContainerData
 import com.teamwizardry.librarianlib.prism.Save
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.items.ItemStackHandler
 
-class GhostSlotContainer(windowId: Int, player: PlayerEntity, pos: BlockPos) :
-    TestContainer<GhostSlotContainer.Data>(Data::class.java, windowId, player, pos) {
+class GhostSlotController(windowId: Int, player: PlayerEntity, pos: BlockPos) :
+    TestController<GhostSlotController.Data>(Data::class.java, windowId, player, pos) {
     val contentsSlots: SlotManager = SlotManager(data.inventory)
 
     init {

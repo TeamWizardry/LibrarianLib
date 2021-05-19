@@ -1,16 +1,20 @@
 package com.teamwizardry.librarianlib.facade.container
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
+import com.teamwizardry.librarianlib.courier.CourierClientPlayNetworking
 import com.teamwizardry.librarianlib.facade.FacadeMouseMask
 import com.teamwizardry.librarianlib.facade.FacadeWidget
-import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
 import com.teamwizardry.librarianlib.facade.bridge.FacadeContainerScreenHooks
 import com.teamwizardry.librarianlib.facade.container.builtin.GhostSlot
 import com.teamwizardry.librarianlib.facade.container.messaging.MessageEncoder
+import com.teamwizardry.librarianlib.facade.container.messaging.MessagePacketType
+import com.teamwizardry.librarianlib.facade.container.messaging.MessageSender
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layer.supporting.ContainerSpace
@@ -31,7 +35,7 @@ import org.lwjgl.opengl.GL11
 /**
  * A Facade-backed GUI container.
  */
-public abstract class FacadeContainerScreen<T: ScreenHandler>(
+public abstract class FacadeView<T: ScreenHandler>(
     container: T,
     inventory: PlayerInventory,
     title: Text
@@ -59,8 +63,6 @@ public abstract class FacadeContainerScreen<T: ScreenHandler>(
 
     public val background: PastryDynamicBackground = PastryDynamicBackground(PastryBackgroundStyle.VANILLA, main)
 
-    public val jei: JeiIntegration = JeiIntegration()
-
     private val messageEncoder = MessageEncoder(container.javaClass, container.syncId)
 
     init {
@@ -84,7 +86,7 @@ public abstract class FacadeContainerScreen<T: ScreenHandler>(
      * which will lead to easier synchronization between the client and server containers.
      */
     public fun sendMessage(name: String, vararg arguments: Any?) {
-        LibrarianLibFacadeModule.channel.sendToServer(messageEncoder.encode(name, arguments))
+        MessageSender.ClientToServer.send(messageEncoder.encode(name, arguments))
         messageEncoder.invoke(this.handler, name, arguments)
     }
 
@@ -109,7 +111,7 @@ public abstract class FacadeContainerScreen<T: ScreenHandler>(
 
     override fun isMouseMasked(mouseX: Double, mouseY: Double): Boolean {
         return hoveredElement(mouseX, mouseY).isPresent || handler.slots.any {
-            isPointWithinBounds(it.x, it.y, 16, 16, mouseX, mouseY) && it.isEnabled
+            isPointWithinBounds(it.x, it.y, 16, 16, mouseX, mouseY) && it.doDrawHoveringEffect()
         }
     }
 
@@ -138,10 +140,10 @@ public abstract class FacadeContainerScreen<T: ScreenHandler>(
 
         val windowHeight = Client.window.scaledHeight
         val windowWidth = Client.window.scaledWidth
-        vb.vertex(Matrix4d.IDENTITY, 0, windowHeight).color(1f, 0f, 1f, 0.5f).next()
-        vb.vertex(Matrix4d.IDENTITY, windowWidth, windowHeight).color(1f, 0f, 1f, 0.5f).next()
-        vb.vertex(Matrix4d.IDENTITY, windowWidth, 0).color(1f, 0f, 1f, 0.5f).next()
-        vb.vertex(Matrix4d.IDENTITY, 0, 0).color(1f, 0f, 1f, 0.5f).next()
+        vb.vertex2d(Matrix4d.IDENTITY, 0, windowHeight).color(1f, 0f, 1f, 0.5f).next()
+        vb.vertex2d(Matrix4d.IDENTITY, windowWidth, windowHeight).color(1f, 0f, 1f, 0.5f).next()
+        vb.vertex2d(Matrix4d.IDENTITY, windowWidth, 0).color(1f, 0f, 1f, 0.5f).next()
+        vb.vertex2d(Matrix4d.IDENTITY, 0, 0).color(1f, 0f, 1f, 0.5f).next()
 
         buffer.draw()
         RenderSystem.depthFunc(GL11.GL_LEQUAL)
@@ -234,27 +236,9 @@ public abstract class FacadeContainerScreen<T: ScreenHandler>(
         facade.onClose()
     }
 
-    public inner class JeiIntegration {
-        private val _exclusionAreas: MutableList<GuiLayer> = mutableListOf()
-        public val exclusionAreas: List<GuiLayer> = _exclusionAreas.unmodifiableView()
-
-        public fun addExclusionArea(layer: GuiLayer) {
-            _exclusionAreas.add(layer)
-        }
-
-        public fun removeExclusionArea(layer: GuiLayer) {
-            _exclusionAreas.remove(layer)
-        }
-
-        @JvmSynthetic
-        internal fun acceptJeiGhostStack(slot: GhostSlot, stack: ItemStack) {
-            sendMessage("acceptJeiGhostStack", slot.slotNumber, stack)
-        }
-    }
-
     public companion object {
         private val depthClobberRenderType = SimpleRenderLayers.flat(GL11.GL_QUADS) {
-            it.depthTest(DefaultRenderStates.DEPTH_ALWAYS)
+            it.depthTest(DefaultRenderPhases.ALWAYS_DEPTH_TEST)
         }
     }
 }

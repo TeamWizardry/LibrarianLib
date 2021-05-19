@@ -1,8 +1,7 @@
 package com.teamwizardry.librarianlib.facade.test.containers
 
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
-import com.teamwizardry.librarianlib.facade.container.layers.JeiIngredientLayer
+import com.teamwizardry.librarianlib.facade.container.FacadeView
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryLabel
 import com.teamwizardry.librarianlib.math.Vec2d
@@ -12,10 +11,10 @@ import net.minecraft.item.Items
 import net.minecraft.text.Text
 
 class JeiIngredientLayerScreen(
-    container: JeiIngredientLayerContainer,
+    container: JeiIngredientLayerController,
     inventory: PlayerInventory,
     title: Text
-) : FacadeContainerScreen<JeiIngredientLayerContainer>(container, inventory, title) {
+) : FacadeView<JeiIngredientLayerController>(container, inventory, title) {
 
     init {
         val label = PastryLabel(5, 5, "Look ma, I'm stone!")

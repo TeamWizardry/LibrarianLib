@@ -1,15 +1,15 @@
 package com.teamwizardry.librarianlib.facade.test.containers
 
 import com.teamwizardry.librarianlib.facade.container.slot.SlotManager
-import com.teamwizardry.librarianlib.facade.test.containers.base.TestContainer
+import com.teamwizardry.librarianlib.facade.test.containers.base.TestController
 import com.teamwizardry.librarianlib.facade.test.containers.base.TestContainerData
 import com.teamwizardry.librarianlib.prism.Save
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.math.BlockPos
 import net.minecraftforge.items.ItemStackHandler
 
-class SingleSlotContainer(windowId: Int, player: PlayerEntity, pos: BlockPos) :
-    TestContainer<SingleSlotContainer.Data>(Data::class.java, windowId, player, pos) {
+class JeiExclusionAreasController(windowId: Int, player: PlayerEntity, pos: BlockPos) :
+    TestController<JeiExclusionAreasController.Data>(Data::class.java, windowId, player, pos) {
     val contentsSlots: SlotManager = SlotManager(data.inventory)
 
     init {

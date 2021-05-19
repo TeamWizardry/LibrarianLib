@@ -12,7 +12,7 @@ import java.util.ArrayList;
 @Mixin(RenderLayer.MultiPhaseParameters.class)
 abstract class RenderLayerPhaseParametersMixin implements IMutableRenderLayerPhaseParameters {
     @Override
-    public void addState(RenderPhase state) {
+    public void addPhase(RenderPhase state) {
         ArrayList<RenderPhase> states = new ArrayList<>(this.getPhases());
         states.add(state);
         this.setPhases(ImmutableList.copyOf(states));

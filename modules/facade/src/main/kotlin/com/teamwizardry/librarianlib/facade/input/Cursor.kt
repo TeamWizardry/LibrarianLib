@@ -1,13 +1,9 @@
 package com.teamwizardry.librarianlib.facade.input
 
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.ISimpleReloadListener
-import com.teamwizardry.librarianlib.core.util.loc
-import net.minecraft.client.renderer.texture.TextureUtil
+import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener
 import net.minecraft.client.texture.TextureUtil
-import net.minecraft.profiler.IProfiler
 import net.minecraft.resource.ResourceManager
-import net.minecraft.resources.IResourceManager
 import net.minecraft.util.Identifier
 import net.minecraft.util.profiler.Profiler
 import org.apache.commons.io.IOUtils
@@ -18,12 +14,14 @@ import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.io.IOException
 import java.nio.ByteBuffer
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executor
 
 public class Cursor @JvmOverloads constructor(
     /**
      * The location of the cursor texture
      */
-    private val Identifier: Identifier,
+    private val texture: Identifier,
     /**
      * The position of the cursor point within the image (e.g. the tip of an arrow cursor). The origin is in the
      * top-left of the image, with the X axis extending to the right.
@@ -38,12 +36,12 @@ public class Cursor @JvmOverloads constructor(
      * The GLFW standard cursor ID, if any, otherwise a negative value
      */
     private val standardCursor: Int = -1
-): ISimpleReloadListener<Unit> {
+) {
     private var glfwCursor: Long = -1
 
     init {
         loadCursor()
-        Client.resourceReloadHandler.register(this)
+        cursors.add(this)
     }
 
     private fun loadCursor() {
@@ -55,7 +53,7 @@ public class Cursor @JvmOverloads constructor(
             if (glfwCursor != 0L)
                 return
         }
-        val stream = Client.resourceManager.getResource(Identifier).inputStream
+        val stream = Client.resourceManager.getResource(texture).inputStream
         var bytebuffer: ByteBuffer? = null
         try {
             bytebuffer = TextureUtil.readAllToByteBuffer(stream)
@@ -79,16 +77,8 @@ public class Cursor @JvmOverloads constructor(
         }
     }
 
-    override fun prepare(resourceManager: ResourceManager, profiler: Profiler) {
-        // nop
-    }
-
-    override fun apply(result: Unit, resourceManager: ResourceManager, profiler: Profiler) {
-        loadCursor()
-    }
-
     override fun toString(): String {
-        return "Cursor($Identifier)"
+        return "Cursor($texture)"
     }
 
     /**
@@ -96,8 +86,10 @@ public class Cursor @JvmOverloads constructor(
      * macOS [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/macos/user-interaction/mouse-and-trackpad/#pointers)
      */
     @Suppress("unused")
-    public companion object {
-        private fun cursor(name: String, originX: Int, originY: Int, standardCursor: Int = -1) = Cursor(loc("librarianlib:facade/textures/cursors/$name.png"), originX, originY, standardCursor)
+    public companion object : SimpleResourceReloadListener<Unit> {
+        private val cursors = mutableListOf<Cursor>()
+
+        private fun cursor(name: String, originX: Int, originY: Int, standardCursor: Int = -1) = Cursor(Identifier("liblib-facade:textures/cursors/$name.png"), originX, originY, standardCursor)
 
         /**
          * The default arrow cursor.
@@ -312,6 +304,29 @@ public class Cursor @JvmOverloads constructor(
         @JvmStatic
         public fun setCursor(cursor: Cursor?) {
             GLFW.glfwSetCursor(Client.window.handle, cursor?.glfwCursor ?: 0L)
+        }
+
+        override fun getFabricId(): Identifier = Identifier("liblib-facade:cursor")
+
+        override fun load(
+            manager: ResourceManager,
+            profiler: Profiler,
+            executor: Executor
+        ): CompletableFuture<Unit> {
+            return CompletableFuture.supplyAsync { Unit }
+        }
+
+        override fun apply(
+            data: Unit?,
+            manager: ResourceManager?,
+            profiler: Profiler?,
+            executor: Executor?
+        ): CompletableFuture<Void> {
+            return CompletableFuture.runAsync {
+                for(cursor in cursors) {
+                    cursor.loadCursor()
+                }
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.facade.test.containers
 
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
+import com.teamwizardry.librarianlib.facade.container.FacadeView
 import com.teamwizardry.librarianlib.facade.container.layers.SlotGridLayer
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
@@ -12,10 +12,10 @@ import net.minecraft.text.Text
 import java.awt.Color
 
 class OcclusionScreen(
-    container: OcclusionContainer,
+    container: OcclusionController,
     inventory: PlayerInventory,
     title: Text
-): FacadeContainerScreen<OcclusionContainer>(container, inventory, title) {
+): FacadeView<OcclusionController>(container, inventory, title) {
 
     init {
         val checkbox = PastryCheckbox(0, 0)

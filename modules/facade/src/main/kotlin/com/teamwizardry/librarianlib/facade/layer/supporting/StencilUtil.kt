@@ -1,9 +1,6 @@
 package com.teamwizardry.librarianlib.facade.layer.supporting
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.util.Client
-import net.minecraft.client.gl.Framebuffer
-import net.minecraft.client.shader.Framebuffer
 import org.lwjgl.opengl.GL11.*
 
 /**
@@ -15,23 +12,6 @@ public object StencilUtil {
      */
     public var currentStencil: Int = 0
         private set
-
-    /**
-     * Enables the stencil buffer for MC's main framebuffer, if it isn't enabled already
-     */
-    @JvmStatic
-    public fun enableStencilBuffer() {
-        enableStencilBuffer(Client.minecraft.framebuffer)
-    }
-
-    /**
-     * Enables the stencil buffer for the passed framebuffer, if it isn't enabled already
-     */
-    @JvmStatic
-    public fun enableStencilBuffer(fbo: Framebuffer) {
-        if (!fbo.isStencilEnabled)
-            fbo.enableStencil()
-    }
 
     /**
      * Clear the stencil buffer

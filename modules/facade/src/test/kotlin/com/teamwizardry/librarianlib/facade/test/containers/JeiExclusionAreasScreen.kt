@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.facade.test.containers
 
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
+import com.teamwizardry.librarianlib.facade.container.FacadeView
 import com.teamwizardry.librarianlib.facade.container.layers.SlotGridLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
@@ -10,10 +10,10 @@ import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.text.Text
 
 class JeiExclusionAreasScreen(
-    container: JeiExclusionAreasContainer,
+    container: JeiExclusionAreasController,
     inventory: PlayerInventory,
     title: Text
-): FacadeContainerScreen<JeiExclusionAreasContainer>(container, inventory, title) {
+): FacadeView<JeiExclusionAreasController>(container, inventory, title) {
 
     init {
         val stack = StackLayout.build(5, 5)

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.facade.test.containers.base
 
-import com.teamwizardry.librarianlib.facade.container.FacadeContainer
+import com.teamwizardry.librarianlib.facade.container.FacadeController
 import com.teamwizardry.librarianlib.facade.container.messaging.Message
 import com.teamwizardry.librarianlib.facade.test.LibrarianLibFacadeTestMod
 import net.minecraft.entity.player.PlayerEntity
@@ -9,8 +9,8 @@ import net.minecraft.text.LiteralText
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 
-class TestContainerSelectorContainer(windowId: Int, player: PlayerEntity, val pos: BlockPos) :
-    FacadeContainer(LibrarianLibFacadeTestMod.testContainerSelectorContainerType, windowId, player) {
+class TestContainerSelectorController(windowId: Int, player: PlayerEntity, val pos: BlockPos) :
+    FacadeController(LibrarianLibFacadeTestMod.testContainerSelectorContainerType, windowId, player) {
     val containerSet: TestContainerSet
 
     init {

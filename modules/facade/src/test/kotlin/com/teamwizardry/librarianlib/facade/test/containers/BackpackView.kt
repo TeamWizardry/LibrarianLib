@@ -1,17 +1,17 @@
 package com.teamwizardry.librarianlib.facade.test.containers
 
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
+import com.teamwizardry.librarianlib.facade.container.FacadeView
 import com.teamwizardry.librarianlib.facade.container.layers.SlotGridLayer
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.text.Text
 
-class BackpackContainerScreen(
-    container: BackpackContainer,
+class BackpackView(
+    container: BackpackController,
     inventory: PlayerInventory,
     title: Text
-): FacadeContainerScreen<BackpackContainer>(container, inventory, title) {
+): FacadeView<BackpackController>(container, inventory, title) {
     init {
         val stack = StackLayout.build(5, 5)
             .vertical()

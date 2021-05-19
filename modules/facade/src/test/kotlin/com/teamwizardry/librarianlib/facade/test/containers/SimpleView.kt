@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.facade.test.containers
 
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
+import com.teamwizardry.librarianlib.facade.container.FacadeView
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
 import com.teamwizardry.librarianlib.math.Align2d
@@ -9,11 +9,11 @@ import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.text.LiteralText
 import net.minecraft.text.Text
 
-class SimpleContainerScreen(
-    container: SimpleContainer,
+class SimpleView(
+    container: SimpleController,
     inventory: PlayerInventory,
     title: Text
-): FacadeContainerScreen<SimpleContainer>(container, inventory, title) {
+): FacadeView<SimpleController>(container, inventory, title) {
 
     init {
         main.size = vec(90, 30)

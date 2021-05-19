@@ -1,14 +1,13 @@
 package com.teamwizardry.librarianlib.facade.container.messaging
 
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
-import com.teamwizardry.librarianlib.prism.Prisms
-import com.teamwizardry.librarianlib.prism.nbt.NBTSerializer
+import com.teamwizardry.librarianlib.scribe.Scribe
+import com.teamwizardry.librarianlib.scribe.nbt.NbtSerializer
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.MethodMirror
 import dev.thecodewarrior.prism.PrismException
-import net.minecraft.nbt.CompoundNBT
-import net.minecraft.nbt.ListNBT
-import net.minecraftforge.common.util.Constants
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.ListTag
 
 public object MessageScanner {
     private val scanCache = mutableMapOf<Class<*>, List<MessageScan>>()
@@ -32,28 +31,28 @@ public object MessageScanner {
 
         public val side: MessageSide = messageAnnotation.side
 
-        public val parameterSerializers: List<NBTSerializer<*>> = method.parameters.map { parameter ->
+        public val parameterSerializers: List<NbtSerializer<*>> = method.parameters.map { parameter ->
             try {
-                Prisms.nbt[parameter.type].value
+                Scribe.nbt[parameter.type].value
             } catch(e: PrismException) {
                 throw IllegalStateException("Error getting serializer for parameter ${parameter.index} of message '$name'")
             }
         }.unmodifiableView()
 
-        public fun writeArguments(arguments: Array<out Any?>): CompoundNBT {
-            val list = ListNBT()
+        public fun writeArguments(arguments: Array<out Any?>): CompoundTag {
+            val list = ListTag()
             parameterSerializers.mapIndexed { i, serializer ->
-                val tag = CompoundNBT()
+                val tag = CompoundTag()
                 arguments[i]?.also {
                     tag.put("V", serializer.write(it))
                 }
                 list.add(tag)
             }.toTypedArray()
-            return CompoundNBT().also { it.put("ll", list) }
+            return CompoundTag().also { it.put("ll", list) }
         }
 
-        public fun readArguments(payload: CompoundNBT): Array<Any?> {
-            val list = payload.getList("ll", Constants.NBT.TAG_COMPOUND)
+        public fun readArguments(payload: CompoundTag): Array<Any?> {
+            val list = payload.getList("ll", CompoundTag().type.toInt())
             return parameterSerializers.mapIndexed { i, serializer ->
                 list.getCompound(i).get("V")?.let {
                     serializer.read(it, null)

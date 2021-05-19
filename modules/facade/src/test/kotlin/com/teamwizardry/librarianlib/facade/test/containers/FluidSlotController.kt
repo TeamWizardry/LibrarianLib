@@ -1,10 +1,7 @@
 package com.teamwizardry.librarianlib.facade.test.containers
 
-import com.teamwizardry.librarianlib.core.util.kotlin.getOrNull
-import com.teamwizardry.librarianlib.facade.container.slot.FluidHandlerSlot
-import com.teamwizardry.librarianlib.facade.container.slot.FluidSlot
 import com.teamwizardry.librarianlib.facade.container.slot.SlotManager
-import com.teamwizardry.librarianlib.facade.test.containers.base.TestContainer
+import com.teamwizardry.librarianlib.facade.test.containers.base.TestController
 import com.teamwizardry.librarianlib.facade.test.containers.base.TestContainerData
 import com.teamwizardry.librarianlib.prism.Save
 import net.minecraft.entity.player.PlayerEntity
@@ -15,8 +12,8 @@ import net.minecraftforge.fluids.capability.IFluidHandler
 import net.minecraftforge.fluids.capability.templates.FluidTank
 import net.minecraftforge.items.ItemStackHandler
 
-class FluidSlotContainer(windowId: Int, player: PlayerEntity, pos: BlockPos) :
-    TestContainer<FluidSlotContainer.Data>(Data::class.java, windowId, player, pos) {
+class FluidSlotController(windowId: Int, player: PlayerEntity, pos: BlockPos) :
+    TestController<FluidSlotController.Data>(Data::class.java, windowId, player, pos) {
     val ioSlots: SlotManager = SlotManager(data.ioInventory)
 
     val tankSlot: FluidSlot = FluidHandlerSlot(data.tank, 0)

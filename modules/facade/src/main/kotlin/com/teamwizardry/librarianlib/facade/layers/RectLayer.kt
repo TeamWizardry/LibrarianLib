@@ -2,6 +2,8 @@ package com.teamwizardry.librarianlib.facade.layers
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers.flatQuads
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.value.IMValue
@@ -28,10 +30,10 @@ public class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): G
         val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
         val vb = buffer.getBuffer(flatQuads)
 
-        vb.pos2d(context.transform, minX, maxY).color(c).endVertex()
-        vb.pos2d(context.transform, maxX, maxY).color(c).endVertex()
-        vb.pos2d(context.transform, maxX, minY).color(c).endVertex()
-        vb.pos2d(context.transform, minX, minY).color(c).endVertex()
+        vb.vertex2d(context.transform, minX, maxY).color(c).next()
+        vb.vertex2d(context.transform, maxX, maxY).color(c).next()
+        vb.vertex2d(context.transform, maxX, minY).color(c).next()
+        vb.vertex2d(context.transform, minX, minY).color(c).next()
 
         buffer.draw()
     }

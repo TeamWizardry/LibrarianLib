@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.facade.example.containers;
 
-import com.teamwizardry.librarianlib.facade.container.FacadeContainer;
-import com.teamwizardry.librarianlib.facade.container.FacadeContainerType;
+import com.teamwizardry.librarianlib.facade.container.FacadeController;
 import com.teamwizardry.librarianlib.facade.container.messaging.Message;
 import com.teamwizardry.librarianlib.facade.example.ExampleModContainers;
 import net.minecraft.block.Blocks;
@@ -9,10 +8,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 
-public class DirtSetterContainer extends FacadeContainer {
+public class DirtSetterController extends FacadeController {
     private final BlockPos pos;
 
-    public DirtSetterContainer(
+    public DirtSetterController(
             int windowId, @NotNull PlayerEntity player,
             BlockPos pos
     ) {

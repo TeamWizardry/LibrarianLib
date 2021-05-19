@@ -1,10 +1,8 @@
 package com.teamwizardry.librarianlib.facade
 
-import com.mojang.blaze3d.matrix.MatrixStack
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
 import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.facade.layer.supporting.StencilUtil
 import com.teamwizardry.librarianlib.facade.input.Cursor
@@ -17,6 +15,7 @@ import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.render.VertexConsumerProvider
+import net.minecraft.client.util.math.MatrixStack
 import org.lwjgl.glfw.GLFW
 import java.awt.Color
 import java.util.function.Predicate
@@ -347,7 +346,7 @@ public open class FacadeWidget(
         drawRect(minSafeX + basisWidth, minSafeY, windowWidth, minSafeY + basisHeight)
         drawRect(0.0, minSafeY + basisHeight, windowWidth, windowHeight)
 
-        buffer.finish()
+        buffer.draw()
     }
 
     /**

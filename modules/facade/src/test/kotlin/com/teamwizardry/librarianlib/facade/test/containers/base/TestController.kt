@@ -1,15 +1,15 @@
 package com.teamwizardry.librarianlib.facade.test.containers.base
 
-import com.teamwizardry.librarianlib.facade.container.FacadeContainer
+import com.teamwizardry.librarianlib.facade.container.FacadeController
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.math.BlockPos
 
-abstract class TestContainer<T: TestContainerData>(
+abstract class TestController<T: TestContainerData>(
     val dataType: Class<T>,
     windowId: Int,
     player: PlayerEntity,
     pos: BlockPos
-): FacadeContainer(TestContainerSet.getTypeByData(dataType).containerType, windowId, player) {
+): FacadeController(TestContainerSet.getTypeByData(dataType).containerType, windowId, player) {
     val data: T
 
     init {

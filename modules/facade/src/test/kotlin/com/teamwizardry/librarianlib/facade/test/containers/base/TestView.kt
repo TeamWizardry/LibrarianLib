@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.facade.test.containers.base
 
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.facade.container.FacadeContainerScreen
+import com.teamwizardry.librarianlib.facade.container.FacadeView
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
@@ -13,11 +13,11 @@ import net.minecraft.text.LiteralText
 import net.minecraft.text.Text
 import kotlin.math.max
 
-class TestContainerSelectorScreen(
-    container: TestContainerSelectorContainer,
+class TestView(
+    container: TestContainerSelectorController,
     inventory: PlayerInventory,
     title: Text
-): FacadeContainerScreen<TestContainerSelectorContainer>(container, inventory, title) {
+): FacadeView<TestContainerSelectorController>(container, inventory, title) {
 
     private val stack = StackLayout.build(0, 0)
         .width(300)

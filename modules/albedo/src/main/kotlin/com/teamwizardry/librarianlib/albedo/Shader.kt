@@ -66,7 +66,7 @@ public abstract class Shader(
      * RenderType type = RenderType.makeState(..., renderState);
      * ```
      */
-    public val renderState: RenderPhase = object: RenderPhase("enable_$shaderName", {
+    public val renderPhase: RenderPhase = object: RenderPhase("enable_$shaderName", {
         bind()
     }, {
         unbind()
@@ -87,7 +87,7 @@ public abstract class Shader(
     private val boundTextureUnits = mutableMapOf<Pair<Int, Int>, Int>()
 
     /**
-     * Binds this as the current program and pushes the current uniform states. If possible, [renderState] is the
+     * Binds this as the current program and pushes the current uniform states. If possible, [renderPhase] is the
      * preferred method of binding shaders.
      */
     public fun bind() {

@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.facade.pastry.layers
 
-import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
@@ -11,7 +10,6 @@ import com.teamwizardry.librarianlib.facade.provided.VanillaTooltipRenderer
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.core.util.vec
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
-import net.minecraft.client.gui.FontRenderer
 import net.minecraft.item.ItemStack
 import java.awt.Color
 import kotlin.math.max
@@ -102,14 +100,11 @@ public class VanillaTooltip: GuiLayer() {
     public val lines_im: IMValue<List<String>?> = imValue()
     public var lines: List<String>? by lines_im
 
-    public val font_im: IMValue<FontRenderer> = imValue(Client.textRenderer)
-    public var font: FontRenderer by font_im
-
     override fun draw(context: GuiDrawContext) {
         val rootMousePos = root.mousePos
 
         (lines ?: text?.let { listOf(it) })?.also { lines ->
-            VanillaTooltipRenderer.renderTooltip(context.transformStack, lines, rootMousePos.xi, rootMousePos.yi, font)
+            VanillaTooltipRenderer.renderTooltip(context.transformStack, lines, rootMousePos.xi, rootMousePos.yi)
         }
     }
 }

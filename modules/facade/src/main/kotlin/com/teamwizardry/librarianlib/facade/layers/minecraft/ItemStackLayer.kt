@@ -27,15 +27,14 @@ public class ItemStackLayer(stack: ItemStack, x: Int, y: Int): GuiLayer(x, y, 16
                     BUS.fire(QuantityTextEvent(stack.count.toString())).text
 
             val itemRender = Client.minecraft.itemRenderer
-            itemRender.zLevel = -130f
+            itemRender.zOffset = -130f
 
-            val fr = (stack.item.getFontRenderer(stack) ?: Client.minecraft.fontRenderer)
             context.pushGlMatrix()
-            itemRender.renderItemAndEffectIntoGUI(stack, 0, 0)
-            itemRender.renderItemOverlayIntoGUI(fr, stack, 0, 0, str)
+            itemRender.renderInGuiWithOverrides(stack, 0, 0)
+            itemRender.renderGuiItemOverlay(Client.minecraft.textRenderer, stack, 0, 0, str)
             context.popGlMatrix()
 
-            itemRender.zLevel = 0.0f
+            itemRender.zOffset = 0.0f
         }
     }
 }

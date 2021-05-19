@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.facade.layers
 
 import com.teamwizardry.librarianlib.math.Direction2d
-import com.teamwizardry.librarianlib.mosaic.ISprite
 import com.teamwizardry.librarianlib.mosaic.Sprite
 import com.teamwizardry.librarianlib.mosaic.WrappedSprite
 
@@ -21,7 +20,7 @@ public class SpriteGaugeLayer: LinearGaugeLayer {
     }
 
     private val pinnedSprite = object: WrappedSprite() {
-        override val wrapped: ISprite?
+        override val wrapped: Sprite?
             get() = sprite
         override val pinTop: Boolean
             get() = direction == Direction2d.DOWN
