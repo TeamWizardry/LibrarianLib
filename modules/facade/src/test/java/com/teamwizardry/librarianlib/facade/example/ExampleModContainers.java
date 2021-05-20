@@ -1,29 +1,19 @@
 package com.teamwizardry.librarianlib.facade.example;
 
-import com.teamwizardry.librarianlib.facade.container.FacadeScreenHandlerType;
+import net.minecraft.util.Identifier;
+
+import com.teamwizardry.librarianlib.facade.container.FacadeControllerRegistry;
+import com.teamwizardry.librarianlib.facade.container.FacadeControllerType;
 import com.teamwizardry.librarianlib.facade.example.containers.DirtSetterController;
 import com.teamwizardry.librarianlib.facade.example.containers.DirtSetterView;
-import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 
 public class ExampleModContainers {
-    public static FacadeScreenHandlerType<DirtSetterController> dirtSetterContainerType =
-            new FacadeScreenHandlerType<>(DirtSetterController.class);
+    public static FacadeControllerType<DirtSetterController> dirtSetterContainerType = FacadeControllerRegistry.register(new Identifier("ll-facade-test:dirt_setter"), DirtSetterController.class);
 
-    static {
-//        dirtSetterContainerType.setRegistryName("modid:dirt_setter");
-        dirtSetterContainerType.setRegistryName("ll-facade-test:dirt_setter");
-    }
-
-    public static void registerContainers(RegistryEvent.Register<ContainerType<?>> e) {
-        e.getRegistry().register(dirtSetterContainerType);
-    }
-
-    public static void clientSetup(FMLClientSetupEvent e) {
-        ScreenManager.registerFactory(
-                dirtSetterContainerType,
+    public static void clientSetup() {
+        ScreenRegistry.register(
+                dirtSetterContainerType.getScreenHandlerType(),
                 DirtSetterView::new
         );
     }

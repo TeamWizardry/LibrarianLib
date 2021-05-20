@@ -1,11 +1,12 @@
 package com.teamwizardry.librarianlib.facade.example.containers;
 
-import com.teamwizardry.librarianlib.facade.container.FacadeController;
-import com.teamwizardry.librarianlib.facade.container.messaging.Message;
-import com.teamwizardry.librarianlib.facade.example.ExampleModContainers;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
+
+import com.teamwizardry.librarianlib.facade.container.FacadeController;
+import com.teamwizardry.librarianlib.facade.container.messaging.Message;
+import com.teamwizardry.librarianlib.facade.example.ExampleModContainers;
 import org.jetbrains.annotations.NotNull;
 
 public class DirtSetterController extends FacadeController {
@@ -15,7 +16,7 @@ public class DirtSetterController extends FacadeController {
             int windowId, @NotNull PlayerEntity player,
             BlockPos pos
     ) {
-        super(ExampleModContainers.dirtSetterContainerType, windowId, player);
+        super(ExampleModContainers.dirtSetterContainerType.getScreenHandlerType(), windowId, player);
         this.pos = pos;
     }
 

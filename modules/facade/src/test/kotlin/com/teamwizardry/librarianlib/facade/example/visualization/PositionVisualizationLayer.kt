@@ -1,14 +1,16 @@
 package com.teamwizardry.librarianlib.facade.example.visualization
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DistinctColors
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
+import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.text.BitfontFormatting
-import com.teamwizardry.librarianlib.core.util.vec
 import dev.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
@@ -42,18 +44,18 @@ class PositionVisualizationLayer(val target: GuiLayer): GuiLayer() {
     override fun draw(context: GuiDrawContext) {
         RenderSystem.lineWidth(3f)
 
-        val buffer = VertexConsumerProvider.getImpl(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(SimpleRenderTypes.flatLines)
+        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+        val vb = buffer.getBuffer(SimpleRenderLayers.flatLines)
 
         val xDrawColor = Color(xColor.red, xColor.green, xColor.blue, 190)
         val yDrawColor = Color(yColor.red, yColor.green, yColor.blue, 190)
 
-        vb.pos2d(context.transform, 0, target.pos.y).color(xDrawColor).endVertex()
-        vb.pos2d(context.transform, target.pos.x, target.pos.y).color(xDrawColor).endVertex()
-        vb.pos2d(context.transform, target.pos.x, 0).color(yDrawColor).endVertex()
-        vb.pos2d(context.transform, target.pos.x, target.pos.y).color(yDrawColor).endVertex()
+        vb.vertex2d(context.transform, 0, target.pos.y).color(xDrawColor).next()
+        vb.vertex2d(context.transform, target.pos.x, target.pos.y).color(xDrawColor).next()
+        vb.vertex2d(context.transform, target.pos.x, 0).color(yDrawColor).next()
+        vb.vertex2d(context.transform, target.pos.x, target.pos.y).color(yDrawColor).next()
 
-        buffer.finish()
+        buffer.draw()
         RenderSystem.lineWidth(1f)
     }
 }
