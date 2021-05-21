@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.test.containers.base
+package com.teamwizardry.librarianlib.facade.test.controllers.base
 
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.container.FacadeView
@@ -14,10 +14,10 @@ import net.minecraft.text.Text
 import kotlin.math.max
 
 class TestView(
-    container: TestContainerSelectorController,
+    controller: TestControllerSelectorController,
     inventory: PlayerInventory,
     title: Text
-): FacadeView<TestContainerSelectorController>(container, inventory, title) {
+): FacadeView<TestControllerSelectorController>(controller, inventory, title) {
 
     private val stack = StackLayout.build(0, 0)
         .width(300)
@@ -52,18 +52,18 @@ class TestView(
 
         main.add(scrollWrapper)
 
-        selectGroup(container.containerSet.root)
+        selectGroup(controller.controllerSet.root)
     }
 
-    fun selectGroup(group: TestContainerSet.Entry.Group) {
+    fun selectGroup(group: TestControllerSet.Entry.Group) {
         stack.forEachChild { it.removeFromParent() }
         for(entry in group.entries) {
             stack.add(PastryButton(entry.name, 0, 0, 250) {
                 when(entry) {
-                    is TestContainerSet.Entry.Container -> {
+                    is TestControllerSet.Entry.Container -> {
                         sendMessage("selectType", entry.type.id)
                     }
-                    is TestContainerSet.Entry.Group -> {
+                    is TestControllerSet.Entry.Group -> {
                         selectGroup(entry)
                     }
                 }

@@ -1,19 +1,19 @@
-package com.teamwizardry.librarianlib.facade.test.containers.base
+package com.teamwizardry.librarianlib.facade.test.controllers.base
 
 import com.teamwizardry.librarianlib.facade.container.FacadeController
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.math.BlockPos
 
-abstract class TestController<T: TestContainerData>(
+abstract class TestController<T: TestControllerData>(
     val dataType: Class<T>,
     windowId: Int,
     player: PlayerEntity,
     pos: BlockPos
-): FacadeController(TestContainerSet.getTypeByData(dataType).containerType, windowId, player) {
+): FacadeController(TestControllerSet.getTypeByData(dataType).containerType, windowId, player) {
     val data: T
 
     init {
-        val tile = player.world.getBlockEntity(pos) as TestContainerTile
+        val tile = player.world.getBlockEntity(pos) as TestControllerBlockEntity
         data = tile.getData(dataType)
     }
 

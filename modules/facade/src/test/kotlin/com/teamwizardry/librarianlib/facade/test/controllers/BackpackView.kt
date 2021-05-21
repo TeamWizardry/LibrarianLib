@@ -1,33 +1,23 @@
-package com.teamwizardry.librarianlib.facade.test.containers
+package com.teamwizardry.librarianlib.facade.test.controllers
 
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.container.FacadeView
 import com.teamwizardry.librarianlib.facade.container.layers.SlotGridLayer
-import com.teamwizardry.librarianlib.facade.container.layers.SlotLayer
-import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.text.Text
 
-class FluidSlotScreen(
-    container: FluidSlotController,
+class BackpackView(
+    container: BackpackController,
     inventory: PlayerInventory,
     title: Text
-) : FacadeView<FluidSlotController>(container, inventory, title) {
-
+): FacadeView<BackpackController>(container, inventory, title) {
     init {
-        val contents = GuiLayer(0, 0, 36, 54)
-        contents.add(
-            FluidSlotLayer(container.tankSlot, 1, 1, 16, 52, true),
-            SlotLayer(container.ioSlots.all.getDirect(0), 19, 1, true),
-            SlotLayer(container.ioSlots.all.getDirect(1), 19, 37, true)
-        )
-
         val stack = StackLayout.build(5, 5)
             .vertical()
             .alignCenterX()
             .spacing(4)
-            .add(contents)
+            .add(SlotGridLayer(0, 0, container.contentsSlots.all, 9))
             .add(SlotGridLayer(0, 0, container.playerSlots.main, 9))
             .add(SlotGridLayer(0, 0, container.playerSlots.hotbar, 9))
             .fit()

@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.test.containers.base
+package com.teamwizardry.librarianlib.facade.test.controllers.base
 
 import com.teamwizardry.librarianlib.facade.container.FacadeController
 import com.teamwizardry.librarianlib.facade.container.messaging.Message
@@ -9,13 +9,13 @@ import net.minecraft.text.LiteralText
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 
-class TestContainerSelectorController(windowId: Int, player: PlayerEntity, val pos: BlockPos) :
+class TestControllerSelectorController(windowId: Int, player: PlayerEntity, val pos: BlockPos) :
     FacadeController(LibrarianLibFacadeTestMod.testContainerSelectorContainerType, windowId, player) {
-    val containerSet: TestContainerSet
+    val controllerSet: TestControllerSet
 
     init {
-        val tile = player.world.getBlockEntity(pos) as TestContainerTile
-        containerSet = tile.containerSet
+        val tile = player.world.getBlockEntity(pos) as TestControllerBlockEntity
+        controllerSet = tile.controllerSet
     }
 
     override fun canUse(playerIn: PlayerEntity): Boolean {
@@ -25,8 +25,8 @@ class TestContainerSelectorController(windowId: Int, player: PlayerEntity, val p
     @Message
     private fun selectType(id: Identifier) {
         if(player is ServerPlayerEntity) {
-            val type = containerSet.getType(id)
-            type.containerType.open(player, LiteralText(containerSet.name), pos)
+            val type = controllerSet.getType(id)
+            type.containerType.open(player, LiteralText(controllerSet.name), pos)
         }
     }
 }

@@ -1,8 +1,8 @@
-package com.teamwizardry.librarianlib.facade.test.containers
+package com.teamwizardry.librarianlib.facade.test.controllers
 
 import com.teamwizardry.librarianlib.facade.container.slot.SlotManager
-import com.teamwizardry.librarianlib.facade.test.containers.base.TestController
-import com.teamwizardry.librarianlib.facade.test.containers.base.TestContainerData
+import com.teamwizardry.librarianlib.facade.test.controllers.base.TestController
+import com.teamwizardry.librarianlib.facade.test.controllers.base.TestControllerData
 import com.teamwizardry.librarianlib.prism.Save
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.math.BlockPos
@@ -21,7 +21,7 @@ class SingleSlotController(windowId: Int, player: PlayerEntity, pos: BlockPos) :
         createTransferRule().from(contentsSlots.all).into(playerSlots.main).into(playerSlots.hotbar)
     }
 
-    class Data: TestContainerData() {
+    class Data: TestControllerData() {
         @Save
         val inventory: ItemStackHandler = ItemStackHandler(1)
     }

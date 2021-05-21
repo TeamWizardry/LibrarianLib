@@ -1,9 +1,8 @@
-package com.teamwizardry.librarianlib.facade.test.containers
+package com.teamwizardry.librarianlib.facade.test.controllers
 
 import com.teamwizardry.librarianlib.prism.Save
 import com.teamwizardry.librarianlib.testcore.objects.TestTileEntity
 import net.minecraft.block.entity.BlockEntityType
-import net.minecraft.tileentity.TileEntityType
 import net.minecraft.util.Direction
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.util.LazyOptional

@@ -1,17 +1,14 @@
-package com.teamwizardry.librarianlib.facade.test.containers.base
+package com.teamwizardry.librarianlib.facade.test.controllers.base
 
-import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.core.util.sided.ClientMetaSupplier
 import com.teamwizardry.librarianlib.core.util.sided.ClientSideFunction
 import com.teamwizardry.librarianlib.facade.container.FacadeController
 import com.teamwizardry.librarianlib.facade.container.FacadeView
-import com.teamwizardry.librarianlib.facade.container.FacadeScreenHandlerType
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.util.Identifier
-import net.minecraft.util.text.ITextComponent
 import java.lang.IllegalArgumentException
 
-class TestContainerSet(val name: String, config: Entry.Group.() -> Unit) {
+class TestControllerSet(val name: String, config: Entry.Group.() -> Unit) {
     val root: Entry.Group = Entry.Group(name)
     val types: List<Type<*, *>>
 
@@ -21,7 +18,7 @@ class TestContainerSet(val name: String, config: Entry.Group.() -> Unit) {
         allTypes.addAll(types)
     }
 
-    fun createData(): Map<Type<*, *>, TestContainerData> {
+    fun createData(): Map<Type<*, *>, TestControllerData> {
         return types.associateWith { it.dataClass.newInstance() }
     }
 
@@ -46,7 +43,7 @@ class TestContainerSet(val name: String, config: Entry.Group.() -> Unit) {
                 entries.add(group)
             }
 
-            inline fun <reified T : TestContainerData, C : TestController<T>> container(
+            inline fun <reified T : TestControllerData, C : TestController<T>> container(
                 name: String,
                 containerClass: Class<C>,
                 screenFactory: ClientMetaSupplier<ContainerScreenFactory<C>>
@@ -63,12 +60,11 @@ class TestContainerSet(val name: String, config: Entry.Group.() -> Unit) {
         }
     }
 
-    class Type<T : TestContainerData, C : TestController<T>>(
+    class Type<T : TestControllerData, C : TestController<T>>(
         val dataClass: Class<T>,
-        val containerClass: Class<C>,
-        val screenFactory: ClientMetaSupplier<ContainerScreenFactory<C>>
+        val containerClass: Class<C>
     ) {
-        val id: Identifier = loc("ll-facade-test", containerClass.simpleName.toLowerCase())
+        val id: Identifier = Identifier("liblib-facade-test", containerClass.simpleName.lowercase())
         val containerType: FacadeScreenHandlerType<C> = FacadeScreenHandlerType(containerClass)
 
         init {
@@ -85,8 +81,4 @@ class TestContainerSet(val name: String, config: Entry.Group.() -> Unit) {
                 ?: throw IllegalArgumentException("No container type for data type '${dataClass.canonicalName}'")
         }
     }
-}
-
-fun interface ContainerScreenFactory<T : FacadeController>: ClientSideFunction {
-    fun create(container: T, inventory: PlayerInventory, title: ITextComponent): FacadeView<T>
 }

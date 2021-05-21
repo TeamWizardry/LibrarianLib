@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.facade.test.containers
+package com.teamwizardry.librarianlib.facade.test.controllers
 
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.container.FacadeView

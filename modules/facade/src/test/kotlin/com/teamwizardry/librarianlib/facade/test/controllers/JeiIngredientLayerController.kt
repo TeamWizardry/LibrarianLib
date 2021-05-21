@@ -1,7 +1,7 @@
-package com.teamwizardry.librarianlib.facade.test.containers
+package com.teamwizardry.librarianlib.facade.test.controllers
 
-import com.teamwizardry.librarianlib.facade.test.containers.base.TestController
-import com.teamwizardry.librarianlib.facade.test.containers.base.TestContainerData
+import com.teamwizardry.librarianlib.facade.test.controllers.base.TestController
+import com.teamwizardry.librarianlib.facade.test.controllers.base.TestControllerData
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.util.math.BlockPos
 
@@ -10,6 +10,6 @@ class JeiIngredientLayerController(windowId: Int, player: PlayerEntity, pos: Blo
     init {
     }
 
-    class Data: TestContainerData() {
+    class Data: TestControllerData() {
     }
 }
