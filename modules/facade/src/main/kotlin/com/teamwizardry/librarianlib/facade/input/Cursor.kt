@@ -40,8 +40,10 @@ public class Cursor @JvmOverloads constructor(
     private var glfwCursor: Long = -1
 
     init {
-        loadCursor()
         cursors.add(this)
+        if(loaded) {
+            loadCursor()
+        }
     }
 
     private fun loadCursor() {
@@ -326,7 +328,10 @@ public class Cursor @JvmOverloads constructor(
                 for(cursor in cursors) {
                     cursor.loadCursor()
                 }
+                loaded = true
             }
         }
+
+        private var loaded = false
     }
 }

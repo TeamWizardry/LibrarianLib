@@ -12,43 +12,36 @@ import net.minecraft.util.profiler.Profiler
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 
-public object Fonts {
-    public var classic: Bitfont
+public object Fonts : SimpleResourceReloadListener<Pair<Bitfont, Bitfont>> {
+    public lateinit var classic: Bitfont
         private set
-    public var unifont: Bitfont
+    public lateinit var unifont: Bitfont
         private set
 
-    init {
+    override fun getFabricId(): Identifier = Identifier("liblib-facade:bitfont-fonts")
+
+    override fun load(
+        manager: ResourceManager,
+        profiler: Profiler,
+        executor: Executor
+    ): CompletableFuture<Pair<Bitfont, Bitfont>> {
         val classicLoc = Identifier("liblib-facade:fonts/mcclassicplus.bitfont")
         val unifontLoc = Identifier("liblib-facade:fonts/unifont.bitfont")
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(object: SimpleResourceReloadListener<Pair<Bitfont, Bitfont>> {
-            override fun getFabricId(): Identifier = Identifier("liblib-facade:bitfont-fonts")
+        return CompletableFuture.supplyAsync {
+            load(manager, classicLoc) to load(manager, unifontLoc)
+        }
+    }
 
-            override fun load(
-                manager: ResourceManager,
-                profiler: Profiler,
-                executor: Executor
-            ): CompletableFuture<Pair<Bitfont, Bitfont>> {
-                return CompletableFuture.supplyAsync {
-                    load(manager, classicLoc) to load(manager, unifontLoc)
-                }
-            }
-
-            override fun apply(
-                data: Pair<Bitfont, Bitfont>,
-                manager: ResourceManager,
-                profiler: Profiler,
-                executor: Executor
-            ): CompletableFuture<Void> {
-                return CompletableFuture.runAsync {
-                    classic = data.first
-                    unifont = data.second
-                }
-            }
-        })
-
-        classic = load(Client.minecraft.resourceManager, classicLoc)
-        unifont = load(Client.minecraft.resourceManager, unifontLoc)
+    override fun apply(
+        data: Pair<Bitfont, Bitfont>,
+        manager: ResourceManager,
+        profiler: Profiler,
+        executor: Executor
+    ): CompletableFuture<Void> {
+        return CompletableFuture.runAsync {
+            classic = data.first
+            unifont = data.second
+        }
     }
 
     private fun load(manager: ResourceManager, fontLocation: Identifier): Bitfont {

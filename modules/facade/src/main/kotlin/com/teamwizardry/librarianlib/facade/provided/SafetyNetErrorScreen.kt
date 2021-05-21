@@ -2,8 +2,10 @@ package com.teamwizardry.librarianlib.facade.provided
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.LibLibFacade
+import com.teamwizardry.librarianlib.facade.bridge.AbortingBufferBuilder
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.util.math.MatrixStack
@@ -22,6 +24,11 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
     private var hasLogged = false
 
     init {
+        if(Client.tessellator.buffer.isBuilding) {
+            logger.error("Safety net was triggered mid-draw, aborting the incomplete draw command.")
+            mixinCast<AbortingBufferBuilder>(Client.tessellator.buffer).abort()
+        }
+
         val maxWidth = 300
 
         parts.add(TextScreenPart(title.string, maxWidth))

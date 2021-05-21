@@ -44,8 +44,10 @@ internal object LibLibFacade : LibLibModule("liblib-facade", "Facade") {
                 }
             }
 
-            ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(Cursor)
-            preload()
+            val clientResources = ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES)
+            clientResources.registerReloadListener(Fonts)
+            clientResources.registerReloadListener(Cursor)
+//            preload()
         }
 
         /**

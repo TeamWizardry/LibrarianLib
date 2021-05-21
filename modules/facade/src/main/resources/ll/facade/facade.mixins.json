@@ -9,7 +9,8 @@
   "client": [
     "ContainerScreenMixin",
     "SlotPosAccess",
-    "FramebufferMixin"
+    "FramebufferMixin",
+    "AbortingBufferBuilderMixin"
   ],
   "server": [
   ],
