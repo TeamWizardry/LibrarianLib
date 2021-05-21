@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.facade.test.screens
 
-import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.supporting.MaskMode
@@ -10,7 +9,7 @@ import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import com.teamwizardry.librarianlib.mosaic.Sprite
 import net.minecraft.text.Text
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.Identifier
 import java.awt.Color
 import kotlin.math.PI
 
@@ -40,6 +39,6 @@ class MaskingTestScreen(title: Text): FacadeScreen(title) {
     }
 
     companion object {
-        val spiral: Sprite = Mosaic(loc("ll-facade-test:textures/spiral_mask.png"), 128, 128).getSprite("")
+        val spiral: Sprite = Mosaic(Identifier("ll-facade-test:textures/spiral_mask.png"), 128, 128).getSprite("")
     }
 }

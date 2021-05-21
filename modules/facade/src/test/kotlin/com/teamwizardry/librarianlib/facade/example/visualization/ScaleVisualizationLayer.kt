@@ -4,7 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DistinctColors
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
@@ -42,19 +43,19 @@ class ScaleVisualizationLayer(gridSize: Double): GuiLayer() {
 
         var x = gridSize
         while(x < width) {
-            vb.pos2d(context.transform, x, 0).color(color).endVertex()
-            vb.pos2d(context.transform, x, height).color(color).endVertex()
+            vb.vertex2d(context.transform, x, 0).color(color).next()
+            vb.vertex2d(context.transform, x, height).color(color).next()
             x += gridSize
         }
 
         var y = gridSize
         while(y < height) {
-            vb.pos2d(context.transform, 0, y).color(color).endVertex()
-            vb.pos2d(context.transform, width, y).color(color).endVertex()
+            vb.vertex2d(context.transform, 0, y).color(color).next()
+            vb.vertex2d(context.transform, width, y).color(color).next()
             y += gridSize
         }
 
-        buffer.finish()
+        buffer.draw()
         RenderSystem.lineWidth(1f)
     }
 }

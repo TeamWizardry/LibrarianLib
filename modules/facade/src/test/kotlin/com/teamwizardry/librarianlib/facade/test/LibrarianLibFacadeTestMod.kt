@@ -1,7 +1,7 @@
 @file:Suppress("LocalVariableName")
 
 package com.teamwizardry.librarianlib.facade.test
-
+/*
 import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.facade.LibrarianLibFacadeModule
 import com.teamwizardry.librarianlib.facade.container.FacadeController
@@ -116,7 +116,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
         groups.forEach { (id, group) ->
             +TestScreenConfig(id, group.name, itemGroup) {
                 customScreen {
-                    TestListScreen(group.name, group.tests)
+                    TestSelectorScreen(group.name, group.tests)
                 }
             }
         }
@@ -209,4 +209,5 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
     }
 }
 
-internal val logger = LibrarianLibFacadeTestMod.makeLogger(null)
+
+ */

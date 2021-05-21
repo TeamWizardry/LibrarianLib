@@ -3,7 +3,8 @@ package com.teamwizardry.librarianlib.facade.test.screens.pastry
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
@@ -20,7 +21,6 @@ import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.text.Text
-import net.minecraft.util.text.ITextComponent
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
@@ -118,20 +118,20 @@ internal class Rect2dUnionTestScreen(title: Text): FacadeScreen(title) {
             for(segment in rect2dUnion.horizontalSegments + rect2dUnion.verticalSegments) {
                 segment ?: continue
                 if(segment.depth != 0) continue
-                vb.pos2d(context.transform, segment.startVec).color(startColor).endVertex()
-                vb.pos2d(context.transform, segment.endVec).color(endColor).endVertex()
+                vb.vertex2d(context.transform, segment.startVec).color(startColor).next()
+                vb.vertex2d(context.transform, segment.endVec).color(endColor).next()
                 val sideOffset = segment.side.vector
                 val forwardOffset = segment.side.rotateCW().vector * 3
 
-                vb.pos2d(context.transform, segment.endVec - forwardOffset + sideOffset).color(arrowColor).endVertex()
-                vb.pos2d(context.transform, segment.endVec).color(arrowColor).endVertex()
-                vb.pos2d(context.transform, segment.endVec).color(arrowColor).endVertex()
-                vb.pos2d(context.transform, segment.endVec - forwardOffset - sideOffset).color(arrowColor).endVertex()
+                vb.vertex2d(context.transform, segment.endVec - forwardOffset + sideOffset).color(arrowColor).next()
+                vb.vertex2d(context.transform, segment.endVec).color(arrowColor).next()
+                vb.vertex2d(context.transform, segment.endVec).color(arrowColor).next()
+                vb.vertex2d(context.transform, segment.endVec - forwardOffset - sideOffset).color(arrowColor).next()
 
             }
 
             RenderSystem.lineWidth(2f)
-            buffer.finish()
+            buffer.draw()
             RenderSystem.lineWidth(1f)
         }
     }

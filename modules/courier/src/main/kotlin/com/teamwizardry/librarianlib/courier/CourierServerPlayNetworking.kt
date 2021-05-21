@@ -54,7 +54,7 @@ public object CourierServerPlayNetworking {
     ): ServerPlayNetworking.PlayChannelHandler {
         return ServerPlayNetworking.PlayChannelHandler { server, player, handler, buf, responseSender ->
             val packet = type.decode(CourierBuffer(buf))
-            packetHandler.receive(server, player, handler, packet, responseSender)
+            packetHandler.receive(packet, PacketContext(server, player, handler, responseSender))
         }
     }
 
@@ -64,30 +64,44 @@ public object CourierServerPlayNetworking {
          *
          * This method is executed on [netty’s event loops][io.netty.channel.EventLoop].
          * Modification to the game should be [scheduled][net.minecraft.util.thread.ThreadExecutor.submit] using the
-         * provided Minecraft server instance.
+         * provided context.
          *
          * An example usage of this is to create an explosion where the player is looking:
          * ```java
-         * CourierServerPlayNetworking.registerReceiver(ModPacketTypes.BOOM, (server, player, handler, packet, responseSender) -> {
+         * CourierServerPlayNetworking.registerReceiver(ModPacketTypes.BOOM, (packet, context) -> {
          *     // All operations on the server or world must be executed on the server thread
-         *     server.execute(() -> {
-         *         ModPacketHandler.createExplosion(player, packet.fire);
+         *     context.execute(() -> {
+         *         ModPacketHandler.createExplosion(context.player, packet.fire);
          *     });
          * });
          * ```
-         *
-         * @param server the server
-         * @param player the player
-         * @param handler the network handler that received this packet, representing the player/client who sent the packet
-         * @param packet the received packet
-         * @param responseSender the packet sender
          */
         public fun receive(
-            server: MinecraftServer,
-            player: ServerPlayerEntity,
-            handler: ServerPlayNetworkHandler,
             packet: T,
-            responseSender: PacketSender
+            context: PacketContext
         )
+    }
+
+    public class PacketContext(
+        /**
+         * the server
+         */
+        public val server: MinecraftServer,
+        /**
+         * the player
+         */
+        public val player: ServerPlayerEntity,
+        /**
+         * the network handler that received this packet, representing the player/client who sent the packet
+         */
+        public val handler: ServerPlayNetworkHandler,
+        /**
+         * the packet sender
+         */
+        public val responseSender: PacketSender
+    ) {
+        public fun execute(runnable: Runnable) {
+            server.execute(runnable)
+        }
     }
 }

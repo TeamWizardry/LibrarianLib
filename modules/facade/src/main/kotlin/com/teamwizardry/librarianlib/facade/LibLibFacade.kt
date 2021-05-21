@@ -24,10 +24,10 @@ internal object LibLibFacade : LibLibModule("liblib-facade", "Facade") {
         private val logger = LibLibFacade.makeLogger<CommonInitializer>()
 
         override fun onInitialize() {
-            CourierServerPlayNetworking.registerGlobalReceiver(MessagePacketType) { server, player, _, packet, _ ->
-                server.execute {
+            CourierServerPlayNetworking.registerGlobalReceiver(MessagePacketType) { packet, context ->
+                context.execute {
                     packet.side = MessageSide.SERVER
-                    (player.currentScreenHandler as? MessageHandler)?.receiveMessage(packet)
+                    (context.player.currentScreenHandler as? MessageHandler)?.receiveMessage(packet)
                 }
             }
         }
@@ -37,10 +37,10 @@ internal object LibLibFacade : LibLibModule("liblib-facade", "Facade") {
         private val logger = LibLibFacade.makeLogger<ClientInitializer>()
 
         override fun onInitializeClient() {
-            CourierClientPlayNetworking.registerGlobalReceiver(MessagePacketType) { client, _, packet, _ ->
-                client.execute {
+            CourierClientPlayNetworking.registerGlobalReceiver(MessagePacketType) { packet, context ->
+                context.execute {
                     packet.side = MessageSide.CLIENT
-                    (client.player?.currentScreenHandler as? MessageHandler)?.receiveMessage(packet)
+                    (context.client.player?.currentScreenHandler as? MessageHandler)?.receiveMessage(packet)
                 }
             }
 

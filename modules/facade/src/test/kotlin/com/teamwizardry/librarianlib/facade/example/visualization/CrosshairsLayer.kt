@@ -4,7 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DistinctColors
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import net.minecraft.client.render.VertexConsumerProvider
@@ -15,10 +16,10 @@ class CrosshairsLayer(val color: Color = DistinctColors.blue, val length: Double
         RenderSystem.lineWidth(2f)
         val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
         val vb = buffer.getBuffer(SimpleRenderLayers.flatLines)
-        vb.pos2d(context.transform, -length, 0).color(color).endVertex()
-        vb.pos2d(context.transform, length, 0).color(color).endVertex()
-        vb.pos2d(context.transform, 0, -length).color(color).endVertex()
-        vb.pos2d(context.transform, 0, length).color(color).endVertex()
-        buffer.finish()
+        vb.vertex2d(context.transform, -length, 0).color(color).next()
+        vb.vertex2d(context.transform, length, 0).color(color).next()
+        vb.vertex2d(context.transform, 0, -length).color(color).next()
+        vb.vertex2d(context.transform, 0, length).color(color).next()
+        buffer.draw()
     }
 }

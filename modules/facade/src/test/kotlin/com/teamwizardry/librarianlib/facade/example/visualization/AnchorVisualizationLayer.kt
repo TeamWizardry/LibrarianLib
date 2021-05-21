@@ -4,7 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.DistinctColors
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderTypes
+import com.teamwizardry.librarianlib.core.util.kotlin.color
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
@@ -44,12 +45,12 @@ class AnchorVisualizationLayer(val target: GuiLayer): GuiLayer() {
         // get into their parent space
         context.matrix *= parent.inverseTransform
 
-        vb.pos2d(context.transform, target.pos.x - anchorSize, target.pos.y - anchorSize).color(color).endVertex()
-        vb.pos2d(context.transform, target.pos.x + anchorSize, target.pos.y + anchorSize).color(color).endVertex()
-        vb.pos2d(context.transform, target.pos.x + anchorSize, target.pos.y - anchorSize).color(color).endVertex()
-        vb.pos2d(context.transform, target.pos.x - anchorSize, target.pos.y + anchorSize).color(color).endVertex()
+        vb.vertex2d(context.transform, target.pos.x - anchorSize, target.pos.y - anchorSize).color(color).next()
+        vb.vertex2d(context.transform, target.pos.x + anchorSize, target.pos.y + anchorSize).color(color).next()
+        vb.vertex2d(context.transform, target.pos.x + anchorSize, target.pos.y - anchorSize).color(color).next()
+        vb.vertex2d(context.transform, target.pos.x - anchorSize, target.pos.y + anchorSize).color(color).next()
 
-        buffer.finish()
+        buffer.draw()
         RenderSystem.lineWidth(1f)
     }
 }

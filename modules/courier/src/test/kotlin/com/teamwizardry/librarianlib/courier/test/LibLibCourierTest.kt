@@ -41,9 +41,9 @@ internal object LibLibCourierTest {
         private val logger = logManager.makeLogger<ClientInitializer>()
 
         override fun onInitializeClient() {
-            CourierClientPlayNetworking.registerGlobalReceiver(TestPacketTypes.testPacket) { client, _, packet, _ ->
-                client.execute {
-                    client.player?.sendMessage(LiteralText("CourierPacket handler: $packet (manual = ${packet.manual})"), false)
+            CourierClientPlayNetworking.registerGlobalReceiver(TestPacketTypes.testPacket) { packet, context ->
+                context.execute {
+                    context.client.player?.sendMessage(LiteralText("CourierPacket handler: $packet (manual = ${packet.manual})"), false)
                 }
             }
             manager.registerClient()

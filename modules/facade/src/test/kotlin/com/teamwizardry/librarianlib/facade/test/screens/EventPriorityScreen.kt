@@ -1,21 +1,20 @@
 package com.teamwizardry.librarianlib.facade.test.screens
 
-import com.teamwizardry.librarianlib.core.util.loc
 import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
 import com.teamwizardry.librarianlib.etcetera.eventbus.EventBus
 import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
-import com.teamwizardry.librarianlib.facade.test.LibrarianLibFacadeTestMod
+import com.teamwizardry.librarianlib.facade.test.LibLibFacadeTest
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import net.minecraft.text.Text
-import net.minecraft.util.text.ITextComponent
+import net.minecraft.util.Identifier
 import java.awt.Color
 
 class EventPriorityScreen(title: Text): FacadeScreen(title) {
     init {
-        val dirt = Mosaic(loc("minecraft:textures/block/dirt.png"), 16, 16)
+        val dirt = Mosaic(Identifier("minecraft:textures/block/dirt.png"), 16, 16)
 
         val bus = EventBus()
         val fireOrder = mutableListOf<Int>()
@@ -70,6 +69,6 @@ class EventPriorityScreen(title: Text): FacadeScreen(title) {
     class TestCancelEvent: CancelableEvent()
 
     private companion object {
-        val logger = LibrarianLibFacadeTestMod.makeLogger<EventPriorityScreen>()
+        val logger = LibLibFacadeTest.logManager.makeLogger<EventPriorityScreen>()
     }
 }

@@ -33,13 +33,13 @@ class PastryTestDropdown: PastryTestBase() {
         val stackLayer = ItemStackLayer(0, 0)
 
         val dropdownWidth = stacks.map { stack ->
-            stack?.let { PastryLabel(0, 0, it.displayName.string).widthi } ?: 0
+            stack?.let { PastryLabel(0, 0, it.name.string).widthi } ?: 0
         }.maxOrNull() ?: 50
         dropdown = PastryDropdown(0, 0, dropdownWidth + 15) {
             stackLayer.stack = it
         }
         dropdown.items.addAll(stacks.map { stack ->
-            stack?.let { DropdownTextItem(it, it.displayName.string) } ?: DropdownSeparatorItem<ItemStack>()
+            stack?.let { DropdownTextItem(it, it.name.string) } ?: DropdownSeparatorItem<ItemStack>()
         })
 
         val horizontalStack = StackLayout.build()

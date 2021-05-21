@@ -57,7 +57,7 @@ public object CourierClientPlayNetworking {
     ): ClientPlayNetworking.PlayChannelHandler {
         return ClientPlayNetworking.PlayChannelHandler { client, handler, buf, responseSender ->
             val packet = type.decode(CourierBuffer(buf))
-            packetHandler.receive(client, handler, packet, responseSender)
+            packetHandler.receive(packet, PacketContext(client, handler, responseSender))
         }
     }
 
@@ -68,29 +68,41 @@ public object CourierClientPlayNetworking {
          *
          * This method is executed on [netty’s event loops][io.netty.channel.EventLoop].
          * Modification to the game should be [scheduled][net.minecraft.util.thread.ThreadExecutor.submit] using the
-         * provided Minecraft client instance.
+         * provided context.
          *
          *
          * An example usage of this is to display an overlay message:
          * ```
-         * CourierClientPlayNetworking.registerReceiver(ModPacketTypes.OVERLAY, (client, handler, packet, responseSender) -> {
+         * CourierClientPlayNetworking.registerReceiver(ModPacketTypes.OVERLAY, (packet, context) -> {
          *     // All operations on the server or world must be executed on the server thread
-         *     client.execute(() -> {
-         *         client.inGameHud.setOverlayMessage(packet.message, true);
+         *     context.execute(() -> {
+         *         context.client.inGameHud.setOverlayMessage(packet.message, true);
          *     });
          * });
          * ```
-         *
-         * @param client the client
-         * @param handler the network handler that received this packet
-         * @param packet the received packet
-         * @param responseSender the packet sender
          */
         public fun receive(
-            client: MinecraftClient,
-            handler: ClientPlayNetworkHandler,
             packet: T,
-            responseSender: PacketSender
+            context: PacketContext
         )
+    }
+
+    public class PacketContext(
+        /**
+         * the client
+         */
+        public val client: MinecraftClient,
+        /**
+         * the network handler that received this packet
+         */
+        public val handler: ClientPlayNetworkHandler,
+        /**
+         * the packet sender
+         */
+        public val responseSender: PacketSender
+    ) {
+        public fun execute(runnable: Runnable) {
+            client.execute(runnable)
+        }
     }
 }
