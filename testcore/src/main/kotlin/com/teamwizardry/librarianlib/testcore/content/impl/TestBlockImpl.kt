@@ -27,30 +27,11 @@ import net.minecraft.world.*
 import java.util.Random
 
 public open class TestBlockImpl(public val config: TestBlock): Block(config.also { configHolder = it }.properties) {
-//    public var tileEntityType: TileEntityType<*>? = null
-//        private set
-//    public val tileEntityRenderer: ClientMetaSupplier<TileEntityRendererFactory>?
-//    private var tileFactory: (() -> TileEntity)? = null
 
     init {
-//        this.registryName = Identifier(ModLoadingContext.get().activeContainer.modId, config.id)
         if (config.directional) {
             this.defaultState = this.stateManager.defaultState.with(FACING, Direction.UP)
         }
-//        @Suppress("UNCHECKED_CAST")
-//        val tileConfig = config.tileConfig as TestTileConfig<TileEntity>?
-//        if(tileConfig != null) {
-//            tileFactory = {
-//                @Suppress("UNCHECKED_CAST")
-//                tileConfig.factory(tileEntityType as TileEntityType<TileEntity>)
-//            }
-//            val type = TileEntityType.Builder.create(tileFactory, this).build(null)
-//            type.registryName = this.registryName
-//            tileEntityType = type
-//            tileEntityRenderer = tileConfig.renderer
-//        } else {
-//            tileEntityRenderer = null
-//        }
     }
 
     public open val modelName: String
@@ -202,8 +183,4 @@ public open class TestBlockImpl(public val config: TestBlock): Block(config.also
         // needed because fillStateContainer is called before we can set the config property
         private var configHolder: TestBlock? by threadLocal()
     }
-}
-
-public fun interface TileEntityRendererFactory: ClientSideFunction {
-    public fun create(dispatcher: BlockEntityRenderDispatcher): BlockEntityRenderer<*>
 }

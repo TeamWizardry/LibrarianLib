@@ -1,10 +1,7 @@
 package com.teamwizardry.librarianlib.facade.test.controllers.base
 
-import com.teamwizardry.librarianlib.core.util.sided.ClientMetaSupplier
-import com.teamwizardry.librarianlib.core.util.sided.ClientSideFunction
-import com.teamwizardry.librarianlib.facade.container.FacadeController
-import com.teamwizardry.librarianlib.facade.container.FacadeView
-import net.minecraft.entity.player.PlayerInventory
+import com.teamwizardry.librarianlib.facade.container.FacadeControllerRegistry
+import com.teamwizardry.librarianlib.facade.container.FacadeControllerType
 import net.minecraft.util.Identifier
 import java.lang.IllegalArgumentException
 
@@ -45,10 +42,9 @@ class TestControllerSet(val name: String, config: Entry.Group.() -> Unit) {
 
             inline fun <reified T : TestControllerData, C : TestController<T>> container(
                 name: String,
-                containerClass: Class<C>,
-                screenFactory: ClientMetaSupplier<ContainerScreenFactory<C>>
+                containerClass: Class<C>
             ) {
-                entries.add(Container(name, Type(T::class.java, containerClass, screenFactory)))
+                entries.add(Container(name, Type(T::class.java, containerClass)))
             }
 
             override fun collectTypes(list: MutableList<Type<*, *>>): List<Type<*, *>> {
@@ -65,11 +61,7 @@ class TestControllerSet(val name: String, config: Entry.Group.() -> Unit) {
         val containerClass: Class<C>
     ) {
         val id: Identifier = Identifier("liblib-facade-test", containerClass.simpleName.lowercase())
-        val containerType: FacadeScreenHandlerType<C> = FacadeScreenHandlerType(containerClass)
-
-        init {
-            containerType.registryName = id
-        }
+        val containerType: FacadeControllerType<C> = FacadeControllerRegistry.register(id, containerClass)
     }
 
 

@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "ll/scribe/scribe.refmap.json",
   "mixins": [
+    "DefaultedListScribeHooks"
   ],
   "client": [
   ],

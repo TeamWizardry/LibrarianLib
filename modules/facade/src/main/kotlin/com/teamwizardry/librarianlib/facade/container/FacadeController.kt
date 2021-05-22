@@ -20,6 +20,12 @@ public abstract class FacadeController(
     windowId: Int,
     public val player: PlayerEntity
 ) : ScreenHandler(type, windowId), MessageHandler {
+    public constructor(
+        type: FacadeControllerType<*>,
+        windowId: Int,
+        player: PlayerEntity
+    ) : this(type.screenHandlerType, windowId, player)
+
     public val isClientContainer: Boolean = player !is ServerPlayerEntity
 
     public val transferManager: TransferManager = TransferManager()

@@ -6,9 +6,12 @@ import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.ConstructorMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.PrismException
+import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry
 import net.fabricmc.fabric.api.util.NbtType
+import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.nbt.CompoundTag
@@ -19,7 +22,6 @@ import net.minecraft.screen.ScreenHandlerType
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import java.lang.IllegalArgumentException
 import kotlin.math.min
 
 public interface FacadeControllerType<T : FacadeController> {
@@ -33,6 +35,36 @@ public object FacadeControllerRegistry {
     public fun <T : FacadeController> register(id: Identifier, clazz: Class<T>): FacadeControllerType<T> {
         val screenHandlerType = ScreenHandlerRegistry.registerExtended(id, FacadeControllerClientFactoryImpl(clazz))
         return FacadeControllerTypeImpl(id, screenHandlerType, clazz)
+    }
+}
+
+public object FacadeViewRegistry {
+    @JvmStatic
+    public fun <C : FacadeController, V : FacadeView<C>> register(
+        type: FacadeControllerType<C>,
+        factory: Factory<C, V>
+    ) {
+        ScreenRegistry.register(type.screenHandlerType) { handler, inventory, title ->
+            factory.create(handler, inventory, title)
+        }
+    }
+
+    /**
+     * A factory for controller views.
+     *
+     * @param <C> the controller type
+     * @param <V> the controller view type
+     */
+    public fun interface Factory<C : FacadeController, V : FacadeView<C>> {
+        /**
+         * Creates a new controller view screen.
+         *
+         * @param controller the controller
+         * @param inventory  the player inventory
+         * @param title      the title of the screen
+         * @return the created screen
+         */
+        public fun create(controller: C, inventory: PlayerInventory, title: Text): V
     }
 }
 

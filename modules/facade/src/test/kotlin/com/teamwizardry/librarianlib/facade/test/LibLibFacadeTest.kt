@@ -4,6 +4,9 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.ModLogManager
 import com.teamwizardry.librarianlib.courier.CourierPacketType
 import com.teamwizardry.librarianlib.courier.CourierServerPlayNetworking
+import com.teamwizardry.librarianlib.facade.container.FacadeControllerRegistry
+import com.teamwizardry.librarianlib.facade.container.FacadeControllerType
+import com.teamwizardry.librarianlib.facade.container.FacadeViewRegistry
 import com.teamwizardry.librarianlib.facade.example.ExampleAlignmentScreen
 import com.teamwizardry.librarianlib.facade.example.GuessingGameScreen
 import com.teamwizardry.librarianlib.facade.example.gettingstarted.AllTheSquaresScreen
@@ -11,19 +14,28 @@ import com.teamwizardry.librarianlib.facade.example.gettingstarted.HelloSquareSc
 import com.teamwizardry.librarianlib.facade.example.gettingstarted.SquaresAllTheWayDownScreen
 import com.teamwizardry.librarianlib.facade.example.transform.PositionExampleScreen
 import com.teamwizardry.librarianlib.facade.example.transform.VisualizationTestScreen
+import com.teamwizardry.librarianlib.facade.test.controllers.*
+import com.teamwizardry.librarianlib.facade.test.controllers.base.TestControllerSelectorController
 import com.teamwizardry.librarianlib.facade.test.screens.*
 import com.teamwizardry.librarianlib.facade.test.screens.pastry.*
 import com.teamwizardry.librarianlib.testcore.TestModContentManager
+import com.teamwizardry.librarianlib.testcore.content.TestBlock
 import com.teamwizardry.librarianlib.testcore.content.TestItem
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.api.ModInitializer
 import net.minecraft.nbt.StringTag
+import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 
 internal object LibLibFacadeTest {
     val logManager: ModLogManager = ModLogManager("liblib-facade-test", "LibrarianLib Facade Test")
     val manager: TestModContentManager = TestModContentManager("liblib-facade-test", "Facade", logManager)
+
+    lateinit var simpleControllerType: FacadeControllerType<SimpleController>
+    lateinit var simpleInventoryControllerType: FacadeControllerType<SimpleInventoryController>
+    lateinit var testControllerSelectorControllerType: FacadeControllerType<TestControllerSelectorController>
 
     object CommonInitializer : ModInitializer {
         private val logger = logManager.makeLogger<CommonInitializer>()
@@ -35,12 +47,43 @@ internal object LibLibFacadeTest {
                 }
             }
 
+            simpleControllerType = FacadeControllerRegistry.register(
+                Identifier("liblib-facade-test:simple_controller"),
+                SimpleController::class.java
+            )
+            simpleInventoryControllerType = FacadeControllerRegistry.register(
+                Identifier("liblib-facade-test:simple_inventory_controller"),
+                SimpleInventoryController::class.java
+            )
+            testControllerSelectorControllerType = FacadeControllerRegistry.register(
+                Identifier("liblib-facade-test:test_controller_selector"),
+                TestControllerSelectorController::class.java
+            )
+
             manager.create<TestItem>("basics") { name = "Basics" }
             manager.create<TestItem>("layers") { name = "Layers" }
             manager.create<TestItem>("animations") { name = "Animations/Time" }
             manager.create<TestItem>("clipping_compositing") { name = "Clipping/Compositing" }
             manager.create<TestItem>("advanced") { name = "Advanced" }
             manager.create<TestItem>("examples") { name = "Examples" }
+
+            manager.create<TestItem>("simple_controller") {
+                name = "Simple controller"
+                rightClick.server {
+                    simpleControllerType.open(player as ServerPlayerEntity, Text.of("Simple Controller"))
+                }
+            }
+            manager.create<TestBlock>("simple_inventory") {
+                name = "Simple inventory"
+                blockEntity(::SimpleInventoryBlockEntity)
+                rightClick.server {
+                    simpleInventoryControllerType.open(player as ServerPlayerEntity, Text.of("Simple Inventory"), pos)
+                }
+            }
+
+            manager.create<TestBlock>("basic_controllers") {
+                name = "Basic Controllers"
+            }
 
             manager.registerCommon()
         }
@@ -97,6 +140,8 @@ internal object LibLibFacadeTest {
                     screen("Position", ::PositionExampleScreen)
                 }
             }
+            FacadeViewRegistry.register(simpleControllerType, ::SimpleView)
+            FacadeViewRegistry.register(simpleInventoryControllerType, ::SimpleInventoryView)
             manager.registerClient()
         }
 

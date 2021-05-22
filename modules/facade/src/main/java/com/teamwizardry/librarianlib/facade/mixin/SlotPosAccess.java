@@ -9,17 +9,17 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface SlotPosAccess {
     @Accessor("x")
     @Mutable
-    int getX();
+    int getSlotX();
 
     @Accessor("x")
     @Mutable
-    void setX(int value);
+    void setSlotX(int value);
 
     @Accessor("y")
     @Mutable
-    int getY();
+    int getSlotY();
 
     @Accessor("y")
     @Mutable
-    void setY(int value);
+    void setSlotY(int value);
 }

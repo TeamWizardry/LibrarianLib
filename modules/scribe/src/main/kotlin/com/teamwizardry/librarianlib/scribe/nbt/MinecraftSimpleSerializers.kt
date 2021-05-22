@@ -2,10 +2,13 @@ package com.teamwizardry.librarianlib.scribe.nbt
 
 import com.mojang.authlib.GameProfile
 import com.teamwizardry.librarianlib.core.util.kotlin.inconceivable
+import com.teamwizardry.librarianlib.core.util.mixinCast
+import com.teamwizardry.librarianlib.scribe.mixin.DefaultedListScribeHooks
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.type.ClassMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.DeserializationException
+import dev.thecodewarrior.prism.SerializationException
 import net.minecraft.block.BlockState
 import net.minecraft.enchantment.EnchantmentLevelEntry
 import net.minecraft.entity.effect.StatusEffectInstance
@@ -13,6 +16,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
+import net.minecraft.util.collection.DefaultedList
 import net.minecraft.util.math.*
 import net.minecraft.util.registry.Registry
 
@@ -239,7 +243,6 @@ internal class MCPairSerializerFactory(prism: NbtPrism): NBTSerializerFactory(pr
 
         override fun deserialize(tag: Tag, existing: MCPair<Any?, Any?>?): MCPair<Any?, Any?> {
             @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundTag>("tag")
-            @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS") // stupid @MethodsReturnNonnullByDefault
             return MCPair(
                 if (tag.contains("A")) firstSerializer.read(tag.expect("A"), existing?.left) else null,
                 if (tag.contains("B")) secondSerializer.read(tag.expect("B"), existing?.right) else null
@@ -248,11 +251,38 @@ internal class MCPairSerializerFactory(prism: NbtPrism): NBTSerializerFactory(pr
 
         override fun serialize(value: MCPair<Any?, Any?>): Tag {
             val tag = CompoundTag()
-            @Suppress("UNNECESSARY_SAFE_CALL") // stupid @MethodsReturnNonnullByDefault
             value.left?.also { tag.put("A", firstSerializer.write(it)) }
-            @Suppress("UNNECESSARY_SAFE_CALL") // stupid @MethodsReturnNonnullByDefault
             value.right?.also { tag.put("B", secondSerializer.write(it)) }
             return tag
+        }
+    }
+}
+
+internal class DefaultedListSerializerFactory(prism: NbtPrism): NBTSerializerFactory(prism, Mirror.reflect<DefaultedList<*>>()) {
+    override fun create(mirror: TypeMirror): NbtSerializer<*> {
+        return DefaultedListSerializer(prism, mirror as ClassMirror)
+    }
+
+    class DefaultedListSerializer(prism: NbtPrism, type: ClassMirror): NbtSerializer<DefaultedList<Any>>(type) {
+        private val listSerializer by prism[
+                Mirror.reflectClass(List::class.java)
+                    .withTypeArguments(
+                        type.findSuperclass(DefaultedList::class.java)!!.typeParameters[0]
+                    )
+        ]
+
+        override fun deserialize(tag: Tag, existing: DefaultedList<Any>?): DefaultedList<Any> {
+            if(existing == null)
+                throw DeserializationException("Expected an existing DefaultedList instance")
+            val delegate = mixinCast<DefaultedListScribeHooks>(existing).delegate
+            val result = listSerializer.read(tag, delegate)
+            if(result !== delegate)
+                throw DeserializationException("The list serializer created a new list instance")
+            return existing
+        }
+
+        override fun serialize(value: DefaultedList<Any>): Tag {
+            return listSerializer.write(mixinCast<DefaultedListScribeHooks>(value).delegate)
         }
     }
 }

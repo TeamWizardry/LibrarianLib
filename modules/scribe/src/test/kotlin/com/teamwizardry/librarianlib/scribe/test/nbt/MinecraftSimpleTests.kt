@@ -149,7 +149,6 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
 
     @Test
     fun `read+write for MCPair with a null value should exclude that key`() {
-        @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS") // stupid @MethodsReturnNonnullByDefault
         simple<MCPair<String, Int?>, MCPairSerializerFactory.MCPairSerializer>(MCPair<String, Int?>("test", null), TagBuilder.compound {
             "A" *= string("test")
         }, { a, b -> a.left == b.left && a.right == b.right })

@@ -34,6 +34,7 @@ public object Scribe {
             TripleSerializerFactory(prism),
 
             // minecraft types
+            DefaultedListSerializerFactory(prism),
             TagPassthroughSerializerFactory(prism),
             MCPairSerializerFactory(prism),
             TextSerializerFactory(prism)

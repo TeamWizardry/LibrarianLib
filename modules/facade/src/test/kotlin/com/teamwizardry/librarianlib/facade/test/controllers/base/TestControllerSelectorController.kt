@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.facade.test.controllers.base
 
 import com.teamwizardry.librarianlib.facade.container.FacadeController
 import com.teamwizardry.librarianlib.facade.container.messaging.Message
-import com.teamwizardry.librarianlib.facade.test.LibrarianLibFacadeTestMod
+import com.teamwizardry.librarianlib.facade.test.LibLibFacadeTest
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.LiteralText
@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 
 class TestControllerSelectorController(windowId: Int, player: PlayerEntity, val pos: BlockPos) :
-    FacadeController(LibrarianLibFacadeTestMod.testContainerSelectorContainerType, windowId, player) {
+    FacadeController(LibLibFacadeTest.testControllerSelectorControllerType, windowId, player) {
     val controllerSet: TestControllerSet
 
     init {

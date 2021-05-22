@@ -120,7 +120,7 @@ public abstract class FacadeView<T: ScreenHandler>(
     }
 
     override fun isClickOutsideBounds(mouseX: Double, mouseY: Double, guiLeftIn: Int, guiTopIn: Int, mouseButton: Int): Boolean {
-        return facade.hitTest(mouseX, mouseY).layer == null
+        return !isMouseMasked(mouseX, mouseY) && facade.hitTest(mouseX, mouseY).layer == null
     }
 
     override fun drawBackground(matrixStack: MatrixStack, partialTicks: Float, mouseX: Int, mouseY: Int) {

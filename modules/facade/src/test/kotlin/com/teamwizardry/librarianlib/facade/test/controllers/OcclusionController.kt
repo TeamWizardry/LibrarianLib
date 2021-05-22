@@ -1,12 +1,15 @@
 package com.teamwizardry.librarianlib.facade.test.controllers
 
+import com.teamwizardry.librarianlib.facade.container.DefaultInventoryImpl
 import com.teamwizardry.librarianlib.facade.container.slot.SlotManager
 import com.teamwizardry.librarianlib.facade.test.controllers.base.TestController
 import com.teamwizardry.librarianlib.facade.test.controllers.base.TestControllerData
-import com.teamwizardry.librarianlib.prism.Save
+import com.teamwizardry.librarianlib.scribe.Save
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.inventory.Inventory
+import net.minecraft.item.ItemStack
+import net.minecraft.util.collection.DefaultedList
 import net.minecraft.util.math.BlockPos
-import net.minecraftforge.items.ItemStackHandler
 
 class OcclusionController(windowId: Int, player: PlayerEntity, pos: BlockPos) :
     TestController<OcclusionController.Data>(Data::class.java, windowId, player, pos) {
@@ -23,6 +26,7 @@ class OcclusionController(windowId: Int, player: PlayerEntity, pos: BlockPos) :
 
     class Data: TestControllerData() {
         @Save
-        val inventory: ItemStackHandler = ItemStackHandler(5)
+        val items: DefaultedList<ItemStack> = DefaultedList.ofSize(5, ItemStack.EMPTY)
+        val inventory: Inventory = DefaultInventoryImpl.of(items)
     }
 }
