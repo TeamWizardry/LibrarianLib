@@ -67,7 +67,7 @@ public interface TransferRule {
             // if it's the same item, we should try stacking. if it's empty, we'll just stack onto that zero.
             if (ScreenHandler.canStacksCombine(transfer.stack, slotStack) || slotStack.isEmpty) {
                 // compute how much to actually transfer
-                val maxStackSize = min(slot.getMaxItemCount(transfer.stack), transfer.stack.count)
+                val maxStackSize = min(slot.getMaxItemCount(transfer.stack), transfer.stack.maxCount)
                 val transferLimit = max(0, maxStackSize - slotStack.count)
                 val transferAmount = min(transfer.stack.count, transferLimit)
 

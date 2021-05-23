@@ -11,7 +11,7 @@ import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.text.Text
 import java.awt.Color
 
-class OcclusionScreen(
+class OcclusionView(
     container: OcclusionController,
     inventory: PlayerInventory,
     title: Text

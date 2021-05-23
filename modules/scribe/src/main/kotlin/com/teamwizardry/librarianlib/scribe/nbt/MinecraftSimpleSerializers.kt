@@ -265,7 +265,7 @@ internal class DefaultedListSerializerFactory(prism: NbtPrism): NBTSerializerFac
 
     class DefaultedListSerializer(prism: NbtPrism, type: ClassMirror): NbtSerializer<DefaultedList<Any>>(type) {
         private val listSerializer by prism[
-                Mirror.reflectClass(List::class.java)
+                Mirror.reflectClass(ArrayList::class.java)
                     .withTypeArguments(
                         type.findSuperclass(DefaultedList::class.java)!!.typeParameters[0]
                     )
@@ -274,10 +274,8 @@ internal class DefaultedListSerializerFactory(prism: NbtPrism): NBTSerializerFac
         override fun deserialize(tag: Tag, existing: DefaultedList<Any>?): DefaultedList<Any> {
             if(existing == null)
                 throw DeserializationException("Expected an existing DefaultedList instance")
-            val delegate = mixinCast<DefaultedListScribeHooks>(existing).delegate
-            val result = listSerializer.read(tag, delegate)
-            if(result !== delegate)
-                throw DeserializationException("The list serializer created a new list instance")
+            val result = listSerializer.read(tag, null) as List<*>
+            mixinCast<DefaultedListScribeHooks>(existing).delegate = result
             return existing
         }
 

@@ -2,7 +2,6 @@ package com.teamwizardry.librarianlib.facade.test
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.ModLogManager
-import com.teamwizardry.librarianlib.courier.CourierPacketType
 import com.teamwizardry.librarianlib.courier.CourierServerPlayNetworking
 import com.teamwizardry.librarianlib.facade.container.FacadeControllerRegistry
 import com.teamwizardry.librarianlib.facade.container.FacadeControllerType
@@ -15,7 +14,10 @@ import com.teamwizardry.librarianlib.facade.example.gettingstarted.SquaresAllThe
 import com.teamwizardry.librarianlib.facade.example.transform.PositionExampleScreen
 import com.teamwizardry.librarianlib.facade.example.transform.VisualizationTestScreen
 import com.teamwizardry.librarianlib.facade.test.controllers.*
+import com.teamwizardry.librarianlib.facade.test.controllers.base.TestControllerBlockEntity
 import com.teamwizardry.librarianlib.facade.test.controllers.base.TestControllerSelectorController
+import com.teamwizardry.librarianlib.facade.test.controllers.base.TestControllerSelectorView
+import com.teamwizardry.librarianlib.facade.test.controllers.base.TestControllerSet
 import com.teamwizardry.librarianlib.facade.test.screens.*
 import com.teamwizardry.librarianlib.facade.test.screens.pastry.*
 import com.teamwizardry.librarianlib.testcore.TestModContentManager
@@ -36,6 +38,8 @@ internal object LibLibFacadeTest {
     lateinit var simpleControllerType: FacadeControllerType<SimpleController>
     lateinit var simpleInventoryControllerType: FacadeControllerType<SimpleInventoryController>
     lateinit var testControllerSelectorControllerType: FacadeControllerType<TestControllerSelectorController>
+
+    lateinit var basicControllers: TestControllerSet
 
     object CommonInitializer : ModInitializer {
         private val logger = logManager.makeLogger<CommonInitializer>()
@@ -81,8 +85,16 @@ internal object LibLibFacadeTest {
                 }
             }
 
+            basicControllers = TestControllerSet("basic_controllers") {
+                controller("single_slot", SingleSlotController::class.java)
+                controller("slot_occlusion", OcclusionController::class.java)
+            }
             manager.create<TestBlock>("basic_controllers") {
                 name = "Basic Controllers"
+                blockEntity<TestControllerBlockEntity> { TestControllerBlockEntity(it, basicControllers) }
+                rightClick.server {
+                    testControllerSelectorControllerType.open(player as ServerPlayerEntity, Text.of("Basic Controllers"), pos)
+                }
             }
 
             manager.registerCommon()
@@ -142,6 +154,9 @@ internal object LibLibFacadeTest {
             }
             FacadeViewRegistry.register(simpleControllerType, ::SimpleView)
             FacadeViewRegistry.register(simpleInventoryControllerType, ::SimpleInventoryView)
+            FacadeViewRegistry.register(testControllerSelectorControllerType, ::TestControllerSelectorView)
+            FacadeViewRegistry.register(basicControllers.controllerType(SingleSlotController::class.java), ::SingleSlotView)
+            FacadeViewRegistry.register(basicControllers.controllerType(OcclusionController::class.java), ::OcclusionView)
             manager.registerClient()
         }
 

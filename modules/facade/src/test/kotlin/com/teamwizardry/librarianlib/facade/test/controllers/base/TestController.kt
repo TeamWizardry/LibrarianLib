@@ -9,7 +9,7 @@ abstract class TestController<T: TestControllerData>(
     windowId: Int,
     player: PlayerEntity,
     pos: BlockPos
-): FacadeController(TestControllerSet.getTypeByData(dataType).containerType, windowId, player) {
+): FacadeController(TestControllerSet.getTypeByData(dataType).controllerType, windowId, player) {
     val data: T
 
     init {

@@ -67,6 +67,22 @@ class TestControllerBlockEntity(blockEntityType: BlockEntityType<*>, val control
             }
         }
 
+        fun serializeSync(): CompoundTag {
+            val tag = CompoundTag()
+            for ((type, data) in dataByType) {
+                tag.put(type.id.toString(), data.serializeSync())
+            }
+            return tag
+        }
+
+        fun deserializeSync(nbt: CompoundTag) {
+            for ((type, data) in dataByType) {
+                if (nbt.contains(type.id.toString())) {
+                    data.deserializeSync(nbt.getCompound(type.id.toString()))
+                }
+            }
+        }
+
         fun tick() {
             for (data in dataByType.values) {
                 data.tick()

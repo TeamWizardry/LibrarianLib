@@ -13,7 +13,7 @@ import net.minecraft.text.LiteralText
 import net.minecraft.text.Text
 import kotlin.math.max
 
-class TestView(
+class TestControllerSelectorView(
     controller: TestControllerSelectorController,
     inventory: PlayerInventory,
     title: Text
@@ -60,7 +60,7 @@ class TestView(
         for(entry in group.entries) {
             stack.add(PastryButton(entry.name, 0, 0, 250) {
                 when(entry) {
-                    is TestControllerSet.Entry.Container -> {
+                    is TestControllerSet.Entry.Controller -> {
                         sendMessage("selectType", entry.type.id)
                     }
                     is TestControllerSet.Entry.Group -> {

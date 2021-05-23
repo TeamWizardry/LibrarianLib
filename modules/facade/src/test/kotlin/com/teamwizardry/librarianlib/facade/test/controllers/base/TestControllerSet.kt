@@ -24,10 +24,15 @@ class TestControllerSet(val name: String, config: Entry.Group.() -> Unit) {
             ?: throw IllegalArgumentException("No container type for id '$id'")
     }
 
+    fun <T: TestController<*>> controllerType(type: Class<T>): FacadeControllerType<T> {
+        @Suppress("UNCHECKED_CAST")
+        return getType(makeId(type)).controllerType as FacadeControllerType<T>
+    }
+
     sealed class Entry(val name: String) {
         abstract fun collectTypes(list: MutableList<Type<*, *>>): List<Type<*, *>>
 
-        class Container(name: String, val type: Type<*, *>): Entry(name) {
+        class Controller(name: String, val type: Type<*, *>): Entry(name) {
             override fun collectTypes(list: MutableList<Type<*, *>>): List<Type<*, *>> {
                 list.add(type)
                 return list
@@ -40,11 +45,11 @@ class TestControllerSet(val name: String, config: Entry.Group.() -> Unit) {
                 entries.add(group)
             }
 
-            inline fun <reified T : TestControllerData, C : TestController<T>> container(
+            inline fun <reified T : TestControllerData, C : TestController<T>> controller(
                 name: String,
                 containerClass: Class<C>
             ) {
-                entries.add(Container(name, Type(T::class.java, containerClass)))
+                entries.add(Controller(name, Type(T::class.java, containerClass)))
             }
 
             override fun collectTypes(list: MutableList<Type<*, *>>): List<Type<*, *>> {
@@ -58,10 +63,10 @@ class TestControllerSet(val name: String, config: Entry.Group.() -> Unit) {
 
     class Type<T : TestControllerData, C : TestController<T>>(
         val dataClass: Class<T>,
-        val containerClass: Class<C>
+        val controllerClass: Class<C>
     ) {
-        val id: Identifier = Identifier("liblib-facade-test", containerClass.simpleName.lowercase())
-        val containerType: FacadeControllerType<C> = FacadeControllerRegistry.register(id, containerClass)
+        val id: Identifier = makeId(controllerClass)
+        val controllerType: FacadeControllerType<C> = FacadeControllerRegistry.register(id, controllerClass)
     }
 
 
@@ -71,6 +76,10 @@ class TestControllerSet(val name: String, config: Entry.Group.() -> Unit) {
         fun getTypeByData(dataClass: Class<*>): Type<*, *> {
             return allTypes.find { it.dataClass == dataClass }
                 ?: throw IllegalArgumentException("No container type for data type '${dataClass.canonicalName}'")
+        }
+
+        fun <T: TestController<*>> makeId(controllerClass: Class<T>): Identifier {
+            return Identifier("liblib-facade-test", controllerClass.simpleName.lowercase())
         }
     }
 }

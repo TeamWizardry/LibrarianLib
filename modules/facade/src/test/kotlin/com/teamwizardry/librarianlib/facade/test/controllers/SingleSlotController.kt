@@ -26,7 +26,7 @@ class SingleSlotController(windowId: Int, player: PlayerEntity, pos: BlockPos) :
 
     class Data: TestControllerData() {
         @Save
-        val items: DefaultedList<ItemStack> = DefaultedList.ofSize(5, ItemStack.EMPTY)
+        val items: DefaultedList<ItemStack> = DefaultedList.ofSize(1, ItemStack.EMPTY)
         val inventory: Inventory = DefaultInventoryImpl.of(items)
     }
 }

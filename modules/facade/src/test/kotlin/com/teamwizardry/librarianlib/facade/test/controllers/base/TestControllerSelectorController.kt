@@ -26,7 +26,7 @@ class TestControllerSelectorController(windowId: Int, player: PlayerEntity, val 
     private fun selectType(id: Identifier) {
         if(player is ServerPlayerEntity) {
             val type = controllerSet.getType(id)
-            type.containerType.open(player, LiteralText(controllerSet.name), pos)
+            type.controllerType.open(player, LiteralText(controllerSet.name), pos)
         }
     }
 }

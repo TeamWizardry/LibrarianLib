@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.text.Text
 
-class SingleSlotScreen(
+class SingleSlotView(
     container: SingleSlotController,
     inventory: PlayerInventory,
     title: Text
