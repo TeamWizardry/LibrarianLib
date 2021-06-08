@@ -6,7 +6,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 
-import com.teamwizardry.librarianlib.facade.example.ExampleModContainers;
+import com.teamwizardry.librarianlib.facade.example.FacadeExampleMod;
 import org.jetbrains.annotations.NotNull;
 
 public class DirtSetterItem extends Item {
@@ -17,7 +17,7 @@ public class DirtSetterItem extends Item {
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         if (!context.getWorld().isClient) {
-            ExampleModContainers.dirtSetterContainerType.open(
+            FacadeExampleMod.dirtSetterControllerType.open(
                     (ServerPlayerEntity) context.getPlayer(),
                     new TranslatableText("modid.container.dirt_setter"),
                     // additional constructor arguments:

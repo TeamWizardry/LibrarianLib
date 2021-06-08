@@ -7,6 +7,7 @@ import com.teamwizardry.librarianlib.facade.container.FacadeControllerRegistry
 import com.teamwizardry.librarianlib.facade.container.FacadeControllerType
 import com.teamwizardry.librarianlib.facade.container.FacadeViewRegistry
 import com.teamwizardry.librarianlib.facade.example.ExampleAlignmentScreen
+import com.teamwizardry.librarianlib.facade.example.FacadeExampleMod
 import com.teamwizardry.librarianlib.facade.example.GuessingGameScreen
 import com.teamwizardry.librarianlib.facade.example.gettingstarted.AllTheSquaresScreen
 import com.teamwizardry.librarianlib.facade.example.gettingstarted.HelloSquareScreen
@@ -98,6 +99,8 @@ internal object LibLibFacadeTest {
             }
 
             manager.registerCommon()
+
+            FacadeExampleMod.CommonInit.init()
         }
     }
 
@@ -158,6 +161,8 @@ internal object LibLibFacadeTest {
             FacadeViewRegistry.register(basicControllers.controllerType(SingleSlotController::class.java), ::SingleSlotView)
             FacadeViewRegistry.register(basicControllers.controllerType(OcclusionController::class.java), ::OcclusionView)
             manager.registerClient()
+
+            FacadeExampleMod.ClientInit.clientInit()
         }
 
         private fun setupTests(name: String, config: TestSelectorBuilder.() -> Unit) {
