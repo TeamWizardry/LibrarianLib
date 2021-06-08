@@ -1,7 +1,5 @@
 @file:Suppress("PublicApiImplicitType", "UnstableApiUsage")
 
-import org.quiltmc.loom.task.RunGameTask
-
 plugins {
     `minecraft-conventions`
 }

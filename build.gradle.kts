@@ -6,13 +6,16 @@ buildscript {
     val gradle_loom_version = "0.7.15" // plugin version duplicated from buildsrc
 
     repositories {
-        maven { url = uri("https://maven.quiltmc.org/repository/release/") }
+        maven {
+            name = "Fabric"
+            url = uri("https://maven.fabricmc.net/")
+        }
         jcenter()
         mavenCentral()
         gradlePluginPortal()
     }
     dependencies {
-        classpath("org.quiltmc:loom:$gradle_loom_version")
+        classpath("net.fabricmc:fabric-loom:0.8-SNAPSHOT")
     }
 }
 
