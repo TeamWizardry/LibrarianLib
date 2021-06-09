@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
 import com.teamwizardry.librarianlib.core.util.resolveSibling
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener
+import net.minecraft.client.gl.GlProgramManager
 import net.minecraft.client.render.RenderPhase
 import net.minecraft.resource.ResourceManager
 import net.minecraft.resource.ResourceType
@@ -38,7 +39,7 @@ public abstract class Shader(
     /**
      * The OpenGL handle for the shader program
      */
-    public var glProgram: Int by GlResourceGc.track(this, 0) { GlStateManager.deleteProgram(it) }
+    public var glProgram: Int by GlResourceGc.track(this, 0) { GlStateManager.glDeleteProgram(it) }
         private set
 
     /**
@@ -92,7 +93,7 @@ public abstract class Shader(
      */
     public fun bind() {
         currentlyBound?.unbind()
-        GlStateManager.useProgram(glProgram)
+        GlProgramManager.useProgram(glProgram)
         currentlyBound = this
         if (uniforms == null && glProgram != 0) {
             uniforms = UniformBinder.bindAllUniforms(this, glProgram)
@@ -125,7 +126,7 @@ public abstract class Shader(
      */
     public fun unbind() {
         teardownState()
-        GlStateManager.useProgram(0)
+        GlProgramManager.useProgram(0)
         boundTextureUnits.forEach { (tex, unit) ->
             unbindTexture(tex.second, unit)
         }
@@ -185,7 +186,7 @@ public abstract class Shader(
     }
 
     public fun delete() {
-        GlStateManager.deleteProgram(glProgram)
+        GlStateManager.glDeleteProgram(glProgram)
         glProgram = 0
     }
 
@@ -226,15 +227,15 @@ public abstract class Shader(
                 fragmentHandle = compileShader(GL_FRAGMENT_SHADER, "fragment",
                     readShader(resourceManager, fragmentName, files), fragmentName, files)
             }
-            GlStateManager.deleteProgram(glProgram)
+            GlStateManager.glDeleteProgram(glProgram)
             glProgram = linkProgram(vertexHandle, fragmentHandle)
         } finally {
             if (glProgram != 0) {
                 glDetachShader(glProgram, vertexHandle)
                 glDetachShader(glProgram, fragmentHandle)
             }
-            GlStateManager.deleteShader(vertexHandle)
-            GlStateManager.deleteShader(fragmentHandle)
+            GlStateManager.glDeleteShader(vertexHandle)
+            GlStateManager.glDeleteShader(fragmentHandle)
         }
         logger.debug("Finished compiling shader program $shaderName")
     }
@@ -303,17 +304,17 @@ public abstract class Shader(
     private fun compileShader(type: Int, typeName: String, source: String, location: Identifier, files: Map<Identifier, Int>): Int {
         logger.debug("Compiling $typeName shader $location")
         checkVersion(source)
-        val shader = GlStateManager.createShader(type)
+        val shader = GlStateManager.glCreateShader(type)
         if (shader == 0)
             throw ShaderCompilationException("Could not create shader object")
-        GlStateManager.shaderSource(shader, source)
-        GlStateManager.compileShader(shader)
+        GlStateManager.glShaderSource(shader, listOf(source))
+        GlStateManager.glCompileShader(shader)
 
-        val status = GlStateManager.getShader(shader, GL_COMPILE_STATUS)
-        val logLength = GlStateManager.getShader(shader, GL_INFO_LOG_LENGTH)
-        var log = GlStateManager.getShaderInfoLog(shader, logLength)
+        val status = GlStateManager.glGetShaderi(shader, GL_COMPILE_STATUS)
+        val logLength = GlStateManager.glGetShaderi(shader, GL_INFO_LOG_LENGTH)
+        var log = GlStateManager.glGetShaderInfoLog(shader, logLength)
         if (status == GL_FALSE) {
-            GlStateManager.deleteShader(shader)
+            GlStateManager.glDeleteShader(shader)
 
             files.forEach { (key, value) ->
                 log = log.replace(Regex("\\b$value\\b"), if (key.namespace != location.namespace) "$key" else key.path)
@@ -333,28 +334,28 @@ public abstract class Shader(
     private fun checkVersion(source: String) {
         val match = """^\s*#version\s+(\d+)\s*$""".toRegex().find(source) ?: return
         val version = match.groupValues[1].toInt()
-        if (version > 120) // Apple doesn't support OpenGL 3.0+ compatibility profile, so we're stuck with OpenGL 2.1 shaders
-            throw ShaderCompilationException("Maximum GLSL version supported by LibrarianLib is 1.20, found `${match.value}`")
+        if (version > 410) // As of macOS 10.9 Apple supports up to GLSL 4.10.
+            throw ShaderCompilationException("Maximum GLSL version supported by all platforms is 4.10. Found `${match.value}`")
     }
 
     private fun linkProgram(vertexHandle: Int, fragmentHandle: Int): Int {
         logger.debug("Linking shader")
-        val program = GlStateManager.createProgram()
+        val program = GlStateManager.glCreateProgram()
         if (program == 0)
             throw ShaderCompilationException("could not create program object")
 
         if (vertexHandle != 0)
-            GlStateManager.attachShader(program, vertexHandle)
+            GlStateManager.glAttachShader(program, vertexHandle)
         if (fragmentHandle != 0)
-            GlStateManager.attachShader(program, fragmentHandle)
+            GlStateManager.glAttachShader(program, fragmentHandle)
 
-        GlStateManager.linkProgram(program)
+        GlStateManager.glLinkProgram(program)
 
-        val status = GlStateManager.getProgram(program, GL_LINK_STATUS)
+        val status = GlStateManager.glGetProgrami(program, GL_LINK_STATUS)
         if (status == GL_FALSE) {
-            val logLength = GlStateManager.getProgram(program, GL_INFO_LOG_LENGTH)
-            val log = GlStateManager.getProgramInfoLog(program, logLength)
-            GlStateManager.deleteProgram(program)
+            val logLength = GlStateManager.glGetProgrami(program, GL_INFO_LOG_LENGTH)
+            val log = GlStateManager.glGetProgramInfoLog(program, logLength)
+            GlStateManager.glDeleteProgram(program)
             logger.error("Error linking shader")
             throw ShaderCompilationException("Could not link program: $log")
         }

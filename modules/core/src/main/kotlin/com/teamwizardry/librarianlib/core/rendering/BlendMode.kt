@@ -26,8 +26,7 @@ public data class BlendMode @JvmOverloads constructor(
     public fun glApply() {
         RenderSystem.blendFuncSeparate(sourceRGB.glConst, destRGB.glConst, sourceAlpha.glConst, destAlpha.glConst)
         GL20.glBlendEquationSeparate(rgbEquation.glConst, alphaEquation.glConst)
-        RenderSystem.blendColor(constantColor.red/255f, constantColor.green/255f, constantColor.blue/255f,
-            constantColor.alpha/255f)
+//        RenderSystem.blendColor(constantColor.red/255f, constantColor.green/255f, constantColor.blue/255f, constantColor.alpha/255f)
     }
 
     public fun reset() {
@@ -36,7 +35,7 @@ public data class BlendMode @JvmOverloads constructor(
         // internal state is reflected in the GL state
         RenderSystem.blendEquation(GL14.GL_FUNC_SUBTRACT)
         RenderSystem.blendEquation(GL14.GL_FUNC_ADD)
-        RenderSystem.blendColor(0f, 0f, 0f, 0f)
+//        RenderSystem.blendColor(0f, 0f, 0f, 0f)
     }
 
     public enum class Equation(public val glConst: Int) {

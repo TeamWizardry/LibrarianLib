@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.glitter.modules
 
 import com.google.common.collect.ImmutableList
+import com.google.common.collect.ImmutableMap
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
 import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
@@ -21,9 +22,9 @@ import com.teamwizardry.librarianlib.math.floorInt
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
 import net.minecraft.client.render.*
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.client.util.math.Vector3f
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
+import net.minecraft.util.math.Vec3f
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.function.Consumer
@@ -142,9 +143,9 @@ public class SpriteRenderModule private constructor(
         val cameraY = camera.pos.y
         val cameraZ = camera.pos.z
 
-        val lookRightVec = Vector3f(-1f, 0f, 0f)
-        val lookUpVec = Vector3f(0f, 1f, 0f)
-        val lookVec = Vector3f(0f, 0f, -1f)
+        val lookRightVec = Vec3f(-1f, 0f, 0f)
+        val lookUpVec = Vec3f(0f, 1f, 0f)
+        val lookVec = Vec3f(0f, 0f, -1f)
 
         lookRightVec.rotate(camera.rotation)
         lookUpVec.rotate(camera.rotation)
@@ -624,7 +625,6 @@ public class SpriteRenderOptions private constructor(
         private var blendMode: BlendMode? = BlendMode.NORMAL
         private var writeDepth: Boolean = true
         private var blur: Boolean = false
-        private var extraConfig: Consumer<RenderLayer.MultiPhaseParameters.Builder>? = null
 
         private var cull: Boolean = true
         private var worldLight: Boolean = false
@@ -686,52 +686,46 @@ public class SpriteRenderOptions private constructor(
             diffuseLight = value
         }
 
-        /**
-         * Additional configurations for the render type.
-         */
-        public fun extraConfig(value: Consumer<RenderLayer.MultiPhaseParameters.Builder>): Builder = builder {
-            extraConfig = value
-        }
 
         public fun build(): SpriteRenderOptions {
-            val renderState = RenderLayer.MultiPhaseParameters.builder()
-                .texture(RenderPhase.Texture(sprite, blur, false))
-                .alpha(DefaultRenderPhases.ONE_TENTH_ALPHA)
+//            val renderState = RenderLayer.MultiPhaseParameters.builder()
+//                .texture(RenderPhase.Texture(sprite, blur, false))
+//                .alpha(DefaultRenderPhases.ONE_TENTH_ALPHA)
+//
+//            if (cull || diffuseLight) {
+//                // when using diffuse lighting we always cull. If culling is disabled we render two quads with different normals
+//                renderState.cull(DefaultRenderPhases.ENABLE_CULLING)
+//            } else {
+//                renderState.cull(DefaultRenderPhases.DISABLE_CULLING)
+//            }
+//
+//            blendMode?.let { blendMode ->
+//                renderState.transparency(RenderPhase.Transparency("particle_transparency", {
+//                    RenderSystem.enableBlend()
+//                    blendMode.glApply()
+//                }, {
+//                    RenderSystem.disableBlend()
+//                    RenderSystem.defaultBlendFunc()
+//                }))
+//            }
+//
+//            if (worldLight) renderState.lightmap(DefaultRenderPhases.ENABLE_LIGHTMAP)
+//            if (diffuseLight) renderState.diffuseLighting(DefaultRenderPhases.ENABLE_DIFFUSE_LIGHTING)
+//            if (!writeDepth) renderState.writeMaskState(DefaultRenderPhases.COLOR_MASK)
+//
+//            extraConfig?.accept(renderState)
+//
+//            val renderType = SimpleRenderLayers.makeType(
+//                "particle_type",
+//                vertexFormatForLighting(worldLight, diffuseLight),
+//                GL11.GL_QUADS,
+//                256,
+//                false,
+//                false,
+//                renderState.build(false)
+//            )
 
-            if (cull || diffuseLight) {
-                // when using diffuse lighting we always cull. If culling is disabled we render two quads with different normals
-                renderState.cull(DefaultRenderPhases.ENABLE_CULLING)
-            } else {
-                renderState.cull(DefaultRenderPhases.DISABLE_CULLING)
-            }
-
-            blendMode?.let { blendMode ->
-                renderState.transparency(RenderPhase.Transparency("particle_transparency", {
-                    RenderSystem.enableBlend()
-                    blendMode.glApply()
-                }, {
-                    RenderSystem.disableBlend()
-                    RenderSystem.defaultBlendFunc()
-                }))
-            }
-
-            if (worldLight) renderState.lightmap(DefaultRenderPhases.ENABLE_LIGHTMAP)
-            if (diffuseLight) renderState.diffuseLighting(DefaultRenderPhases.ENABLE_DIFFUSE_LIGHTING)
-            if (!writeDepth) renderState.writeMaskState(DefaultRenderPhases.COLOR_MASK)
-
-            extraConfig?.accept(renderState)
-
-            val renderType = SimpleRenderLayers.makeType(
-                "particle_type",
-                vertexFormatForLighting(worldLight, diffuseLight),
-                GL11.GL_QUADS,
-                256,
-                false,
-                false,
-                renderState.build(false)
-            )
-
-            return SpriteRenderOptions(renderType, cull, worldLight, diffuseLight)
+            return SpriteRenderOptions(RenderLayer.getLines(), cull, worldLight, diffuseLight)
         }
 
         public companion object {

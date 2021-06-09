@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.scribe.nbt
 
 import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.DeserializationException
-import net.minecraft.nbt.StringTag
-import net.minecraft.nbt.Tag
+import net.minecraft.nbt.NbtString
+import net.minecraft.nbt.NbtElement
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import java.lang.IllegalArgumentException
@@ -17,13 +17,13 @@ public class RegistryEntrySerializer<T : Any>(private val registry: Registry<T>,
         name = registries.getId(registry) ?: throw IllegalArgumentException("Couldn't find registry")
     }
 
-    override fun deserialize(tag: Tag, existing: T?): T {
-        val id = Identifier(tag.expectType<StringTag>("id").asString())
+    override fun deserialize(tag: NbtElement, existing: T?): T {
+        val id = Identifier(tag.expectType<NbtString>("id").asString())
         return registry.get(id) ?: throw DeserializationException("No entry in $name with id $id")
     }
 
-    override fun serialize(value: T): Tag {
+    override fun serialize(value: T): NbtElement {
         val id = registry.getId(value)
-        return StringTag.of(id.toString())
+        return NbtString.of(id.toString())
     }
 }

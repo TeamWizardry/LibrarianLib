@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.albedo
 
 import com.mojang.blaze3d.platform.GlStateManager
 import dev.thecodewarrior.mirror.Mirror
+import net.minecraft.client.gl.GlUniform
 import org.lwjgl.opengl.GL20
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
@@ -62,8 +63,8 @@ internal object UniformBinder {
     private fun getUniformInfos(program: Int): Map<String, UniformInfo> {
         val uniformInfos = mutableMapOf<String, UniformInfo>()
         MemoryStack.stackPush().use { stack ->
-            val uniformCount = GlStateManager.getProgram(program, GL20.GL_ACTIVE_UNIFORMS)
-            val maxNameLength = GlStateManager.getProgram(program, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH)
+            val uniformCount = GlStateManager.glGetProgrami(program, GL20.GL_ACTIVE_UNIFORMS)
+            val maxNameLength = GlStateManager.glGetProgrami(program, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH)
 
             val glType = stack.mallocInt(1)
             val size = stack.mallocInt(1)
@@ -76,7 +77,7 @@ internal object UniformBinder {
                 nameBuffer.rewind()
                 GL20.glGetActiveUniform(program, index, nameLength, size, glType, nameBuffer)
                 val name = MemoryUtil.memASCII(nameBuffer, nameLength.get())
-                val location = GlStateManager.getUniformLocation(program, name)
+                val location = GlUniform.getUniformLocation(program, name)
                 uniformInfos[name] = UniformInfo(name, glType.get(), size.get(), location)
             }
         }

@@ -1,17 +1,12 @@
 package com.teamwizardry.librarianlib.testcore.content.impl
 
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
-import com.teamwizardry.librarianlib.core.util.sided.ClientSideFunction
 import com.teamwizardry.librarianlib.testcore.content.TestBlock
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.FacingBlock
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher
-import net.minecraft.client.render.block.entity.BlockEntityRenderer
-import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.entity.projectile.ProjectileEntity
 import net.minecraft.item.ItemPlacementContext
 import net.minecraft.item.ItemStack
 import net.minecraft.loot.context.LootContext
@@ -133,24 +128,6 @@ public open class TestBlockImpl(public val config: TestBlock): Block(config.also
             super.onBlockBreakStart(state, world, pos, player)
     }
 
-    // entity interaction ==============================================================================================
-    @Suppress("DEPRECATION")
-    override fun onEntityCollision(state: BlockState, worldIn: World, pos: BlockPos, entityIn: Entity) {
-        super.onEntityCollision(state, worldIn, pos, entityIn)
-    }
-
-    override fun onSteppedOn(world: World, pos: BlockPos, entity: Entity) {
-        super.onSteppedOn(world, pos, entity)
-    }
-
-    override fun onLandedUpon(world: World, pos: BlockPos, entity: Entity, distance: Float) {
-        super.onLandedUpon(world, pos, entity, distance)
-    }
-
-    override fun onProjectileHit(world: World, state: BlockState, hit: BlockHitResult, projectile: ProjectileEntity) {
-        super.onProjectileHit(world, state, hit, projectile)
-    }
-
     // misc ============================================================================================================
 
     override fun neighborUpdate(
@@ -167,15 +144,6 @@ public open class TestBlockImpl(public val config: TestBlock): Block(config.also
     override fun isSideInvisible(state: BlockState, adjacentBlockState: BlockState, side: Direction): Boolean {
         return if (adjacentBlockState.block === this) true else super.isSideInvisible(state, adjacentBlockState, side)
     }
-
-    // todo: fabric tile entities
-//    override fun hasBlockEntity(state: BlockState?): Boolean {
-//        return tileEntityType != null
-//    }
-//
-//    override fun createTileEntity(state: BlockState?, world: IBlockReader?): BlockEntity? {
-//        return tileFactory!!.invoke()
-//    }
 
     public companion object {
         public val FACING: DirectionProperty = Properties.FACING

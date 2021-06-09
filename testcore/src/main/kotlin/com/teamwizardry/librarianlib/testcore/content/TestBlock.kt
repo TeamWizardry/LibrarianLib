@@ -71,7 +71,7 @@ public class TestBlock(manager: TestModContentManager, id: Identifier): TestConf
     }
     internal val blockEntityType: BlockEntityType<BlockEntity>? by lazy {
         blockEntityFactory?.let { factory ->
-            BlockEntityType.Builder.create({ factory(this.blockEntityType!!) }, blockInstance).build(null)
+            BlockEntityType.Builder.create({ _, _ -> factory(this.blockEntityType!!) }, blockInstance).build(null)
         }
     }
 
@@ -142,7 +142,7 @@ public class TestBlock(manager: TestModContentManager, id: Identifier): TestConf
 
     private companion object {
         val testMaterial: Material = Material(
-            MaterialColor.PINK, // materialMapColorIn
+            MapColor.PINK, // materialMapColorIn
             false, // liquid
             false, // solid
             true, // doesBlockMovement

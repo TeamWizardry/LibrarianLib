@@ -1,101 +1,101 @@
 package com.teamwizardry.librarianlib.scribe.nbt
 
-import net.minecraft.nbt.ByteTag
-import net.minecraft.nbt.DoubleTag
-import net.minecraft.nbt.FloatTag
-import net.minecraft.nbt.Tag
-import net.minecraft.nbt.IntTag
-import net.minecraft.nbt.LongTag
-import net.minecraft.nbt.AbstractNumberTag
-import net.minecraft.nbt.ShortTag
+import net.minecraft.nbt.NbtByte
+import net.minecraft.nbt.NbtDouble
+import net.minecraft.nbt.NbtFloat
+import net.minecraft.nbt.NbtElement
+import net.minecraft.nbt.NbtInt
+import net.minecraft.nbt.NbtLong
+import net.minecraft.nbt.AbstractNbtNumber
+import net.minecraft.nbt.NbtShort
 
 internal object NumberSerializer: NbtSerializer<Number>() {
-    override fun deserialize(tag: Tag, existing: Number?): Number {
-        return tag.expectType<AbstractNumberTag>("tag").number
+    override fun deserialize(tag: NbtElement, existing: Number?): Number {
+        return tag.expectType<AbstractNbtNumber>("tag").numberValue()
     }
 
-    override fun serialize(value: Number): Tag {
+    override fun serialize(value: Number): NbtElement {
         return when(value) {
-            is Double -> DoubleTag.of(value)
-            is Float -> FloatTag.of(value)
-            is Long -> LongTag.of(value)
-            is Int -> IntTag.of(value)
-            is Short -> ShortTag.of(value)
-            is Byte -> ByteTag.of(value)
-            else -> DoubleTag.of(value.toDouble())
+            is Double -> NbtDouble.of(value)
+            is Float -> NbtFloat.of(value)
+            is Long -> NbtLong.of(value)
+            is Int -> NbtInt.of(value)
+            is Short -> NbtShort.of(value)
+            is Byte -> NbtByte.of(value)
+            else -> NbtDouble.of(value.toDouble())
         }
     }
 }
 internal object DoubleSerializer: NbtSerializer<Double>() {
-    override fun deserialize(tag: Tag, existing: Double?): Double {
-        return tag.expectType<AbstractNumberTag>("tag").double
+    override fun deserialize(tag: NbtElement, existing: Double?): Double {
+        return tag.expectType<AbstractNbtNumber>("tag").doubleValue()
     }
 
-    override fun serialize(value: Double): Tag {
-        return DoubleTag.of(value)
+    override fun serialize(value: Double): NbtElement {
+        return NbtDouble.of(value)
     }
 }
 internal object FloatSerializer: NbtSerializer<Float>() {
-    override fun deserialize(tag: Tag, existing: Float?): Float {
-        return tag.expectType<AbstractNumberTag>("tag").float
+    override fun deserialize(tag: NbtElement, existing: Float?): Float {
+        return tag.expectType<AbstractNbtNumber>("tag").floatValue()
     }
 
-    override fun serialize(value: Float): Tag {
-        return FloatTag.of(value)
+    override fun serialize(value: Float): NbtElement {
+        return NbtFloat.of(value)
     }
 }
 internal object LongSerializer: NbtSerializer<Long>() {
-    override fun deserialize(tag: Tag, existing: Long?): Long {
-        return tag.expectType<AbstractNumberTag>("tag").long
+    override fun deserialize(tag: NbtElement, existing: Long?): Long {
+        return tag.expectType<AbstractNbtNumber>("tag").longValue()
     }
 
-    override fun serialize(value: Long): Tag {
-        return LongTag.of(value)
+    override fun serialize(value: Long): NbtElement {
+        return NbtLong.of(value)
     }
 }
 internal object IntegerSerializer: NbtSerializer<Int>() {
-    override fun deserialize(tag: Tag, existing: Int?): Int {
-        return tag.expectType<AbstractNumberTag>("tag").int
+    override fun deserialize(tag: NbtElement, existing: Int?): Int {
+        return tag.expectType<AbstractNbtNumber>("tag").intValue()
     }
 
-    override fun serialize(value: Int): Tag {
-        return IntTag.of(value)
+    override fun serialize(value: Int): NbtElement {
+        return NbtInt.of(value)
     }
 }
 internal object ShortSerializer: NbtSerializer<Short>() {
-    override fun deserialize(tag: Tag, existing: Short?): Short {
-        return tag.expectType<AbstractNumberTag>("tag").short
+    override fun deserialize(tag: NbtElement, existing: Short?): Short {
+        return tag.expectType<AbstractNbtNumber>("tag").shortValue()
     }
 
-    override fun serialize(value: Short): Tag {
-        return ShortTag.of(value)
+    override fun serialize(value: Short): NbtElement {
+        return NbtShort.of(value)
     }
 }
 internal object CharacterSerializer: NbtSerializer<Char>() {
-    override fun deserialize(tag: Tag, existing: Char?): Char {
-        return tag.expectType<AbstractNumberTag>("tag").int.toChar()
+    override fun deserialize(tag: NbtElement, existing: Char?): Char {
+        return tag.expectType<AbstractNbtNumber>("tag").intValue().toChar()
     }
 
-    override fun serialize(value: Char): Tag {
-        return IntTag.of(value.code)
+    override fun serialize(value: Char): NbtElement {
+        return NbtInt.of(value.code)
     }
 }
 internal object ByteSerializer: NbtSerializer<Byte>() {
-    override fun deserialize(tag: Tag, existing: Byte?): Byte {
-        return tag.expectType<AbstractNumberTag>("tag").byte
+    override fun deserialize(tag: NbtElement, existing: Byte?): Byte {
+        return tag.expectType<AbstractNbtNumber>("tag").byteValue()
     }
 
-    override fun serialize(value: Byte): Tag {
-        return ByteTag.of(value)
+    override fun serialize(value: Byte): NbtElement {
+        return NbtByte.of(value)
     }
 }
 internal object BooleanSerializer: NbtSerializer<Boolean>() {
-    override fun deserialize(tag: Tag, existing: Boolean?): Boolean {
-        return tag.expectType<AbstractNumberTag>("tag").byte != 0.toByte()
+    override fun deserialize(tag: NbtElement, existing: Boolean?): Boolean {
+        return tag.expectType<AbstractNbtNumber>("tag").byteValue() != 0.toByte()
     }
 
-    override fun serialize(value: Boolean): Tag {
-        return if(value) ByteTag.ONE else ByteTag.ZERO
+    override fun serialize(value: Boolean): NbtElement {
+        return if(value) NbtByte.ONE else NbtByte.ZERO
     }
 }
 

@@ -28,32 +28,16 @@ public object SimpleRenderLayers {
     @JvmStatic
     public fun flat(
         texture: Identifier,
-        glMode: Int = GL11.GL_QUADS,
-        configure: Consumer<RenderLayer.MultiPhaseParameters.Builder>? = null
+        glMode: Int = GL11.GL_QUADS
     ): RenderLayer {
-        if (configure != null)
-            return makeFlat(texture, glMode, configure)
-        return flatTextureCache.getOrPut(texture to glMode) {
-            makeFlat(texture, glMode, configure)
-        }
+        TODO("Rendering changes")
     }
 
     private fun makeFlat(
         texture: Identifier,
         glMode: Int = GL11.GL_QUADS,
-        configure: Consumer<RenderLayer.MultiPhaseParameters.Builder>? = null
     ): RenderLayer {
-        val RenderPhase = RenderLayer.MultiPhaseParameters.builder()
-            .texture(RenderPhase.Texture(texture, false, false))
-            .alpha(DefaultRenderPhases.ONE_TENTH_ALPHA)
-            .depthTest(DefaultRenderPhases.LEQUAL_DEPTH_TEST)
-            .transparency(DefaultRenderPhases.TRANSLUCENT_TRANSPARENCY)
-        configure?.accept(RenderPhase)
-
-        return makeType(
-            "flat_texture",
-            VertexFormats.POSITION_COLOR_TEXTURE, glMode, 256, false, false, RenderPhase.build(true)
-        )
+        TODO("Rendering changes")
     }
 
     /**
@@ -65,29 +49,13 @@ public object SimpleRenderLayers {
      * Defaults to [GL_QUADS][GL11.GL_QUADS]
      * @param configure additional configuration for the render state
      */
-    @JvmOverloads
     @JvmStatic
-    public fun flat(glMode: Int, configure: Consumer<RenderLayer.MultiPhaseParameters.Builder>? = null): RenderLayer {
-        if (configure != null)
-            return makeFlat(glMode, configure)
-        return flatColorCache.getOrPut(glMode) {
-            makeFlat(glMode, configure)
-        }
+    public fun flat(glMode: Int): RenderLayer {
+        TODO("Rendering changes")
     }
 
-    private fun makeFlat(glMode: Int, configure: Consumer<RenderLayer.MultiPhaseParameters.Builder>? = null): RenderLayer {
-        val RenderPhase = RenderLayer.MultiPhaseParameters.builder()
-            .texture(RenderPhase.Texture())
-            .alpha(DefaultRenderPhases.ONE_TENTH_ALPHA)
-            .depthTest(DefaultRenderPhases.LEQUAL_DEPTH_TEST)
-            .transparency(DefaultRenderPhases.TRANSLUCENT_TRANSPARENCY)
-            .shadeModel(DefaultRenderPhases.SMOOTH_SHADE_MODEL)
-        configure?.accept(RenderPhase)
-
-        return makeType(
-            "flat_color",
-            VertexFormats.POSITION_COLOR, glMode, 256, false, false, RenderPhase.build(true)
-        )
+    private fun makeFlat(glMode: Int): RenderLayer {
+        TODO("Rendering changes")
     }
 
     /**
@@ -102,23 +70,8 @@ public object SimpleRenderLayers {
         name: String,
         vertexFormatIn: VertexFormat, glMode: Int,
         bufferSizeIn: Int, useDelegate: Boolean, needsSorting: Boolean,
-        renderPhase: RenderLayer.MultiPhaseParameters
     ): RenderLayer {
-        mixinCast<IMutableRenderLayerPhaseParameters>(renderPhase).addPhase(
-            CacheFixerRenderPhase(
-                vertexFormatIn, glMode, bufferSizeIn, useDelegate, needsSorting
-            )
-        )
-        @Suppress("INACCESSIBLE_TYPE")
-        return RenderLayer.of(
-            name,
-            vertexFormatIn,
-            glMode,
-            bufferSizeIn,
-            useDelegate,
-            needsSorting,
-            renderPhase
-        )
+        TODO("Rendering changes")
     }
 
     /**

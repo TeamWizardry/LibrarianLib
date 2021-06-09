@@ -9,7 +9,7 @@ import net.minecraft.entity.EntityPose
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.network.Packet
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.util.ActionResult
@@ -29,7 +29,7 @@ public open class TestEntityImpl(public val config: TestEntity, type: EntityType
 
         config.hit.run(world.isClient, context)
         if (context.kill) {
-            this.remove()
+            this.remove(RemovalReason.KILLED)
             return true
         }
         return false
@@ -77,10 +77,10 @@ public open class TestEntityImpl(public val config: TestEntity, type: EntityType
         return EntitySpawnS2CPacket(this)
     }
 
-    override fun readCustomDataFromTag(tag: CompoundTag?) {
+    override fun readCustomDataFromNbt(tag: NbtCompound?) {
     }
 
-    override fun writeCustomDataToTag(tag: CompoundTag?) {
+    override fun writeCustomDataToNbt(tag: NbtCompound?) {
     }
 
     override fun initDataTracker() {
@@ -100,7 +100,7 @@ public open class TestEntityImpl(public val config: TestEntity, type: EntityType
         )
     }
 
-    override fun getBoundingBox(): Box {
+    override fun calculateBoundingBox(): Box {
         return relativeBoundingBox.offset(this.x, this.y, this.z)
     }
 }

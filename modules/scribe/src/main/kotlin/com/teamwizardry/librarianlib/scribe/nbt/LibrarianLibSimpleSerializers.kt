@@ -8,237 +8,237 @@ import com.teamwizardry.librarianlib.math.Quaternion
 import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.Vec2i
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.DoubleTag
-import net.minecraft.nbt.Tag
-import net.minecraft.nbt.IntTag
-import net.minecraft.nbt.ListTag
-import net.minecraft.nbt.AbstractNumberTag
+import net.minecraft.nbt.NbtCompound
+import net.minecraft.nbt.NbtDouble
+import net.minecraft.nbt.NbtElement
+import net.minecraft.nbt.NbtInt
+import net.minecraft.nbt.NbtList
+import net.minecraft.nbt.AbstractNbtNumber
 
 internal object Vec2dSerializer: NbtSerializer<Vec2d>() {
-    override fun deserialize(tag: Tag, existing: Vec2d?): Vec2d {
-        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundTag>("tag")
+    override fun deserialize(tag: NbtElement, existing: Vec2d?): Vec2d {
+        @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         return Vec2d(
-            tag.expect<AbstractNumberTag>("X").double,
-            tag.expect<AbstractNumberTag>("Y").double
+            tag.expect<AbstractNbtNumber>("X").doubleValue(),
+            tag.expect<AbstractNbtNumber>("Y").doubleValue()
         )
     }
 
-    override fun serialize(value: Vec2d): Tag {
-        val tag = CompoundTag()
-        tag.put("X", DoubleTag.of(value.x))
-        tag.put("Y", DoubleTag.of(value.y))
+    override fun serialize(value: Vec2d): NbtElement {
+        val tag = NbtCompound()
+        tag.put("X", NbtDouble.of(value.x))
+        tag.put("Y", NbtDouble.of(value.y))
         return tag
     }
 }
 
 internal object Vec2iSerializer: NbtSerializer<Vec2i>() {
-    override fun deserialize(tag: Tag, existing: Vec2i?): Vec2i {
-        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundTag>("tag")
+    override fun deserialize(tag: NbtElement, existing: Vec2i?): Vec2i {
+        @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         return Vec2i(
-            tag.expect<AbstractNumberTag>("X").int,
-            tag.expect<AbstractNumberTag>("Y").int
+            tag.expect<AbstractNbtNumber>("X").intValue(),
+            tag.expect<AbstractNbtNumber>("Y").intValue()
         )
     }
 
-    override fun serialize(value: Vec2i): Tag {
-        val tag = CompoundTag()
-        tag.put("X", IntTag.of(value.x))
-        tag.put("Y", IntTag.of(value.y))
+    override fun serialize(value: Vec2i): NbtElement {
+        val tag = NbtCompound()
+        tag.put("X", NbtInt.of(value.x))
+        tag.put("Y", NbtInt.of(value.y))
         return tag
     }
 }
 
 internal object Rect2dSerializer: NbtSerializer<Rect2d>() {
-    override fun deserialize(tag: Tag, existing: Rect2d?): Rect2d {
-        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundTag>("tag")
+    override fun deserialize(tag: NbtElement, existing: Rect2d?): Rect2d {
+        @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         return Rect2d(
-            tag.expect<AbstractNumberTag>("X").double,
-            tag.expect<AbstractNumberTag>("Y").double,
-            tag.expect<AbstractNumberTag>("Width").double,
-            tag.expect<AbstractNumberTag>("Height").double
+            tag.expect<AbstractNbtNumber>("X").doubleValue(),
+            tag.expect<AbstractNbtNumber>("Y").doubleValue(),
+            tag.expect<AbstractNbtNumber>("Width").doubleValue(),
+            tag.expect<AbstractNbtNumber>("Height").doubleValue()
         )
     }
 
-    override fun serialize(value: Rect2d): Tag {
-        val tag = CompoundTag()
-        tag.put("X", DoubleTag.of(value.x))
-        tag.put("Y", DoubleTag.of(value.y))
-        tag.put("Width", DoubleTag.of(value.width))
-        tag.put("Height", DoubleTag.of(value.height))
+    override fun serialize(value: Rect2d): NbtElement {
+        val tag = NbtCompound()
+        tag.put("X", NbtDouble.of(value.x))
+        tag.put("Y", NbtDouble.of(value.y))
+        tag.put("Width", NbtDouble.of(value.width))
+        tag.put("Height", NbtDouble.of(value.height))
         return tag
     }
 }
 
 internal object Matrix3dSerializer: NbtSerializer<Matrix3d>() {
-    override fun deserialize(tag: Tag, existing: Matrix3d?): Matrix3d {
-        val list = tag.expectType<ListTag>("tag")
+    override fun deserialize(tag: NbtElement, existing: Matrix3d?): Matrix3d {
+        val list = tag.expectType<NbtList>("tag")
         return Matrix3d(
-            list[0].expectType<AbstractNumberTag>("00").double,
-            list[1].expectType<AbstractNumberTag>("01").double,
-            list[2].expectType<AbstractNumberTag>("02").double,
-            list[3].expectType<AbstractNumberTag>("10").double,
-            list[4].expectType<AbstractNumberTag>("11").double,
-            list[5].expectType<AbstractNumberTag>("12").double,
-            list[6].expectType<AbstractNumberTag>("20").double,
-            list[7].expectType<AbstractNumberTag>("21").double,
-            list[8].expectType<AbstractNumberTag>("22").double
+            list[0].expectType<AbstractNbtNumber>("00").doubleValue(),
+            list[1].expectType<AbstractNbtNumber>("01").doubleValue(),
+            list[2].expectType<AbstractNbtNumber>("02").doubleValue(),
+            list[3].expectType<AbstractNbtNumber>("10").doubleValue(),
+            list[4].expectType<AbstractNbtNumber>("11").doubleValue(),
+            list[5].expectType<AbstractNbtNumber>("12").doubleValue(),
+            list[6].expectType<AbstractNbtNumber>("20").doubleValue(),
+            list[7].expectType<AbstractNbtNumber>("21").doubleValue(),
+            list[8].expectType<AbstractNbtNumber>("22").doubleValue()
         )
     }
 
-    override fun serialize(value: Matrix3d): Tag {
-        return ListTag().also {
-            it.add(DoubleTag.of(value.m00))
-            it.add(DoubleTag.of(value.m01))
-            it.add(DoubleTag.of(value.m02))
-            it.add(DoubleTag.of(value.m10))
-            it.add(DoubleTag.of(value.m11))
-            it.add(DoubleTag.of(value.m12))
-            it.add(DoubleTag.of(value.m20))
-            it.add(DoubleTag.of(value.m21))
-            it.add(DoubleTag.of(value.m22))
+    override fun serialize(value: Matrix3d): NbtElement {
+        return NbtList().also {
+            it.add(NbtDouble.of(value.m00))
+            it.add(NbtDouble.of(value.m01))
+            it.add(NbtDouble.of(value.m02))
+            it.add(NbtDouble.of(value.m10))
+            it.add(NbtDouble.of(value.m11))
+            it.add(NbtDouble.of(value.m12))
+            it.add(NbtDouble.of(value.m20))
+            it.add(NbtDouble.of(value.m21))
+            it.add(NbtDouble.of(value.m22))
         }
     }
 }
 
 internal object MutableMatrix3dSerializer: NbtSerializer<MutableMatrix3d>() {
-    override fun deserialize(tag: Tag, existing: MutableMatrix3d?): MutableMatrix3d {
-        val list = tag.expectType<ListTag>("tag")
+    override fun deserialize(tag: NbtElement, existing: MutableMatrix3d?): MutableMatrix3d {
+        val list = tag.expectType<NbtList>("tag")
         return (existing ?: MutableMatrix3d()).set(
-            list[0].expectType<AbstractNumberTag>("00").double,
-            list[1].expectType<AbstractNumberTag>("01").double,
-            list[2].expectType<AbstractNumberTag>("02").double,
-            list[3].expectType<AbstractNumberTag>("10").double,
-            list[4].expectType<AbstractNumberTag>("11").double,
-            list[5].expectType<AbstractNumberTag>("12").double,
-            list[6].expectType<AbstractNumberTag>("20").double,
-            list[7].expectType<AbstractNumberTag>("21").double,
-            list[8].expectType<AbstractNumberTag>("22").double
+            list[0].expectType<AbstractNbtNumber>("00").doubleValue(),
+            list[1].expectType<AbstractNbtNumber>("01").doubleValue(),
+            list[2].expectType<AbstractNbtNumber>("02").doubleValue(),
+            list[3].expectType<AbstractNbtNumber>("10").doubleValue(),
+            list[4].expectType<AbstractNbtNumber>("11").doubleValue(),
+            list[5].expectType<AbstractNbtNumber>("12").doubleValue(),
+            list[6].expectType<AbstractNbtNumber>("20").doubleValue(),
+            list[7].expectType<AbstractNbtNumber>("21").doubleValue(),
+            list[8].expectType<AbstractNbtNumber>("22").doubleValue()
         )
     }
 
-    override fun serialize(value: MutableMatrix3d): Tag {
-        return ListTag().also {
-            it.add(DoubleTag.of(value.m00))
-            it.add(DoubleTag.of(value.m01))
-            it.add(DoubleTag.of(value.m02))
-            it.add(DoubleTag.of(value.m10))
-            it.add(DoubleTag.of(value.m11))
-            it.add(DoubleTag.of(value.m12))
-            it.add(DoubleTag.of(value.m20))
-            it.add(DoubleTag.of(value.m21))
-            it.add(DoubleTag.of(value.m22))
+    override fun serialize(value: MutableMatrix3d): NbtElement {
+        return NbtList().also {
+            it.add(NbtDouble.of(value.m00))
+            it.add(NbtDouble.of(value.m01))
+            it.add(NbtDouble.of(value.m02))
+            it.add(NbtDouble.of(value.m10))
+            it.add(NbtDouble.of(value.m11))
+            it.add(NbtDouble.of(value.m12))
+            it.add(NbtDouble.of(value.m20))
+            it.add(NbtDouble.of(value.m21))
+            it.add(NbtDouble.of(value.m22))
         }
     }
 }
 
 internal object Matrix4dSerializer: NbtSerializer<Matrix4d>() {
-    override fun deserialize(tag: Tag, existing: Matrix4d?): Matrix4d {
-        val list = tag.expectType<ListTag>("tag")
+    override fun deserialize(tag: NbtElement, existing: Matrix4d?): Matrix4d {
+        val list = tag.expectType<NbtList>("tag")
         return Matrix4d(
-            list[0].expectType<AbstractNumberTag>("00").double,
-            list[1].expectType<AbstractNumberTag>("01").double,
-            list[2].expectType<AbstractNumberTag>("02").double,
-            list[3].expectType<AbstractNumberTag>("03").double,
-            list[4].expectType<AbstractNumberTag>("10").double,
-            list[5].expectType<AbstractNumberTag>("11").double,
-            list[6].expectType<AbstractNumberTag>("12").double,
-            list[7].expectType<AbstractNumberTag>("13").double,
-            list[8].expectType<AbstractNumberTag>("20").double,
-            list[9].expectType<AbstractNumberTag>("21").double,
-            list[10].expectType<AbstractNumberTag>("22").double,
-            list[11].expectType<AbstractNumberTag>("23").double,
-            list[12].expectType<AbstractNumberTag>("30").double,
-            list[13].expectType<AbstractNumberTag>("31").double,
-            list[14].expectType<AbstractNumberTag>("32").double,
-            list[15].expectType<AbstractNumberTag>("33").double
+            list[0].expectType<AbstractNbtNumber>("00").doubleValue(),
+            list[1].expectType<AbstractNbtNumber>("01").doubleValue(),
+            list[2].expectType<AbstractNbtNumber>("02").doubleValue(),
+            list[3].expectType<AbstractNbtNumber>("03").doubleValue(),
+            list[4].expectType<AbstractNbtNumber>("10").doubleValue(),
+            list[5].expectType<AbstractNbtNumber>("11").doubleValue(),
+            list[6].expectType<AbstractNbtNumber>("12").doubleValue(),
+            list[7].expectType<AbstractNbtNumber>("13").doubleValue(),
+            list[8].expectType<AbstractNbtNumber>("20").doubleValue(),
+            list[9].expectType<AbstractNbtNumber>("21").doubleValue(),
+            list[10].expectType<AbstractNbtNumber>("22").doubleValue(),
+            list[11].expectType<AbstractNbtNumber>("23").doubleValue(),
+            list[12].expectType<AbstractNbtNumber>("30").doubleValue(),
+            list[13].expectType<AbstractNbtNumber>("31").doubleValue(),
+            list[14].expectType<AbstractNbtNumber>("32").doubleValue(),
+            list[15].expectType<AbstractNbtNumber>("33").doubleValue()
         )
     }
 
-    override fun serialize(value: Matrix4d): Tag {
-        return ListTag().also {
-            it.add(DoubleTag.of(value.m00))
-            it.add(DoubleTag.of(value.m01))
-            it.add(DoubleTag.of(value.m02))
-            it.add(DoubleTag.of(value.m03))
-            it.add(DoubleTag.of(value.m10))
-            it.add(DoubleTag.of(value.m11))
-            it.add(DoubleTag.of(value.m12))
-            it.add(DoubleTag.of(value.m13))
-            it.add(DoubleTag.of(value.m20))
-            it.add(DoubleTag.of(value.m21))
-            it.add(DoubleTag.of(value.m22))
-            it.add(DoubleTag.of(value.m23))
-            it.add(DoubleTag.of(value.m30))
-            it.add(DoubleTag.of(value.m31))
-            it.add(DoubleTag.of(value.m32))
-            it.add(DoubleTag.of(value.m33))
+    override fun serialize(value: Matrix4d): NbtElement {
+        return NbtList().also {
+            it.add(NbtDouble.of(value.m00))
+            it.add(NbtDouble.of(value.m01))
+            it.add(NbtDouble.of(value.m02))
+            it.add(NbtDouble.of(value.m03))
+            it.add(NbtDouble.of(value.m10))
+            it.add(NbtDouble.of(value.m11))
+            it.add(NbtDouble.of(value.m12))
+            it.add(NbtDouble.of(value.m13))
+            it.add(NbtDouble.of(value.m20))
+            it.add(NbtDouble.of(value.m21))
+            it.add(NbtDouble.of(value.m22))
+            it.add(NbtDouble.of(value.m23))
+            it.add(NbtDouble.of(value.m30))
+            it.add(NbtDouble.of(value.m31))
+            it.add(NbtDouble.of(value.m32))
+            it.add(NbtDouble.of(value.m33))
         }
     }
 }
 
 internal object MutableMatrix4dSerializer: NbtSerializer<MutableMatrix4d>() {
-    override fun deserialize(tag: Tag, existing: MutableMatrix4d?): MutableMatrix4d {
-        val list = tag.expectType<ListTag>("tag")
+    override fun deserialize(tag: NbtElement, existing: MutableMatrix4d?): MutableMatrix4d {
+        val list = tag.expectType<NbtList>("tag")
         return (existing ?: MutableMatrix4d()).set(
-            list[0].expectType<AbstractNumberTag>("00").double,
-            list[1].expectType<AbstractNumberTag>("01").double,
-            list[2].expectType<AbstractNumberTag>("02").double,
-            list[3].expectType<AbstractNumberTag>("03").double,
-            list[4].expectType<AbstractNumberTag>("10").double,
-            list[5].expectType<AbstractNumberTag>("11").double,
-            list[6].expectType<AbstractNumberTag>("12").double,
-            list[7].expectType<AbstractNumberTag>("13").double,
-            list[8].expectType<AbstractNumberTag>("20").double,
-            list[9].expectType<AbstractNumberTag>("21").double,
-            list[10].expectType<AbstractNumberTag>("22").double,
-            list[11].expectType<AbstractNumberTag>("23").double,
-            list[12].expectType<AbstractNumberTag>("30").double,
-            list[13].expectType<AbstractNumberTag>("31").double,
-            list[14].expectType<AbstractNumberTag>("32").double,
-            list[15].expectType<AbstractNumberTag>("33").double
+            list[0].expectType<AbstractNbtNumber>("00").doubleValue(),
+            list[1].expectType<AbstractNbtNumber>("01").doubleValue(),
+            list[2].expectType<AbstractNbtNumber>("02").doubleValue(),
+            list[3].expectType<AbstractNbtNumber>("03").doubleValue(),
+            list[4].expectType<AbstractNbtNumber>("10").doubleValue(),
+            list[5].expectType<AbstractNbtNumber>("11").doubleValue(),
+            list[6].expectType<AbstractNbtNumber>("12").doubleValue(),
+            list[7].expectType<AbstractNbtNumber>("13").doubleValue(),
+            list[8].expectType<AbstractNbtNumber>("20").doubleValue(),
+            list[9].expectType<AbstractNbtNumber>("21").doubleValue(),
+            list[10].expectType<AbstractNbtNumber>("22").doubleValue(),
+            list[11].expectType<AbstractNbtNumber>("23").doubleValue(),
+            list[12].expectType<AbstractNbtNumber>("30").doubleValue(),
+            list[13].expectType<AbstractNbtNumber>("31").doubleValue(),
+            list[14].expectType<AbstractNbtNumber>("32").doubleValue(),
+            list[15].expectType<AbstractNbtNumber>("33").doubleValue()
         )
     }
 
-    override fun serialize(value: MutableMatrix4d): Tag {
-        return ListTag().also {
-            it.add(DoubleTag.of(value.m00))
-            it.add(DoubleTag.of(value.m01))
-            it.add(DoubleTag.of(value.m02))
-            it.add(DoubleTag.of(value.m03))
-            it.add(DoubleTag.of(value.m10))
-            it.add(DoubleTag.of(value.m11))
-            it.add(DoubleTag.of(value.m12))
-            it.add(DoubleTag.of(value.m13))
-            it.add(DoubleTag.of(value.m20))
-            it.add(DoubleTag.of(value.m21))
-            it.add(DoubleTag.of(value.m22))
-            it.add(DoubleTag.of(value.m23))
-            it.add(DoubleTag.of(value.m30))
-            it.add(DoubleTag.of(value.m31))
-            it.add(DoubleTag.of(value.m32))
-            it.add(DoubleTag.of(value.m33))
+    override fun serialize(value: MutableMatrix4d): NbtElement {
+        return NbtList().also {
+            it.add(NbtDouble.of(value.m00))
+            it.add(NbtDouble.of(value.m01))
+            it.add(NbtDouble.of(value.m02))
+            it.add(NbtDouble.of(value.m03))
+            it.add(NbtDouble.of(value.m10))
+            it.add(NbtDouble.of(value.m11))
+            it.add(NbtDouble.of(value.m12))
+            it.add(NbtDouble.of(value.m13))
+            it.add(NbtDouble.of(value.m20))
+            it.add(NbtDouble.of(value.m21))
+            it.add(NbtDouble.of(value.m22))
+            it.add(NbtDouble.of(value.m23))
+            it.add(NbtDouble.of(value.m30))
+            it.add(NbtDouble.of(value.m31))
+            it.add(NbtDouble.of(value.m32))
+            it.add(NbtDouble.of(value.m33))
         }
     }
 }
 
 internal object QuaternionSerializer: NbtSerializer<Quaternion>() {
-    override fun deserialize(tag: Tag, existing: Quaternion?): Quaternion {
-        @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundTag>("tag")
+    override fun deserialize(tag: NbtElement, existing: Quaternion?): Quaternion {
+        @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         return Quaternion(
-            tag.expect<AbstractNumberTag>("X").double,
-            tag.expect<AbstractNumberTag>("Y").double,
-            tag.expect<AbstractNumberTag>("Z").double,
-            tag.expect<AbstractNumberTag>("W").double
+            tag.expect<AbstractNbtNumber>("X").doubleValue(),
+            tag.expect<AbstractNbtNumber>("Y").doubleValue(),
+            tag.expect<AbstractNbtNumber>("Z").doubleValue(),
+            tag.expect<AbstractNbtNumber>("W").doubleValue()
         )
     }
 
-    override fun serialize(value: Quaternion): Tag {
-        val tag = CompoundTag()
-        tag.put("X", DoubleTag.of(value.x))
-        tag.put("Y", DoubleTag.of(value.y))
-        tag.put("Z", DoubleTag.of(value.z))
-        tag.put("W", DoubleTag.of(value.w))
+    override fun serialize(value: Quaternion): NbtElement {
+        val tag = NbtCompound()
+        tag.put("X", NbtDouble.of(value.x))
+        tag.put("Y", NbtDouble.of(value.y))
+        tag.put("Z", NbtDouble.of(value.z))
+        tag.put("W", NbtDouble.of(value.w))
         return tag
     }
 }

@@ -94,7 +94,7 @@ public object Scribe {
             BlockStateSerializer,
             GameProfileSerializer,
             ItemStackSerializer,
-            StatusEffectInstanceSerializer,
+//            StatusEffectInstanceSerializer, // The deserializer can return null, which we don't handle gracefully
             EnchantmentLevelEntrySerializer,
 //            DimensionTypeSerializer, // DimensionType serialization issues
 

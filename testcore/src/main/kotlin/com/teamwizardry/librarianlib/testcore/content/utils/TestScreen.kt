@@ -36,13 +36,13 @@ public open class TestScreen(public val config: TestScreenConfig): Screen(Litera
     }
 
     override fun render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        RenderSystem.translated(left, top, 0.0)
-        RenderSystem.scaled(config.scale.toDouble(), config.scale.toDouble(), 1.0)
+        matrixStack.push()
+        matrixStack.translate(left, top, 0.0)
+        matrixStack.scale(config.scale.toFloat(), config.scale.toFloat(), 1f)
 
         config.draw.run(TestScreenConfig.DrawContext(this, matrixStack, vec(mouseX - left, mouseY - top) / config.scale, partialTicks))
 
-        RenderSystem.scaled(1 / config.scale.toDouble(), 1 / config.scale.toDouble(), 1.0)
-        RenderSystem.translated(-left, -top, 0.0)
+        matrixStack.pop()
         super.render(matrixStack, mouseX, mouseY, partialTicks)
     }
 

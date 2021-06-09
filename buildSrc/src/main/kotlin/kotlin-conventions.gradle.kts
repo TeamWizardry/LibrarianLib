@@ -20,6 +20,7 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs = freeCompilerArgs + listOf(
             "-Xjvm-default=all",
             "-Xuse-experimental=kotlin.Experimental",
+            "-Xopt-in=kotlin.ExperimentalStdlibApi",
             "-Xinline-classes"
         )
     }

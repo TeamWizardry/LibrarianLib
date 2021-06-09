@@ -480,7 +480,7 @@ public class Raycaster {
             if (visitedEntityChunks.add(ChunkPos.toLong(chunkPos.x, chunkPos.z))) {
                 val chunk = world.chunkManager.getWorldChunk(chunkPos.x, chunkPos.z, false) ?: continue
                 entityList.clear()
-                chunk.collectEntities(null, boundingBox, entityList, entityFilter)
+                chunk.QUILT_TODO("collectEntities(null, boundingBox, entityList, entityFilter)")
                 for (i in entityList.indices) {
                     castEntity(entityList[i])
                 }

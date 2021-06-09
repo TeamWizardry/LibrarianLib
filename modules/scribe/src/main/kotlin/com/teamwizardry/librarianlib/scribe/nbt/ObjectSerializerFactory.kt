@@ -7,8 +7,8 @@ import dev.thecodewarrior.prism.DeserializationException
 import dev.thecodewarrior.prism.SerializationException
 import dev.thecodewarrior.prism.annotation.RefractClass
 import dev.thecodewarrior.prism.base.analysis.auto.ObjectAnalyzer
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.Tag
+import net.minecraft.nbt.NbtCompound
+import net.minecraft.nbt.NbtElement
 
 internal class ObjectSerializerFactory(prism: NbtPrism): NBTSerializerFactory(prism, Mirror.reflect<Any>(), { type ->
     (type as? ClassMirror)?.annotations?.any { it is RefractClass } == true
@@ -21,14 +21,14 @@ internal class ObjectSerializerFactory(prism: NbtPrism): NBTSerializerFactory(pr
         private val analyzer = ObjectAnalyzer<Any, NbtSerializer<*>>(prism, type.asClassMirror())
 
         @Suppress("UNCHECKED_CAST")
-        override fun deserialize(tag: Tag, existing: Any?): Any {
+        override fun deserialize(tag: NbtElement, existing: Any?): Any {
             analyzer.getReader(existing).use { state ->
-                @Suppress("NAME_SHADOWING") val tag = tag.expectType<CompoundTag>("tag")
+                @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
                 state.properties.forEach { property ->
                     try {
-                        val valueTag = tag[property.name]
-                        if (valueTag != null) {
-                            property.value = property.serializer.read(valueTag, property.existing)
+                        val Nbtvalue = tag[property.name]
+                        if (Nbtvalue != null) {
+                            property.value = property.serializer.read(Nbtvalue, property.existing)
                         } else {
                             property.value = null
                         }
@@ -42,9 +42,9 @@ internal class ObjectSerializerFactory(prism: NbtPrism): NBTSerializerFactory(pr
             }
         }
 
-        override fun serialize(value: Any): Tag {
+        override fun serialize(value: Any): NbtElement {
             analyzer.getWriter(value).use { state ->
-                val tag = CompoundTag()
+                val tag = NbtCompound()
                 state.properties.forEach { property ->
                     val v = property.value
                     if (v != null) {

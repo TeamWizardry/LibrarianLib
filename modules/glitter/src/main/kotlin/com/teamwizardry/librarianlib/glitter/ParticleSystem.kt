@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding
 import com.teamwizardry.librarianlib.glitter.bindings.VariableBinding
 import com.teamwizardry.librarianlib.glitter.modules.DepthSortModule
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
-import net.minecraft.client.options.ParticlesMode
+import net.minecraft.client.option.ParticlesMode
 import org.magicwerk.brownies.collections.GapList
 import java.lang.RuntimeException
 import java.util.*

@@ -6,19 +6,20 @@ import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.render.entity.EntityRenderDispatcher
 import net.minecraft.client.render.entity.EntityRenderer
+import net.minecraft.client.render.entity.EntityRendererFactory
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.client.util.math.Vector3f
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Matrix3f
 import net.minecraft.util.math.Matrix4f
+import net.minecraft.util.math.Vec3f
 import kotlin.math.sqrt
 
-public class TestEntityRenderer(dispatcher: EntityRenderDispatcher) : EntityRenderer<TestEntityImpl>(dispatcher) {
+public class TestEntityRenderer(dispatcher: EntityRendererFactory.Context) : EntityRenderer<TestEntityImpl>(dispatcher) {
     override fun render(entity: TestEntityImpl, entityYaw: Float, partialTicks: Float, matrixStack: MatrixStack, buffer: VertexConsumerProvider, packedLight: Int) {
         matrixStack.push()
-        matrixStack.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(MathHelper.lerp(partialTicks, entity.prevYaw, entity.yaw) + 90.0f))
-        matrixStack.multiply(Vector3f.NEGATIVE_Z.getDegreesQuaternion(MathHelper.lerp(partialTicks, entity.prevPitch, entity.pitch)))
+        matrixStack.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(MathHelper.lerp(partialTicks, entity.prevYaw, entity.yaw) + 90.0f))
+        matrixStack.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(MathHelper.lerp(partialTicks, entity.prevPitch, entity.pitch)))
         matrixStack.scale(1 / 5f, 1 / 5f, 1 / 5f)
 
         fun draw(type: RenderLayer) {

@@ -8,7 +8,7 @@ import dev.thecodewarrior.prism.DeserializationException
 import dev.thecodewarrior.prism.InvalidTypeException
 import dev.thecodewarrior.prism.PrismException
 import dev.thecodewarrior.prism.SerializationException
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import java.lang.IllegalStateException
 import java.util.function.Predicate
 
@@ -28,24 +28,24 @@ public interface SimpleSerializer<T: Any> {
     /**
      * Create a tag containing the fields marked with any of the passed [markers] types.
      */
-    public fun createTag(instance: T, vararg markers: Class<out Annotation>): CompoundTag
+    public fun createTag(instance: T, vararg markers: Class<out Annotation>): NbtCompound
 
     /**
      * Create a tag containing the fields with marker annotations that succeed in the passed filter. If possible, prefer
      * using the version of [createTag] that accepts marker classes, since it can be more optimized.
      */
-    public fun createTag(instance: T, predicate: Predicate<Collection<Annotation>>): CompoundTag
+    public fun createTag(instance: T, predicate: Predicate<Collection<Annotation>>): NbtCompound
 
     /**
      * Applies a tag containing the fields marked with any of the passed [markers] types.
      */
-    public fun applyTag(tag: CompoundTag, instance: T, vararg markers: Class<out Annotation>)
+    public fun applyTag(tag: NbtCompound, instance: T, vararg markers: Class<out Annotation>)
 
     /**
      * Applies a tag containing the fields that succeed in the passed filter. If possible, prefer using the version of
      * [applyTag] that accepts marker classes, since it can be more optimized.
      */
-    public fun applyTag(tag: CompoundTag, instance: T, predicate: Predicate<Collection<Annotation>>)
+    public fun applyTag(tag: NbtCompound, instance: T, predicate: Predicate<Collection<Annotation>>)
 
     public companion object {
         private val typeMap = mutableMapOf<Class<*>, SimpleSerializerImpl<*>>()
@@ -124,8 +124,8 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
         val field: FieldMirror, val nbtSerializer: NbtSerializer<*>
     )
 
-    private inline fun createTagImpl(instance: T, test: (Property) -> Boolean): CompoundTag {
-        val tag = CompoundTag()
+    private inline fun createTagImpl(instance: T, test: (Property) -> Boolean): NbtCompound {
+        val tag = NbtCompound()
         properties.forEach { property ->
             try {
                 if (test(property)) {
@@ -141,15 +141,15 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
         return tag
     }
 
-    override fun createTag(instance: T, vararg markers: Class<out Annotation>): CompoundTag {
+    override fun createTag(instance: T, vararg markers: Class<out Annotation>): NbtCompound {
         return createTagImpl(instance) { property -> markers.any { it in property.markerClasses } }
     }
 
-    override fun createTag(instance: T, predicate: Predicate<Collection<Annotation>>): CompoundTag {
+    override fun createTag(instance: T, predicate: Predicate<Collection<Annotation>>): NbtCompound {
         return createTagImpl(instance) { property -> predicate.test(property.markers) }
     }
 
-    private inline fun applyTagImpl(tag: CompoundTag, instance: T, test: (Property) -> Boolean) {
+    private inline fun applyTagImpl(tag: NbtCompound, instance: T, test: (Property) -> Boolean) {
         properties.forEach { property ->
             try {
                 if (test(property)) {
@@ -185,11 +185,11 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
         }
     }
 
-    override fun applyTag(tag: CompoundTag, instance: T, vararg markers: Class<out Annotation>) {
+    override fun applyTag(tag: NbtCompound, instance: T, vararg markers: Class<out Annotation>) {
         applyTagImpl(tag, instance) { property -> markers.any { it in property.markerClasses } }
     }
 
-    override fun applyTag(tag: CompoundTag, instance: T, predicate: Predicate<Collection<Annotation>>) {
+    override fun applyTag(tag: NbtCompound, instance: T, predicate: Predicate<Collection<Annotation>>) {
         applyTagImpl(tag, instance) { property -> predicate.test(property.markers) }
     }
 

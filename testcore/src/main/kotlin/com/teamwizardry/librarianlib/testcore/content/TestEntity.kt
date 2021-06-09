@@ -126,7 +126,7 @@ public class TestEntity(manager: TestModContentManager, id: Identifier) : TestCo
     }
 
     override fun registerClient(resources: TestModResourceManager) {
-        EntityRendererRegistry.INSTANCE.register(this.type) { dispatcher, _ ->
+        EntityRendererRegistry.INSTANCE.register(this.type) { dispatcher ->
             TestEntityRenderer(dispatcher)
         }
 
