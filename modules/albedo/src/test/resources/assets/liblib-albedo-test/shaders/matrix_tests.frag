@@ -1,4 +1,4 @@
-#version 120
+#version 330
 
 // 4xN
 uniform mat4x4 matrix4x4;

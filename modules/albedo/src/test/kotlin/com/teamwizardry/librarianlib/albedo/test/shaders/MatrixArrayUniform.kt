@@ -15,18 +15,14 @@ import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>() {
+internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>(
+    minX = -8,
+    minY = -8,
+    maxX = 136,
+    maxY = 136
+) {
 
-    override fun doDraw(matrixStack: MatrixStack) {
-        val minX = -8.0
-        val minY = -8.0
-        val maxX = 136.0
-        val maxY = 136.0
-
-        val c = Color.WHITE
-
-
-
+    override fun doDraw(stack: MatrixStack, matrix: Matrix4d) {
         val matrixType = (Client.time.seconds % 3).toInt()
         val index = (Client.time.seconds % 6).toInt()/3
         val mat4Label: String = when(matrixType) {
@@ -131,38 +127,29 @@ internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>() {
             )
         }
 
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(renderType)
-
-        vb.vertex2d(minX, maxY).color(c).texture(0f, 1f).next()
-        vb.vertex2d(maxX, maxY).color(c).texture(1f, 1f).next()
-        vb.vertex2d(maxX, minY).color(c).texture(1f, 0f).next()
-        vb.vertex2d(minX, minY).color(c).texture(0f, 0f).next()
-
-        shader.bind()
-        buffer.draw()
-        shader.unbind()
+        drawUnitQuad(matrix)
 
         val fr = Client.minecraft.textRenderer
         val cellSize = 16
-        fr.draw(matrixStack, mat4Label,
-            (minX + cellSize * 2 - fr.getWidth(mat4Label)/2).toInt().toFloat(),
-            (minY + cellSize * 2 - 4).toInt().toFloat(),
+        fr.draw(
+            stack, mat4Label,
+            (minX + cellSize * 2 - fr.getWidth(mat4Label)/2).toFloat(),
+            (minY + cellSize * 2 - 4).toFloat(),
             Color.WHITE.rgb
         )
-        fr.draw(matrixStack, mat3Label,
+        fr.draw(
+            stack, mat3Label,
             (minX + cellSize * 5.5 - fr.getWidth(mat3Label)/2).toInt().toFloat(),
             (minY + cellSize * 5.5 - 4).toInt().toFloat(),
             Color.WHITE.rgb
         )
-        fr.draw(matrixStack, "$index",
-            (maxX - 2 - fr.getWidth("$index")).toInt().toFloat(),
+        fr.draw(
+            stack, "$index",
+            (maxX - 2 - fr.getWidth("$index")).toFloat(),
             minY.toFloat() + 11,
             Color.WHITE.rgb
         )
     }
-
-    private val renderType = SimpleRenderLayers.flat(Identifier("minecraft:missingno"), GL11.GL_QUADS)
 
     class Test: Shader("matrix_array_tests", null, Identifier("liblib-albedo-test:shaders/matrix_array_tests.frag")) {
         val index = GLSL.glInt()

@@ -40,9 +40,9 @@
   "mixins": [
   ],
   "depends": {
-    "quilt_loader": ">=0.12.0",
+    "fabricloader": ">=0.11.3",
     "fabric-language-kotlin": "*",
-    "minecraft": "1.16.x"
+    "minecraft": "1.17.x"
   },
   "custom": {
     "modmenu": {

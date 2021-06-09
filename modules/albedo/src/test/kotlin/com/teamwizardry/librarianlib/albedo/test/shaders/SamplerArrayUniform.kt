@@ -3,19 +3,14 @@ package com.teamwizardry.librarianlib.albedo.test.shaders
 import com.teamwizardry.librarianlib.albedo.GLSL
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
-import com.teamwizardry.librarianlib.core.bridge.IMutableRenderLayerPhaseParameters
-import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
-import com.teamwizardry.librarianlib.core.util.mixinCast
-import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.render.VertexFormats
+import com.teamwizardry.librarianlib.math.Matrix4d
+import net.minecraft.client.render.*
+import net.minecraft.client.render.VertexFormat.DrawMode
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
@@ -23,28 +18,14 @@ internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
     private val successLocation1 = Identifier("liblib-albedo-test:textures/sampler_success1.png")
     private val successLocation2 = Identifier("liblib-albedo-test:textures/sampler_success2.png")
 
-    override fun doDraw(matrixStack: MatrixStack) {
-        val minX = 0.0
-        val minY = 0.0
-        val maxX = 128.0
-        val maxY = 128.0
-
-        val c = Color.WHITE
-
+    override fun doDraw(stack: MatrixStack, matrix: Matrix4d) {
         Client.textureManager.bindTexture(successLocation1)
         Client.textureManager.bindTexture(successLocation2)
         val tex1 = Client.textureManager.getTexture(successLocation1)?.glId ?: throw IllegalStateException("sampler_success1 not found")
         val tex2 = Client.textureManager.getTexture(successLocation2)?.glId ?: throw IllegalStateException("sampler_success2 not found")
         Client.textureManager.bindTexture(failureLocation)
 
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        var vb = buffer.getBuffer(renderType)
-        vb.vertex2d(minX, maxY).color(c).texture(0f, 1f).next()
-        vb.vertex2d(maxX, maxY).color(c).texture(1f, 1f).next()
-        vb.vertex2d(maxX, minY).color(c).texture(1f, 0f).next()
-        vb.vertex2d(minX, minY).color(c).texture(0f, 0f).next()
-
-        buffer.draw()
+        drawUnitQuad(matrix)
 
         val index = (Client.time.seconds % 2).toInt()
         shader.index.set(index)
@@ -53,30 +34,7 @@ internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
         shader.sampler2[0] = tex1
         shader.sampler2[1] = tex2
 
-        vb = buffer.getBuffer(renderType)
-
-        vb.vertex2d(minX, maxY).color(c).texture(0f, 2f).next()
-        vb.vertex2d(maxX, maxY).color(c).texture(1f, 2f).next()
-        vb.vertex2d(maxX, minY).color(c).texture(1f, 0f).next()
-        vb.vertex2d(minX, minY).color(c).texture(0f, 0f).next()
-
-        buffer.draw()
-    }
-
-    private val renderType: RenderLayer
-    init {
-
-        val renderState = RenderLayer.MultiPhaseParameters.builder()
-            .alpha(DefaultRenderPhases.ONE_TENTH_ALPHA)
-            .depthTest(DefaultRenderPhases.LEQUAL_DEPTH_TEST)
-            .transparency(DefaultRenderPhases.TRANSLUCENT_TRANSPARENCY)
-            .build(true)
-
-        mixinCast<IMutableRenderLayerPhaseParameters>(renderState).addPhase("albedo", { shader.bind() }, { shader.unbind() })
-
-        renderType = SimpleRenderLayers.makeType("sampler_array",
-            VertexFormats.POSITION_COLOR_TEXTURE, GL11.GL_QUADS, 256, false, false, renderState
-        )
+        drawUnitQuad(matrix, maxV = 2f)
     }
 
     class Test: Shader("sampler_array_tests", null, Identifier("liblib-albedo-test:shaders/sampler_array_tests.frag")) {

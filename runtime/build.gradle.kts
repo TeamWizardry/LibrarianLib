@@ -16,7 +16,7 @@ dependencies {
         runtimeOnly(project(it.path, configuration = "devClasspath"))
         modRuntime(project(it.path, configuration = "devMod"))
     }
-    modRuntime("com.terraformersmc:modmenu:1.16.5")
+//    modRuntime("com.terraformersmc:modmenu:1.16.5")
 }
 
 loom {

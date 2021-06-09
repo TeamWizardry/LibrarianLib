@@ -1,4 +1,4 @@
-#version 120
+#version 330
 
 uniform int index;
 uniform int[2] primitive;

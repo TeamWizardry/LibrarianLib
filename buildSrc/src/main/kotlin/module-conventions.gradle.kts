@@ -101,7 +101,7 @@ configureFabricModJson {
     icon.set("ll/icon.png")
     iconFile.set(rootDir.resolve("logo/icon.png"))
 
-    depends("quilt_loader", project.property("fabricmodjson.depends.quilt_loader") as String)
+    depends("fabricloader", project.property("fabricmodjson.depends.fabricloader") as String)
     depends("minecraft", project.property("fabricmodjson.depends.minecraft") as String)
     depends("fabric-language-kotlin", "*")
 
@@ -132,7 +132,7 @@ val generateFabricTestMod = tasks.register<GenerateFabricModJson>("generateFabri
     icon.set("ll/test_icon.png")
     iconFile.set(rootDir.resolve("logo/test_icon.png"))
 
-    depends("quilt_loader", project.property("fabricmodjson.depends.quilt_loader") as String)
+    depends("fabricloader", project.property("fabricmodjson.depends.fabricloader") as String)
     depends("minecraft", project.property("fabricmodjson.depends.minecraft") as String)
     depends("fabric-language-kotlin", "*")
     depends(module.moduleInfo.modid, commonConfig.version)
