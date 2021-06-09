@@ -1,6 +1,10 @@
 package com.teamwizardry.librarianlib.albedo
 
 import com.mojang.blaze3d.platform.GlStateManager
+import com.teamwizardry.librarianlib.albedo.uniform.ArrayUniform
+import com.teamwizardry.librarianlib.albedo.uniform.SamplerArrayUniform
+import com.teamwizardry.librarianlib.albedo.uniform.SamplerUniform
+import com.teamwizardry.librarianlib.albedo.uniform.Uniform
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.gl.GlUniform
 import org.lwjgl.opengl.GL20
@@ -10,17 +14,17 @@ import org.lwjgl.system.MemoryUtil
 internal object UniformBinder {
     fun unbindAllUniforms(target: Shader) {
         Mirror.reflectClass(target.javaClass).fields.forEach { field ->
-            if(Mirror.reflect<GLSL>().isAssignableFrom(field.type)) {
-                val uniform = field.get<GLSL>(if(field.isStatic) null else target)
+            if(Mirror.reflect<Uniform>().isAssignableFrom(field.type)) {
+                val uniform = field.get<Uniform>(if(field.isStatic) null else target)
                 uniform.location = -1
-                if(uniform is GLSL.GLSLArray) uniform.trueLength = uniform.length
-                if(uniform is GLSL.GLSLSampler) uniform.textureUnit = 0
-                if(uniform is GLSL.GLSLSampler.GLSLSamplerArray) uniform.textureUnits.fill(0)
+                if(uniform is ArrayUniform) uniform.trueLength = uniform.length
+                if(uniform is SamplerUniform) uniform.textureUnit = 0
+                if(uniform is SamplerArrayUniform) uniform.textureUnits.fill(0)
             }
         }
     }
 
-    fun bindAllUniforms(shader: Shader, program: Int): List<GLSL> {
+    fun bindAllUniforms(shader: Shader, program: Int): List<Uniform> {
         logger.debug("Binding uniforms for shader ${shader.shaderName}")
         val uniformInfos = getUniformInfos(program)
         val bindPoints = scanUniforms(shader)
@@ -30,7 +34,7 @@ internal object UniformBinder {
         bindPoints.forEach { (name, uniform) ->
             val uniformInfo = uniformInfos[name] ?: return@forEach
             uniform.location = uniformInfo.location
-            if (uniform is GLSL.GLSLArray)
+            if (uniform is ArrayUniform)
                 uniform.trueLength = uniformInfo.size
         }
 
@@ -84,12 +88,12 @@ internal object UniformBinder {
         return uniformInfos
     }
 
-    private fun scanUniforms(target: Any): Map<String, GLSL> {
-        val out = mutableMapOf<String, GLSL>()
+    private fun scanUniforms(target: Any): Map<String, Uniform> {
+        val out = mutableMapOf<String, Uniform>()
         Mirror.reflectClass(target.javaClass).fields.forEach { field ->
             when (val uniform = field.get<Any>(if(field.isStatic) null else target)) {
-                is GLSL -> {
-                    val glName = field.name + if(uniform is GLSL.GLSLArray) "[0]" else ""
+                is Uniform -> {
+                    val glName = field.name + if(uniform is ArrayUniform) "[0]" else ""
                     out[glName] = uniform
                 }
                 is GLSLStruct -> {

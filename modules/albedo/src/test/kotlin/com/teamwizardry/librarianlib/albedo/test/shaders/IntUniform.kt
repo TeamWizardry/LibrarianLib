@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.test.shaders
 
-import com.teamwizardry.librarianlib.albedo.GLSL
+import com.teamwizardry.librarianlib.albedo.uniform.Uniform
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.math.Matrix4d
@@ -19,9 +19,9 @@ internal object IntUniform: ShaderTest<IntUniform.Test>() {
     }
 
     class Test: Shader("int_tests", null, Identifier("liblib-albedo-test:shaders/int_tests.frag")) {
-        val primitive = GLSL.glInt()
-        val vector2 = GLSL.ivec2()
-        val vector3 = GLSL.ivec3()
-        val vector4 = GLSL.ivec4()
+        val primitive = Uniform.int.create()
+        val vector2 = Uniform.ivec2.create()
+        val vector3 = Uniform.ivec3.create()
+        val vector4 = Uniform.ivec4.create()
     }
 }

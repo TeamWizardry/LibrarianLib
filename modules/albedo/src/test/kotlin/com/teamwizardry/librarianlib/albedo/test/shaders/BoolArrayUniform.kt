@@ -2,7 +2,7 @@
 
 package com.teamwizardry.librarianlib.albedo.test.shaders
 
-import com.teamwizardry.librarianlib.albedo.GLSL
+import com.teamwizardry.librarianlib.albedo.uniform.Uniform
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
@@ -40,10 +40,10 @@ internal object BoolArrayUniform: ShaderTest<BoolArrayUniform.Test>() {
     }
 
     class Test: Shader("bool_array_tests", null, Identifier("liblib-albedo-test:shaders/bool_array_tests.frag")) {
-        val index = GLSL.glInt()
-        val primitive = GLSL.glBool[2]
-        val vector2 = GLSL.bvec2[2]
-        val vector3 = GLSL.bvec3[2]
-        val vector4 = GLSL.bvec4[2]
+        val index = Uniform.int.create()
+        val primitive = Uniform.bool.createArray(2)
+        val vector2 = Uniform.bvec2.createArray(2)
+        val vector3 = Uniform.bvec3.createArray(2)
+        val vector4 = Uniform.bvec4.createArray(2)
     }
 }

@@ -1,16 +1,12 @@
 package com.teamwizardry.librarianlib.albedo.test.shaders
 
-import com.teamwizardry.librarianlib.albedo.GLSL
+import com.teamwizardry.librarianlib.albedo.uniform.Uniform
 import com.teamwizardry.librarianlib.albedo.GLSLStruct
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.math.Matrix4d
-import net.minecraft.client.render.*
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
-import java.awt.Color
 
 internal object StructUniform: ShaderTest<StructUniform.Test>() {
 
@@ -41,17 +37,17 @@ internal object StructUniform: ShaderTest<StructUniform.Test>() {
     }
 
     class Test: Shader("struct_tests", null, Identifier("liblib-albedo-test:shaders/struct_tests.frag")) {
-        val simple = GLSL.struct<Simple>()
-        val simpleArray = GLSL.struct<Simple>(2)
+        val simple = Uniform.struct.create<Simple>()
+        val simpleArray = Uniform.struct.createArray<Simple>(2)
 
         class Embedded: GLSLStruct() {
-            val embed = GLSL.glFloat()
+            val embed = Uniform.float.create()
         }
         class Simple: GLSLStruct() {
-            val primitive = GLSL.glFloat()
-            val primitiveArray = GLSL.glFloat[2]
-            val embedded = GLSL.struct<Embedded>()
-            val embeddedArray = GLSL.struct<Embedded>(2)
+            val primitive = Uniform.float.create()
+            val primitiveArray = Uniform.float.createArray(2)
+            val embedded = Uniform.struct.create<Embedded>()
+            val embeddedArray = Uniform.struct.createArray<Embedded>(2)
         }
     }
 }

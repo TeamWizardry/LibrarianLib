@@ -1,18 +1,13 @@
 package com.teamwizardry.librarianlib.albedo.test.shaders
 
-import com.teamwizardry.librarianlib.albedo.GLSL
+import com.teamwizardry.librarianlib.albedo.uniform.Uniform
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
-import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 internal object MatrixUniform: ShaderTest<MatrixUniform.Test>(
@@ -138,16 +133,16 @@ internal object MatrixUniform: ShaderTest<MatrixUniform.Test>(
     }
 
     class Test: Shader("matrix_tests", null, Identifier("liblib-albedo-test:shaders/matrix_tests.frag")) {
-        val matrix4x4 = GLSL.mat4()
-        val matrix4x3 = GLSL.mat4x3()
-        val matrix4x2 = GLSL.mat4x2()
+        val matrix4x4 = Uniform.mat4.create(false)
+        val matrix4x3 = Uniform.mat4x3.create()
+        val matrix4x2 = Uniform.mat4x2.create()
 
-        val matrix3x4 = GLSL.mat3x4()
-        val matrix3x3 = GLSL.mat3()
-        val matrix3x2 = GLSL.mat3x2()
+        val matrix3x4 = Uniform.mat3x4.create()
+        val matrix3x3 = Uniform.mat3.create(false)
+        val matrix3x2 = Uniform.mat3x2.create()
 
-        val matrix2x4 = GLSL.mat2x4()
-        val matrix2x3 = GLSL.mat2x3()
-        val matrix2x2 = GLSL.mat2()
+        val matrix2x4 = Uniform.mat2x4.create()
+        val matrix2x3 = Uniform.mat2x3.create()
+        val matrix2x2 = Uniform.mat2.create(false)
     }
 }

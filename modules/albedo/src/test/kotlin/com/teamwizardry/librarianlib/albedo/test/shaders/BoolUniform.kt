@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.test.shaders
 
-import com.teamwizardry.librarianlib.albedo.GLSL
+import com.teamwizardry.librarianlib.albedo.uniform.Uniform
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.math.Matrix4d
@@ -19,9 +19,9 @@ internal object BoolUniform: ShaderTest<BoolUniform.Test>() {
     }
 
     class Test: Shader("bool_tests", null, Identifier("liblib-albedo-test:shaders/bool_tests.frag")) {
-        val primitive = GLSL.glBool()
-        val vector2 = GLSL.bvec2()
-        val vector3 = GLSL.bvec3()
-        val vector4 = GLSL.bvec4()
+        val primitive = Uniform.bool.create()
+        val vector2 = Uniform.bvec2.create()
+        val vector3 = Uniform.bvec3.create()
+        val vector4 = Uniform.bvec4.create()
     }
 }

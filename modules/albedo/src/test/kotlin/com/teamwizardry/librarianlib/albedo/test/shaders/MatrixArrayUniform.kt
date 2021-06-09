@@ -1,18 +1,13 @@
 package com.teamwizardry.librarianlib.albedo.test.shaders
 
-import com.teamwizardry.librarianlib.albedo.GLSL
+import com.teamwizardry.librarianlib.albedo.uniform.Uniform
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
-import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>(
@@ -152,18 +147,18 @@ internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>(
     }
 
     class Test: Shader("matrix_array_tests", null, Identifier("liblib-albedo-test:shaders/matrix_array_tests.frag")) {
-        val index = GLSL.glInt()
+        val index = Uniform.int.create()
 
-        val matrix4x4 = GLSL.mat4[2]
-        val matrix4x3 = GLSL.mat4x3[2]
-        val matrix4x2 = GLSL.mat4x2[2]
+        val matrix4x4 = Uniform.mat4.createArray(false, 2)
+        val matrix4x3 = Uniform.mat4x3.createArray(2)
+        val matrix4x2 = Uniform.mat4x2.createArray(2)
 
-        val matrix3x4 = GLSL.mat3x4[2]
-        val matrix3x3 = GLSL.mat3[2]
-        val matrix3x2 = GLSL.mat3x2[2]
+        val matrix3x4 = Uniform.mat3x4.createArray(2)
+        val matrix3x3 = Uniform.mat3.createArray(false, 2)
+        val matrix3x2 = Uniform.mat3x2.createArray(2)
 
-        val matrix2x4 = GLSL.mat2x4[2]
-        val matrix2x3 = GLSL.mat2x3[2]
-        val matrix2x2 = GLSL.mat2[2]
+        val matrix2x4 = Uniform.mat2x4.createArray(2)
+        val matrix2x3 = Uniform.mat2x3.createArray(2)
+        val matrix2x2 = Uniform.mat2.createArray(false, 2)
     }
 }

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.test.shaders
 
-import com.teamwizardry.librarianlib.albedo.GLSL
+import com.teamwizardry.librarianlib.albedo.uniform.Uniform
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.math.Matrix4d
@@ -19,9 +19,9 @@ internal object FloatUniform: ShaderTest<FloatUniform.Test>() {
     }
 
     class Test: Shader("float_tests", null, Identifier("liblib-albedo-test:shaders/float_tests.frag")) {
-        val primitive = GLSL.glFloat()
-        val vector2 = GLSL.vec2()
-        val vector3 = GLSL.vec3()
-        val vector4 = GLSL.vec4()
+        val primitive = Uniform.float.create()
+        val vector2 = Uniform.vec2.create()
+        val vector3 = Uniform.vec3.create()
+        val vector4 = Uniform.vec4.create()
     }
 }

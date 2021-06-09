@@ -2,6 +2,9 @@ package com.teamwizardry.librarianlib.albedo
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.albedo.uniform.SamplerArrayUniform
+import com.teamwizardry.librarianlib.albedo.uniform.SamplerUniform
+import com.teamwizardry.librarianlib.albedo.uniform.Uniform
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
@@ -83,7 +86,7 @@ public abstract class Shader(
      */
     protected open fun teardownState() {}
 
-    private var uniforms: List<GLSL>? = null
+    private var uniforms: List<Uniform>? = null
 
     private val boundTextureUnits = mutableMapOf<Pair<Int, Int>, Int>()
 
@@ -102,12 +105,16 @@ public abstract class Shader(
         var currentUnit = FIRST_TEXTURE_UNIT
         boundTextureUnits.clear()
         uniforms?.forEach {
-            if (it is GLSL.GLSLSampler) {
-                it.textureUnit = boundTextureUnits.getOrPut(it.get() to it.textureTarget) { currentUnit++ }
-            } else if (it is GLSL.GLSLSampler.GLSLSamplerArray) {
-                for (i in 0 until min(it.length, it.trueLength)) {
-                    it.textureUnits[i] = boundTextureUnits.getOrPut(it[i] to it.textureTarget) { currentUnit++ }
+            when (it) {
+                is SamplerUniform -> {
+                    it.textureUnit = boundTextureUnits.getOrPut(it.get() to it.textureTarget) { currentUnit++ }
                 }
+                is SamplerArrayUniform -> {
+                    for (i in 0 until min(it.length, it.trueLength)) {
+                        it.textureUnits[i] = boundTextureUnits.getOrPut(it[i] to it.textureTarget) { currentUnit++ }
+                    }
+                }
+                else -> {}
             }
         }
         boundTextureUnits.forEach { (tex, unit) ->
