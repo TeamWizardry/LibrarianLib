@@ -34,11 +34,11 @@ internal object IntArrayUniform: ShaderTest<IntArrayUniform.Test>() {
         )
     }
 
-    class Test: Shader("int_array_tests", null, Identifier("liblib-albedo-test:shaders/int_array_tests.frag")) {
-        val index = Uniform.int.create()
-        val primitive = Uniform.int.createArray(2)
-        val vector2 = Uniform.ivec2.createArray(2)
-        val vector3 = Uniform.ivec3.createArray(2)
-        val vector4 = Uniform.ivec4.createArray(2)
+    class Test: Shader("int_array_tests", Identifier("liblib-albedo-test:shaders/uniform_base.vert"), Identifier("liblib-albedo-test:shaders/int_array_tests.frag")) {
+        val index = Uniform.int.create("index")
+        val primitive = Uniform.int.createArray("primitive", 2)
+        val vector2 = Uniform.ivec2.createArray("vector2", 2)
+        val vector3 = Uniform.ivec3.createArray("vector3", 2)
+        val vector4 = Uniform.ivec4.createArray("vector4", 2)
     }
 }

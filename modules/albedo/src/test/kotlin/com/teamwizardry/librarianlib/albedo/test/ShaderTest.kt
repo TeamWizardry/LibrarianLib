@@ -17,12 +17,15 @@ abstract class ShaderTest<T: Shader>(
     val maxX: Int = 128,
     val maxY: Int = 128
 ) {
+    private var initialized = false
+
     protected abstract fun doDraw(stack: MatrixStack, matrix: Matrix4d)
 
     private var _shader: Shader? = null
     @Suppress("UNCHECKED_CAST")
-    protected val shader: T
+    protected var shader: T
         get() = _shader!! as T
+        set(value) { _shader = value }
 
     protected fun drawUnitQuad(
         matrix: Matrix4d,
@@ -37,25 +40,37 @@ abstract class ShaderTest<T: Shader>(
         vb.vertex2d(matrix, maxX, minY).color(1f, 1f, 1f, 1f).texture(maxU, minV).next()
         vb.vertex2d(matrix, minX, minY).color(1f, 1f, 1f, 1f).texture(minU, minV).next()
 
-        shader.bind()
+        shader.use()
         BufferRenderer.draw(vb)
-        shader.unbind()
+//        shader.unbind()
     }
 
-    private val shaderConstructor: ConstructorMirror = Mirror.reflectClass(this.javaClass)
-        .findSuperclass(ShaderTest::class.java)!!
-        .typeParameters[0].asClassMirror()
-        .getDeclaredConstructor()
+    private val shaderConstructor: ConstructorMirror by lazy {
+        Mirror.reflectClass(this.javaClass)
+            .findSuperclass(ShaderTest::class.java)!!
+            .typeParameters[0].asClassMirror()
+            .getDeclaredConstructor()
+    }
 
     fun draw(matrixStack: MatrixStack) {
-        if(_shader == null) {
-            _shader = shaderConstructor()
+        if(!initialized) {
+            initialize()
+            initialized = true
         }
         doDraw(matrixStack, Matrix4d(matrixStack))
     }
 
-    fun delete() {
+    protected open fun initialize() {
+        _shader = shaderConstructor()
+    }
+
+    protected open fun delete() {
         _shader?.delete()
         _shader = null
+    }
+
+    fun destroy() {
+        delete()
+        initialized = false
     }
 }

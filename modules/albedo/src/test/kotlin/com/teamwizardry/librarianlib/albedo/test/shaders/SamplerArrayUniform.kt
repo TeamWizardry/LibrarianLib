@@ -32,11 +32,11 @@ internal object SamplerArrayUniform: ShaderTest<SamplerArrayUniform.Test>() {
         drawUnitQuad(matrix, maxV = 2f)
     }
 
-    class Test: Shader("sampler_array_tests", null, Identifier("liblib-albedo-test:shaders/sampler_array_tests.frag")) {
-        val index = Uniform.int.create()
+    class Test: Shader("sampler_array_tests", Identifier("liblib-albedo-test:shaders/uniform_base.vert"), Identifier("liblib-albedo-test:shaders/sampler_array_tests.frag")) {
+        val index = Uniform.int.create("index")
         // we only test sampler2D because all the sampler implementations are identical, and the others will be complex
         // to set up
-        val sampler1 = Uniform.sampler2D.createArray(2)
-        val sampler2 = Uniform.sampler2D.createArray(2)
+        val sampler1 = Uniform.sampler2D.createArray("sampler1", 2)
+        val sampler2 = Uniform.sampler2D.createArray("sampler2", 2)
     }
 }

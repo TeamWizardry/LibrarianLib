@@ -18,10 +18,10 @@ internal object BoolUniform: ShaderTest<BoolUniform.Test>() {
         drawUnitQuad(matrix)
     }
 
-    class Test: Shader("bool_tests", null, Identifier("liblib-albedo-test:shaders/bool_tests.frag")) {
-        val primitive = Uniform.bool.create()
-        val vector2 = Uniform.bvec2.create()
-        val vector3 = Uniform.bvec3.create()
-        val vector4 = Uniform.bvec4.create()
+    class Test: Shader("bool_tests", Identifier("liblib-albedo-test:shaders/uniform_base.vert"), Identifier("liblib-albedo-test:shaders/bool_tests.frag")) {
+        val primitive = Uniform.bool.create("primitive")
+        val vector2 = Uniform.bvec2.create("vector2")
+        val vector3 = Uniform.bvec3.create("vector3")
+        val vector4 = Uniform.bvec4.create("vector4")
     }
 }

@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.albedo.uniform
 
-import com.teamwizardry.librarianlib.albedo.GLSLStruct
-import com.teamwizardry.librarianlib.albedo.GLSLStructArray
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.ConstructorMirror
 
@@ -11,25 +9,26 @@ public class SimpleUniformType<T : Uniform, A : ArrayUniform>(
     private val type: Class<T>,
     private val arrayType: Class<A>
 ) : UniformType() {
-    private val constructor: ConstructorMirror = Mirror.reflectClass(type).getDeclaredConstructor()
+    private val constructor: ConstructorMirror =
+        Mirror.reflectClass(type).getDeclaredConstructor(Mirror.reflect<String>())
     private val arrayConstructor: ConstructorMirror =
-        Mirror.reflectClass(arrayType).getDeclaredConstructor(Mirror.types.int)
+        Mirror.reflectClass(arrayType).getDeclaredConstructor(Mirror.reflect<String>(), Mirror.types.int)
 
-    public fun create(): T {
-        return constructor()
+    public fun create(name: String): T {
+        return constructor(name)
     }
 
     /**
      * @param length The length of the array
      */
-    public fun createArray(length: Int): A {
-        return arrayConstructor(length)
+    public fun createArray(name: String, length: Int): A {
+        return arrayConstructor(name, length)
     }
 }
 
 public class SamplerUniformType(private val glConstant: Int, private val textureTarget: Int) : UniformType() {
-    public fun create(): SamplerUniform {
-        return SamplerUniform(glConstant, textureTarget)
+    public fun create(name: String): SamplerUniform {
+        return SamplerUniform(name, glConstant, textureTarget)
     }
 
     /**
@@ -37,27 +36,27 @@ public class SamplerUniformType(private val glConstant: Int, private val texture
      *
      * @param length The length of the array
      */
-    public fun createArray(length: Int): SamplerArrayUniform {
-        return SamplerArrayUniform(glConstant, textureTarget, length)
+    public fun createArray(name: String, length: Int): SamplerArrayUniform {
+        return SamplerArrayUniform(name, glConstant, textureTarget, length)
     }
 }
 
-public class TransposableMatrixUniformType<T : Uniform, A : ArrayUniform>(
+public class MatrixUniformType<T : Uniform, A : ArrayUniform>(
     private val type: Class<T>,
     private val arrayType: Class<A>
 ) : UniformType() {
     private val constructor: ConstructorMirror =
-        Mirror.reflectClass(type).getDeclaredConstructor(Mirror.types.boolean)
-    private val arrayConstructor: ConstructorMirror =
-        Mirror.reflectClass(arrayType).getDeclaredConstructor(Mirror.types.boolean, Mirror.types.int)
+        Mirror.reflectClass(type).getDeclaredConstructor(Mirror.reflect<String>(), Mirror.types.boolean)
+    private val arrayConstructor: ConstructorMirror = Mirror.reflectClass(arrayType)
+        .getDeclaredConstructor(Mirror.reflect<String>(), Mirror.types.boolean, Mirror.types.int)
 
     /**
      * @param transpose Whether to transpose this matrix when sending it to the shader. This is generally used when
      * sending transform matrices to the shader, since OpenGL's transform matrices are column-based as opposed to
      * row-based.
      */
-    public fun create(transpose: Boolean): T {
-        return constructor(transpose)
+    public fun create(name: String, transpose: Boolean): T {
+        return constructor(name, transpose)
     }
 
     /**
@@ -66,38 +65,31 @@ public class TransposableMatrixUniformType<T : Uniform, A : ArrayUniform>(
      * row-based.
      * @param length The length of the array
      */
-    public fun createArray(transpose: Boolean, length: Int): A {
-        return arrayConstructor(transpose, length)
+    public fun createArray(name: String, transpose: Boolean, length: Int): A {
+        return arrayConstructor(name, transpose, length)
     }
 }
 
 public object StructUniformType : UniformType() {
-    public fun <T: GLSLStruct> create(type: Class<T>): T {
-        return Mirror.reflectClass(type).getDeclaredConstructor().invoke()
+    public fun <T : GLSLStruct> create(type: Class<T>, name: String): T {
+        return Mirror.reflectClass(type).getDeclaredConstructor(Mirror.reflect<String>()).invoke(name)
     }
 
-    /**
-     * @param length The length of the array
-     */
-    public fun <T: GLSLStruct> createArray(type: Class<T>, length: Int): GLSLStructArray<T> {
-        val constructor = Mirror.reflectClass(type).getDeclaredConstructor()
-        return GLSLStructArray(length) { constructor() }
+    public fun <T : GLSLStruct> createArray(type: Class<T>, name: String, length: Int): GLSLStructArray<T> {
+        val constructor = Mirror.reflectClass(type).getDeclaredConstructor(Mirror.reflect<String>())
+        return GLSLStructArray(name, length) { constructor("$it") }
     }
 
     @JvmSynthetic
-    public inline fun <reified T: GLSLStruct> create(): T {
-        return Mirror.reflectClass<T>().getDeclaredConstructor().invoke()
+    public inline fun <reified T : GLSLStruct> create(name: String): T {
+        return Mirror.reflectClass<T>().getDeclaredConstructor(Mirror.reflect<String>()).invoke(name)
     }
 
-    /**
-     * @param length The length of the array
-     */
     @JvmSynthetic
-    public inline fun <reified T: GLSLStruct> createArray(length: Int): GLSLStructArray<T> {
+    public inline fun <reified T : GLSLStruct> createArray(name: String, length: Int): GLSLStructArray<T> {
         val constructor = Mirror.reflectClass<T>().getDeclaredConstructor()
-        return GLSLStructArray(length) { constructor() }
+        return GLSLStructArray(name, length) { constructor("$it") }
     }
 }
-
 
 public object UnsupportedUniformType : UniformType()

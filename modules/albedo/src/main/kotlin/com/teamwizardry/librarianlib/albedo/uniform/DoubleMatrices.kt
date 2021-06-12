@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.albedo.uniform
 
-import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
+import com.teamwizardry.librarianlib.core.mixin.IMatrix3f
+import com.teamwizardry.librarianlib.core.mixin.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
@@ -11,8 +11,8 @@ import net.minecraft.util.math.Matrix4f
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL40
 
-public sealed class DoubleMatrixUniform(glConstant: Int, public val columns: Int, public val rows: Int) :
-    Uniform(glConstant) {
+public sealed class DoubleMatrixUniform(name: String, glConstant: Int, public val columns: Int, public val rows: Int) :
+    Uniform(name, glConstant) {
     protected var values: DoubleArray = DoubleArray(columns * rows)
 
     public operator fun get(column: Int, row: Int): Double {
@@ -41,11 +41,12 @@ public sealed class DoubleMatrixUniform(glConstant: Int, public val columns: Int
 }
 
 public sealed class DoubleMatrixArrayUniform(
+    name: String,
     glConstant: Int,
     length: Int,
     public val columns: Int,
     public val rows: Int
-) : ArrayUniform(glConstant, length) {
+) : ArrayUniform(name, glConstant, length) {
     private val stride = columns * rows
     protected val values: DoubleArray = DoubleArray(length * stride)
 
@@ -74,7 +75,8 @@ public sealed class DoubleMatrixArrayUniform(
     }
 }
 
-public class DoubleMat2x2Uniform : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT2, 2, 2) {
+public class DoubleMat2x2Uniform(name: String, public val transpose: Boolean) :
+    DoubleMatrixUniform(name, GL40.GL_DOUBLE_MAT2, 2, 2) {
     /** Column 0, Row 0 */
     public var m00: Double
         get() = this[0, 0]
@@ -129,11 +131,12 @@ public class DoubleMat2x2Uniform : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT2, 2, 2
     }
 
     override fun push() {
-        GL40.glUniformMatrix2dv(location, false, values)
+        GL40.glUniformMatrix2dv(location, transpose, values)
     }
 }
 
-public class DoubleMat2x2ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL40.GL_DOUBLE_MAT2, length, 2, 2) {
+public class DoubleMat2x2ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    DoubleMatrixArrayUniform(name, GL40.GL_DOUBLE_MAT2, length, 2, 2) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Double = this[index, 0, 0]
     public fun setM00(index: Int, value: Double) {
@@ -184,11 +187,12 @@ public class DoubleMat2x2ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL
     }
 
     override fun push() {
-        GL40.glUniformMatrix2dv(location, false, values)
+        GL40.glUniformMatrix2dv(location, transpose, values)
     }
 }
 
-public class DoubleMat3x3Uniform(public val transpose: Boolean) : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT3, 3, 3) {
+public class DoubleMat3x3Uniform(name: String, public val transpose: Boolean) :
+    DoubleMatrixUniform(name, GL40.GL_DOUBLE_MAT3, 3, 3) {
     /** Column 0, Row 0 */
     public var m00: Double
         get() = this[0, 0]
@@ -318,8 +322,8 @@ public class DoubleMat3x3Uniform(public val transpose: Boolean) : DoubleMatrixUn
     }
 }
 
-public class DoubleMat3x3ArrayUniform(public val transpose: Boolean, length: Int) :
-    DoubleMatrixArrayUniform(GL40.GL_DOUBLE_MAT3, length, 3, 3) {
+public class DoubleMat3x3ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    DoubleMatrixArrayUniform(name, GL40.GL_DOUBLE_MAT3, length, 3, 3) {
 
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Double = this[index, 0, 0]
@@ -444,8 +448,8 @@ public class DoubleMat3x3ArrayUniform(public val transpose: Boolean, length: Int
     }
 }
 
-public class DoubleMat4x4Uniform(public val transpose: Boolean = false) :
-    DoubleMatrixUniform(GL40.GL_DOUBLE_MAT4, 4, 4) {
+public class DoubleMat4x4Uniform(name: String, public val transpose: Boolean) :
+    DoubleMatrixUniform(name, GL40.GL_DOUBLE_MAT4, 4, 4) {
     /** Column 0, Row 0 */
     public var m00: Double
         get() = this[0, 0]
@@ -625,8 +629,8 @@ public class DoubleMat4x4Uniform(public val transpose: Boolean = false) :
     }
 }
 
-public class DoubleMat4x4ArrayUniform(public val transpose: Boolean, length: Int) :
-    DoubleMatrixArrayUniform(GL40.GL_DOUBLE_MAT4, length, 4, 4) {
+public class DoubleMat4x4ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    DoubleMatrixArrayUniform(name, GL40.GL_DOUBLE_MAT4, length, 4, 4) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Double = this[index, 0, 0]
     public fun setM00(index: Int, value: Double) {
@@ -809,7 +813,8 @@ public class DoubleMat4x4ArrayUniform(public val transpose: Boolean, length: Int
     }
 }
 
-public class DoubleMat2x3Uniform(private val transpose: Boolean) : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT2x3, 2, 3) {
+public class DoubleMat2x3Uniform(name: String, public val transpose: Boolean) :
+    DoubleMatrixUniform(name, GL40.GL_DOUBLE_MAT2x3, 2, 3) {
     /** Column 0, Row 0 */
     public var m00: Double
         get() = this[0, 0]
@@ -886,7 +891,8 @@ public class DoubleMat2x3Uniform(private val transpose: Boolean) : DoubleMatrixU
     }
 }
 
-public class DoubleMat2x3ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL40.GL_DOUBLE_MAT2x3, length, 2, 3) {
+public class DoubleMat2x3ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    DoubleMatrixArrayUniform(name, GL40.GL_DOUBLE_MAT2x3, length, 2, 3) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Double = this[index, 0, 0]
     public fun setM00(index: Int, value: Double) {
@@ -953,11 +959,12 @@ public class DoubleMat2x3ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL
     }
 
     override fun push() {
-        GL40.glUniformMatrix2x3dv(location, false, values)
+        GL40.glUniformMatrix2x3dv(location, transpose, values)
     }
 }
 
-public class DoubleMat2x4Uniform : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT2x4, 2, 4) {
+public class DoubleMat2x4Uniform(name: String, public val transpose: Boolean) :
+    DoubleMatrixUniform(name, GL40.GL_DOUBLE_MAT2x4, 2, 4) {
     /** Column 0, Row 0 */
     public var m00: Double
         get() = this[0, 0]
@@ -1039,11 +1046,12 @@ public class DoubleMat2x4Uniform : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT2x4, 2,
     }
 
     override fun push() {
-        GL40.glUniformMatrix2x4dv(location, false, values)
+        GL40.glUniformMatrix2x4dv(location, transpose, values)
     }
 }
 
-public class DoubleMat2x4ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL40.GL_DOUBLE_MAT2x4, length, 2, 4) {
+public class DoubleMat2x4ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    DoubleMatrixArrayUniform(name, GL40.GL_DOUBLE_MAT2x4, length, 2, 4) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Double = this[index, 0, 0]
     public fun setM00(index: Int, value: Double) {
@@ -1118,11 +1126,12 @@ public class DoubleMat2x4ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL
     }
 
     override fun push() {
-        GL40.glUniformMatrix2x4dv(location, false, values)
+        GL40.glUniformMatrix2x4dv(location, transpose, values)
     }
 }
 
-public class DoubleMat3x2Uniform : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT3x2, 3, 2) {
+public class DoubleMat3x2Uniform(name: String, public val transpose: Boolean) :
+    DoubleMatrixUniform(name, GL40.GL_DOUBLE_MAT3x2, 3, 2) {
     /** Column 0, Row 0 */
     public var m00: Double
         get() = this[0, 0]
@@ -1195,11 +1204,12 @@ public class DoubleMat3x2Uniform : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT3x2, 3,
     }
 
     override fun push() {
-        GL40.glUniformMatrix3x2dv(location, false, values)
+        GL40.glUniformMatrix3x2dv(location, transpose, values)
     }
 }
 
-public class DoubleMat3x2ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL40.GL_DOUBLE_MAT3x2, length, 3, 2) {
+public class DoubleMat3x2ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    DoubleMatrixArrayUniform(name, GL40.GL_DOUBLE_MAT3x2, length, 3, 2) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Double = this[index, 0, 0]
     public fun setM00(index: Int, value: Double) {
@@ -1266,11 +1276,12 @@ public class DoubleMat3x2ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL
     }
 
     override fun push() {
-        GL40.glUniformMatrix3x2dv(location, false, values)
+        GL40.glUniformMatrix3x2dv(location, transpose, values)
     }
 }
 
-public class DoubleMat3x4Uniform : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT3x4, 3, 4) {
+public class DoubleMat3x4Uniform(name: String, public val transpose: Boolean) :
+    DoubleMatrixUniform(name, GL40.GL_DOUBLE_MAT3x4, 3, 4) {
     /** Column 0, Row 0 */
     public var m00: Double
         get() = this[0, 0]
@@ -1389,11 +1400,12 @@ public class DoubleMat3x4Uniform : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT3x4, 3,
     }
 
     override fun push() {
-        GL40.glUniformMatrix3x4dv(location, false, values)
+        GL40.glUniformMatrix3x4dv(location, transpose, values)
     }
 }
 
-public class DoubleMat3x4ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL40.GL_DOUBLE_MAT3x4, length, 3, 4) {
+public class DoubleMat3x4ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    DoubleMatrixArrayUniform(name, GL40.GL_DOUBLE_MAT3x4, length, 3, 4) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Double = this[index, 0, 0]
     public fun setM00(index: Int, value: Double) {
@@ -1501,11 +1513,12 @@ public class DoubleMat3x4ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL
     }
 
     override fun push() {
-        GL40.glUniformMatrix3x4dv(location, false, values)
+        GL40.glUniformMatrix3x4dv(location, transpose, values)
     }
 }
 
-public class DoubleMat4x2Uniform : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT4x2, 4, 2) {
+public class DoubleMat4x2Uniform(name: String, public val transpose: Boolean) :
+    DoubleMatrixUniform(name, GL40.GL_DOUBLE_MAT4x2, 4, 2) {
     /** Column 0, Row 0 */
     public var m00: Double
         get() = this[0, 0]
@@ -1604,11 +1617,12 @@ public class DoubleMat4x2Uniform : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT4x2, 4,
     }
 
     override fun push() {
-        GL40.glUniformMatrix4x2dv(location, false, values)
+        GL40.glUniformMatrix4x2dv(location, transpose, values)
     }
 }
 
-public class DoubleMat4x2ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL40.GL_DOUBLE_MAT4x2, length, 4, 2) {
+public class DoubleMat4x2ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    DoubleMatrixArrayUniform(name, GL40.GL_DOUBLE_MAT4x2, length, 4, 2) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Double = this[index, 0, 0]
     public fun setM00(index: Int, value: Double) {
@@ -1700,11 +1714,12 @@ public class DoubleMat4x2ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL
     }
 
     override fun push() {
-        GL40.glUniformMatrix4x2dv(location, false, values)
+        GL40.glUniformMatrix4x2dv(location, transpose, values)
     }
 }
 
-public class DoubleMat4x3Uniform : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT4x3, 4, 3) {
+public class DoubleMat4x3Uniform(name: String, public val transpose: Boolean) :
+    DoubleMatrixUniform(name, GL40.GL_DOUBLE_MAT4x3, 4, 3) {
     /** Column 0, Row 0 */
     public var m00: Double
         get() = this[0, 0]
@@ -1840,11 +1855,12 @@ public class DoubleMat4x3Uniform : DoubleMatrixUniform(GL40.GL_DOUBLE_MAT4x3, 4,
     }
 
     override fun push() {
-        GL40.glUniformMatrix4x3dv(location, false, values)
+        GL40.glUniformMatrix4x3dv(location, transpose, values)
     }
 }
 
-public class DoubleMat4x3ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL40.GL_DOUBLE_MAT4x3, length, 4, 3) {
+public class DoubleMat4x3ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    DoubleMatrixArrayUniform(name, GL40.GL_DOUBLE_MAT4x3, length, 4, 3) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Double = this[index, 0, 0]
     public fun setM00(index: Int, value: Double) {
@@ -1969,6 +1985,6 @@ public class DoubleMat4x3ArrayUniform(length: Int) : DoubleMatrixArrayUniform(GL
     }
 
     override fun push() {
-        GL40.glUniformMatrix4x3dv(location, false, values)
+        GL40.glUniformMatrix4x3dv(location, transpose, values)
     }
 }

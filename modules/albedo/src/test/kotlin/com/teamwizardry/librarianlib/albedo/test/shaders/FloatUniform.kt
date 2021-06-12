@@ -18,10 +18,10 @@ internal object FloatUniform: ShaderTest<FloatUniform.Test>() {
         drawUnitQuad(matrix)
     }
 
-    class Test: Shader("float_tests", null, Identifier("liblib-albedo-test:shaders/float_tests.frag")) {
-        val primitive = Uniform.float.create()
-        val vector2 = Uniform.vec2.create()
-        val vector3 = Uniform.vec3.create()
-        val vector4 = Uniform.vec4.create()
+    class Test: Shader("float_tests", Identifier("liblib-albedo-test:shaders/uniform_base.vert"), Identifier("liblib-albedo-test:shaders/float_tests.frag")) {
+        val primitive = Uniform.float.create("primitive")
+        val vector2 = Uniform.vec2.create("vector2")
+        val vector3 = Uniform.vec3.create("vector3")
+        val vector4 = Uniform.vec4.create("vector4")
     }
 }

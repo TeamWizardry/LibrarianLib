@@ -10,7 +10,7 @@ vec3[2] vector3_expected = vec3[2](vec3(10, 20, 30), vec3(40, 50, 60));
 uniform vec4[2] vector4;
 vec4[2] vector4_expected = vec4[2](vec4(10, 20, 30, 40), vec4(50, 60, 70, 80));
 
-#pragma include <gridutil.glsl>
+#include "gridutil.glsl"
 
 ivec2 dimensions = ivec2(4, 4);
 void main() {

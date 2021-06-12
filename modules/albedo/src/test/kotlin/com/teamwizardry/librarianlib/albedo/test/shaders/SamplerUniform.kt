@@ -28,10 +28,10 @@ internal object SamplerUniform: ShaderTest<SamplerUniform.Test>() {
         drawUnitQuad(matrix, maxV = 2f)
     }
 
-    class Test: Shader("sampler_tests", null, Identifier("liblib-albedo-test:shaders/sampler_tests.frag")) {
+    class Test: Shader("sampler_tests", Identifier("liblib-albedo-test:shaders/uniform_base.vert"), Identifier("liblib-albedo-test:shaders/sampler_tests.frag")) {
         // we only test sampler2D because all the sampler implementations are identical, and the others will be complex
         // to set up
-        val sampler1 = Uniform.sampler2D.create()
-        val sampler2 = Uniform.sampler2D.create()
+        val sampler1 = Uniform.sampler2D.create("sampler1")
+        val sampler2 = Uniform.sampler2D.create("sampler2")
     }
 }

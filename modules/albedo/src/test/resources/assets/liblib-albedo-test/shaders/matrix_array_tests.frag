@@ -130,7 +130,7 @@ mat2x2(
 )
 );
 
-#pragma include <gridutil.glsl>
+#include "gridutil.glsl"
 
 
 ivec2 dimensions = ivec2(9, 9);

@@ -19,6 +19,8 @@ internal object LibLibAlbedoTest {
         private val logger = logManager.makeLogger<CommonInitializer>()
 
         override fun onInitialize() {
+            test("simple_renderbuffer", "Simple RenderBuffer", "A simple flat color RenderBuffer")
+
             test("simple_frag", "Simple Fragment Shader", "A simple fragment shader with no uniforms")
             test("primitive_uniform", "Simple Primitive Uniform", "A simple time-based color fragment")
             test("float_uniform", "Float Uniform", "float uniform tests")
@@ -47,6 +49,8 @@ internal object LibLibAlbedoTest {
         private val logger = logManager.makeLogger<ClientInitializer>()
 
         override fun onInitializeClient() {
+            test("simple_renderbuffer", SimpleRenderBuffer)
+
             test("simple_frag", SimpleFrag)
             test("primitive_uniform", PrimitiveUniform)
             test("float_uniform", FloatUniform)
@@ -85,7 +89,7 @@ internal object LibLibAlbedoTest {
 
                         onClose {
                             crashed = false
-                            shader.delete()
+                            shader.destroy()
                         }
                     })
                 }

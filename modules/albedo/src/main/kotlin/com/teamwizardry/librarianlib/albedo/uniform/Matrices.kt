@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.albedo.uniform
 
-import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
+import com.teamwizardry.librarianlib.core.mixin.IMatrix3f
+import com.teamwizardry.librarianlib.core.mixin.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
@@ -12,8 +12,8 @@ import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL21
 
-public sealed class MatrixUniform(glConstant: Int, public val columns: Int, public val rows: Int) :
-    Uniform(glConstant) {
+public sealed class MatrixUniform(name: String, glConstant: Int, public val columns: Int, public val rows: Int) :
+    Uniform(name, glConstant) {
     protected var values: FloatArray = FloatArray(columns * rows)
 
     public operator fun get(column: Int, row: Int): Float {
@@ -41,8 +41,14 @@ public sealed class MatrixUniform(glConstant: Int, public val columns: Int, publ
 
 }
 
-public sealed class MatrixArrayUniform(glConstant: Int, length: Int, public val columns: Int, public val rows: Int) :
-    ArrayUniform(glConstant, length) {
+public sealed class MatrixArrayUniform(
+    name: String,
+    glConstant: Int,
+    length: Int,
+    public val columns: Int,
+    public val rows: Int
+) : ArrayUniform(name, glConstant, length) {
+
     private val stride = columns * rows
     protected val values: FloatArray = FloatArray(length * stride)
 
@@ -71,7 +77,8 @@ public sealed class MatrixArrayUniform(glConstant: Int, length: Int, public val 
     }
 }
 
-public class Mat2x2Uniform(private val transpose: Boolean) : MatrixUniform(GL20.GL_FLOAT_MAT2, 2, 2) {
+public class Mat2x2Uniform(name: String, private val transpose: Boolean) :
+    MatrixUniform(name, GL20.GL_FLOAT_MAT2, 2, 2) {
     /** Column 0, Row 0 */
     public var m00: Float
         get() = this[0, 0]
@@ -130,7 +137,8 @@ public class Mat2x2Uniform(private val transpose: Boolean) : MatrixUniform(GL20.
     }
 }
 
-public class Mat2x2ArrayUniform(length: Int) : MatrixArrayUniform(GL20.GL_FLOAT_MAT2, length, 2, 2) {
+public class Mat2x2ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    MatrixArrayUniform(name, GL20.GL_FLOAT_MAT2, length, 2, 2) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Float = this[index, 0, 0]
     public fun setM00(index: Int, value: Float) {
@@ -181,11 +189,12 @@ public class Mat2x2ArrayUniform(length: Int) : MatrixArrayUniform(GL20.GL_FLOAT_
     }
 
     override fun push() {
-        GL20.glUniformMatrix2fv(location, false, values)
+        GL20.glUniformMatrix2fv(location, transpose, values)
     }
 }
 
-public class Mat3x3Uniform(public val transpose: Boolean) : MatrixUniform(GL20.GL_FLOAT_MAT3, 3, 3) {
+public class Mat3x3Uniform(name: String, public val transpose: Boolean) :
+    MatrixUniform(name, GL20.GL_FLOAT_MAT3, 3, 3) {
     /** Column 0, Row 0 */
     public var m00: Float
         get() = this[0, 0]
@@ -315,8 +324,8 @@ public class Mat3x3Uniform(public val transpose: Boolean) : MatrixUniform(GL20.G
     }
 }
 
-public class Mat3x3ArrayUniform(public val transpose: Boolean, length: Int) :
-    MatrixArrayUniform(GL20.GL_FLOAT_MAT3, length, 3, 3) {
+public class Mat3x3ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    MatrixArrayUniform(name, GL20.GL_FLOAT_MAT3, length, 3, 3) {
 
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Float = this[index, 0, 0]
@@ -441,7 +450,8 @@ public class Mat3x3ArrayUniform(public val transpose: Boolean, length: Int) :
     }
 }
 
-public class Mat4x4Uniform(public val transpose: Boolean = false) : MatrixUniform(GL20.GL_FLOAT_MAT4, 4, 4) {
+public class Mat4x4Uniform(name: String, public val transpose: Boolean) :
+    MatrixUniform(name, GL20.GL_FLOAT_MAT4, 4, 4) {
     /** Column 0, Row 0 */
     public var m00: Float
         get() = this[0, 0]
@@ -621,8 +631,8 @@ public class Mat4x4Uniform(public val transpose: Boolean = false) : MatrixUnifor
     }
 }
 
-public class Mat4x4ArrayUniform(public val transpose: Boolean, length: Int) :
-    MatrixArrayUniform(GL20.GL_FLOAT_MAT4, length, 4, 4) {
+public class Mat4x4ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    MatrixArrayUniform(name, GL20.GL_FLOAT_MAT4, length, 4, 4) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Float = this[index, 0, 0]
     public fun setM00(index: Int, value: Float) {
@@ -805,7 +815,8 @@ public class Mat4x4ArrayUniform(public val transpose: Boolean, length: Int) :
     }
 }
 
-public class Mat2x3Uniform : MatrixUniform(GL21.GL_FLOAT_MAT2x3, 2, 3) {
+public class Mat2x3Uniform(name: String, public val transpose: Boolean) :
+    MatrixUniform(name, GL21.GL_FLOAT_MAT2x3, 2, 3) {
     /** Column 0, Row 0 */
     public var m00: Float
         get() = this[0, 0]
@@ -882,7 +893,8 @@ public class Mat2x3Uniform : MatrixUniform(GL21.GL_FLOAT_MAT2x3, 2, 3) {
     }
 }
 
-public class Mat2x3ArrayUniform(length: Int) : MatrixArrayUniform(GL21.GL_FLOAT_MAT2x3, length, 2, 3) {
+public class Mat2x3ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    MatrixArrayUniform(name, GL21.GL_FLOAT_MAT2x3, length, 2, 3) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Float = this[index, 0, 0]
     public fun setM00(index: Int, value: Float) {
@@ -953,7 +965,8 @@ public class Mat2x3ArrayUniform(length: Int) : MatrixArrayUniform(GL21.GL_FLOAT_
     }
 }
 
-public class Mat2x4Uniform : MatrixUniform(GL21.GL_FLOAT_MAT2x4, 2, 4) {
+public class Mat2x4Uniform(name: String, public val transpose: Boolean) :
+    MatrixUniform(name, GL21.GL_FLOAT_MAT2x4, 2, 4) {
     /** Column 0, Row 0 */
     public var m00: Float
         get() = this[0, 0]
@@ -1030,7 +1043,8 @@ public class Mat2x4Uniform : MatrixUniform(GL21.GL_FLOAT_MAT2x4, 2, 4) {
     }
 }
 
-public class Mat2x4ArrayUniform(length: Int) : MatrixArrayUniform(GL21.GL_FLOAT_MAT2x4, length, 2, 4) {
+public class Mat2x4ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    MatrixArrayUniform(name, GL21.GL_FLOAT_MAT2x4, length, 2, 4) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Float = this[index, 0, 0]
     public fun setM00(index: Int, value: Float) {
@@ -1109,7 +1123,8 @@ public class Mat2x4ArrayUniform(length: Int) : MatrixArrayUniform(GL21.GL_FLOAT_
     }
 }
 
-public class Mat3x2Uniform : MatrixUniform(GL21.GL_FLOAT_MAT3x2, 3, 2) {
+public class Mat3x2Uniform(name: String, public val transpose: Boolean) :
+    MatrixUniform(name, GL21.GL_FLOAT_MAT3x2, 3, 2) {
     /** Column 0, Row 0 */
     public var m00: Float
         get() = this[0, 0]
@@ -1186,7 +1201,8 @@ public class Mat3x2Uniform : MatrixUniform(GL21.GL_FLOAT_MAT3x2, 3, 2) {
     }
 }
 
-public class Mat3x2ArrayUniform(length: Int) : MatrixArrayUniform(GL21.GL_FLOAT_MAT3x2, length, 3, 2) {
+public class Mat3x2ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    MatrixArrayUniform(name, GL21.GL_FLOAT_MAT3x2, length, 3, 2) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Float = this[index, 0, 0]
     public fun setM00(index: Int, value: Float) {
@@ -1257,7 +1273,8 @@ public class Mat3x2ArrayUniform(length: Int) : MatrixArrayUniform(GL21.GL_FLOAT_
     }
 }
 
-public class Mat3x4Uniform : MatrixUniform(GL21.GL_FLOAT_MAT3x4, 3, 4) {
+public class Mat3x4Uniform(name: String, public val transpose: Boolean) :
+    MatrixUniform(name, GL21.GL_FLOAT_MAT3x4, 3, 4) {
     /** Column 0, Row 0 */
     public var m00: Float
         get() = this[0, 0]
@@ -1380,7 +1397,8 @@ public class Mat3x4Uniform : MatrixUniform(GL21.GL_FLOAT_MAT3x4, 3, 4) {
     }
 }
 
-public class Mat3x4ArrayUniform(length: Int) : MatrixArrayUniform(GL21.GL_FLOAT_MAT3x4, length, 3, 4) {
+public class Mat3x4ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    MatrixArrayUniform(name, GL21.GL_FLOAT_MAT3x4, length, 3, 4) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Float = this[index, 0, 0]
     public fun setM00(index: Int, value: Float) {
@@ -1492,7 +1510,8 @@ public class Mat3x4ArrayUniform(length: Int) : MatrixArrayUniform(GL21.GL_FLOAT_
     }
 }
 
-public class Mat4x2Uniform : MatrixUniform(GL21.GL_FLOAT_MAT4x2, 4, 2) {
+public class Mat4x2Uniform(name: String, public val transpose: Boolean) :
+    MatrixUniform(name, GL21.GL_FLOAT_MAT4x2, 4, 2) {
     /** Column 0, Row 0 */
     public var m00: Float
         get() = this[0, 0]
@@ -1586,7 +1605,8 @@ public class Mat4x2Uniform : MatrixUniform(GL21.GL_FLOAT_MAT4x2, 4, 2) {
     }
 }
 
-public class Mat4x2ArrayUniform(length: Int) : MatrixArrayUniform(GL21.GL_FLOAT_MAT4x2, length, 4, 2) {
+public class Mat4x2ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    MatrixArrayUniform(name, GL21.GL_FLOAT_MAT4x2, length, 4, 2) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Float = this[index, 0, 0]
     public fun setM00(index: Int, value: Float) {
@@ -1682,7 +1702,8 @@ public class Mat4x2ArrayUniform(length: Int) : MatrixArrayUniform(GL21.GL_FLOAT_
     }
 }
 
-public class Mat4x3Uniform : MatrixUniform(GL21.GL_FLOAT_MAT4x3, 4, 3) {
+public class Mat4x3Uniform(name: String, public val transpose: Boolean) :
+    MatrixUniform(name, GL21.GL_FLOAT_MAT4x3, 4, 3) {
     /** Column 0, Row 0 */
     public var m00: Float
         get() = this[0, 0]
@@ -1822,7 +1843,8 @@ public class Mat4x3Uniform : MatrixUniform(GL21.GL_FLOAT_MAT4x3, 4, 3) {
     }
 }
 
-public class Mat4x3ArrayUniform(length: Int) : MatrixArrayUniform(GL21.GL_FLOAT_MAT4x3, length, 4, 3) {
+public class Mat4x3ArrayUniform(name: String, public val transpose: Boolean, length: Int) :
+    MatrixArrayUniform(name, GL21.GL_FLOAT_MAT4x3, length, 4, 3) {
     /** Column 0, Row 0 */
     public fun getM00(index: Int): Float = this[index, 0, 0]
     public fun setM00(index: Int, value: Float) {

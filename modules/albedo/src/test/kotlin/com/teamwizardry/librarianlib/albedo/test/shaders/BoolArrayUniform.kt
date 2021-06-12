@@ -39,11 +39,11 @@ internal object BoolArrayUniform: ShaderTest<BoolArrayUniform.Test>() {
         )
     }
 
-    class Test: Shader("bool_array_tests", null, Identifier("liblib-albedo-test:shaders/bool_array_tests.frag")) {
-        val index = Uniform.int.create()
-        val primitive = Uniform.bool.createArray(2)
-        val vector2 = Uniform.bvec2.createArray(2)
-        val vector3 = Uniform.bvec3.createArray(2)
-        val vector4 = Uniform.bvec4.createArray(2)
+    class Test: Shader("bool_array_tests", Identifier("liblib-albedo-test:shaders/uniform_base.vert"), Identifier("liblib-albedo-test:shaders/bool_array_tests.frag")) {
+        val index = Uniform.int.create("index")
+        val primitive = Uniform.bool.createArray("primitive", 2)
+        val vector2 = Uniform.bvec2.createArray("vector2", 2)
+        val vector3 = Uniform.bvec3.createArray("vector3", 2)
+        val vector4 = Uniform.bvec4.createArray("vector4", 2)
     }
 }

@@ -18,7 +18,7 @@ object SimpleFrag: ShaderTest<SimpleFrag.Test>() {
         drawUnitQuad(matrix)
     }
 
-    class Test: Shader("simple_frag", null, Identifier("liblib-albedo-test:shaders/simple_frag.frag")) {
+    class Test: Shader("simple_frag", Identifier("liblib-albedo-test:shaders/uniform_base.vert"), Identifier("liblib-albedo-test:shaders/simple_frag.frag")) {
 
     }
 }

@@ -2,8 +2,16 @@ package com.teamwizardry.librarianlib.albedo.uniform
 
 import org.lwjgl.opengl.GL41.*
 
-public sealed class Uniform(public val glConstant: Int) {
-    internal var location: Int = -1
+public sealed class AbstractUniform(
+    /**
+     * The name of the uniform (or field within a struct)
+     */
+    public val name: String
+)
+
+public sealed class Uniform(name: String, public val glConstant: Int): AbstractUniform(name) {
+    public var location: Int = -1
+        @JvmSynthetic internal set
 
     @JvmSynthetic
     internal abstract fun push()
@@ -90,13 +98,13 @@ public sealed class Uniform(public val glConstant: Int) {
         public val vec4: SimpleUniformType<FloatVec4Uniform, FloatVec4ArrayUniform> = simple()
 
         @JvmField
-        public val mat2: TransposableMatrixUniformType<Mat2x2Uniform, Mat2x2ArrayUniform> = transMatrix()
+        public val mat2: MatrixUniformType<Mat2x2Uniform, Mat2x2ArrayUniform> = matrix()
 
         @JvmField
-        public val mat3: TransposableMatrixUniformType<Mat3x3Uniform, Mat3x3ArrayUniform> = transMatrix()
+        public val mat3: MatrixUniformType<Mat3x3Uniform, Mat3x3ArrayUniform> = matrix()
 
         @JvmField
-        public val mat4: TransposableMatrixUniformType<Mat4x4Uniform, Mat4x4ArrayUniform> = transMatrix()
+        public val mat4: MatrixUniformType<Mat4x4Uniform, Mat4x4ArrayUniform> = matrix()
 
         @JvmField
         public val sampler1D: SamplerUniformType = sampler(GL_SAMPLER_1D, GL_TEXTURE_1D)
@@ -119,22 +127,22 @@ public sealed class Uniform(public val glConstant: Int) {
 
         //region GLSL 1.20 - OpenGL 2.1
         @JvmField
-        public val mat2x3: SimpleUniformType<Mat2x3Uniform, Mat2x3ArrayUniform> = simple()
+        public val mat2x3: MatrixUniformType<Mat2x3Uniform, Mat2x3ArrayUniform> = matrix()
 
         @JvmField
-        public val mat2x4: SimpleUniformType<Mat2x4Uniform, Mat2x4ArrayUniform> = simple()
+        public val mat2x4: MatrixUniformType<Mat2x4Uniform, Mat2x4ArrayUniform> = matrix()
 
         @JvmField
-        public val mat3x2: SimpleUniformType<Mat3x2Uniform, Mat3x2ArrayUniform> = simple()
+        public val mat3x2: MatrixUniformType<Mat3x2Uniform, Mat3x2ArrayUniform> = matrix()
 
         @JvmField
-        public val mat3x4: SimpleUniformType<Mat3x4Uniform, Mat3x4ArrayUniform> = simple()
+        public val mat3x4: MatrixUniformType<Mat3x4Uniform, Mat3x4ArrayUniform> = matrix()
 
         @JvmField
-        public val mat4x2: SimpleUniformType<Mat4x2Uniform, Mat4x2ArrayUniform> = simple()
+        public val mat4x2: MatrixUniformType<Mat4x2Uniform, Mat4x2ArrayUniform> = matrix()
 
         @JvmField
-        public val mat4x3: SimpleUniformType<Mat4x3Uniform, Mat4x3ArrayUniform> = simple()
+        public val mat4x3: MatrixUniformType<Mat4x3Uniform, Mat4x3ArrayUniform> = matrix()
         //endregion
 
         //region GLSL 1.30 - OpenGL 3.0
@@ -263,31 +271,31 @@ public sealed class Uniform(public val glConstant: Int) {
         public val devec4: SimpleUniformType<DoubleVec4Uniform, DoubleVec4ArrayUniform> = simple()
 
         @JvmField
-        public val dmat2: TransposableMatrixUniformType<DoubleMat2x2Uniform, DoubleMat2x2ArrayUniform> = transMatrix()
+        public val dmat2: MatrixUniformType<DoubleMat2x2Uniform, DoubleMat2x2ArrayUniform> = matrix()
 
         @JvmField
-        public val dmat3: TransposableMatrixUniformType<DoubleMat3x3Uniform, DoubleMat3x3ArrayUniform> = transMatrix()
+        public val dmat3: MatrixUniformType<DoubleMat3x3Uniform, DoubleMat3x3ArrayUniform> = matrix()
 
         @JvmField
-        public val dmat4: TransposableMatrixUniformType<DoubleMat4x4Uniform, DoubleMat4x4ArrayUniform> = transMatrix()
+        public val dmat4: MatrixUniformType<DoubleMat4x4Uniform, DoubleMat4x4ArrayUniform> = matrix()
 
         @JvmField
-        public val dmat2x3: SimpleUniformType<DoubleMat2x3Uniform, DoubleMat2x3ArrayUniform> = simple()
+        public val dmat2x3: MatrixUniformType<DoubleMat2x3Uniform, DoubleMat2x3ArrayUniform> = matrix()
 
         @JvmField
-        public val dmat2x4: SimpleUniformType<DoubleMat2x4Uniform, DoubleMat2x4ArrayUniform> = simple()
+        public val dmat2x4: MatrixUniformType<DoubleMat2x4Uniform, DoubleMat2x4ArrayUniform> = matrix()
 
         @JvmField
-        public val dmat3x2: SimpleUniformType<DoubleMat3x2Uniform, DoubleMat3x2ArrayUniform> = simple()
+        public val dmat3x2: MatrixUniformType<DoubleMat3x2Uniform, DoubleMat3x2ArrayUniform> = matrix()
 
         @JvmField
-        public val dmat3x4: SimpleUniformType<DoubleMat3x4Uniform, DoubleMat3x4ArrayUniform> = simple()
+        public val dmat3x4: MatrixUniformType<DoubleMat3x4Uniform, DoubleMat3x4ArrayUniform> = matrix()
 
         @JvmField
-        public val dmat4x2: SimpleUniformType<DoubleMat4x2Uniform, DoubleMat4x2ArrayUniform> = simple()
+        public val dmat4x2: MatrixUniformType<DoubleMat4x2Uniform, DoubleMat4x2ArrayUniform> = matrix()
 
         @JvmField
-        public val dmat4x3: SimpleUniformType<DoubleMat4x3Uniform, DoubleMat4x3ArrayUniform> = simple()
+        public val dmat4x3: MatrixUniformType<DoubleMat4x3Uniform, DoubleMat4x3ArrayUniform> = matrix()
 
         @JvmField
         public val samplerCubeShadow: SamplerUniformType = sampler(GL_SAMPLER_CUBE_SHADOW, GL_TEXTURE_CUBE_MAP)
@@ -412,8 +420,8 @@ public sealed class Uniform(public val glConstant: Int) {
             return SimpleUniformType(T::class.java, A::class.java)
         }
 
-        private inline fun <reified T : Uniform, reified A : ArrayUniform> transMatrix(): TransposableMatrixUniformType<T, A> {
-            return TransposableMatrixUniformType(T::class.java, A::class.java)
+        private inline fun <reified T : Uniform, reified A : ArrayUniform> matrix(): MatrixUniformType<T, A> {
+            return MatrixUniformType(T::class.java, A::class.java)
         }
 
         private fun sampler(glConstant: Int, textureTarget: Int): SamplerUniformType {
@@ -427,6 +435,6 @@ public sealed class Uniform(public val glConstant: Int) {
     }
 }
 
-public sealed class ArrayUniform(glConstant: Int, public val length: Int) : Uniform(glConstant) {
+public sealed class ArrayUniform(name: String, glConstant: Int, public val length: Int) : Uniform(name, glConstant) {
     internal var trueLength: Int = length
 }

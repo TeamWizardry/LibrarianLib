@@ -1,14 +1,14 @@
 package com.teamwizardry.librarianlib.albedo.test.shaders
 
 import com.teamwizardry.librarianlib.albedo.uniform.Uniform
-import com.teamwizardry.librarianlib.albedo.GLSLStruct
+import com.teamwizardry.librarianlib.albedo.uniform.GLSLStruct
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
 
-internal object StructUniform: ShaderTest<StructUniform.Test>() {
+internal object StructUniform : ShaderTest<StructUniform.Test>() {
 
     override fun doDraw(stack: MatrixStack, matrix: Matrix4d) {
         shader.simple.primitive.set(1f)
@@ -36,18 +36,23 @@ internal object StructUniform: ShaderTest<StructUniform.Test>() {
         drawUnitQuad(matrix)
     }
 
-    class Test: Shader("struct_tests", null, Identifier("liblib-albedo-test:shaders/struct_tests.frag")) {
-        val simple = Uniform.struct.create<Simple>()
-        val simpleArray = Uniform.struct.createArray<Simple>(2)
+    class Test : Shader(
+        "struct_tests",
+        Identifier("liblib-albedo-test:shaders/uniform_base.vert"),
+        Identifier("liblib-albedo-test:shaders/struct_tests.frag")
+    ) {
+        val simple = Uniform.struct.create<Simple>("simple")
+        val simpleArray = Uniform.struct.createArray<Simple>("simpleArray", 2)
 
-        class Embedded: GLSLStruct() {
-            val embed = Uniform.float.create()
+        class Embedded(name: String) : GLSLStruct(name) {
+            val embed = Uniform.float.create("embed")
         }
-        class Simple: GLSLStruct() {
-            val primitive = Uniform.float.create()
-            val primitiveArray = Uniform.float.createArray(2)
-            val embedded = Uniform.struct.create<Embedded>()
-            val embeddedArray = Uniform.struct.createArray<Embedded>(2)
+
+        class Simple(name: String) : GLSLStruct(name) {
+            val primitive = Uniform.float.create("primitive")
+            val primitiveArray = Uniform.float.createArray("primitiveArray", 2)
+            val embedded = Uniform.struct.create<Embedded>("embedded")
+            val embeddedArray = Uniform.struct.createArray<Embedded>("embeddedArray", 2)
         }
     }
 }

@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.albedo.uniform
 import org.lwjgl.opengl.GL20
 import org.lwjgl.system.MemoryStack
 
-public class SamplerUniform(glConstant: Int, public val textureTarget: Int) : Uniform(glConstant) {
+public class SamplerUniform(name: String, glConstant: Int, public val textureTarget: Int) : Uniform(name, glConstant) {
     internal var textureUnit: Int = 0
 
     private var value: Int = 0
@@ -19,8 +19,8 @@ public class SamplerUniform(glConstant: Int, public val textureTarget: Int) : Un
 
 }
 
-public class SamplerArrayUniform(glConstant: Int, public val textureTarget: Int, length: Int) :
-    ArrayUniform(glConstant, length) {
+public class SamplerArrayUniform(name: String, glConstant: Int, public val textureTarget: Int, length: Int) :
+    ArrayUniform(name, glConstant, length) {
     internal var textureUnits: IntArray = IntArray(length)
 
     private val values: IntArray = IntArray(length)

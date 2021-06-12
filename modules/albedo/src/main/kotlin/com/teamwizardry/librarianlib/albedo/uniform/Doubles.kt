@@ -6,7 +6,7 @@ import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL40
 
-public class DoubleUniform : Uniform(GL40.GL_DOUBLE) {
+public class DoubleUniform(name: String) : Uniform(name, GL40.GL_DOUBLE) {
     private var value: Double = 0.0
 
     public fun get(): Double = value
@@ -20,7 +20,7 @@ public class DoubleUniform : Uniform(GL40.GL_DOUBLE) {
 
 }
 
-public class DoubleArrayUniform(length: Int) : ArrayUniform(GL20.GL_DOUBLE, length) {
+public class DoubleArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_DOUBLE, length) {
     private val values: DoubleArray = DoubleArray(length)
 
     public operator fun get(index: Int): Double = values[index]
@@ -33,7 +33,7 @@ public class DoubleArrayUniform(length: Int) : ArrayUniform(GL20.GL_DOUBLE, leng
     }
 }
 
-public class DoubleVec2Uniform : Uniform(GL40.GL_DOUBLE_VEC2) {
+public class DoubleVec2Uniform(name: String) : Uniform(name, GL40.GL_DOUBLE_VEC2) {
     public var x: Double = 0.0
     public var y: Double = 0.0
 
@@ -52,7 +52,7 @@ public class DoubleVec2Uniform : Uniform(GL40.GL_DOUBLE_VEC2) {
     }
 }
 
-public class DoubleVec2ArrayUniform(length: Int) : ArrayUniform(GL40.GL_DOUBLE_VEC2, length) {
+public class DoubleVec2ArrayUniform(name: String, length: Int) : ArrayUniform(name, GL40.GL_DOUBLE_VEC2, length) {
     private val values: DoubleArray = DoubleArray(length * 2)
 
     public fun getX(index: Int): Double = values[index * 2]
@@ -80,7 +80,7 @@ public class DoubleVec2ArrayUniform(length: Int) : ArrayUniform(GL40.GL_DOUBLE_V
     }
 }
 
-public class DoubleVec3Uniform : Uniform(GL40.GL_DOUBLE_VEC3) {
+public class DoubleVec3Uniform(name: String) : Uniform(name, GL40.GL_DOUBLE_VEC3) {
     public var x: Double = 0.0
     public var y: Double = 0.0
     public var z: Double = 0.0
@@ -101,7 +101,7 @@ public class DoubleVec3Uniform : Uniform(GL40.GL_DOUBLE_VEC3) {
     }
 }
 
-public class DoubleVec3ArrayUniform(length: Int) : ArrayUniform(GL40.GL_DOUBLE_VEC3, length) {
+public class DoubleVec3ArrayUniform(name: String, length: Int) : ArrayUniform(name, GL40.GL_DOUBLE_VEC3, length) {
     private val values: DoubleArray = DoubleArray(length * 3)
 
     public fun getX(index: Int): Double = values[index * 3]
@@ -135,7 +135,7 @@ public class DoubleVec3ArrayUniform(length: Int) : ArrayUniform(GL40.GL_DOUBLE_V
     }
 }
 
-public class DoubleVec4Uniform : Uniform(GL40.GL_DOUBLE_VEC4) {
+public class DoubleVec4Uniform(name: String) : Uniform(name, GL40.GL_DOUBLE_VEC4) {
     public var x: Double = 0.0
     public var y: Double = 0.0
     public var z: Double = 0.0
@@ -153,7 +153,7 @@ public class DoubleVec4Uniform : Uniform(GL40.GL_DOUBLE_VEC4) {
     }
 }
 
-public class DoubleVec4ArrayUniform(length: Int) : ArrayUniform(GL40.GL_DOUBLE_VEC4, length) {
+public class DoubleVec4ArrayUniform(name: String, length: Int) : ArrayUniform(name, GL40.GL_DOUBLE_VEC4, length) {
     private val values: DoubleArray = DoubleArray(length * 4)
 
     public fun getX(index: Int): Double = values[index * 4]

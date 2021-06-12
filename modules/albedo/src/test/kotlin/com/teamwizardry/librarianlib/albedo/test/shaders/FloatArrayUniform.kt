@@ -34,11 +34,11 @@ internal object FloatArrayUniform: ShaderTest<FloatArrayUniform.Test>() {
         )
     }
 
-    class Test: Shader("float_array_tests", null, Identifier("liblib-albedo-test:shaders/float_array_tests.frag")) {
-        val index = Uniform.int.create()
-        val primitive = Uniform.glFloat.createArray(2)
-        val vector2 = Uniform.vec2.createArray(2)
-        val vector3 = Uniform.vec3.createArray(2)
-        val vector4 = Uniform.vec4.createArray(2)
+    class Test: Shader("float_array_tests", Identifier("liblib-albedo-test:shaders/uniform_base.vert"), Identifier("liblib-albedo-test:shaders/float_array_tests.frag")) {
+        val index = Uniform.int.create("index")
+        val primitive = Uniform.glFloat.createArray("primitive", 2)
+        val vector2 = Uniform.vec2.createArray("vector2", 2)
+        val vector3 = Uniform.vec3.createArray("vector3", 2)
+        val vector4 = Uniform.vec4.createArray("vector4", 2)
     }
 }

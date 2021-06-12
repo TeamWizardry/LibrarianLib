@@ -1,29 +1,20 @@
 package com.teamwizardry.librarianlib.albedo
 
-import com.mojang.blaze3d.platform.GlStateManager
-import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.albedo.uniform.SamplerArrayUniform
-import com.teamwizardry.librarianlib.albedo.uniform.SamplerUniform
-import com.teamwizardry.librarianlib.albedo.uniform.Uniform
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
+import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
-import com.teamwizardry.librarianlib.core.util.resolveSibling
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener
-import net.minecraft.client.gl.GlProgramManager
-import net.minecraft.client.render.RenderPhase
 import net.minecraft.resource.ResourceManager
 import net.minecraft.resource.ResourceType
 import net.minecraft.util.Identifier
 import net.minecraft.util.profiler.Profiler
-import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL20.*
-import java.util.LinkedList
+import org.lwjgl.system.MemoryStack
+import org.lwjgl.system.MemoryUtil
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
-import kotlin.math.min
 
 public abstract class Shader(
     /**
@@ -31,178 +22,37 @@ public abstract class Shader(
      */
     public val shaderName: String,
     /**
-     * The location of the vertex shader, if any
+     * The location of the vertex shader
      */
-    public val vertexName: Identifier?,
+    public val vertexName: Identifier,
     /**
-     * The location of the fragment shader, if any
+     * The location of the fragment shader
      */
-    public val fragmentName: Identifier?
+    public val fragmentName: Identifier
 ) {
     /**
      * The OpenGL handle for the shader program
      */
-    public var glProgram: Int by GlResourceGc.track(this, 0) { GlStateManager.glDeleteProgram(it) }
+    public var glProgram: Int by GlResourceGc.track(this, 0) { glDeleteProgram(it) }
         private set
 
-    /**
-     * True if this shader is currently bound. This only tracks calls to [bind] and [unbind], so modifications of the
-     * bound shader outside of that will not be reflected. Binding another LibrarianLib shader will unbind this one.
-     */
-    public val isBound: Boolean
-        get() = currentlyBound === this
+    private val _uniforms = mutableListOf<UniformInfo>()
+    private val _attributes = mutableListOf<AttributeInfo>()
+
+    public val uniforms: List<UniformInfo> = _uniforms.unmodifiableView()
+    public val attributes: List<AttributeInfo> = _attributes.unmodifiableView()
 
     /**
-     * A [RenderState] object that can be added to a [RenderType.State] to bind, push uniforms, and unbind this shader
-     * program when drawing. Doing so requires the [IMutableRenderTypeState] mixin, so cast to that and call
-     * [IMutableRenderTypeState.addState].
-     *
-     * **NOTE!!** If your shader uses samplers (textures), your texture state *must not be set*, or else it may
-     * inadvertently overwrite one of the textures the shader is using.
-     *
-     * ```java
-     * RenderType.State renderState = RenderType.State.getBuilder()
-     *     .alpha(...) // set up your state normally
-     *     .build(...);
-     *
-     * ((IRenderTypeState)renderState).addState(someShader.getRenderState());
-     *
-     * RenderType type = RenderType.makeState(..., renderState);
-     * ```
+     * Binds this program.
      */
-    public val renderPhase: RenderPhase = object: RenderPhase("enable_$shaderName", {
-        bind()
-    }, {
-        unbind()
-    }) {}
-
-    /**
-     * Called after the shader is bound and before uniforms are pushed
-     */
-    protected open fun setupState() {}
-
-    /**
-     * Called before the shader is unbound
-     */
-    protected open fun teardownState() {}
-
-    private var uniforms: List<Uniform>? = null
-
-    private val boundTextureUnits = mutableMapOf<Pair<Int, Int>, Int>()
-
-    /**
-     * Binds this as the current program and pushes the current uniform states. If possible, [renderPhase] is the
-     * preferred method of binding shaders.
-     */
-    public fun bind() {
-        currentlyBound?.unbind()
-        GlProgramManager.useProgram(glProgram)
-        currentlyBound = this
-        if (uniforms == null && glProgram != 0) {
-            uniforms = UniformBinder.bindAllUniforms(this, glProgram)
-        }
-
-        var currentUnit = FIRST_TEXTURE_UNIT
-        boundTextureUnits.clear()
-        uniforms?.forEach {
-            when (it) {
-                is SamplerUniform -> {
-                    it.textureUnit = boundTextureUnits.getOrPut(it.get() to it.textureTarget) { currentUnit++ }
-                }
-                is SamplerArrayUniform -> {
-                    for (i in 0 until min(it.length, it.trueLength)) {
-                        it.textureUnits[i] = boundTextureUnits.getOrPut(it[i] to it.textureTarget) { currentUnit++ }
-                    }
-                }
-                else -> {}
-            }
-        }
-        boundTextureUnits.forEach { (tex, unit) ->
-            bindTexture(tex.first, tex.second, unit)
-        }
-        RenderSystem.activeTexture(GL13.GL_TEXTURE0)
-
-        setupState()
-        uniforms?.forEach {
-            it.push()
-        }
-    }
-
-    /**
-     * Unbinds this shader program and cleans up some GL texture state.
-     */
-    public fun unbind() {
-        teardownState()
-        GlProgramManager.useProgram(0)
-        boundTextureUnits.forEach { (tex, unit) ->
-            unbindTexture(tex.second, unit)
-        }
-        currentlyBound = null
-    }
-
-    private fun bindTexture(texture: Int, target: Int, unit: Int) {
-        if (unit < 8 && target == GL11.GL_TEXTURE_2D) { // GlStateManager only tracks the first 8 GL_TEXTURE_2D units
-            RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
-            RenderSystem.enableTexture()
-            RenderSystem.bindTexture(texture)
-            RenderSystem.activeTexture(GL13.GL_TEXTURE0)
-        } else {
-            if (unit < 8) {
-                // GlStateManager tracks the first 8 texture units, and it only changes the texture when the value
-                // changes from its perspective. This becomes an issue if we change the texture without it knowing,
-                // since it may think that a texture doesn't need to be re-bound. To alleviate this we set it to a
-                // dummy value, making sure it will always try to re-bind next time someone binds a texture.
-                RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
-                RenderSystem.enableTexture()
-                Client.textureManager.bindTexture(Identifier("librarianlib:albedo/textures/dummy.png"))
-            }
-            RenderSystem.activeTexture(GL13.GL_TEXTURE0) // get GlStateManager into a known state
-            GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit)
-            GL11.glEnable(target)
-            GL11.glBindTexture(target, texture)
-            GL13.glActiveTexture(GL13.GL_TEXTURE0) // make sure we return to that state
-        }
-    }
-
-    private fun unbindTexture(target: Int, unit: Int) {
-        if (unit < 8 && target == GL11.GL_TEXTURE_2D) { // GlStateManager only tracks the first 8 GL_TEXTURE_2D units
-            RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
-            RenderSystem.bindTexture(0)
-            RenderSystem.disableTexture()
-            RenderSystem.activeTexture(GL13.GL_TEXTURE0)
-        } else {
-            if (unit < 8) {
-                // GlStateManager tracks the first 8 texture units, and it only changes the texture when the value
-                // changes from its perspective. This becomes an issue if we change the texture without it knowing,
-                // since it may think that a texture doesn't need to be re-bound. To alleviate this we set it to a
-                // dummy value, making sure it will always try to re-bind next time someone binds a texture.
-                RenderSystem.activeTexture(GL13.GL_TEXTURE0 + unit)
-                Client.textureManager.bindTexture(Identifier("librarianlib:albedo/textures/dummy.png"))
-                RenderSystem.bindTexture(0)
-                RenderSystem.disableTexture()
-            }
-            RenderSystem.activeTexture(GL13.GL_TEXTURE0) // get GlStateManager into a known state
-            GL13.glActiveTexture(GL13.GL_TEXTURE0 + unit)
-
-            GL11.glEnable(target)
-            GL11.glBindTexture(target, 0)
-            GL11.glBindTexture(GL13.GL_TEXTURE_2D, 0)
-            GL11.glDisable(target)
-            GL13.glActiveTexture(GL13.GL_TEXTURE0) // make sure we return to that state
-        }
+    public fun use() {
+        glUseProgram(glProgram)
     }
 
     public fun delete() {
-        GlStateManager.glDeleteProgram(glProgram)
+        glDeleteProgram(glProgram)
         glProgram = 0
     }
-
-    /**
-     * The base source string number. Sufficiently high that _hopefully_ a substitution in the error log will be
-     * correct, sufficiently low so even a signed short won't overflow, and sufficiently different from the max signed
-     * short value that anyone using that max value in their code won't have collisions
-     */
-    private val sourceNumberBase = 31500
 
     init {
         @Suppress("LeakingThis")
@@ -216,153 +66,72 @@ public abstract class Shader(
     }
 
     private fun compile(resourceManager: ResourceManager) {
-        logger.info("Compiling shader program $shaderName")
-        if (uniforms != null) {
-            UniformBinder.unbindAllUniforms(this)
-            uniforms = null
-        }
+        logger.info("Creating shader program $shaderName:")
+        glDeleteProgram(glProgram)
+        glProgram = 0
         var vertexHandle = 0
         var fragmentHandle = 0
         try {
-            if (vertexName != null) {
-                val files = mutableMapOf<Identifier, Int>()
-                vertexHandle = compileShader(GL_VERTEX_SHADER, "vertex",
-                    readShader(resourceManager, vertexName, files), vertexName, files)
-            }
-            if (fragmentName != null) {
-                val files = mutableMapOf<Identifier, Int>()
-                fragmentHandle = compileShader(GL_FRAGMENT_SHADER, "fragment",
-                    readShader(resourceManager, fragmentName, files), fragmentName, files)
-            }
-            GlStateManager.glDeleteProgram(glProgram)
+            vertexHandle = compileShader(GL_VERTEX_SHADER, "vertex", ShaderSource(resourceManager, vertexName))
+            fragmentHandle = compileShader(GL_FRAGMENT_SHADER, "fragment", ShaderSource(resourceManager, fragmentName))
+            glDeleteProgram(glProgram)
             glProgram = linkProgram(vertexHandle, fragmentHandle)
         } finally {
             if (glProgram != 0) {
                 glDetachShader(glProgram, vertexHandle)
                 glDetachShader(glProgram, fragmentHandle)
             }
-            GlStateManager.glDeleteShader(vertexHandle)
-            GlStateManager.glDeleteShader(fragmentHandle)
+            glDeleteShader(vertexHandle)
+            glDeleteShader(fragmentHandle)
         }
-        logger.debug("Finished compiling shader program $shaderName")
+        logger.debug("Finished compiling shader program")
+        readUniforms()
+        logger.debug("Found ${uniforms.size} uniforms: [${uniforms.joinToString { it.name }}]")
+        readAttributes()
+        logger.debug("Found ${attributes.size} attributes: [${attributes.joinToString { it.name }}]")
     }
 
-    private fun readShader(
-        resourceManager: ResourceManager, name: Identifier,
-        files: MutableMap<Identifier, Int>,
-        stack: LinkedList<Identifier> = LinkedList()
-    ): String {
-        if (name in stack) {
-            val cycleString = stack.reversed().joinToString(" -> ") { if (it == name) "[$it" else "$it" } + " -> $name]"
-            throw ShaderCompilationException("#pragma include cycle: $cycleString")
-        }
-        stack.push(name)
-        val sourceNumber = files.getOrPut(name) { sourceNumberBase + files.size }
-        val includeRegex = """^\s*#pragma\s+include\s*<\s*(\S*)\s*>\s*$""".toRegex()
-
-        val text = resourceManager.getResource(name).inputStream.bufferedReader().readText()
-        var out = ""
-        text.lineSequence().forEachIndexed { i, line ->
-            val lineNumber = i + 1
-            val includeMatch = includeRegex.matchEntire(line)
-            if (lineNumber == 1 && "#version" !in text) {
-                out += "#line 0 $sourceNumber // $name\n"
-            }
-
-            if (includeMatch != null) {
-                val includeName = includeMatch.groupValues[1]
-                val includeLocation = if (':' !in includeName) {
-                    name.resolveSibling(includeName)
-                } else {
-                    Identifier(includeName)
-                }
-
-                out += readShader(resourceManager, includeLocation, files, stack)
-                out += "\n#line $lineNumber $sourceNumber // $name\n"
-            } else {
-                out += "$line\n"
-            }
-
-            if ("#version" in line) {
-                out += "#line $lineNumber $sourceNumber // $name\n"
-            }
-        }
-
-        stack.pop()
-
-        return out
-    }
-
-    private fun prependLineNumbers(source: String): String {
-        val lineRegex = """^\s*#line\s+(\d+)""".toRegex()
-        var lineNumber = 0
-
-        return source.lineSequence().joinToString("\n") { line ->
-            lineNumber++
-            var lineOut = ""
-            lineRegex.matchEntire(line)?.also { match ->
-                lineNumber = match.groupValues[1].toInt()
-            }
-            lineOut += "%4d: %s".format(lineNumber, line)
-            lineOut
-        }
-    }
-
-    private fun compileShader(type: Int, typeName: String, source: String, location: Identifier, files: Map<Identifier, Int>): Int {
-        logger.debug("Compiling $typeName shader $location")
-        checkVersion(source)
-        val shader = GlStateManager.glCreateShader(type)
+    private fun compileShader(type: Int, typeName: String, source: ShaderSource): Int {
+        logger.debug("Compiling $typeName shader ${source.location}")
+        val shader = glCreateShader(type)
         if (shader == 0)
             throw ShaderCompilationException("Could not create shader object")
-        GlStateManager.glShaderSource(shader, listOf(source))
-        GlStateManager.glCompileShader(shader)
+        glShaderSource(shader, source.source)
+        glCompileShader(shader)
 
-        val status = GlStateManager.glGetShaderi(shader, GL_COMPILE_STATUS)
-        val logLength = GlStateManager.glGetShaderi(shader, GL_INFO_LOG_LENGTH)
-        var log = GlStateManager.glGetShaderInfoLog(shader, logLength)
+        val status = glGetShaderi(shader, GL_COMPILE_STATUS)
         if (status == GL_FALSE) {
-            GlStateManager.glDeleteShader(shader)
+            glDeleteShader(shader)
 
-            files.forEach { (key, value) ->
-                log = log.replace(Regex("\\b$value\\b"), if (key.namespace != location.namespace) "$key" else key.path)
-            }
+            val logLength = glGetShaderi(shader, GL_INFO_LOG_LENGTH)
+            var log = glGetShaderInfoLog(shader, logLength)
+            log = source.replaceFilenames(log)
 
-            logger.error("Error compiling $typeName shader $location")
-            throw ShaderCompilationException("Error compiling $typeName shader `$location`:\n$log")
+            logger.error("Error compiling $typeName shader. Shader source text:\n${source.source}")
+            throw ShaderCompilationException("Error compiling $typeName shader `${source.location}`:\n$log")
         }
 
-        logger.debug("Finished compiling $typeName shader $location")
         return shader
-    }
-
-    /**
-     * Check the GLSL version directive
-     */
-    private fun checkVersion(source: String) {
-        val match = """^\s*#version\s+(\d+)\s*$""".toRegex().find(source) ?: return
-        val version = match.groupValues[1].toInt()
-        if (version > 410) // As of macOS 10.9 Apple supports up to GLSL 4.10.
-            throw ShaderCompilationException("Maximum GLSL version supported by all platforms is 4.10. Found `${match.value}`")
     }
 
     private fun linkProgram(vertexHandle: Int, fragmentHandle: Int): Int {
         logger.debug("Linking shader")
-        val program = GlStateManager.glCreateProgram()
+        val program = glCreateProgram()
         if (program == 0)
             throw ShaderCompilationException("could not create program object")
 
         if (vertexHandle != 0)
-            GlStateManager.glAttachShader(program, vertexHandle)
+            glAttachShader(program, vertexHandle)
         if (fragmentHandle != 0)
-            GlStateManager.glAttachShader(program, fragmentHandle)
+            glAttachShader(program, fragmentHandle)
 
-        GlStateManager.glLinkProgram(program)
+        glLinkProgram(program)
 
-        val status = GlStateManager.glGetProgrami(program, GL_LINK_STATUS)
+        val status = glGetProgrami(program, GL_LINK_STATUS)
         if (status == GL_FALSE) {
-            val logLength = GlStateManager.glGetProgrami(program, GL_INFO_LOG_LENGTH)
-            val log = GlStateManager.glGetProgramInfoLog(program, logLength)
-            GlStateManager.glDeleteProgram(program)
+            val logLength = glGetProgrami(program, GL_INFO_LOG_LENGTH)
+            val log = glGetProgramInfoLog(program, logLength)
+            glDeleteProgram(program)
             logger.error("Error linking shader")
             throw ShaderCompilationException("Could not link program: $log")
         }
@@ -370,41 +139,85 @@ public abstract class Shader(
         return program
     }
 
+    private fun readUniforms() {
+        _uniforms.clear()
+        MemoryStack.stackPush().use { stack ->
+            val uniformCount = glGetProgrami(glProgram, GL_ACTIVE_UNIFORMS)
+            val maxNameLength = glGetProgrami(glProgram, GL_ACTIVE_UNIFORM_MAX_LENGTH)
+
+            val glType = stack.mallocInt(1)
+            val size = stack.mallocInt(1)
+            val nameLength = stack.mallocInt(1)
+            val nameBuffer = stack.malloc(maxNameLength)
+            for (index in 0 until uniformCount) {
+                glType.rewind()
+                size.rewind()
+                nameLength.rewind()
+                nameBuffer.rewind()
+                glGetActiveUniform(glProgram, index, nameLength, size, glType, nameBuffer)
+                val name = MemoryUtil.memASCII(nameBuffer, nameLength.get())
+                val location = glGetUniformLocation(glProgram, name)
+                _uniforms.add(UniformInfo(name, glType.get(), size.get(), location))
+            }
+        }
+    }
+
+    private fun readAttributes() {
+        _attributes.clear()
+        MemoryStack.stackPush().use { stack ->
+            val uniformCount = glGetProgrami(glProgram, GL_ACTIVE_ATTRIBUTES)
+            val maxNameLength = glGetProgrami(glProgram, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH)
+
+            val glType = stack.mallocInt(1)
+            val size = stack.mallocInt(1)
+            val nameLength = stack.mallocInt(1)
+            val nameBuffer = stack.malloc(maxNameLength)
+            for (index in 0 until uniformCount) {
+                glType.rewind()
+                size.rewind()
+                nameLength.rewind()
+                nameBuffer.rewind()
+                glGetActiveAttrib(glProgram, index, nameLength, size, glType, nameBuffer)
+                val name = MemoryUtil.memASCII(nameBuffer, nameLength.get())
+                _attributes.add(AttributeInfo(name, glType.get(), size.get(), index))
+            }
+        }
+    }
+
+    public data class UniformInfo(val name: String, val type: Int, val size: Int, val location: Int)
+    public data class AttributeInfo(val name: String, val type: Int, val size: Int, val index: Int)
+
     private companion object {
-        /**
-         * So far as I can tell, vanilla doesn't use anything past GL_TEXTURE3, and we don't want to clobber them.
-         */
-        private const val FIRST_TEXTURE_UNIT = 3
-
-        private var currentlyBound: Shader? = null
         private val allShaders = weakSetOf<Shader>()
+
         init {
-            ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(object: SimpleResourceReloadListener<Unit> {
-                override fun getFabricId(): Identifier {
-                    return Identifier("liblib-albedo:shaders")
-                }
+            ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES)
+                .registerReloadListener(object : SimpleResourceReloadListener<Unit> {
+                    override fun getFabricId(): Identifier {
+                        return Identifier("liblib-albedo:shaders")
+                    }
 
-                override fun load(
-                    manager: ResourceManager,
-                    profiler: Profiler,
-                    executor: Executor
-                ): CompletableFuture<Unit> {
-                    return CompletableFuture.supplyAsync { Unit }
-                }
+                    override fun load(
+                        manager: ResourceManager,
+                        profiler: Profiler,
+                        executor: Executor
+                    ): CompletableFuture<Unit> {
+                        return CompletableFuture.supplyAsync { }
+                    }
 
-                override fun apply(
-                    data: Unit,
-                    manager: ResourceManager,
-                    profiler: Profiler,
-                    executor: Executor
-                ): CompletableFuture<Void> {
-                    return CompletableFuture.runAsync {
-                        allShaders.forEach { shader ->
-                            shader.compile(manager)
+                    override fun apply(
+                        data: Unit,
+                        manager: ResourceManager,
+                        profiler: Profiler,
+                        executor: Executor
+                    ): CompletableFuture<Void> {
+                        return CompletableFuture.runAsync {
+                            allShaders.forEach { shader ->
+                                shader.compile(manager)
+                            }
                         }
                     }
-                }
-            })
+                })
         }
 
         private val logger = LibLibAlbedo.makeLogger<Shader>()

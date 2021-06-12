@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL20
 
-public class FloatUniform : Uniform(GL20.GL_FLOAT) {
+public class FloatUniform(name: String) : Uniform(name, GL20.GL_FLOAT) {
     private var value: Float = 0f
 
     public fun get(): Float = value
@@ -19,7 +19,7 @@ public class FloatUniform : Uniform(GL20.GL_FLOAT) {
 
 }
 
-public class FloatArrayUniform(length: Int) : ArrayUniform(GL20.GL_FLOAT, length) {
+public class FloatArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_FLOAT, length) {
     private val values: FloatArray = FloatArray(length)
 
     public operator fun get(index: Int): Float = values[index]
@@ -32,7 +32,7 @@ public class FloatArrayUniform(length: Int) : ArrayUniform(GL20.GL_FLOAT, length
     }
 }
 
-public class FloatVec2Uniform : Uniform(GL20.GL_FLOAT_VEC2) {
+public class FloatVec2Uniform(name: String) : Uniform(name, GL20.GL_FLOAT_VEC2) {
     public var x: Float = 0f
     public var y: Float = 0f
 
@@ -51,7 +51,7 @@ public class FloatVec2Uniform : Uniform(GL20.GL_FLOAT_VEC2) {
     }
 }
 
-public class FloatVec2ArrayUniform(length: Int) : ArrayUniform(GL20.GL_FLOAT_VEC2, length) {
+public class FloatVec2ArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_FLOAT_VEC2, length) {
     private val values: FloatArray = FloatArray(length * 2)
 
     public fun getX(index: Int): Float = values[index * 2]
@@ -79,7 +79,7 @@ public class FloatVec2ArrayUniform(length: Int) : ArrayUniform(GL20.GL_FLOAT_VEC
     }
 }
 
-public class FloatVec3Uniform : Uniform(GL20.GL_FLOAT_VEC3) {
+public class FloatVec3Uniform(name: String) : Uniform(name, GL20.GL_FLOAT_VEC3) {
     public var x: Float = 0f
     public var y: Float = 0f
     public var z: Float = 0f
@@ -100,7 +100,7 @@ public class FloatVec3Uniform : Uniform(GL20.GL_FLOAT_VEC3) {
     }
 }
 
-public class FloatVec3ArrayUniform(length: Int) : ArrayUniform(GL20.GL_FLOAT_VEC3, length) {
+public class FloatVec3ArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_FLOAT_VEC3, length) {
     private val values: FloatArray = FloatArray(length * 3)
 
     public fun getX(index: Int): Float = values[index * 3]
@@ -134,7 +134,7 @@ public class FloatVec3ArrayUniform(length: Int) : ArrayUniform(GL20.GL_FLOAT_VEC
     }
 }
 
-public class FloatVec4Uniform : Uniform(GL20.GL_FLOAT_VEC4) {
+public class FloatVec4Uniform(name: String) : Uniform(name, GL20.GL_FLOAT_VEC4) {
     public var x: Float = 0f
     public var y: Float = 0f
     public var z: Float = 0f
@@ -152,7 +152,7 @@ public class FloatVec4Uniform : Uniform(GL20.GL_FLOAT_VEC4) {
     }
 }
 
-public class FloatVec4ArrayUniform(length: Int) : ArrayUniform(GL20.GL_FLOAT_VEC4, length) {
+public class FloatVec4ArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_FLOAT_VEC4, length) {
     private val values: FloatArray = FloatArray(length * 4)
 
     public fun getX(index: Int): Float = values[index * 4]

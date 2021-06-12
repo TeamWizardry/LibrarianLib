@@ -18,10 +18,10 @@ internal object IntUniform: ShaderTest<IntUniform.Test>() {
         drawUnitQuad(matrix)
     }
 
-    class Test: Shader("int_tests", null, Identifier("liblib-albedo-test:shaders/int_tests.frag")) {
-        val primitive = Uniform.int.create()
-        val vector2 = Uniform.ivec2.create()
-        val vector3 = Uniform.ivec3.create()
-        val vector4 = Uniform.ivec4.create()
+    class Test: Shader("int_tests", Identifier("liblib-albedo-test:shaders/uniform_base.vert"), Identifier("liblib-albedo-test:shaders/int_tests.frag")) {
+        val primitive = Uniform.int.create("primitive")
+        val vector2 = Uniform.ivec2.create("vector2")
+        val vector3 = Uniform.ivec3.create("vector3")
+        val vector4 = Uniform.ivec4.create("vector4")
     }
 }

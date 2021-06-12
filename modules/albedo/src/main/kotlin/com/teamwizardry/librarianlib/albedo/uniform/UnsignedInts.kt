@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.albedo.uniform
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30
 
-public class UnsignedIntUniform : Uniform(GL20.GL_UNSIGNED_INT) {
+public class UnsignedIntUniform(name: String) : Uniform(name, GL20.GL_UNSIGNED_INT) {
     private var value: Int = 0
 
     public fun get(): Int = value
@@ -16,7 +16,7 @@ public class UnsignedIntUniform : Uniform(GL20.GL_UNSIGNED_INT) {
     }
 }
 
-public class UnsignedIntArrayUniform(length: Int) : ArrayUniform(GL20.GL_UNSIGNED_INT, length) {
+public class UnsignedIntArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_UNSIGNED_INT, length) {
     private val values: IntArray = IntArray(length)
 
     public operator fun get(index: Int): Int = values[index]
@@ -29,7 +29,7 @@ public class UnsignedIntArrayUniform(length: Int) : ArrayUniform(GL20.GL_UNSIGNE
     }
 }
 
-public class UnsignedIntVec2Uniform : Uniform(GL30.GL_UNSIGNED_INT_VEC2) {
+public class UnsignedIntVec2Uniform(name: String) : Uniform(name, GL30.GL_UNSIGNED_INT_VEC2) {
     public var x: Int = 0
     public var y: Int = 0
 
@@ -43,7 +43,8 @@ public class UnsignedIntVec2Uniform : Uniform(GL30.GL_UNSIGNED_INT_VEC2) {
     }
 }
 
-public class UnsignedIntVec2ArrayUniform(length: Int) : ArrayUniform(GL30.GL_UNSIGNED_INT_VEC2, length) {
+public class UnsignedIntVec2ArrayUniform(name: String, length: Int) :
+    ArrayUniform(name, GL30.GL_UNSIGNED_INT_VEC2, length) {
     private val values: IntArray = IntArray(length * 2)
 
     public fun getX(index: Int): Int = values[index * 2]
@@ -66,7 +67,7 @@ public class UnsignedIntVec2ArrayUniform(length: Int) : ArrayUniform(GL30.GL_UNS
     }
 }
 
-public class UnsignedIntVec3Uniform : Uniform(GL30.GL_UNSIGNED_INT_VEC3) {
+public class UnsignedIntVec3Uniform(name: String) : Uniform(name, GL30.GL_UNSIGNED_INT_VEC3) {
     public var x: Int = 0
     public var y: Int = 0
     public var z: Int = 0
@@ -82,7 +83,8 @@ public class UnsignedIntVec3Uniform : Uniform(GL30.GL_UNSIGNED_INT_VEC3) {
     }
 }
 
-public class UnsignedIntVec3ArrayUniform(length: Int) : ArrayUniform(GL30.GL_UNSIGNED_INT_VEC3, length) {
+public class UnsignedIntVec3ArrayUniform(name: String, length: Int) :
+    ArrayUniform(name, GL30.GL_UNSIGNED_INT_VEC3, length) {
     private val values: IntArray = IntArray(length * 3)
 
     public fun getX(index: Int): Int = values[index * 3]
@@ -111,7 +113,7 @@ public class UnsignedIntVec3ArrayUniform(length: Int) : ArrayUniform(GL30.GL_UNS
     }
 }
 
-public class UnsignedIntVec4Uniform : Uniform(GL30.GL_UNSIGNED_INT_VEC4) {
+public class UnsignedIntVec4Uniform(name: String) : Uniform(name, GL30.GL_UNSIGNED_INT_VEC4) {
     public var x: Int = 0
     public var y: Int = 0
     public var z: Int = 0
@@ -129,7 +131,8 @@ public class UnsignedIntVec4Uniform : Uniform(GL30.GL_UNSIGNED_INT_VEC4) {
     }
 }
 
-public class UnsignedIntVec4ArrayUniform(length: Int) : ArrayUniform(GL30.GL_UNSIGNED_INT_VEC4, length) {
+public class UnsignedIntVec4ArrayUniform(name: String, length: Int) :
+    ArrayUniform(name, GL30.GL_UNSIGNED_INT_VEC4, length) {
     private val values: IntArray = IntArray(length * 4)
 
     public fun getX(index: Int): Int = values[index * 4]

@@ -146,19 +146,19 @@ internal object MatrixArrayUniform: ShaderTest<MatrixArrayUniform.Test>(
         )
     }
 
-    class Test: Shader("matrix_array_tests", null, Identifier("liblib-albedo-test:shaders/matrix_array_tests.frag")) {
-        val index = Uniform.int.create()
+    class Test: Shader("matrix_array_tests", Identifier("liblib-albedo-test:shaders/uniform_base.vert"), Identifier("liblib-albedo-test:shaders/matrix_array_tests.frag")) {
+        val index = Uniform.int.create("index")
 
-        val matrix4x4 = Uniform.mat4.createArray(false, 2)
-        val matrix4x3 = Uniform.mat4x3.createArray(2)
-        val matrix4x2 = Uniform.mat4x2.createArray(2)
+        val matrix4x4 = Uniform.mat4.createArray("matrix4x4", false, 2)
+        val matrix4x3 = Uniform.mat4x3.createArray("matrix4x3", false, 2)
+        val matrix4x2 = Uniform.mat4x2.createArray("matrix4x2", false, 2)
 
-        val matrix3x4 = Uniform.mat3x4.createArray(2)
-        val matrix3x3 = Uniform.mat3.createArray(false, 2)
-        val matrix3x2 = Uniform.mat3x2.createArray(2)
+        val matrix3x4 = Uniform.mat3x4.createArray("matrix3x4", false, 2)
+        val matrix3x3 = Uniform.mat3.createArray("matrix3x3", false, 2)
+        val matrix3x2 = Uniform.mat3x2.createArray("matrix3x2", false, 2)
 
-        val matrix2x4 = Uniform.mat2x4.createArray(2)
-        val matrix2x3 = Uniform.mat2x3.createArray(2)
-        val matrix2x2 = Uniform.mat2.createArray(false, 2)
+        val matrix2x4 = Uniform.mat2x4.createArray("matrix2x4", false, 2)
+        val matrix2x3 = Uniform.mat2x3.createArray("matrix2x3", false, 2)
+        val matrix2x2 = Uniform.mat2.createArray("matrix2x2", false, 2)
     }
 }

@@ -16,8 +16,8 @@ object PrimitiveUniform: ShaderTest<PrimitiveUniform.Test>() {
         drawUnitQuad(matrix)
     }
 
-    class Test: Shader("primitive_uniform", null, Identifier("liblib-albedo-test:shaders/primitive_uniform.frag")) {
-        val time = Uniform.float.create()
+    class Test: Shader("primitive_uniform", Identifier("liblib-albedo-test:shaders/uniform_base.vert"), Identifier("liblib-albedo-test:shaders/primitive_uniform.frag")) {
+        val time = Uniform.float.create("time")
     }
 }
 

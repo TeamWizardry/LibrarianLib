@@ -12,7 +12,7 @@ private fun bool(v: Boolean): Int = if (v) 1 else 0
  */
 private fun bool(v: Int): Boolean = v != 0
 
-public class BoolUniform(glConstant: Int) : Uniform(glConstant) {
+public class BoolUniform(name: String) : Uniform(name, GL20.GL_BOOL) {
     private var value: Boolean = false
 
     public fun get(): Boolean = value
@@ -25,7 +25,7 @@ public class BoolUniform(glConstant: Int) : Uniform(glConstant) {
     }
 }
 
-public class BoolArrayUniform(glConstant: Int, length: Int) : ArrayUniform(glConstant, length) {
+public class BoolArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_BOOL, length) {
     private val values: IntArray = IntArray(length)
 
     public operator fun get(index: Int): Boolean = bool(values[index])
@@ -38,7 +38,7 @@ public class BoolArrayUniform(glConstant: Int, length: Int) : ArrayUniform(glCon
     }
 }
 
-public class BoolVec2Uniform : Uniform(GL20.GL_BOOL_VEC2) {
+public class BoolVec2Uniform(name: String) : Uniform(name, GL20.GL_BOOL_VEC2) {
     public var x: Boolean = false
     public var y: Boolean = false
 
@@ -52,7 +52,7 @@ public class BoolVec2Uniform : Uniform(GL20.GL_BOOL_VEC2) {
     }
 }
 
-public class BoolVec2ArrayUniform(length: Int) : ArrayUniform(GL20.GL_BOOL_VEC2, length) {
+public class BoolVec2ArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_BOOL_VEC2, length) {
     private val values: IntArray = IntArray(length * 2)
 
     public fun getX(index: Int): Boolean = bool(values[index * 2])
@@ -75,7 +75,7 @@ public class BoolVec2ArrayUniform(length: Int) : ArrayUniform(GL20.GL_BOOL_VEC2,
     }
 }
 
-public class BoolVec3Uniform : Uniform(GL20.GL_BOOL_VEC3) {
+public class BoolVec3Uniform(name: String) : Uniform(name, GL20.GL_BOOL_VEC3) {
     public var x: Boolean = false
     public var y: Boolean = false
     public var z: Boolean = false
@@ -91,7 +91,7 @@ public class BoolVec3Uniform : Uniform(GL20.GL_BOOL_VEC3) {
     }
 }
 
-public class BoolVec3ArrayUniform(length: Int) : ArrayUniform(GL20.GL_BOOL_VEC3, length) {
+public class BoolVec3ArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_BOOL_VEC3, length) {
     private val values: IntArray = IntArray(length * 3)
 
     public fun getX(index: Int): Boolean = bool(values[index * 3])
@@ -120,7 +120,7 @@ public class BoolVec3ArrayUniform(length: Int) : ArrayUniform(GL20.GL_BOOL_VEC3,
     }
 }
 
-public class BoolVec4Uniform : Uniform(GL20.GL_BOOL_VEC4) {
+public class BoolVec4Uniform(name: String) : Uniform(name, GL20.GL_BOOL_VEC4) {
     public var x: Boolean = false
     public var y: Boolean = false
     public var z: Boolean = false
@@ -138,7 +138,7 @@ public class BoolVec4Uniform : Uniform(GL20.GL_BOOL_VEC4) {
     }
 }
 
-public class BoolVec4ArrayUniform(length: Int) : ArrayUniform(GL20.GL_BOOL_VEC4, length) {
+public class BoolVec4ArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_BOOL_VEC4, length) {
     private val values: IntArray = IntArray(length * 4)
 
     public fun getX(index: Int): Boolean = bool(values[index * 4])
