@@ -68,6 +68,14 @@ configure<CommonConfigExtension> {
 
 }
 
+loom {
+    runConfigs.configureEach {
+        vmArg("-Dlibrarianlib.logging.debug=liblib-*")
+    }
+
+    log4jConfigs.setFrom(file("runtime/log4j.xml"))
+}
+
 open class CreateModule: CopyFreemarker() {
     @Option(option = "name", description = "The name of the module in Title Case. e.g. 'Cool Thing'. " +
             "The PascalCase and lowercase names will be inferred from this")

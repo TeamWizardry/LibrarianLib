@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.core.util
 
+import com.teamwizardry.librarianlib.core.LibLibCore
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -20,7 +21,7 @@ public class ModLogManager(private val modid: String, private val humanName: Str
     /**
      * Whether debugging is enabled for this module.
      */
-    public var debugEnabled: Boolean = debugPatterns.any { it.matches(modid) }
+    public var debugEnabled: Boolean = isDebugEnabled(modid)
         set(value) {
             if (field != value) {
                 registeredLoggers.forEach { (logger, level) ->
@@ -75,13 +76,24 @@ public class ModLogManager(private val modid: String, private val humanName: Str
 
     private data class TrackedLogger(val logger: Logger, val initialLevel: Level)
 
-    private companion object {
-        private val debugPatterns: List<Regex> = System.getProperty("librarianlib.logging.debug", "")
-            .split(",")
-            .map { glob ->
+    public companion object {
+        private val debugPatterns: List<Regex>
+        private val logger = LogManager.getLogger("LibrarianLib: Core|ModLogManager")
+
+        init {
+            val rules = System.getProperty("librarianlib.logging.debug", "").split(",")
+            logger.info("Found ${rules.size} LibrarianLib debug logging rule${if(rules.size != 1) "s" else ""}: " +
+                    "[${rules.joinToString { "\"$it\"" }}]")
+            debugPatterns = rules.map { glob ->
                 Regex.escape(glob.replace("*", "\uE000"))
-                    .replace("\uE000", ".*")
+                    .replace("\uE000", "\\E.*\\Q")
                     .toRegex(RegexOption.IGNORE_CASE)
             }
+        }
+
+        @JvmStatic
+        public fun isDebugEnabled(modid: String): Boolean {
+            return debugPatterns.any { it.matches(modid) }
+        }
     }
 }
