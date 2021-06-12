@@ -25,6 +25,6 @@ dependencies {
 // doesn't seem to do that. We manually add it to the classpath of the root project, so we only enable genSources for
 // that project.
 tasks.whenTaskAdded {
-    if(name.startsWith("genSources"))
+    if(name.startsWith("genSources") || name.startsWith("unpickJar"))
         enabled = project == project.rootProject
 }
