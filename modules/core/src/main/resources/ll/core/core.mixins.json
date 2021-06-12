@@ -1,9 +1,9 @@
 {
   "minVersion": "0.8.2",
   "required": true,
-  "package": "com.teamwizardry.librarianlib.mosaic.mixin",
+  "package": "com.teamwizardry.librarianlib.core.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "ll/mosaic/mosaic-refmap.json",
+  "refmap": "ll/core/core-refmap.json",
   "mixins": [
   ],
   "client": [
