@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.math
 
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
+import com.teamwizardry.librarianlib.core.mixin.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.core.util.vec

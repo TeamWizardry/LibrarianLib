@@ -35,3 +35,7 @@ dependencies {
     "devMod"("net.devtech:arrp:0.3.11")
     modImplementation("net.devtech:arrp:0.3.11")
 }
+
+minecraft {
+    refmapName = "liblib-testcore-refmap.json"
+}

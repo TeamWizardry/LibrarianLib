@@ -2,7 +2,7 @@
 
 package com.teamwizardry.librarianlib.core.util.kotlin
 
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
+import com.teamwizardry.librarianlib.core.mixin.IMatrix4f
 import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.client.render.VertexConsumer
