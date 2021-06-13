@@ -1,13 +1,14 @@
 package com.teamwizardry.librarianlib.albedo.test.shaders
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.albedo.uniform.Uniform
-import com.teamwizardry.librarianlib.albedo.uniform.GLSLStruct
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.attribute.VertexLayoutElement
 import com.teamwizardry.librarianlib.albedo.buffer.RenderBuffer
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
+import com.teamwizardry.librarianlib.albedo.uniform.Uniform
+import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.math.Matrix4d
+import net.minecraft.client.render.*
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
@@ -31,22 +32,49 @@ internal object SimpleRenderBuffer : ShaderTest<SimpleRenderBuffer.TestShader>()
     }
 
     override fun doDraw(stack: MatrixStack, matrix: Matrix4d) {
+        val vb = Tessellator.getInstance().buffer
+
+        RenderSystem.enableBlend()
+        RenderSystem.disableTexture()
+        RenderSystem.defaultBlendFunc()
+        RenderSystem.setShader { GameRenderer.getPositionColorShader() }
+        vb.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR)
+        vb.vertex2d(matrix, minX, maxY).color(1f, 1f, 1f, 1f).next()
+        vb.vertex2d(matrix, maxX, maxY).color(1f, 1f, 1f, 1f).next()
+        vb.vertex2d(matrix, maxX, minY).color(1f, 1f, 1f, 1f).next()
+        vb.vertex2d(matrix, minX, minY).color(1f, 1f, 1f, 1f).next()
+        vb.end()
+        BufferRenderer.draw(vb)
+
         val rb = renderBuffer ?: return
 
         rb.modelViewMatrix.set(RenderSystem.getModelViewMatrix())
         rb.projectionMatrix.set(RenderSystem.getProjectionMatrix())
 
-        val s = 10f
-        rb.pos(-s, s,  0f).color(1f, 0f, 0f, 1f).endVertex()
-        rb.pos(s,  s,  0f).color(1f, 0f, 0f, 1f).endVertex()
-        rb.pos(s,  -s, 0f).color(1f, 0f, 0f, 1f).endVertex()
-        rb.pos(-s, -s, 0f).color(1f, 0f, 0f, 1f).endVertex()
+        val m = Matrix4d()
+        rb.pos(matrix, minX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
+        rb.pos(matrix, minX, maxY, 0).color(1f, 1f, 0f, 1f).endVertex()
+        rb.pos(matrix, maxX, maxY, 0).color(1f, 1f, 1f, 1f).endVertex()
 
-        rb.pos(-s, -s, 0f).color(1f, 0f, 0f, 1f).endVertex()
-        rb.pos(s,  -s, 0f).color(1f, 0f, 0f, 1f).endVertex()
-        rb.pos(s,  s,  0f).color(1f, 0f, 0f, 1f).endVertex()
-        rb.pos(-s, s,  0f).color(1f, 0f, 0f, 1f).endVertex()
-        rb.draw(GL11.GL_QUADS)
+//        rb.pos(matrix, minX+15, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
+//        rb.pos(matrix, minX+15, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
+//        rb.pos(matrix, maxX+15, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
+
+//        rb.pos(matrix, maxX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
+//        rb.pos(matrix, minX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
+//        rb.pos(matrix, minX, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
+//
+//        rb.pos(matrix, minX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
+//        rb.pos(matrix, maxX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
+//        rb.pos(matrix, maxX, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
+//
+//        rb.pos(matrix, maxX, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
+//        rb.pos(matrix, minX, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
+//        rb.pos(matrix, minX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
+
+        rb.draw(GL11.GL_TRIANGLES)
+        RenderSystem.enableTexture()
+        RenderSystem.disableBlend()
     }
 
     class TestShader : Shader(
@@ -56,17 +84,21 @@ internal object SimpleRenderBuffer : ShaderTest<SimpleRenderBuffer.TestShader>()
     )
 
     class FlatColorRenderBuffer : RenderBuffer() {
-        public val modelViewMatrix = +Uniform.mat4.create("ModelViewMatrix", true)
-        public val projectionMatrix = +Uniform.mat4.create("ProjectionMatrix", true)
+        public val modelViewMatrix = +Uniform.mat4.create("ModelViewMatrix")
+        public val projectionMatrix = +Uniform.mat4.create("ProjectionMatrix")
 
         private val _position = +VertexLayoutElement("Position", VertexLayoutElement.FloatFormat.FLOAT, 3, false)
         private val _color = +VertexLayoutElement("Color", VertexLayoutElement.FloatFormat.UNSIGNED_BYTE, 4, true)
 
-        fun pos(x: Float, y: Float, z: Float): FlatColorRenderBuffer {
+        fun pos(matrix: Matrix4d, x: Int, y: Int, z: Int): FlatColorRenderBuffer {
+            return pos(matrix, x.toDouble(), y.toDouble(), z.toDouble())
+        }
+
+        fun pos(matrix: Matrix4d, x: Double, y: Double, z: Double): FlatColorRenderBuffer {
             seek(_position)
-            putFloat(x)
-            putFloat(y)
-            putFloat(z)
+            putFloat(matrix.transformX(x, y, z).toFloat())
+            putFloat(matrix.transformY(x, y, z).toFloat())
+            putFloat(matrix.transformZ(x, y, z).toFloat())
             return this
         }
 

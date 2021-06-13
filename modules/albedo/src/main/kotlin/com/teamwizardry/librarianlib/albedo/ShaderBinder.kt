@@ -1,20 +1,15 @@
 package com.teamwizardry.librarianlib.albedo
 
-import com.mojang.blaze3d.platform.GlStateManager
 import com.teamwizardry.librarianlib.albedo.attribute.VertexLayoutElement
 import com.teamwizardry.librarianlib.albedo.uniform.*
-import net.minecraft.client.gl.GlUniform
-import org.lwjgl.opengl.GL20
-import org.lwjgl.system.MemoryStack
-import org.lwjgl.system.MemoryUtil
 
-public object ShaderLinker {
+public object ShaderBinder {
 
-    public fun linkUniforms(
+    public fun bindUniforms(
         uniforms: List<AbstractUniform>,
         shader: Shader
     ): List<Uniform> {
-        logger.debug("Linking uniforms [${uniforms.joinToString { it.name }}] against shader ${shader.shaderName}")
+        logger.debug("Binding uniforms [${uniforms.joinToString { it.name }}] against shader ${shader.shaderName}")
         val uniformInfos = shader.uniforms.associateBy { it.name }
         val resolvedUniforms = resolveUniformNames(uniforms)
         val glNames = uniformInfos.keys.sorted()
@@ -56,11 +51,11 @@ public object ShaderLinker {
         return boundNames.map { resolvedUniforms.getValue(it) }
     }
 
-    public fun linkAttributes(
+    public fun bindAttributes(
         attributes: List<VertexLayoutElement>,
         shader: Shader
     ) {
-        logger.debug("Linking attributes [${attributes.joinToString { it.name }}] against shader ${shader.shaderName}")
+        logger.debug("Binding attributes [${attributes.joinToString { it.name }}] against shader ${shader.shaderName}")
         val attributeInfos = shader.attributes.associateBy { it.name }
         val glNames = attributeInfos.keys.sorted()
         val attributeNames = attributes.map { it.name }.sorted()
@@ -75,7 +70,7 @@ public object ShaderLinker {
         val boundNames = glNames.intersect(attributeNames)
 
         if (missingNames.isNotEmpty()) {
-            throw ShaderLinkerException(
+            throw ShaderBinderException(
                 "${missingNames.size} attributes are missing for ${shader.shaderName}: \n" +
                         "The shader was missing these names:  [${missingNames.sorted().joinToString(", ")}]\n" +
                         "OpenGL reported these attribute names: [${glNames.sorted().joinToString(", ")}]"
@@ -83,7 +78,7 @@ public object ShaderLinker {
         }
 
         if (unboundNames.isNotEmpty()) {
-            throw ShaderLinkerException(
+            throw ShaderBinderException(
                 "${missingNames.size} attributes were never bound for ${shader.shaderName}: \n" +
                         "These names were never bound: [${missingNames.sorted().joinToString(", ")}]\n" +
                         "OpenGL reported these names:  [${glNames.sorted().joinToString(", ")}]"
@@ -122,5 +117,5 @@ public object ShaderLinker {
         return out
     }
 
-    private val logger = LibLibAlbedo.makeLogger<ShaderLinker>()
+    private val logger = LibLibAlbedo.makeLogger<ShaderBinder>()
 }

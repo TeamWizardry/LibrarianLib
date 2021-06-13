@@ -62,6 +62,7 @@ public class ShaderSource(public val location: Identifier, private val reader: (
             if ("#version" in line) {
                 requireVersion(file, line)
                 out += "//$line\n"
+                out += "#line $lineNumber $sourceNumber // $file\n"
                 continue
             }
 

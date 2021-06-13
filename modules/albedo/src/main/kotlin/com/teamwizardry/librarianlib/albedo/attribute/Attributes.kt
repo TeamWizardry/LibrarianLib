@@ -44,6 +44,7 @@ public class VertexLayoutElement private constructor(
     public fun setupVertexAttribPointer(stride: Int) {
         if (index == -1)
             return
+        glEnableVertexAttribArray(index)
         when (format) {
             is FloatFormat -> glVertexAttribPointer(
                 index,

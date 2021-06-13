@@ -41,35 +41,6 @@ public class SamplerUniformType(private val glConstant: Int, private val texture
     }
 }
 
-public class MatrixUniformType<T : Uniform, A : ArrayUniform>(
-    private val type: Class<T>,
-    private val arrayType: Class<A>
-) : UniformType() {
-    private val constructor: ConstructorMirror =
-        Mirror.reflectClass(type).getDeclaredConstructor(Mirror.reflect<String>(), Mirror.types.boolean)
-    private val arrayConstructor: ConstructorMirror = Mirror.reflectClass(arrayType)
-        .getDeclaredConstructor(Mirror.reflect<String>(), Mirror.types.boolean, Mirror.types.int)
-
-    /**
-     * @param transpose Whether to transpose this matrix when sending it to the shader. This is generally used when
-     * sending transform matrices to the shader, since OpenGL's transform matrices are column-based as opposed to
-     * row-based.
-     */
-    public fun create(name: String, transpose: Boolean): T {
-        return constructor(name, transpose)
-    }
-
-    /**
-     * @param transpose Whether to transpose this matrix when sending it to the shader. This is generally used when
-     * sending transform matrices to the shader, since OpenGL's transform matrices are column-based as opposed to
-     * row-based.
-     * @param length The length of the array
-     */
-    public fun createArray(name: String, transpose: Boolean, length: Int): A {
-        return arrayConstructor(name, transpose, length)
-    }
-}
-
 public object StructUniformType : UniformType() {
     public fun <T : GLSLStruct> create(type: Class<T>, name: String): T {
         return Mirror.reflectClass(type).getDeclaredConstructor(Mirror.reflect<String>()).invoke(name)

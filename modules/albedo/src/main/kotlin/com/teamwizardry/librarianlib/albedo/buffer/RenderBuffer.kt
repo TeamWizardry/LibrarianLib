@@ -31,12 +31,15 @@ public abstract class RenderBuffer : ShaderBinding() {
     }
 
     public fun setupVAO() {
+        useProgram()
+        glBindBuffer(GL_ARRAY_BUFFER, vbo)
         glBindVertexArray(vao)
         for(attribute in attributes) {
             attribute.setupVertexAttribPointer(stride)
         }
         ensureCapacity()
         glBindVertexArray(0)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
     }
 
     public fun endVertex() {
@@ -57,11 +60,17 @@ public abstract class RenderBuffer : ShaderBinding() {
     public fun draw(type: Int) {
         useProgram()
         pushUniforms()
+        glBindBuffer(GL_ARRAY_BUFFER, vbo)
+        byteBuffer.position(0)
+        byteBuffer.limit(count * stride)
+        glBufferData(GL_ARRAY_BUFFER, byteBuffer, GL_DYNAMIC_DRAW)
         glBindVertexArray(vao)
-        GL15.glBufferData(vbo, byteBuffer.slice(0, count * stride), GL_DYNAMIC_DRAW)
         glDrawArrays(type, 0, count)
+        glBindVertexArray(0)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
         count = 0
         unbind()
+        byteBuffer.limit(byteBuffer.capacity())
     }
 
     public open fun delete() {

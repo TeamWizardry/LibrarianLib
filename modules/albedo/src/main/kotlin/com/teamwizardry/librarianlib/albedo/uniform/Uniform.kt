@@ -98,13 +98,13 @@ public sealed class Uniform(name: String, public val glConstant: Int): AbstractU
         public val vec4: SimpleUniformType<FloatVec4Uniform, FloatVec4ArrayUniform> = simple()
 
         @JvmField
-        public val mat2: MatrixUniformType<Mat2x2Uniform, Mat2x2ArrayUniform> = matrix()
+        public val mat2: SimpleUniformType<Mat2x2Uniform, Mat2x2ArrayUniform> = simple()
 
         @JvmField
-        public val mat3: MatrixUniformType<Mat3x3Uniform, Mat3x3ArrayUniform> = matrix()
+        public val mat3: SimpleUniformType<Mat3x3Uniform, Mat3x3ArrayUniform> = simple()
 
         @JvmField
-        public val mat4: MatrixUniformType<Mat4x4Uniform, Mat4x4ArrayUniform> = matrix()
+        public val mat4: SimpleUniformType<Mat4x4Uniform, Mat4x4ArrayUniform> = simple()
 
         @JvmField
         public val sampler1D: SamplerUniformType = sampler(GL_SAMPLER_1D, GL_TEXTURE_1D)
@@ -127,22 +127,22 @@ public sealed class Uniform(name: String, public val glConstant: Int): AbstractU
 
         //region GLSL 1.20 - OpenGL 2.1
         @JvmField
-        public val mat2x3: MatrixUniformType<Mat2x3Uniform, Mat2x3ArrayUniform> = matrix()
+        public val mat2x3: SimpleUniformType<Mat2x3Uniform, Mat2x3ArrayUniform> = simple()
 
         @JvmField
-        public val mat2x4: MatrixUniformType<Mat2x4Uniform, Mat2x4ArrayUniform> = matrix()
+        public val mat2x4: SimpleUniformType<Mat2x4Uniform, Mat2x4ArrayUniform> = simple()
 
         @JvmField
-        public val mat3x2: MatrixUniformType<Mat3x2Uniform, Mat3x2ArrayUniform> = matrix()
+        public val mat3x2: SimpleUniformType<Mat3x2Uniform, Mat3x2ArrayUniform> = simple()
 
         @JvmField
-        public val mat3x4: MatrixUniformType<Mat3x4Uniform, Mat3x4ArrayUniform> = matrix()
+        public val mat3x4: SimpleUniformType<Mat3x4Uniform, Mat3x4ArrayUniform> = simple()
 
         @JvmField
-        public val mat4x2: MatrixUniformType<Mat4x2Uniform, Mat4x2ArrayUniform> = matrix()
+        public val mat4x2: SimpleUniformType<Mat4x2Uniform, Mat4x2ArrayUniform> = simple()
 
         @JvmField
-        public val mat4x3: MatrixUniformType<Mat4x3Uniform, Mat4x3ArrayUniform> = matrix()
+        public val mat4x3: SimpleUniformType<Mat4x3Uniform, Mat4x3ArrayUniform> = simple()
         //endregion
 
         //region GLSL 1.30 - OpenGL 3.0
@@ -271,31 +271,31 @@ public sealed class Uniform(name: String, public val glConstant: Int): AbstractU
         public val devec4: SimpleUniformType<DoubleVec4Uniform, DoubleVec4ArrayUniform> = simple()
 
         @JvmField
-        public val dmat2: MatrixUniformType<DoubleMat2x2Uniform, DoubleMat2x2ArrayUniform> = matrix()
+        public val dmat2: SimpleUniformType<DoubleMat2x2Uniform, DoubleMat2x2ArrayUniform> = simple()
 
         @JvmField
-        public val dmat3: MatrixUniformType<DoubleMat3x3Uniform, DoubleMat3x3ArrayUniform> = matrix()
+        public val dmat3: SimpleUniformType<DoubleMat3x3Uniform, DoubleMat3x3ArrayUniform> = simple()
 
         @JvmField
-        public val dmat4: MatrixUniformType<DoubleMat4x4Uniform, DoubleMat4x4ArrayUniform> = matrix()
+        public val dmat4: SimpleUniformType<DoubleMat4x4Uniform, DoubleMat4x4ArrayUniform> = simple()
 
         @JvmField
-        public val dmat2x3: MatrixUniformType<DoubleMat2x3Uniform, DoubleMat2x3ArrayUniform> = matrix()
+        public val dmat2x3: SimpleUniformType<DoubleMat2x3Uniform, DoubleMat2x3ArrayUniform> = simple()
 
         @JvmField
-        public val dmat2x4: MatrixUniformType<DoubleMat2x4Uniform, DoubleMat2x4ArrayUniform> = matrix()
+        public val dmat2x4: SimpleUniformType<DoubleMat2x4Uniform, DoubleMat2x4ArrayUniform> = simple()
 
         @JvmField
-        public val dmat3x2: MatrixUniformType<DoubleMat3x2Uniform, DoubleMat3x2ArrayUniform> = matrix()
+        public val dmat3x2: SimpleUniformType<DoubleMat3x2Uniform, DoubleMat3x2ArrayUniform> = simple()
 
         @JvmField
-        public val dmat3x4: MatrixUniformType<DoubleMat3x4Uniform, DoubleMat3x4ArrayUniform> = matrix()
+        public val dmat3x4: SimpleUniformType<DoubleMat3x4Uniform, DoubleMat3x4ArrayUniform> = simple()
 
         @JvmField
-        public val dmat4x2: MatrixUniformType<DoubleMat4x2Uniform, DoubleMat4x2ArrayUniform> = matrix()
+        public val dmat4x2: SimpleUniformType<DoubleMat4x2Uniform, DoubleMat4x2ArrayUniform> = simple()
 
         @JvmField
-        public val dmat4x3: MatrixUniformType<DoubleMat4x3Uniform, DoubleMat4x3ArrayUniform> = matrix()
+        public val dmat4x3: SimpleUniformType<DoubleMat4x3Uniform, DoubleMat4x3ArrayUniform> = simple()
 
         @JvmField
         public val samplerCubeShadow: SamplerUniformType = sampler(GL_SAMPLER_CUBE_SHADOW, GL_TEXTURE_CUBE_MAP)
@@ -418,10 +418,6 @@ public sealed class Uniform(name: String, public val glConstant: Int): AbstractU
         //region helpers
         private inline fun <reified T : Uniform, reified A : ArrayUniform> simple(): SimpleUniformType<T, A> {
             return SimpleUniformType(T::class.java, A::class.java)
-        }
-
-        private inline fun <reified T : Uniform, reified A : ArrayUniform> matrix(): MatrixUniformType<T, A> {
-            return MatrixUniformType(T::class.java, A::class.java)
         }
 
         private fun sampler(glConstant: Int, textureTarget: Int): SamplerUniformType {

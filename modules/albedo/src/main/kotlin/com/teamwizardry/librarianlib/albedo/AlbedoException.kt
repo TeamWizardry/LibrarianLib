@@ -16,7 +16,7 @@ public class ShaderCompilationException: AlbedoException {
     public constructor(cause: Throwable?): super(cause)
 }
 
-public class ShaderLinkerException: AlbedoException {
+public class ShaderBinderException: AlbedoException {
     public constructor(): super()
     public constructor(message: String?): super(message)
     public constructor(message: String?, cause: Throwable?): super(message, cause)

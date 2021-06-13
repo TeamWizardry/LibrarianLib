@@ -13,16 +13,17 @@ import kotlin.math.roundToLong
 import kotlin.math.sin
 
 // adapted from flow/math: https://github.com/flow/math
+/**
+ * ```
+ * ⎡ m00 m01 m02 ⎤
+ * ⎢ m10 m11 m12 ⎥
+ * ⎣ m20 m21 m22 ⎦
+ * ```
+ */
 public open class Matrix3d(
-    public open val m00: Double,
-    public open val m01: Double,
-    public open val m02: Double,
-    public open val m10: Double,
-    public open val m11: Double,
-    public open val m12: Double,
-    public open val m20: Double,
-    public open val m21: Double,
-    public open val m22: Double
+    public open val m00: Double, public open val m01: Double, public open val m02: Double,
+    public open val m10: Double, public open val m11: Double, public open val m12: Double,
+    public open val m20: Double, public open val m21: Double, public open val m22: Double
 ): Cloneable {
     public constructor(m: Matrix3d): this(
         m.m00, m.m01, m.m02,
@@ -48,15 +49,9 @@ public open class Matrix3d(
 
     @Suppress("CAST_NEVER_SUCCEEDS")
     public constructor(m: Matrix3f): this(
-        (m as IMatrix3f).m00,
-        (m as IMatrix3f).m01,
-        (m as IMatrix3f).m02,
-        (m as IMatrix3f).m10,
-        (m as IMatrix3f).m11,
-        (m as IMatrix3f).m12,
-        (m as IMatrix3f).m20,
-        (m as IMatrix3f).m21,
-        (m as IMatrix3f).m22
+        (m as IMatrix3f).m00, (m as IMatrix3f).m01, (m as IMatrix3f).m02,
+        (m as IMatrix3f).m10, (m as IMatrix3f).m11, (m as IMatrix3f).m12,
+        (m as IMatrix3f).m20, (m as IMatrix3f).m21, (m as IMatrix3f).m22
     )
 
     public operator fun get(row: Int, col: Int): Double {

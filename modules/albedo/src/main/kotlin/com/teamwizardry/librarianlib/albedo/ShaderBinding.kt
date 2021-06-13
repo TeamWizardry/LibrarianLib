@@ -56,8 +56,8 @@ public abstract class ShaderBinding {
 
     public fun link(shader: Shader) {
         linked = shader
-        linkedUniforms = ShaderLinker.linkUniforms(uniforms, shader)
-        ShaderLinker.linkAttributes(attributes, shader)
+        linkedUniforms = ShaderBinder.bindUniforms(uniforms, shader)
+        ShaderBinder.bindAttributes(attributes, shader)
     }
 
     public fun useProgram() {

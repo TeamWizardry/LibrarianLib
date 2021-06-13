@@ -93,6 +93,7 @@ public abstract class Shader(
 
     private fun compileShader(type: Int, typeName: String, source: ShaderSource): Int {
         logger.debug("Compiling $typeName shader ${source.location}")
+        logger.debug("Shader source:\n${source.source}")
         val shader = glCreateShader(type)
         if (shader == 0)
             throw ShaderCompilationException("Could not create shader object")
