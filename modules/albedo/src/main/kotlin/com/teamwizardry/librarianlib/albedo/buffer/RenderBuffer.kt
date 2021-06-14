@@ -3,15 +3,12 @@ package com.teamwizardry.librarianlib.albedo.buffer
 import com.teamwizardry.librarianlib.albedo.ShaderBinding
 import com.teamwizardry.librarianlib.albedo.attribute.VertexLayoutElement
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
-import org.lwjgl.opengl.GL15
-import org.lwjgl.opengl.GL15.glDeleteBuffers
-import org.lwjgl.opengl.GL15.glGenBuffers
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil
 import java.nio.ByteBuffer
 
 public abstract class RenderBuffer : ShaderBinding() {
-    private var vbo: Int by GlResourceGc.track(this, glGenBuffers()) { glDeleteBuffers(it) }
+    private var vbo = VertexBuffer()
     private var vao: Int by GlResourceGc.track(this, glGenVertexArrays()) { glDeleteVertexArrays(it) }
 
     public var byteBuffer: ByteBuffer by GlResourceGc.track(this, MemoryUtil.memAlloc(1)) { MemoryUtil.memFree(it) }
@@ -26,15 +23,16 @@ public abstract class RenderBuffer : ShaderBinding() {
     protected fun putFloat(value: Float) {
         byteBuffer.putFloat(value)
     }
+
     protected fun putByte(value: Int) {
         byteBuffer.put(value.toByte())
     }
 
     public fun setupVAO() {
         useProgram()
-        glBindBuffer(GL_ARRAY_BUFFER, vbo)
+        glBindBuffer(GL_ARRAY_BUFFER, vbo.vbo)
         glBindVertexArray(vao)
-        for(attribute in attributes) {
+        for (attribute in attributes) {
             attribute.setupVertexAttribPointer(stride)
         }
         ensureCapacity()
@@ -48,34 +46,43 @@ public abstract class RenderBuffer : ShaderBinding() {
     }
 
     private fun ensureCapacity() {
-        if(count >= size) {
+        if (count >= size) {
             size += size / 2
         }
         val bytes = size * stride
-        if(byteBuffer.capacity() < bytes) {
+        if (byteBuffer.capacity() < bytes) {
             byteBuffer = MemoryUtil.memRealloc(byteBuffer, bytes)
         }
     }
 
-    public fun draw(type: Int) {
+    private var currentElementBuffer: Int = -1
+
+    public fun draw(primitive: Primitive) {
         useProgram()
         pushUniforms()
-        glBindBuffer(GL_ARRAY_BUFFER, vbo)
         byteBuffer.position(0)
         byteBuffer.limit(count * stride)
-        glBufferData(GL_ARRAY_BUFFER, byteBuffer, GL_DYNAMIC_DRAW)
+        vbo.upload(0, byteBuffer)
         glBindVertexArray(vao)
-        glDrawArrays(type, 0, count)
+        val indexBuffer = primitive.indexBuffer(primitive.elementCount(count))
+        if (indexBuffer != null) {
+            if (currentElementBuffer != indexBuffer.id) {
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer.id)
+                currentElementBuffer = indexBuffer.id
+            }
+            val indexType = indexBuffer.elementFormat.count // this is actually a gl enum. the mappings are bad.
+            glDrawElements(primitive.resultType, primitive.elementCount(count), indexType, 0L)
+        } else {
+            glDrawArrays(primitive.resultType, 0, count)
+        }
         glBindVertexArray(0)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         count = 0
-        unbind()
+        cleanup()
         byteBuffer.limit(byteBuffer.capacity())
     }
 
     public open fun delete() {
-        glDeleteBuffers(vbo)
-        vbo = 0
         glDeleteVertexArrays(vao)
         vao = 0
     }

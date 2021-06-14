@@ -21,6 +21,7 @@ tasks.withType<KotlinCompile> {
             "-Xjvm-default=all",
             "-Xuse-experimental=kotlin.Experimental",
             "-Xopt-in=kotlin.ExperimentalStdlibApi",
+            "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
             "-Xinline-classes"
         )
     }

@@ -1,30 +1,33 @@
 package com.teamwizardry.librarianlib.albedo.buffer
 
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
+import net.minecraft.util.math.MathHelper
+import org.lwjgl.opengl.GL15.*
 import org.lwjgl.system.MemoryUtil
 import java.nio.ByteBuffer
 
-//public var glBuffer: Int by GlResourceGc.track(this, GL15.glGenBuffers()) { GL15.glDeleteBuffers(it) }
-//    private set
 /**
- * A buffer for vertex data
+ * An OpenGL Vertex Buffer Object
  */
 public class VertexBuffer {
-    public var byteBuffer: ByteBuffer by GlResourceGc.track(this, MemoryUtil.memAlloc(0)) { MemoryUtil.memFree(it) }
-        private set
+    public var usage: Int = GL_DYNAMIC_DRAW
+    public var vbo: Int by GlResourceGc.track(this, glGenBuffers()) { glDeleteBuffers(it) }
+    private var size: Int = 0
 
-    public var position: Int
-        get() = byteBuffer.position()
-        set(value) {
-            byteBuffer.position(value)
+    public fun upload(start: Int, data: ByteBuffer) {
+        glBindBuffer(GL_ARRAY_BUFFER, vbo)
+        if(size < start + data.remaining()) {
+            size = MathHelper.smallestEncompassingPowerOfTwo(start + data.remaining())
         }
+        // Reallocate the buffer. If the size has not changed this has the effect of "orphaning" the buffer, which can
+        // improve performance: https://www.khronos.org/opengl/wiki/Buffer_Object_Streaming#Buffer_re-specification
+        glBufferData(GL_ARRAY_BUFFER, size.toLong(), usage)
+        glBufferSubData(GL_ARRAY_BUFFER, start.toLong(), data)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+    }
 
-    public fun putFloat(value: Float): VertexBuffer = build { putFloat(value) }
-    public fun putDouble(value: Double): VertexBuffer = build { putDouble(value) }
-    public fun putFixed(value: Double): VertexBuffer = build { putDouble(value) }
-
-    private inline fun build(block: ByteBuffer.() -> Unit): VertexBuffer {
-        byteBuffer.block()
-        return this
+    public fun delete() {
+        glDeleteBuffers(vbo)
+        vbo = 0
     }
 }

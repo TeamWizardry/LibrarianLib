@@ -11,7 +11,7 @@ public object SomethingImportant {
 }
 
 private val shader: Test get() = TODO()
-private val buffer = Test.Buffer().also { it.link(shader) }
+private val buffer = Test.Buffer().also { it.bind(shader) }
 
 private fun draw() {
     // wow

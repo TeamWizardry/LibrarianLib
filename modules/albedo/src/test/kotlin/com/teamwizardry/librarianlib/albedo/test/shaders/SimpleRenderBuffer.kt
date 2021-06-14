@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.albedo.test.shaders
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.attribute.VertexLayoutElement
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.albedo.buffer.RenderBuffer
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.albedo.uniform.Uniform
@@ -20,7 +21,7 @@ internal object SimpleRenderBuffer : ShaderTest<SimpleRenderBuffer.TestShader>()
     override fun initialize() {
         super.initialize()
         val renderBuffer = FlatColorRenderBuffer()
-        renderBuffer.link(shader)
+        renderBuffer.bind(shader)
         renderBuffer.setupVAO()
         this.renderBuffer = renderBuffer
     }
@@ -55,6 +56,7 @@ internal object SimpleRenderBuffer : ShaderTest<SimpleRenderBuffer.TestShader>()
         rb.pos(matrix, minX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
         rb.pos(matrix, minX, maxY, 0).color(1f, 1f, 0f, 1f).endVertex()
         rb.pos(matrix, maxX, maxY, 0).color(1f, 1f, 1f, 1f).endVertex()
+        rb.pos(matrix, maxX, minY, 0).color(0f, 1f, 0f, 1f).endVertex()
 
 //        rb.pos(matrix, minX+15, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
 //        rb.pos(matrix, minX+15, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
@@ -72,7 +74,7 @@ internal object SimpleRenderBuffer : ShaderTest<SimpleRenderBuffer.TestShader>()
 //        rb.pos(matrix, minX, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
 //        rb.pos(matrix, minX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
 
-        rb.draw(GL11.GL_TRIANGLES)
+        rb.draw(Primitive.QUADS)
         RenderSystem.enableTexture()
         RenderSystem.disableBlend()
     }
