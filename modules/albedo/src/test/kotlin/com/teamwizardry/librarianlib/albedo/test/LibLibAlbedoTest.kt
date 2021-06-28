@@ -51,23 +51,10 @@ internal object LibLibAlbedoTest {
         override fun onInitializeClient() {
             test("simple_renderbuffer", SimpleRenderBuffer)
 
-            test("simple_frag", SimpleFrag)
-            test("primitive_uniform", PrimitiveUniform)
-            test("float_uniform", FloatUniform)
-            test("float_array_uniform", FloatArrayUniform)
-            test("int_uniform", IntUniform)
-            test("int_array_uniform", IntArrayUniform)
-            test("bool_uniform", BoolUniform)
-            test("bool_array_uniform", BoolArrayUniform)
-            test("matrix_uniform", MatrixUniform)
-            test("matrix_array_uniform", MatrixArrayUniform)
-            test("sampler_uniform", SamplerUniform)
-            test("sampler_array_uniform", SamplerArrayUniform)
-            test("struct_uniform", StructUniform)
             manager.registerClient()
         }
 
-        private fun test(id: String, shader: ShaderTest<*>) {
+        private fun test(id: String, shader: ShaderTest) {
             var crashed = false
             manager.named<TestItem>(id) {
                 rightClick.client {

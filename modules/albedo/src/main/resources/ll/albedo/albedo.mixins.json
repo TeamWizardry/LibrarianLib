@@ -7,7 +7,7 @@
   "mixins": [
   ],
   "client": [
-    "GlStateInjector"
+    "GlStateManagerMixin"
   ],
   "server": [
   ],

@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.attribute.VertexLayoutElement
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.albedo.buffer.RenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.VertexBuffer
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.albedo.uniform.Uniform
 import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
@@ -12,22 +13,24 @@ import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.render.*
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
-import org.lwjgl.opengl.GL11
 
-internal object SimpleRenderBuffer : ShaderTest<SimpleRenderBuffer.TestShader>() {
+internal object SimpleRenderBuffer : ShaderTest() {
 
+    val shader by lazy {
+        Shader.build("flat_color")
+            .vertex(Identifier("liblib-albedo-test:shaders/flat_color.vert"))
+            .fragment(Identifier("liblib-albedo-test:shaders/flat_color.frag"))
+            .build()
+    }
     var renderBuffer: FlatColorRenderBuffer? = null
 
     override fun initialize() {
-        super.initialize()
         val renderBuffer = FlatColorRenderBuffer()
         renderBuffer.bind(shader)
-        renderBuffer.setupVAO()
         this.renderBuffer = renderBuffer
     }
 
     override fun delete() {
-        super.delete()
         renderBuffer?.delete()
         renderBuffer = null
     }
@@ -79,13 +82,7 @@ internal object SimpleRenderBuffer : ShaderTest<SimpleRenderBuffer.TestShader>()
         RenderSystem.disableBlend()
     }
 
-    class TestShader : Shader(
-        "flat_color",
-        Identifier("liblib-albedo-test:shaders/flat_color.vert"),
-        Identifier("liblib-albedo-test:shaders/flat_color.frag")
-    )
-
-    class FlatColorRenderBuffer : RenderBuffer() {
+    class FlatColorRenderBuffer : RenderBuffer(VertexBuffer.SHARED) {
         public val modelViewMatrix = +Uniform.mat4.create("ModelViewMatrix")
         public val projectionMatrix = +Uniform.mat4.create("ProjectionMatrix")
 
@@ -97,7 +94,7 @@ internal object SimpleRenderBuffer : ShaderTest<SimpleRenderBuffer.TestShader>()
         }
 
         fun pos(matrix: Matrix4d, x: Double, y: Double, z: Double): FlatColorRenderBuffer {
-            seek(_position)
+            start(_position)
             putFloat(matrix.transformX(x, y, z).toFloat())
             putFloat(matrix.transformY(x, y, z).toFloat())
             putFloat(matrix.transformZ(x, y, z).toFloat())
@@ -105,7 +102,7 @@ internal object SimpleRenderBuffer : ShaderTest<SimpleRenderBuffer.TestShader>()
         }
 
         fun color(r: Float, g: Float, b: Float, a: Float): FlatColorRenderBuffer {
-            seek(_color)
+            start(_color)
             putByte((r * 255).toInt())
             putByte((g * 255).toInt())
             putByte((b * 255).toInt())
@@ -113,4 +110,5 @@ internal object SimpleRenderBuffer : ShaderTest<SimpleRenderBuffer.TestShader>()
             return this
         }
     }
+
 }

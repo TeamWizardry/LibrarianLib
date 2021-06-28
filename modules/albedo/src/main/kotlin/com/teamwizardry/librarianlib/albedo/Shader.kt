@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.albedo
 
+import com.teamwizardry.librarianlib.albedo.attribute.VertexLayoutElement
+import com.teamwizardry.librarianlib.albedo.uniform.*
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
@@ -10,43 +12,33 @@ import net.minecraft.resource.ResourceManager
 import net.minecraft.resource.ResourceType
 import net.minecraft.util.Identifier
 import net.minecraft.util.profiler.Profiler
-import org.lwjgl.opengl.GL20.*
+import org.lwjgl.opengl.GL40.*
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 
-public abstract class Shader(
+public class Shader private constructor(
     /**
      * An arbitrary name used for logging
      */
-    public val shaderName: String,
-    /**
-     * The location of the vertex shader
-     */
-    public val vertexName: Identifier,
-    /**
-     * The location of the fragment shader
-     */
-    public val fragmentName: Identifier
+    public val name: String,
+    private val shaders: Map<Stage, Identifier>
 ) {
     /**
      * The OpenGL handle for the shader program
      */
     public var glProgram: Int by GlResourceGc.track(this, 0) { glDeleteProgram(it) }
         private set
+    public var uniforms: List<UniformInfo> = emptyList()
+        private set
+    public var attributes: List<AttributeInfo> = emptyList()
+        private set
 
-    private val _uniforms = mutableListOf<UniformInfo>()
-    private val _attributes = mutableListOf<AttributeInfo>()
-
-    public val uniforms: List<UniformInfo> = _uniforms.unmodifiableView()
-    public val attributes: List<AttributeInfo> = _attributes.unmodifiableView()
-
-    /**
-     * Binds this program.
-     */
-    public fun use() {
-        glUseProgram(glProgram)
+    init {
+        @Suppress("LeakingThis")
+        ReloadListener.allShaders.add(this)
+        compile(Client.resourceManager)
     }
 
     public fun delete() {
@@ -54,77 +46,156 @@ public abstract class Shader(
         glProgram = 0
     }
 
-    init {
-        @Suppress("LeakingThis")
-        allShaders.add(this)
-        compile()
+    @JvmOverloads
+    public fun bindUniforms(uniforms: List<AbstractUniform>, warnUnbound: Boolean = true): List<Uniform> {
+        logger.debug("Binding uniforms [${uniforms.joinToString { it.name }}] against shader $name")
+        val uniformInfos = this.uniforms.associateBy { it.name }
+        val resolvedUniforms = resolveUniformNames(uniforms)
+        val glNames = uniformInfos.keys.sorted()
+        val uniformNames = resolvedUniforms.keys.sorted()
+
+        for((name, uniform) in resolvedUniforms) {
+            val uniformInfo = uniformInfos[name] ?: continue
+            uniform.location = uniformInfo.location
+            if (uniform is ArrayUniform)
+                uniform.trueLength = uniformInfo.size
+        }
+
+        val missingNames = uniformNames - glNames
+        val unboundNames = glNames - uniformNames
+        val boundNames = glNames.intersect(uniformNames)
+
+        if (missingNames.isNotEmpty()) {
+            logger.warn(
+                "${missingNames.size} uniforms are missing for $name: \n" +
+                        "The shader was missing these names:  [${missingNames.sorted().joinToString(", ")}]\n" +
+                        "OpenGL reported these uniform names: [${glNames.sorted().joinToString(", ")}]\n" +
+                        "The missing uniforms may have the wrong name, not exist at all, or if they were unused they " +
+                        "may have been optimized away by the graphics driver. This will not crash, however the " +
+                        "missing uniforms will be silently ignored, which may produce unexpected behavior."
+            )
+        }
+
+        if (unboundNames.isNotEmpty()) {
+            logger.warn(
+                "${missingNames.size} uniforms were never bound for $name: \n" +
+                        "These names were never bound: [${missingNames.sorted().joinToString(", ")}]\n" +
+                        "OpenGL reported these names:  [${glNames.sorted().joinToString(", ")}]\n" +
+                        "This will not cause a crash, however it's an indicator of a mismatched glsl shader and " +
+                        "shader binding."
+            )
+        }
+
+        logger.debug("Successfully bound ${boundNames.size} uniforms")
+        return boundNames.map { resolvedUniforms.getValue(it) }
     }
 
-    @JvmSynthetic
-    internal fun compile() {
-        compile(Client.resourceManager)
+    @JvmOverloads
+    public fun bindAttributes(attributes: List<VertexLayoutElement>, warnUnbound: Boolean = true) {
+        logger.debug("Binding attributes [${attributes.joinToString { it.name }}] against shader $name")
+        val attributeInfos = this.attributes.associateBy { it.name }
+        val glNames = attributeInfos.keys.sorted()
+        val attributeNames = attributes.map { it.name }.sorted()
+
+        for(attribute in attributes) {
+            val attributeInfo = attributeInfos[attribute.name] ?: continue
+            attribute.index = attributeInfo.index
+        }
+
+        val missingNames = attributeNames - glNames
+        val unboundNames = glNames - attributeNames
+        val boundNames = glNames.intersect(attributeNames)
+
+        if (missingNames.isNotEmpty()) {
+            throw ShaderBinderException(
+                "${missingNames.size} attributes are missing for $name: \n" +
+                        "The shader was missing these names:  [${missingNames.sorted().joinToString(", ")}]\n" +
+                        "OpenGL reported these attribute names: [${glNames.sorted().joinToString(", ")}]"
+            )
+        }
+
+        if (unboundNames.isNotEmpty()) {
+            throw ShaderBinderException(
+                "${missingNames.size} attributes were never bound for $name: \n" +
+                        "These names were never bound: [${missingNames.sorted().joinToString(", ")}]\n" +
+                        "OpenGL reported these names:  [${glNames.sorted().joinToString(", ")}]"
+            )
+        }
+
+        logger.debug("Successfully bound ${boundNames.size} attributes")
+    }
+
+    private fun resolveUniformNames(uniforms: List<AbstractUniform>): Map<String, Uniform> {
+        val out = mutableMapOf<String, Uniform>()
+        for (uniform in uniforms) {
+            when (uniform) {
+                is Uniform -> {
+                    val glName = uniform.name + if (uniform is ArrayUniform) "[0]" else ""
+                    out[glName] = uniform
+                }
+                is GLSLStruct -> {
+                    val resolved = resolveUniformNames(uniform.fields)
+                    resolved.forEach { (name, glsl) ->
+                        out["${uniform.name}.$name"] = glsl
+                    }
+                }
+                is GLSLStructArray<*> -> {
+                    for (i in 0 until uniform.length) {
+                        val scanResult = resolveUniformNames(uniform[i].fields)
+                        scanResult.forEach { (name, glsl) ->
+                            out["${uniform.name}[$i].$name"] = glsl
+                        }
+                    }
+                }
+            }
+        }
+        return out
     }
 
     private fun compile(resourceManager: ResourceManager) {
-        logger.info("Creating shader program $shaderName:")
+        logger.info("Creating shader program $name:")
         glDeleteProgram(glProgram)
         glProgram = 0
-        var vertexHandle = 0
-        var fragmentHandle = 0
+        val shaderHandles = mutableListOf<Int>()
         try {
-            vertexHandle = compileShader(GL_VERTEX_SHADER, "vertex", ShaderSource(resourceManager, vertexName))
-            fragmentHandle = compileShader(GL_FRAGMENT_SHADER, "fragment", ShaderSource(resourceManager, fragmentName))
+            for((stage, location) in shaders) {
+                shaderHandles.add(
+                    ShaderCompiler.compileShader(
+                        stage,
+                        ShaderCompiler.preprocessShader(location, resourceManager)
+                    )
+                )
+            }
             glDeleteProgram(glProgram)
-            glProgram = linkProgram(vertexHandle, fragmentHandle)
+            glProgram = linkProgram(shaderHandles)
         } finally {
             if (glProgram != 0) {
-                glDetachShader(glProgram, vertexHandle)
-                glDetachShader(glProgram, fragmentHandle)
+                for(handle in shaderHandles) {
+                    glDetachShader(glProgram, handle)
+                }
             }
-            glDeleteShader(vertexHandle)
-            glDeleteShader(fragmentHandle)
+            for(handle in shaderHandles) {
+                glDeleteShader(handle)
+            }
         }
         logger.debug("Finished compiling shader program")
+        logger.debug("Reading uniforms...")
         readUniforms()
         logger.debug("Found ${uniforms.size} uniforms: [${uniforms.joinToString { it.name }}]")
+        logger.debug("Reading attributes...")
         readAttributes()
         logger.debug("Found ${attributes.size} attributes: [${attributes.joinToString { it.name }}]")
     }
 
-    private fun compileShader(type: Int, typeName: String, source: ShaderSource): Int {
-        logger.debug("Compiling $typeName shader ${source.location}")
-        logger.debug("Shader source:\n${source.source}")
-        val shader = glCreateShader(type)
-        if (shader == 0)
-            throw ShaderCompilationException("Could not create shader object")
-        glShaderSource(shader, source.source)
-        glCompileShader(shader)
-
-        val status = glGetShaderi(shader, GL_COMPILE_STATUS)
-        if (status == GL_FALSE) {
-            glDeleteShader(shader)
-
-            val logLength = glGetShaderi(shader, GL_INFO_LOG_LENGTH)
-            var log = glGetShaderInfoLog(shader, logLength)
-            log = source.replaceFilenames(log)
-
-            logger.error("Error compiling $typeName shader. Shader source text:\n${source.source}")
-            throw ShaderCompilationException("Error compiling $typeName shader `${source.location}`:\n$log")
-        }
-
-        return shader
-    }
-
-    private fun linkProgram(vertexHandle: Int, fragmentHandle: Int): Int {
+    private fun linkProgram(handles: List<Int>): Int {
         logger.debug("Linking shader")
         val program = glCreateProgram()
         if (program == 0)
             throw ShaderCompilationException("could not create program object")
 
-        if (vertexHandle != 0)
-            glAttachShader(program, vertexHandle)
-        if (fragmentHandle != 0)
-            glAttachShader(program, fragmentHandle)
+        for(handle in handles) {
+            glAttachShader(program, handle)
+        }
 
         glLinkProgram(program)
 
@@ -141,7 +212,7 @@ public abstract class Shader(
     }
 
     private fun readUniforms() {
-        _uniforms.clear()
+        val uniforms = mutableListOf<UniformInfo>()
         MemoryStack.stackPush().use { stack ->
             val uniformCount = glGetProgrami(glProgram, GL_ACTIVE_UNIFORMS)
             val maxNameLength = glGetProgrami(glProgram, GL_ACTIVE_UNIFORM_MAX_LENGTH)
@@ -158,13 +229,14 @@ public abstract class Shader(
                 glGetActiveUniform(glProgram, index, nameLength, size, glType, nameBuffer)
                 val name = MemoryUtil.memASCII(nameBuffer, nameLength.get())
                 val location = glGetUniformLocation(glProgram, name)
-                _uniforms.add(UniformInfo(name, glType.get(), size.get(), location))
+                uniforms.add(UniformInfo(name, glType.get(), size.get(), location))
             }
         }
+        this.uniforms = uniforms.unmodifiableView()
     }
 
     private fun readAttributes() {
-        _attributes.clear()
+        val attributes = mutableListOf<AttributeInfo>()
         MemoryStack.stackPush().use { stack ->
             val uniformCount = glGetProgrami(glProgram, GL_ACTIVE_ATTRIBUTES)
             val maxNameLength = glGetProgrami(glProgram, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH)
@@ -180,47 +252,85 @@ public abstract class Shader(
                 nameBuffer.rewind()
                 glGetActiveAttrib(glProgram, index, nameLength, size, glType, nameBuffer)
                 val name = MemoryUtil.memASCII(nameBuffer, nameLength.get())
-                _attributes.add(AttributeInfo(name, glType.get(), size.get(), index))
+                attributes.add(AttributeInfo(name, glType.get(), size.get(), index))
             }
         }
+        this.attributes = attributes.unmodifiableView()
     }
 
     public data class UniformInfo(val name: String, val type: Int, val size: Int, val location: Int)
     public data class AttributeInfo(val name: String, val type: Int, val size: Int, val index: Int)
 
-    private companion object {
-        private val allShaders = weakSetOf<Shader>()
+    public enum class Stage(public val glConstant: Int, public val stageName: String) {
+        VERTEX(GL_VERTEX_SHADER, "vertex"),
+        TESSELLATION_CONTROL(GL_TESS_CONTROL_SHADER, "tessellation control"),
+        TESSELLATION_EVALUATION(GL_TESS_EVALUATION_SHADER, "tessellation evaluation"),
+        GEOMETRY(GL_GEOMETRY_SHADER, "geometry"),
+        FRAGMENT(GL_FRAGMENT_SHADER, "fragment");
 
-        init {
-            ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES)
-                .registerReloadListener(object : SimpleResourceReloadListener<Unit> {
-                    override fun getFabricId(): Identifier {
-                        return Identifier("liblib-albedo:shaders")
-                    }
+        override fun toString(): String {
+            return stageName
+        }
+    }
 
-                    override fun load(
-                        manager: ResourceManager,
-                        profiler: Profiler,
-                        executor: Executor
-                    ): CompletableFuture<Unit> {
-                        return CompletableFuture.supplyAsync { }
-                    }
+    public class Builder(public val name: String) {
+        private val stages = mutableMapOf<Stage, Identifier>()
 
-                    override fun apply(
-                        data: Unit,
-                        manager: ResourceManager,
-                        profiler: Profiler,
-                        executor: Executor
-                    ): CompletableFuture<Void> {
-                        return CompletableFuture.runAsync {
-                            allShaders.forEach { shader ->
-                                shader.compile(manager)
-                            }
-                        }
-                    }
-                })
+        public fun add(stage: Stage, shader: Identifier): Builder {
+            stages[stage] = shader
+            return this
         }
 
+        public fun vertex(shader: Identifier): Builder = add(Stage.VERTEX, shader)
+        public fun fragment(shader: Identifier): Builder = add(Stage.FRAGMENT, shader)
+        public fun geometry(shader: Identifier): Builder = add(Stage.GEOMETRY, shader)
+        public fun tessellationControl(shader: Identifier): Builder = add(Stage.TESSELLATION_CONTROL, shader)
+        public fun tessellationEvaluation(shader: Identifier): Builder = add(Stage.TESSELLATION_EVALUATION, shader)
+
+        public fun build(): Shader {
+            return Shader(name, stages)
+        }
+    }
+
+    private object ReloadListener : SimpleResourceReloadListener<Unit> {
+        val allShaders = weakSetOf<Shader>()
+
+        init {
+            ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(ReloadListener)
+        }
+
+        override fun getFabricId(): Identifier {
+            return Identifier("liblib-albedo:shaders")
+        }
+
+        override fun load(
+            manager: ResourceManager,
+            profiler: Profiler,
+            executor: Executor
+        ): CompletableFuture<Unit> {
+            return CompletableFuture.supplyAsync { }
+        }
+
+        override fun apply(
+            data: Unit,
+            manager: ResourceManager,
+            profiler: Profiler,
+            executor: Executor
+        ): CompletableFuture<Void> {
+            return CompletableFuture.runAsync {
+                allShaders.forEach { shader ->
+                    shader.compile(manager)
+                }
+            }
+        }
+    }
+
+    public companion object {
         private val logger = LibLibAlbedo.makeLogger<Shader>()
+
+        @JvmStatic
+        public fun build(name: String): Builder {
+            return Builder(name)
+        }
     }
 }

@@ -1,34 +1,56 @@
 package com.teamwizardry.librarianlib.albedo.buffer
 
-import com.teamwizardry.librarianlib.albedo.ShaderBinding
+import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.attribute.VertexLayoutElement
+import com.teamwizardry.librarianlib.albedo.uniform.AbstractUniform
+import com.teamwizardry.librarianlib.albedo.uniform.SamplerArrayUniform
+import com.teamwizardry.librarianlib.albedo.uniform.SamplerUniform
+import com.teamwizardry.librarianlib.albedo.uniform.Uniform
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil
 import java.nio.ByteBuffer
+import kotlin.math.min
 
-public abstract class RenderBuffer : ShaderBinding() {
-    private var vbo = VertexBuffer()
+public abstract class RenderBuffer(private val vbo: VertexBuffer) {
     private var vao: Int by GlResourceGc.track(this, glGenVertexArrays()) { glDeleteVertexArrays(it) }
+    private var byteBuffer: ByteBuffer by GlResourceGc.track(this, MemoryUtil.memAlloc(1)) { MemoryUtil.memFree(it) }
 
-    public var byteBuffer: ByteBuffer by GlResourceGc.track(this, MemoryUtil.memAlloc(1)) { MemoryUtil.memFree(it) }
-        private set
+    private val attributes = mutableListOf<VertexLayoutElement>()
+    private val uniforms = mutableListOf<AbstractUniform>()
+    private var linkedUniforms: List<Uniform>? = null
+    private var shader: Shader? = null
+    private val boundTextureUnits = Long2IntOpenHashMap(32)
+
     private var size: Int = 64
     private var count: Int = 0
+    private var stride: Int = 0
 
-    protected fun seek(attribute: VertexLayoutElement) {
-        byteBuffer.position(count * stride + attribute.offset)
+    protected fun start(attribute: VertexLayoutElement) { byteBuffer.position(count * stride + attribute.offset) }
+
+    protected fun putFloat(value: Float) { byteBuffer.putFloat(value) }
+    protected fun putDouble(value: Double) { byteBuffer.putDouble(value) }
+    protected fun putByte(value: Int) { byteBuffer.put(value.toByte()) }
+
+    public fun endVertex() {
+        count++
+        ensureCapacity()
     }
 
-    protected fun putFloat(value: Float) {
-        byteBuffer.putFloat(value)
+    public fun draw(primitive: Primitive) {
+        useProgram()
+        uploadUniforms()
+        drawVertices(primitive)
     }
 
-    protected fun putByte(value: Int) {
-        byteBuffer.put(value.toByte())
-    }
+    public fun bind(shader: Shader) {
+        this.shader = shader
+        linkedUniforms = shader.bindUniforms(uniforms)
+        shader.bindAttributes(attributes)
 
-    public fun setupVAO() {
         useProgram()
         glBindBuffer(GL_ARRAY_BUFFER, vbo.vbo)
         glBindVertexArray(vao)
@@ -40,29 +62,70 @@ public abstract class RenderBuffer : ShaderBinding() {
         glBindBuffer(GL_ARRAY_BUFFER, 0)
     }
 
-    public fun endVertex() {
-        count++
-        ensureCapacity()
+    protected fun <T : AbstractUniform> add(uniform: T): T {
+        uniforms.add(uniform)
+        return uniform
     }
 
-    private fun ensureCapacity() {
-        if (count >= size) {
-            size += size / 2
-        }
-        val bytes = size * stride
-        if (byteBuffer.capacity() < bytes) {
-            byteBuffer = MemoryUtil.memRealloc(byteBuffer, bytes)
-        }
+    protected fun add(attribute: VertexLayoutElement): VertexLayoutElement {
+        attribute.offset = stride
+        stride += attribute.width
+        attributes.add(attribute)
+        return attribute
+    }
+
+    @JvmSynthetic
+    protected operator fun <T : AbstractUniform> T.unaryPlus(): T = add(this)
+    @JvmSynthetic
+    protected operator fun VertexLayoutElement.unaryPlus(): VertexLayoutElement = add(this)
+
+    private fun useProgram() {
+        val shader = this.shader ?: return
+        glUseProgram(shader.glProgram)
     }
 
     private var currentElementBuffer: Int = -1
 
-    public fun draw(primitive: Primitive) {
-        useProgram()
-        pushUniforms()
+    private fun uploadUniforms() {
+        var nextUnit = 0
+        boundTextureUnits.clear()
+        linkedUniforms?.forEach {
+            when (it) {
+                is SamplerUniform -> {
+                    val packed = packTextureBinding(it.textureTarget, it.get())
+                    val unit = boundTextureUnits.putIfAbsent(packed, nextUnit)
+                    if (unit == nextUnit)
+                        nextUnit++
+                    it.textureUnit = unit
+                }
+                is SamplerArrayUniform -> {
+                    for (i in 0 until min(it.length, it.trueLength)) {
+                        val packed = packTextureBinding(it.textureTarget, it[i])
+                        val unit = boundTextureUnits.putIfAbsent(packed, nextUnit)
+                        if (unit == nextUnit)
+                            nextUnit++
+                        it.textureUnits[i] = unit
+                    }
+                }
+                else -> {
+                }
+            }
+        }
+        boundTextureUnits.long2IntEntrySet().fastForEach { entry ->
+            bindTexture(unpackTexture(entry.longKey), unpackTarget(entry.longKey), entry.intValue)
+        }
+        RenderSystem.activeTexture(GL_TEXTURE0)
+
+        linkedUniforms?.forEach {
+            it.push()
+        }
+    }
+
+    private fun drawVertices(primitive: Primitive) {
         byteBuffer.position(0)
         byteBuffer.limit(count * stride)
         vbo.upload(0, byteBuffer)
+        byteBuffer.limit(byteBuffer.capacity())
         glBindVertexArray(vao)
         val indexBuffer = primitive.indexBuffer(primitive.elementCount(count))
         if (indexBuffer != null) {
@@ -78,12 +141,44 @@ public abstract class RenderBuffer : ShaderBinding() {
         glBindVertexArray(0)
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         count = 0
-        cleanup()
-        byteBuffer.limit(byteBuffer.capacity())
+        glUseProgram(0)
     }
 
     public open fun delete() {
         glDeleteVertexArrays(vao)
         vao = 0
     }
+
+    private fun packTextureBinding(target: Int, texture: Int): Long {
+        return ((target.toULong() shl 32) or texture.toULong()).toLong()
+    }
+
+    private fun unpackTexture(packed: Long): Int {
+        return packed.toInt()
+    }
+    private fun unpackTarget(packed: Long): Int {
+        return (packed ushr 32).toInt()
+    }
+
+    private fun bindTexture(texture: Int, target: Int, unit: Int) {
+        val glUnit = GL_TEXTURE0 + unit
+        if(unit < GlStateManager.TEXTURE_COUNT) {
+            GlStateManager._activeTexture(glUnit)
+            GlStateManager._bindTexture(-1)
+        }
+        glActiveTexture(glUnit)
+        glBindTexture(target, texture)
+        GlStateManager._activeTexture(GL_TEXTURE0)
+    }
+
+    private fun ensureCapacity() {
+        if (count >= size) {
+            size += size / 2
+        }
+        val bytes = size * stride
+        if (byteBuffer.capacity() < bytes) {
+            byteBuffer = MemoryUtil.memRealloc(byteBuffer, bytes)
+        }
+    }
+
 }

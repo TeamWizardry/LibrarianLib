@@ -30,4 +30,12 @@ public class VertexBuffer {
         glDeleteBuffers(vbo)
         vbo = 0
     }
+
+    public companion object {
+        /**
+         * A shared vertex buffer for use in immediate mode rendering.
+         */
+        @JvmStatic
+        public val SHARED: VertexBuffer = VertexBuffer()
+    }
 }
