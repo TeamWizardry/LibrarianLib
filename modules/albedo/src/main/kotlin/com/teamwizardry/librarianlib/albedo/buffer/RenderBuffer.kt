@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.albedo.buffer
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.albedo.AlbedoTypeConversion
 import com.teamwizardry.librarianlib.albedo.Shader
 import com.teamwizardry.librarianlib.albedo.StandardUniforms
 import com.teamwizardry.librarianlib.albedo.attribute.VertexLayoutElement
@@ -43,11 +44,37 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
         teardownState()
     }
 
-    protected fun start(attribute: VertexLayoutElement) { byteBuffer.position(count * stride + attribute.offset) }
+    protected fun start(attribute: VertexLayoutElement) {
+        byteBuffer.position(count * stride + attribute.offset)
+    }
 
-    protected fun putFloat(value: Float) { byteBuffer.putFloat(value) }
-    protected fun putDouble(value: Double) { byteBuffer.putDouble(value) }
-    protected fun putByte(value: Int) { byteBuffer.put(value.toByte()) }
+    protected fun putDouble(value: Double) {
+        byteBuffer.putDouble(value)
+    }
+
+    protected fun putFloat(value: Float) {
+        byteBuffer.putFloat(value)
+    }
+
+    protected fun putInt(value: Int) {
+        byteBuffer.putInt(value)
+    }
+
+    protected fun putShort(value: Short) {
+        byteBuffer.putShort(value)
+    }
+
+    protected fun putByte(value: Int) {
+        byteBuffer.put(value.toByte())
+    }
+
+    protected fun putHalfFloat(value: Float) {
+        byteBuffer.putShort(AlbedoTypeConversion.GL_HALF_FLOAT(value).toShort())
+    }
+
+    protected fun putFixedFloat(value: Float) {
+        byteBuffer.putInt(AlbedoTypeConversion.GL_FIXED(value))
+    }
 
     /**
      * Called immediately before drawing. One of its primary roles is setting standard uniform values using
@@ -90,6 +117,7 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
 
     @JvmSynthetic
     protected operator fun <T : AbstractUniform> T.unaryPlus(): T = add(this)
+
     @JvmSynthetic
     protected operator fun VertexLayoutElement.unaryPlus(): VertexLayoutElement = add(this)
 
@@ -170,13 +198,14 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
     private fun unpackTexture(packed: Long): Int {
         return packed.toInt()
     }
+
     private fun unpackTarget(packed: Long): Int {
         return (packed ushr 32).toInt()
     }
 
     private fun bindTexture(texture: Int, target: Int, unit: Int) {
         val glUnit = GL_TEXTURE0 + unit
-        if(unit < GlStateManager.TEXTURE_COUNT) {
+        if (unit < GlStateManager.TEXTURE_COUNT) {
             GlStateManager._activeTexture(glUnit)
             GlStateManager._bindTexture(-1)
         }
