@@ -107,7 +107,7 @@ public class Shader private constructor(
         val boundNames = glNames.intersect(attributeNames)
 
         if (missingNames.isNotEmpty()) {
-            throw ShaderBinderException(
+            throw ShaderBindingException(
                 "${missingNames.size} attributes are missing for $name: \n" +
                         "The shader was missing these names:  [${missingNames.sorted().joinToString(", ")}]\n" +
                         "OpenGL reported these attribute names: [${glNames.sorted().joinToString(", ")}]"
@@ -115,7 +115,7 @@ public class Shader private constructor(
         }
 
         if (unboundNames.isNotEmpty()) {
-            throw ShaderBinderException(
+            throw ShaderBindingException(
                 "${missingNames.size} attributes were never bound for $name: \n" +
                         "These names were never bound: [${missingNames.sorted().joinToString(", ")}]\n" +
                         "OpenGL reported these names:  [${glNames.sorted().joinToString(", ")}]"

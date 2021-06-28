@@ -1,7 +1,9 @@
 package com.teamwizardry.librarianlib.albedo.mixin;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.util.math.Vec3f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 

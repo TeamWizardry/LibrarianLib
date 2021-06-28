@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.albedo.buffer
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.Shader
+import com.teamwizardry.librarianlib.albedo.StandardUniforms
 import com.teamwizardry.librarianlib.albedo.attribute.VertexLayoutElement
 import com.teamwizardry.librarianlib.albedo.uniform.AbstractUniform
 import com.teamwizardry.librarianlib.albedo.uniform.SamplerArrayUniform
@@ -29,22 +30,35 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
     private var count: Int = 0
     private var stride: Int = 0
 
-    protected fun start(attribute: VertexLayoutElement) { byteBuffer.position(count * stride + attribute.offset) }
-
-    protected fun putFloat(value: Float) { byteBuffer.putFloat(value) }
-    protected fun putDouble(value: Double) { byteBuffer.putDouble(value) }
-    protected fun putByte(value: Int) { byteBuffer.put(value.toByte()) }
-
     public fun endVertex() {
         count++
         ensureCapacity()
     }
 
     public fun draw(primitive: Primitive) {
+        setupState()
         useProgram()
         uploadUniforms()
         drawVertices(primitive)
+        teardownState()
     }
+
+    protected fun start(attribute: VertexLayoutElement) { byteBuffer.position(count * stride + attribute.offset) }
+
+    protected fun putFloat(value: Float) { byteBuffer.putFloat(value) }
+    protected fun putDouble(value: Double) { byteBuffer.putDouble(value) }
+    protected fun putByte(value: Int) { byteBuffer.put(value.toByte()) }
+
+    /**
+     * Called immediately before drawing. One of its primary roles is setting standard uniform values using
+     * [StandardUniforms].
+     */
+    protected open fun setupState() {}
+
+    /**
+     * Called immediately after drawing.
+     */
+    protected open fun teardownState() {}
 
     public fun bind(shader: Shader) {
         this.shader = shader
