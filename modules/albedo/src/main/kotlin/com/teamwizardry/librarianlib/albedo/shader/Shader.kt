@@ -1,7 +1,10 @@
-package com.teamwizardry.librarianlib.albedo
+package com.teamwizardry.librarianlib.albedo.shader
 
-import com.teamwizardry.librarianlib.albedo.attribute.VertexLayoutElement
-import com.teamwizardry.librarianlib.albedo.uniform.*
+import com.teamwizardry.librarianlib.albedo.LibLibAlbedo
+import com.teamwizardry.librarianlib.albedo.ShaderBindingException
+import com.teamwizardry.librarianlib.albedo.ShaderCompilationException
+import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
+import com.teamwizardry.librarianlib.albedo.shader.uniform.*
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
@@ -46,8 +49,7 @@ public class Shader private constructor(
         glProgram = 0
     }
 
-    @JvmOverloads
-    public fun bindUniforms(uniforms: List<AbstractUniform>, warnUnbound: Boolean = true): List<Uniform> {
+    public fun bindUniforms(uniforms: List<AbstractUniform>): List<Uniform> {
         logger.debug("Binding uniforms [${uniforms.joinToString { it.name }}] against shader $name")
         val uniformInfos = this.uniforms.associateBy { it.name }
         val resolvedUniforms = resolveUniformNames(uniforms)
@@ -90,8 +92,7 @@ public class Shader private constructor(
         return boundNames.map { resolvedUniforms.getValue(it) }
     }
 
-    @JvmOverloads
-    public fun bindAttributes(attributes: List<VertexLayoutElement>, warnUnbound: Boolean = true) {
+    public fun bindAttributes(attributes: List<VertexLayoutElement>) {
         logger.debug("Binding attributes [${attributes.joinToString { it.name }}] against shader $name")
         val attributeInfos = this.attributes.associateBy { it.name }
         val glNames = attributeInfos.keys.sorted()

@@ -1,14 +1,14 @@
 package com.teamwizardry.librarianlib.albedo.test.shaders
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.albedo.Shader
-import com.teamwizardry.librarianlib.albedo.StandardUniforms
-import com.teamwizardry.librarianlib.albedo.attribute.VertexLayoutElement
+import com.teamwizardry.librarianlib.albedo.shader.StandardUniforms
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.albedo.buffer.RenderBuffer
 import com.teamwizardry.librarianlib.albedo.buffer.VertexBuffer
+import com.teamwizardry.librarianlib.albedo.shader.Shader
+import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
-import com.teamwizardry.librarianlib.albedo.uniform.Uniform
+import com.teamwizardry.librarianlib.albedo.shader.uniform.Uniform
 import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.render.*

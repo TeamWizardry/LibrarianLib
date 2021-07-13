@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.albedo.uniform
+package com.teamwizardry.librarianlib.albedo.shader.uniform
 
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.ConstructorMirror

@@ -1,5 +1,7 @@
-package com.teamwizardry.librarianlib.albedo
+package com.teamwizardry.librarianlib.albedo.shader
 
+import com.teamwizardry.librarianlib.albedo.LibLibAlbedo
+import com.teamwizardry.librarianlib.albedo.ShaderCompilationException
 import com.teamwizardry.librarianlib.core.util.resolve
 import com.teamwizardry.librarianlib.core.util.resolveSibling
 import net.minecraft.resource.ResourceManager

@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.albedo.uniform
+package com.teamwizardry.librarianlib.albedo.shader.uniform
 
 import org.lwjgl.opengl.GL41.*
 

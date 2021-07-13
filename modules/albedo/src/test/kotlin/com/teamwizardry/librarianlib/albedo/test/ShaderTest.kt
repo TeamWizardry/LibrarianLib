@@ -1,14 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.test
 
-import com.teamwizardry.librarianlib.albedo.Shader
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.math.Matrix4d
-import dev.thecodewarrior.mirror.Mirror
-import dev.thecodewarrior.mirror.member.ConstructorMirror
-import net.minecraft.client.render.BufferRenderer
-import net.minecraft.client.render.Tessellator
-import net.minecraft.client.render.VertexFormat
-import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.util.math.MatrixStack
 
 abstract class ShaderTest(

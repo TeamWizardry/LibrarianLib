@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.albedo.attribute
+package com.teamwizardry.librarianlib.albedo.shader.attribute
 
 import org.lwjgl.opengl.GL41.*
 import java.lang.IllegalArgumentException

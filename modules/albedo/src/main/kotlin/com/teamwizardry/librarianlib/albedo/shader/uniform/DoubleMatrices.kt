@@ -1,15 +1,12 @@
-package com.teamwizardry.librarianlib.albedo.uniform
+package com.teamwizardry.librarianlib.albedo.shader.uniform
 
 import com.teamwizardry.librarianlib.core.mixin.IMatrix3f
 import com.teamwizardry.librarianlib.core.mixin.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.mixinCast
-import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
-import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.util.math.Matrix3f
 import net.minecraft.util.math.Matrix4f
-import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL40
 
 /**

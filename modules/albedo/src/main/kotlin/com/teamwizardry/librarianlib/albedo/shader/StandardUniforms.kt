@@ -1,9 +1,9 @@
-package com.teamwizardry.librarianlib.albedo
+package com.teamwizardry.librarianlib.albedo.shader
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.buffer.RenderBuffer
 import com.teamwizardry.librarianlib.albedo.mixin.RenderSystemMixin
-import com.teamwizardry.librarianlib.albedo.uniform.*
+import com.teamwizardry.librarianlib.albedo.shader.uniform.*
 import com.teamwizardry.librarianlib.core.util.Client
 
 /**

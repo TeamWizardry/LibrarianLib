@@ -1,9 +1,8 @@
-package com.teamwizardry.librarianlib.albedo.uniform
+package com.teamwizardry.librarianlib.albedo.shader.uniform
 
 import org.lwjgl.opengl.GL20
-import org.lwjgl.opengl.GL30
 
-public class UnsignedIntUniform(name: String) : Uniform(name, GL20.GL_UNSIGNED_INT) {
+public class IntUniform(name: String) : Uniform(name, GL20.GL_INT) {
     private var value: Int = 0
 
     public fun get(): Int = value
@@ -12,11 +11,11 @@ public class UnsignedIntUniform(name: String) : Uniform(name, GL20.GL_UNSIGNED_I
     }
 
     override fun push() {
-        GL30.glUniform1ui(location, value)
+        GL20.glUniform1i(location, value)
     }
 }
 
-public class UnsignedIntArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_UNSIGNED_INT, length) {
+public class IntArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_INT, length) {
     private val values: IntArray = IntArray(length)
 
     public operator fun get(index: Int): Int = values[index]
@@ -25,11 +24,11 @@ public class UnsignedIntArrayUniform(name: String, length: Int) : ArrayUniform(n
     }
 
     override fun push() {
-        GL30.glUniform1uiv(location, values)
+        GL20.glUniform1iv(location, values)
     }
 }
 
-public class UnsignedIntVec2Uniform(name: String) : Uniform(name, GL30.GL_UNSIGNED_INT_VEC2) {
+public class IntVec2Uniform(name: String) : Uniform(name, GL20.GL_INT_VEC2) {
     public var x: Int = 0
     public var y: Int = 0
 
@@ -39,12 +38,11 @@ public class UnsignedIntVec2Uniform(name: String) : Uniform(name, GL30.GL_UNSIGN
     }
 
     override fun push() {
-        GL30.glUniform2ui(location, x, y)
+        GL20.glUniform2i(location, x, y)
     }
 }
 
-public class UnsignedIntVec2ArrayUniform(name: String, length: Int) :
-    ArrayUniform(name, GL30.GL_UNSIGNED_INT_VEC2, length) {
+public class IntVec2ArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_INT_VEC2, length) {
     private val values: IntArray = IntArray(length * 2)
 
     public fun getX(index: Int): Int = values[index * 2]
@@ -63,11 +61,11 @@ public class UnsignedIntVec2ArrayUniform(name: String, length: Int) :
     }
 
     override fun push() {
-        GL30.glUniform2uiv(location, values)
+        GL20.glUniform2iv(location, values)
     }
 }
 
-public class UnsignedIntVec3Uniform(name: String) : Uniform(name, GL30.GL_UNSIGNED_INT_VEC3) {
+public class IntVec3Uniform(name: String) : Uniform(name, GL20.GL_INT_VEC3) {
     public var x: Int = 0
     public var y: Int = 0
     public var z: Int = 0
@@ -79,12 +77,11 @@ public class UnsignedIntVec3Uniform(name: String) : Uniform(name, GL30.GL_UNSIGN
     }
 
     override fun push() {
-        GL30.glUniform3ui(location, x, y, z)
+        GL20.glUniform3i(location, x, y, z)
     }
 }
 
-public class UnsignedIntVec3ArrayUniform(name: String, length: Int) :
-    ArrayUniform(name, GL30.GL_UNSIGNED_INT_VEC3, length) {
+public class IntVec3ArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_INT_VEC3, length) {
     private val values: IntArray = IntArray(length * 3)
 
     public fun getX(index: Int): Int = values[index * 3]
@@ -109,11 +106,11 @@ public class UnsignedIntVec3ArrayUniform(name: String, length: Int) :
     }
 
     override fun push() {
-        GL30.glUniform3uiv(location, values)
+        GL20.glUniform3iv(location, values)
     }
 }
 
-public class UnsignedIntVec4Uniform(name: String) : Uniform(name, GL30.GL_UNSIGNED_INT_VEC4) {
+public class IntVec4Uniform(name: String) : Uniform(name, GL20.GL_INT_VEC4) {
     public var x: Int = 0
     public var y: Int = 0
     public var z: Int = 0
@@ -127,12 +124,11 @@ public class UnsignedIntVec4Uniform(name: String) : Uniform(name, GL30.GL_UNSIGN
     }
 
     override fun push() {
-        GL30.glUniform4ui(location, x, y, z, w)
+        GL20.glUniform4i(location, x, y, z, w)
     }
 }
 
-public class UnsignedIntVec4ArrayUniform(name: String, length: Int) :
-    ArrayUniform(name, GL30.GL_UNSIGNED_INT_VEC4, length) {
+public class IntVec4ArrayUniform(name: String, length: Int) : ArrayUniform(name, GL20.GL_INT_VEC4, length) {
     private val values: IntArray = IntArray(length * 4)
 
     public fun getX(index: Int): Int = values[index * 4]
@@ -163,6 +159,6 @@ public class UnsignedIntVec4ArrayUniform(name: String, length: Int) :
     }
 
     override fun push() {
-        GL30.glUniform4uiv(location, values)
+        GL20.glUniform4iv(location, values)
     }
 }

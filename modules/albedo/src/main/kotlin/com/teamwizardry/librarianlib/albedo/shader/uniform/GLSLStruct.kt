@@ -1,4 +1,4 @@
-package com.teamwizardry.librarianlib.albedo.uniform
+package com.teamwizardry.librarianlib.albedo.shader.uniform
 
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 
