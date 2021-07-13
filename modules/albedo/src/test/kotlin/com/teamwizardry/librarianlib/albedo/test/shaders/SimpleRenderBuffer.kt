@@ -58,22 +58,6 @@ internal object SimpleRenderBuffer : ShaderTest() {
         rb.pos(matrix, maxX, maxY, 0).color(1f, 1f, 1f, 1f).endVertex()
         rb.pos(matrix, maxX, minY, 0).color(0f, 1f, 0f, 1f).endVertex()
 
-//        rb.pos(matrix, minX+15, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
-//        rb.pos(matrix, minX+15, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
-//        rb.pos(matrix, maxX+15, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
-
-//        rb.pos(matrix, maxX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
-//        rb.pos(matrix, minX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
-//        rb.pos(matrix, minX, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
-//
-//        rb.pos(matrix, minX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
-//        rb.pos(matrix, maxX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
-//        rb.pos(matrix, maxX, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
-//
-//        rb.pos(matrix, maxX, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
-//        rb.pos(matrix, minX, maxY, 0).color(1f, 0f, 0f, 1f).endVertex()
-//        rb.pos(matrix, minX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
-
         rb.draw(Primitive.QUADS)
         RenderSystem.enableTexture()
         RenderSystem.disableBlend()
@@ -83,8 +67,8 @@ internal object SimpleRenderBuffer : ShaderTest() {
         private val modelViewMatrix = +Uniform.mat4.create("ModelViewMatrix")
         private val projectionMatrix = +Uniform.mat4.create("ProjectionMatrix")
 
-        private val _position = +VertexLayoutElement("Position", VertexLayoutElement.FloatFormat.FLOAT, 3, false)
-        private val _color = +VertexLayoutElement("Color", VertexLayoutElement.FloatFormat.UNSIGNED_BYTE, 4, true)
+        private val position = +VertexLayoutElement("Position", VertexLayoutElement.FloatFormat.FLOAT, 3, false)
+        private val color = +VertexLayoutElement("Color", VertexLayoutElement.FloatFormat.UNSIGNED_BYTE, 4, true)
 
         override fun setupState() {
             super.setupState()
@@ -97,7 +81,7 @@ internal object SimpleRenderBuffer : ShaderTest() {
         }
 
         fun pos(matrix: Matrix4d, x: Double, y: Double, z: Double): FlatColorRenderBuffer {
-            start(_position)
+            start(position)
             putFloat(matrix.transformX(x, y, z).toFloat())
             putFloat(matrix.transformY(x, y, z).toFloat())
             putFloat(matrix.transformZ(x, y, z).toFloat())
@@ -105,7 +89,7 @@ internal object SimpleRenderBuffer : ShaderTest() {
         }
 
         fun color(r: Float, g: Float, b: Float, a: Float): FlatColorRenderBuffer {
-            start(_color)
+            start(color)
             putByte((r * 255).toInt())
             putByte((g * 255).toInt())
             putByte((b * 255).toInt())
