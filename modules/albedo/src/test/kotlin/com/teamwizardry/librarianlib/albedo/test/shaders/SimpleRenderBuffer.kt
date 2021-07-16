@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.albedo.test.shaders
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
 import com.teamwizardry.librarianlib.albedo.shader.StandardUniforms
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.albedo.buffer.RenderBuffer
@@ -19,14 +20,14 @@ internal object SimpleRenderBuffer : ShaderTest() {
 
     val shader by lazy {
         Shader.build("flat_color")
-            .vertex(Identifier("liblib-albedo-test:shaders/flat_color.vert"))
-            .fragment(Identifier("liblib-albedo-test:shaders/flat_color.frag"))
+            .vertex(Identifier("liblib-albedo-test:flat_color.vert"))
+            .fragment(Identifier("liblib-albedo-test:flat_color.frag"))
             .build()
     }
-    var renderBuffer: FlatColorRenderBuffer? = null
+    var renderBuffer: TestRenderBuffer? = null
 
     override fun initialize() {
-        val renderBuffer = FlatColorRenderBuffer()
+        val renderBuffer = TestRenderBuffer()
         renderBuffer.bind(shader)
         this.renderBuffer = renderBuffer
     }
@@ -51,7 +52,7 @@ internal object SimpleRenderBuffer : ShaderTest() {
         vb.end()
         BufferRenderer.draw(vb)
 
-        val rb = renderBuffer ?: return
+        val rb = FlatColorRenderBuffer.SHARED
 
         rb.pos(matrix, minX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
         rb.pos(matrix, minX, maxY, 0).color(1f, 1f, 0f, 1f).endVertex()
@@ -63,7 +64,7 @@ internal object SimpleRenderBuffer : ShaderTest() {
         RenderSystem.disableBlend()
     }
 
-    class FlatColorRenderBuffer : RenderBuffer(VertexBuffer.SHARED) {
+    class TestRenderBuffer : RenderBuffer(VertexBuffer.SHARED) {
         private val modelViewMatrix = +Uniform.mat4.create("ModelViewMatrix")
         private val projectionMatrix = +Uniform.mat4.create("ProjectionMatrix")
 
@@ -76,11 +77,11 @@ internal object SimpleRenderBuffer : ShaderTest() {
             StandardUniforms.setProjectionMatrix(projectionMatrix)
         }
 
-        fun pos(matrix: Matrix4d, x: Int, y: Int, z: Int): FlatColorRenderBuffer {
+        fun pos(matrix: Matrix4d, x: Int, y: Int, z: Int): TestRenderBuffer {
             return pos(matrix, x.toDouble(), y.toDouble(), z.toDouble())
         }
 
-        fun pos(matrix: Matrix4d, x: Double, y: Double, z: Double): FlatColorRenderBuffer {
+        fun pos(matrix: Matrix4d, x: Double, y: Double, z: Double): TestRenderBuffer {
             start(position)
             putFloat(matrix.transformX(x, y, z).toFloat())
             putFloat(matrix.transformY(x, y, z).toFloat())
@@ -88,7 +89,7 @@ internal object SimpleRenderBuffer : ShaderTest() {
             return this
         }
 
-        fun color(r: Float, g: Float, b: Float, a: Float): FlatColorRenderBuffer {
+        fun color(r: Float, g: Float, b: Float, a: Float): TestRenderBuffer {
             start(color)
             putByte((r * 255).toInt())
             putByte((g * 255).toInt())

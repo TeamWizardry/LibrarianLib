@@ -36,6 +36,7 @@ public class VertexBuffer {
          * A shared vertex buffer for use in immediate mode rendering.
          */
         @JvmStatic
+        @get:JvmName("getShared")
         public val SHARED: VertexBuffer = VertexBuffer()
     }
 }

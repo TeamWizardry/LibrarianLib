@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.albedo.shader
 
 import com.teamwizardry.librarianlib.albedo.LibLibAlbedo
 import com.teamwizardry.librarianlib.albedo.ShaderCompilationException
+import com.teamwizardry.librarianlib.core.util.extension
 import com.teamwizardry.librarianlib.core.util.resolve
 import com.teamwizardry.librarianlib.core.util.resolveSibling
 import net.minecraft.resource.ResourceManager
@@ -10,12 +11,8 @@ import org.lwjgl.opengl.GL20.*
 import java.util.*
 
 /**
- * A preprocessor that provides `#pragma include` support.
- *
- * Includes come in two varieties, those surrounded by quotes (`#pragma include "location"`) and those surrounded by
- * angle brackets (`#pragma include <location>`). The form in quotes is interpreted as a resource location or a
- * relative path, and the form in brackets is interpreted as a shader from the Albedo standard library. (Located in
- * `liblib-albedo:shaders/stdlib`)
+ * A preprocessor that provides `#include` support. Include paths without a mod ID will be resolved in the current
+ * file's mod. All paths are resolved inside the mod's `shaders` directory.
  *
  * This class automatically selects the maximum GLSL version used by any of the included files, and inserts `#line`
  * directives so each file has the correct line number. Pass the shader log through
@@ -34,13 +31,12 @@ public object ShaderCompiler {
 
         val status = glGetShaderi(glShader, GL_COMPILE_STATUS)
         if (status == GL_FALSE) {
-            glDeleteShader(glShader)
-
             val logLength = glGetShaderi(glShader, GL_INFO_LOG_LENGTH)
             var log = glGetShaderInfoLog(glShader, logLength)
+            glDeleteShader(glShader)
             log = shader.replaceFilenames(log)
 
-            logger.error("Error compiling $stage shader. Shader source text:\n${shader.code}")
+            logger.error("Error compiling $stage shader. Shader source text:\n${shader.code}\nOpenGL error log:\n$log")
             throw ShaderCompilationException("Error compiling $stage shader `${shader.location}`:\n$log")
         }
 
@@ -87,12 +83,11 @@ public object ShaderCompiler {
     ): String {
         if (file in stack) {
             val cycleString = stack.reversed().joinToString(" -> ") { if (it == file) "[$it" else "$it" } + " -> $file]"
-            throw ShaderCompilationException("#pragma include cycle: $cycleString")
+            throw ShaderCompilationException("#include cycle: $cycleString")
         }
         stack.push(file)
         val sourceNumber = result.files.getOrPut(file) { BASE_SOURCE_NUMBER + result.files.size }
-        val includeRegex =
-            """^\s*#pragma\s+include\s*(?:<\s*(?<system>\S*)\s*>|"\s*(?<relative>\S*)\s*")\s*$""".toRegex()
+        val includeRegex = """^\s*#include\s*"\s*(?<relative>\S*)\s*"\s*$""".toRegex()
 
         val text = reader(file)
         var out = ""
@@ -111,13 +106,11 @@ public object ShaderCompiler {
 
             val includeMatch = includeRegex.matchEntire(line)
             if (includeMatch != null) {
-                val includeName = includeMatch.groups["system"]?.value ?: includeMatch.groups["relative"]?.value!!
+                val includeName = includeMatch.groups["relative"]?.value!!
                 val includeLocation = if (':' !in includeName) {
-                    file.resolveSibling(includeName)
-                } else if (includeMatch.groups["system"] != null) {
-                    STDLIB_ROOT.resolve(includeName)
+                    Identifier(file.namespace, "shaders/$includeName")
                 } else {
-                    Identifier(includeName)
+                    Identifier(includeName.substringBefore(":"), "shaders/" + includeName.substringAfter(":"))
                 }
 
                 out += readShader(result, reader, includeLocation, stack)
@@ -146,8 +139,6 @@ public object ShaderCompiler {
         if (version > result.glslVersion)
             result.glslVersion = version
     }
-
-    private val STDLIB_ROOT = Identifier("liblib-albedo:shaders/stdlib")
 
     /**
      * The base source string number. Sufficiently high that _hopefully_ a substitution in the error log will be

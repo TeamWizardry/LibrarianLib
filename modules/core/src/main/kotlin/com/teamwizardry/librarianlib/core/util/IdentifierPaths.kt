@@ -46,3 +46,27 @@ public fun Identifier.resolveSibling(path: String): Identifier {
  */
 public val Identifier.parent: Identifier
     get() = Identifier(this.namespace, URI(this.path, null, null).resolve(".").path)
+
+/**
+ * Get the last path component of this `Identifier`
+ *
+ * ```
+ * Identifier("mymod:my/path/file1.png").filename == "file1.png"
+ * Identifier("mymod:x").filename == "x"
+ * ```
+ */
+public val Identifier.filename: String
+    get() = this.path.substringAfterLast('/')
+
+/**
+ * Get the text after the final `.` of this `Identifier`'s [filename], or an empty string if there is none
+ *
+ * ```
+ * Identifier("mymod:my/path/file1.png").extension == "png"
+ * Identifier("mymod:my/path/file1.").extension == ""
+ * Identifier("mymod:my/path/file").extension == ""
+ * Identifier("mymod:my/path.ext/file1").extension == ""
+ * ```
+ */
+public val Identifier.extension: String
+    get() = this.filename.substringAfterLast('.', missingDelimiterValue = "")

@@ -278,7 +278,7 @@ public class Shader private constructor(
         private val stages = mutableMapOf<Stage, Identifier>()
 
         public fun add(stage: Stage, shader: Identifier): Builder {
-            stages[stage] = shader
+            stages[stage] = Identifier(shader.namespace, "shaders/${shader.path}")
             return this
         }
 

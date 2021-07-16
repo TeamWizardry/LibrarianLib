@@ -21,9 +21,9 @@ abstract class ShaderTest(
         doDraw(matrixStack, Matrix4d(matrixStack))
     }
 
-    protected abstract fun initialize()
+    protected open fun initialize() {}
 
-    protected abstract fun delete()
+    protected open fun delete() {}
 
     fun destroy() {
         delete()

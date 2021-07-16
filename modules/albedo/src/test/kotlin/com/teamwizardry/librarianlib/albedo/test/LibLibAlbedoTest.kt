@@ -20,6 +20,8 @@ internal object LibLibAlbedoTest {
 
         override fun onInitialize() {
             test("simple_renderbuffer", "Simple RenderBuffer", "A simple flat color RenderBuffer")
+            test("base_flat_color", "FlatColorRenderBuffer", "The built-in flat color buffer")
+            test("base_flat_texture", "FlatTextureRenderBuffer", "The built-in flat texture buffer")
 
             test("simple_frag", "Simple Fragment Shader", "A simple fragment shader with no uniforms")
             test("primitive_uniform", "Simple Primitive Uniform", "A simple time-based color fragment")
@@ -50,6 +52,8 @@ internal object LibLibAlbedoTest {
 
         override fun onInitializeClient() {
             test("simple_renderbuffer", SimpleRenderBuffer)
+            test("base_flat_color", TestFlatColorRenderBuffer)
+            test("base_flat_texture", TestFlatTextureRenderBuffer)
 
             manager.registerClient()
         }
