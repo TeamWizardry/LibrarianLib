@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.albedo.test.shaders
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
 import com.teamwizardry.librarianlib.albedo.shader.StandardUniforms
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.albedo.buffer.RenderBuffer
@@ -10,6 +11,7 @@ import com.teamwizardry.librarianlib.albedo.shader.Shader
 import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
 import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.albedo.shader.uniform.Uniform
+import com.teamwizardry.librarianlib.albedo.state.RenderState
 import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.render.*
@@ -18,6 +20,7 @@ import net.minecraft.util.Identifier
 
 internal object SimpleRenderBuffer : ShaderTest() {
 
+    val state = RenderState.normal.extend(DefaultRenderStates.Blend.DEFAULT)
     val shader by lazy {
         Shader.build("flat_color")
             .vertex(Identifier("liblib-albedo-test:flat_color.vert"))
@@ -38,20 +41,6 @@ internal object SimpleRenderBuffer : ShaderTest() {
     }
 
     override fun doDraw(stack: MatrixStack, matrix: Matrix4d) {
-        val vb = Tessellator.getInstance().buffer
-
-        RenderSystem.enableBlend()
-        RenderSystem.disableTexture()
-        RenderSystem.defaultBlendFunc()
-        RenderSystem.setShader { GameRenderer.getPositionColorShader() }
-        vb.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR)
-        vb.vertex2d(matrix, minX, maxY).color(1f, 1f, 1f, 1f).next()
-        vb.vertex2d(matrix, maxX, maxY).color(1f, 1f, 1f, 1f).next()
-        vb.vertex2d(matrix, maxX, minY).color(1f, 1f, 1f, 1f).next()
-        vb.vertex2d(matrix, minX, minY).color(1f, 1f, 1f, 1f).next()
-        vb.end()
-        BufferRenderer.draw(vb)
-
         val rb = FlatColorRenderBuffer.SHARED
 
         rb.pos(matrix, minX, minY, 0).color(1f, 0f, 0f, 1f).endVertex()
@@ -59,9 +48,9 @@ internal object SimpleRenderBuffer : ShaderTest() {
         rb.pos(matrix, maxX, maxY, 0).color(1f, 1f, 1f, 1f).endVertex()
         rb.pos(matrix, maxX, minY, 0).color(0f, 1f, 0f, 1f).endVertex()
 
+        state.apply()
         rb.draw(Primitive.QUADS)
-        RenderSystem.enableTexture()
-        RenderSystem.disableBlend()
+        state.cleanup()
     }
 
     class TestRenderBuffer : RenderBuffer(VertexBuffer.SHARED) {
