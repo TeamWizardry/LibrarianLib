@@ -13,7 +13,7 @@ includeModule("core")
 //includeModule("facade")
 //includeModule("foundation")
 //includeModule("glitter")
-//includeModule("mosaic")
+includeModule("mosaic")
 //includeModule("scribe")
 
 include("zz_runtime")

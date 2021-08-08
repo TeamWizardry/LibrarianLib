@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import net.minecraft.client.render.RenderLayer
+import net.minecraft.util.Identifier
 
 /**
  * [Sprite] wrapper for Minecraft [atlas sprites](net.minecraft.client.texture.Sprite).
@@ -10,7 +11,7 @@ import net.minecraft.client.render.RenderLayer
  */
 public class MinecraftAtlasSprite(private val sprite: net.minecraft.client.texture.Sprite) : Sprite {
 
-    override val renderType: RenderLayer = SimpleRenderLayers.flat(sprite.atlas.id)
+    override val texture: Identifier get() = sprite.atlas.id
 
     override fun minU(animFrames: Int): Float = sprite.minU
 

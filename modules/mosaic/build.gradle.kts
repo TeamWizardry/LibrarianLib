@@ -22,5 +22,6 @@ configureFabricTestModJson {
 
 dependencies {
     liblib(project(":core"))
+    liblib(project(":albedo"))
     testApi(project(":testcore"))
 }

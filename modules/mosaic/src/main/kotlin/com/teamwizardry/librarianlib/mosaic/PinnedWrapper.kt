@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.render.RenderLayer
+import net.minecraft.util.Identifier
 import java.awt.Color
 
 public class PinnedWrapper(
@@ -32,7 +33,7 @@ public class PinnedWrapper(
         return wrapped.pinnedWrapper(top, bottom, left, right)
     }
 
-    override val renderType: RenderLayer get() = wrapped.renderType
+    override val texture: Identifier get() = wrapped.texture
     override val width: Int get() = wrapped.width
     override val height: Int get() = wrapped.height
     override val uSize: Float get() = wrapped.uSize

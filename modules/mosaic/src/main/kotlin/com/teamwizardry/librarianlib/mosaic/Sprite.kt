@@ -3,9 +3,7 @@ package com.teamwizardry.librarianlib.mosaic
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.VertexFormats
-import org.lwjgl.opengl.GL11
+import net.minecraft.util.Identifier
 import java.awt.Color
 
 /**
@@ -14,12 +12,7 @@ import java.awt.Color
  * the [MinecraftAtlasSprite] is needed in some cases.
  */
 public interface Sprite {
-
-    /**
-     * The render type to be used when drawing. The renderer expects this type to be drawing [GL11.GL_QUADS]
-     * using [VertexFormats.POSITION_COLOR_TEXTURE]
-     */
-    public val renderType: RenderLayer
+    public val texture: Identifier
 
     /**
      * The logical width of this sprite.
@@ -174,10 +167,7 @@ public interface Sprite {
      * @param height The height to draw the sprite
      */
     public fun draw(matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animTicks: Int, tint: Color) {
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val builder = buffer.getBuffer(renderType)
-        DrawingUtil.draw(this, builder, matrix, x, y, width, height, animTicks, tint)
-        buffer.draw()
+        SpriteRenderer.draw(this, matrix, x, y, width, height, animTicks, tint)
     }
 
     public fun pinnedWrapper(top: Boolean, bottom: Boolean, left: Boolean, right: Boolean): Sprite {

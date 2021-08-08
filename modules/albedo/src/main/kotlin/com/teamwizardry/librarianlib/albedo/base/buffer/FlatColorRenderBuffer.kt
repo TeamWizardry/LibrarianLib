@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.albedo.buffer.VertexBuffer
 import com.teamwizardry.librarianlib.albedo.shader.Shader
 import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
 import net.minecraft.util.Identifier
+import java.awt.Color
 
 public class FlatColorRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatColorRenderBuffer>(vbo) {
     private val color: VertexLayoutElement =
@@ -15,6 +16,16 @@ public class FlatColorRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatCol
         putByte((g * 255).toInt())
         putByte((b * 255).toInt())
         putByte((a * 255).toInt())
+        @Suppress("UNCHECKED_CAST")
+        return this
+    }
+
+    public fun color(color: Color): FlatColorRenderBuffer {
+        start(this.color)
+        putByte(color.red)
+        putByte(color.green)
+        putByte(color.blue)
+        putByte(color.alpha)
         @Suppress("UNCHECKED_CAST")
         return this
     }

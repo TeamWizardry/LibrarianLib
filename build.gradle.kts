@@ -62,7 +62,7 @@ configure<CommonConfigExtension> {
 //        create("facade")
 //        create("foundation")
 //        create("glitter")
-//        create("mosaic")
+        create("mosaic")
 //        create("scribe")
     }
 

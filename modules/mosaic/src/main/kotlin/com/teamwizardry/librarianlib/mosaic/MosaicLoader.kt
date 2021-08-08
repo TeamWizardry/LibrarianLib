@@ -205,12 +205,9 @@ internal object MosaicLoader : SimpleResourceReloadListener<Map<Identifier, Mosa
                 sprite.size = ivec(sheet.uvSize.x, sheet.uvSize.x * animation.getHeight(1) / animation.getWidth(1))
                 val offset = ivec(0, sprite.size.y)
                 val frames = mutableListOf<Vec2i>()
-                for(it in 0 until animation.frameCount) {
-                    val index = animation.getFrameIndex(it)
-                    val duration = animation.getFrameTime(it)
+                animation.forEachFrame { index, frameTime ->
                     val uv = sprite.uv + offset * index
-
-                    repeat(duration) { frames.add(uv) }
+                    repeat(frameTime) { frames.add(uv) }
                 }
                 sprite.frameUVs = frames.unmodifiableView()
             }

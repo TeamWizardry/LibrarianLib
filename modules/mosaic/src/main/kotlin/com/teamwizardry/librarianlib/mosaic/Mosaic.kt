@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
+import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
 import net.minecraft.client.render.RenderPhase
@@ -88,9 +89,6 @@ public class Mosaic(
     public val image: BufferedImage
         get() = definition.image
 
-    public lateinit var renderType: RenderLayer
-        private set
-
     private var sprites: MutableMap<String, MosaicSprite> = mutableMapOf()
     private var colors: MutableMap<String, TextureColor> = mutableMapOf()
 
@@ -103,7 +101,7 @@ public class Mosaic(
 
     internal fun loadDefinition() {
         definition = MosaicLoader.getDefinition(location)
-        renderType = createRenderLayer(RenderPhase.Texture(location, definition.blur, definition.mipmap))
+        Client.textureManager.getTexture(location).setFilter(definition.blur, definition.mipmap)
 
         sprites.forEach { (_, sprite) ->
             sprite.loadDefinition()
@@ -159,24 +157,6 @@ public class Mosaic(
 
         @get:JvmSynthetic
         internal val textures = weakSetOf<Mosaic>().synchronized()
-
-        private val types = mutableMapOf<RenderPhase.Texture, RenderLayer>()
-
-        private fun createRenderLayer(texture: RenderPhase.Texture): RenderLayer {
-            return types.getOrPut(texture) {
-                val renderState = RenderLayer.MultiPhaseParameters.builder()
-                    .texture(texture)
-                    .alpha(DefaultRenderPhases.ONE_TENTH_ALPHA)
-                    .depthTest(DefaultRenderPhases.LEQUAL_DEPTH_TEST)
-                    .transparency(DefaultRenderPhases.TRANSLUCENT_TRANSPARENCY)
-
-                @Suppress("INACCESSIBLE_TYPE")
-                RenderLayer.of("sprite_type",
-                    VertexFormats.POSITION_COLOR_TEXTURE, GL11.GL_QUADS, 256, false, false, renderState.build(true)
-                )
-            }
-        }
-
     }
 
     private class TextureColor(private val mosaic: Mosaic, val name: String) {

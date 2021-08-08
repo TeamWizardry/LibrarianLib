@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
 import com.teamwizardry.librarianlib.albedo.shader.uniform.SamplerUniform
 import com.teamwizardry.librarianlib.albedo.shader.uniform.Uniform
 import net.minecraft.util.Identifier
+import java.awt.Color
 
 public class FlatTextureRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatTextureRenderBuffer>(vbo) {
     public val texture: SamplerUniform = +Uniform.sampler2D.create("Texture")
@@ -20,6 +21,16 @@ public class FlatTextureRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatT
         putByte((g * 255).toInt())
         putByte((b * 255).toInt())
         putByte((a * 255).toInt())
+        @Suppress("UNCHECKED_CAST")
+        return this
+    }
+
+    public fun color(color: Color): FlatTextureRenderBuffer {
+        start(this.color)
+        putByte(color.red)
+        putByte(color.green)
+        putByte(color.blue)
+        putByte(color.alpha)
         @Suppress("UNCHECKED_CAST")
         return this
     }

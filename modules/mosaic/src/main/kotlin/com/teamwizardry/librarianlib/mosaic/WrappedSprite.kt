@@ -17,7 +17,7 @@ public abstract class WrappedSprite: Sprite {
     override fun maxU(animFrames: Int): Float = wrapped?.maxU(animFrames) ?: 1f
     override fun maxV(animFrames: Int): Float = wrapped?.maxV(animFrames) ?: 1f
 
-    override val renderType: RenderLayer get() = wrapped?.renderType ?: missingType
+    override val texture: Identifier get() = wrapped?.texture ?: Identifier("missingno")
     override val width: Int get() = wrapped?.width ?: 1
     override val height: Int get() = wrapped?.height ?: 1
     override val uSize: Float get() = wrapped?.uSize ?: 1f
@@ -38,20 +38,5 @@ public abstract class WrappedSprite: Sprite {
     }
     override fun draw(matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animTicks: Int, tint: Color) {
         wrapped?.draw(matrix, x, y, width, height, animTicks, tint)
-    }
-
-    private companion object {
-        @Suppress("INACCESSIBLE_TYPE")
-        val missingType: RenderLayer = run {
-            val renderState = RenderLayer.MultiPhaseParameters.builder()
-                .texture(RenderPhase.Texture(Identifier("minecraft:missingno"), false, false))
-                .alpha(DefaultRenderPhases.ONE_TENTH_ALPHA)
-                .depthTest(DefaultRenderPhases.LEQUAL_DEPTH_TEST)
-                .transparency(DefaultRenderPhases.TRANSLUCENT_TRANSPARENCY)
-
-            RenderLayer.of("sprite_type",
-                VertexFormats.POSITION_COLOR_TEXTURE, GL11.GL_QUADS, 256, false, false, renderState.build(true)
-            )
-        }
     }
 }

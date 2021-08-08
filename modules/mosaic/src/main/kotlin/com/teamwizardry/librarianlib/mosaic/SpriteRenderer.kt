@@ -1,5 +1,9 @@
 package com.teamwizardry.librarianlib.mosaic
 
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatTextureRenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
+import com.teamwizardry.librarianlib.albedo.state.RenderState
+import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.texture
 import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
@@ -7,17 +11,17 @@ import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.render.VertexConsumer
 import java.awt.Color
 
-internal object DrawingUtil {
-    fun draw(sprite: Sprite, vb: VertexConsumer, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
+internal object SpriteRenderer {
+    fun draw(sprite: Sprite, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
         if(sprite.pinTop && sprite.pinBottom && sprite.pinLeft && sprite.pinRight &&
             sprite.minUCap == 0f && sprite.minVCap == 0f && sprite.maxUCap == 0f && sprite.maxVCap == 0f) {
-            drawSimple(sprite, vb, matrix, x, y, width, height, animFrames, tint)
+            drawSimple(sprite, matrix, x, y, width, height, animFrames, tint)
         } else {
-            drawComplex(sprite, vb, matrix, x, y, width, height, animFrames, tint)
+            drawComplex(sprite, matrix, x, y, width, height, animFrames, tint)
         }
     }
 
-    private fun drawSimple(sprite: Sprite, vb: VertexConsumer, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
+    private fun drawSimple(sprite: Sprite, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
         val minX = x
         val minY = y
         val maxX = x + width
@@ -28,13 +32,18 @@ internal object DrawingUtil {
         val minV = sprite.minV(animFrames)
         val maxV = sprite.maxV(animFrames)
 
-        vb.vertex2d(matrix, minX, maxY).color(tint).texture(minU, maxV).next()
-        vb.vertex2d(matrix, maxX, maxY).color(tint).texture(maxU, maxV).next()
-        vb.vertex2d(matrix, maxX, minY).color(tint).texture(maxU, minV).next()
-        vb.vertex2d(matrix, minX, minY).color(tint).texture(minU, minV).next()
+        val rb = FlatTextureRenderBuffer.SHARED
+        rb.pos(matrix, minX, maxY, 0).color(tint).tex(minU, maxV).endVertex()
+        rb.pos(matrix, maxX, maxY, 0).color(tint).tex(maxU, maxV).endVertex()
+        rb.pos(matrix, maxX, minY, 0).color(tint).tex(maxU, minV).endVertex()
+        rb.pos(matrix, minX, minY, 0).color(tint).tex(minU, minV).endVertex()
+
+        val texture = Client.textureManager.getTexture(sprite.texture)
+        rb.texture.set(texture.glId)
+        rb.draw(Primitive.QUADS)
     }
 
-    private fun drawComplex(sprite: Sprite, vb: VertexConsumer, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
+    private fun drawComplex(sprite: Sprite, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
 
         val xSections = getSections(
             logicalSize = sprite.width.toFloat(),
@@ -60,6 +69,8 @@ internal object DrawingUtil {
         val spriteMinV = sprite.minV(animFrames)
         val spriteUSpan = sprite.maxU(animFrames) - spriteMinU
         val spriteVSpan = sprite.maxV(animFrames) - spriteMinV
+
+        val rb = FlatTextureRenderBuffer.SHARED
         xSections.forEach { xSection ->
             ySections.forEach { ySection ->
                 val minX = x + xSection.minPos
@@ -74,21 +85,25 @@ internal object DrawingUtil {
                     xSection.minTex, ySection.minTex
                 )
 
-                vb.vertex2d(matrix, minX, maxY).color(tint).texture(u0, v0).next()
-                vb.vertex2d(matrix, maxX, maxY).color(tint).texture(u1, v1).next()
-                vb.vertex2d(matrix, maxX, minY).color(tint).texture(u2, v2).next()
-                vb.vertex2d(matrix, minX, minY).color(tint).texture(u3, v3).next()
+                rb.pos(matrix, minX, maxY, 0).color(tint).tex(u0, v0).endVertex()
+                rb.pos(matrix, maxX, maxY, 0).color(tint).tex(u1, v1).endVertex()
+                rb.pos(matrix, maxX, minY, 0).color(tint).tex(u2, v2).endVertex()
+                rb.pos(matrix, minX, minY, 0).color(tint).tex(u3, v3).endVertex()
             }
         }
+
+        val texture = Client.textureManager.getTexture(sprite.texture)
+        rb.texture.set(texture.glId)
+        rb.draw(Primitive.QUADS)
     }
 
     private data class DestructureUVs(
-        var u0: Double, var v0: Double, var u1: Double, var v1: Double,
-        var u2: Double, var v2: Double, var u3: Double, var v3: Double
+        var u0: Float, var v0: Float, var u1: Float, var v1: Float,
+        var u2: Float, var v2: Float, var u3: Float, var v3: Float
     )
     private val spinValue = DestructureUVs(
-        0.0, 0.0, 0.0, 0.0,
-        0.0, 0.0, 0.0, 0.0
+        0f, 0f, 0f, 0f,
+        0f, 0f, 0f, 0f
     )
 
     @Suppress("NAME_SHADOWING")
@@ -97,10 +112,10 @@ internal object DrawingUtil {
         u0: Float, v0: Float, u1: Float, v1: Float,
         u2: Float, v2: Float, u3: Float, v3: Float
     ): DestructureUVs {
-        val u0 = u0 - 0.5; val v0 = v0 - 0.5
-        val u1 = u1 - 0.5; val v1 = v1 - 0.5
-        val u2 = u2 - 0.5; val v2 = v2 - 0.5
-        val u3 = u3 - 0.5; val v3 = v3 - 0.5
+        val u0 = u0 - 0.5f; val v0 = v0 - 0.5f
+        val u1 = u1 - 0.5f; val v1 = v1 - 0.5f
+        val u2 = u2 - 0.5f; val v2 = v2 - 0.5f
+        val u3 = u3 - 0.5f; val v3 = v3 - 0.5f
 
         when(rotation % 4 + if(rotation < 0) 4 else 0) {
             1 -> {
@@ -129,14 +144,14 @@ internal object DrawingUtil {
             }
         }
 
-        spinValue.u0 = spriteMinU + (spinValue.u0 + 0.5) * spriteUSpan
-        spinValue.v0 = spriteMinV + (spinValue.v0 + 0.5) * spriteVSpan
-        spinValue.u1 = spriteMinU + (spinValue.u1 + 0.5) * spriteUSpan
-        spinValue.v1 = spriteMinV + (spinValue.v1 + 0.5) * spriteVSpan
-        spinValue.u2 = spriteMinU + (spinValue.u2 + 0.5) * spriteUSpan
-        spinValue.v2 = spriteMinV + (spinValue.v2 + 0.5) * spriteVSpan
-        spinValue.u3 = spriteMinU + (spinValue.u3 + 0.5) * spriteUSpan
-        spinValue.v3 = spriteMinV + (spinValue.v3 + 0.5) * spriteVSpan
+        spinValue.u0 = spriteMinU + (spinValue.u0 + 0.5f) * spriteUSpan
+        spinValue.v0 = spriteMinV + (spinValue.v0 + 0.5f) * spriteVSpan
+        spinValue.u1 = spriteMinU + (spinValue.u1 + 0.5f) * spriteUSpan
+        spinValue.v1 = spriteMinV + (spinValue.v1 + 0.5f) * spriteVSpan
+        spinValue.u2 = spriteMinU + (spinValue.u2 + 0.5f) * spriteUSpan
+        spinValue.v2 = spriteMinV + (spinValue.v2 + 0.5f) * spriteVSpan
+        spinValue.u3 = spriteMinU + (spinValue.u3 + 0.5f) * spriteUSpan
+        spinValue.v3 = spriteMinV + (spinValue.v3 + 0.5f) * spriteVSpan
 
         return spinValue
     }
