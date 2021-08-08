@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.scribe.test.nbt
 
-import com.teamwizardry.librarianlib.core.util.kotlin.TagBuilder
+import com.teamwizardry.librarianlib.core.util.kotlin.NbtBuilder
 import com.teamwizardry.librarianlib.scribe.nbt.EnumSerializerFactory
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.prism.DeserializationException
@@ -26,14 +26,14 @@ internal class EnumFactoryTests: NbtPrismTest() {
 
     @Test
     fun `read+write for enum should be symmetrical`() {
-        simple<TestEnum, EnumSerializerFactory.EnumSerializer>(TestEnum.ONE, TagBuilder.string("ONE"))
+        simple<TestEnum, EnumSerializerFactory.EnumSerializer>(TestEnum.ONE, NbtBuilder.string("ONE"))
     }
 
     @Test
     fun `reading a non-existent enum case name should throw`() {
         val serializer = prism[Mirror.reflect<TestEnum>()].value
         assertThrows<DeserializationException> {
-            serializer.read(TagBuilder.string("OOPS"), null)
+            serializer.read(NbtBuilder.string("OOPS"), null)
         }
     }
 

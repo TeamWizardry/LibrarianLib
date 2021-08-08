@@ -6,7 +6,7 @@ import net.minecraft.nbt.*
 import kotlin.jvm.JvmInline
 
 @DslMarker
-internal annotation class TagBuilderDslMarker
+internal annotation class NbtBuilderDslMarker
 
 /**
  * A Kotlin DSL for creating NbtElement tags.
@@ -21,16 +21,16 @@ internal annotation class TagBuilderDslMarker
  * }
  * ```
  */
-@TagBuilderDslMarker
-public object TagBuilder {
+@NbtBuilderDslMarker
+public object NbtBuilder {
     public inline fun compound(block: CompoundTagBuilder.() -> Unit): NbtCompound =
         CompoundTagBuilder(NbtCompound()).also { it.block() }.tag
 
-    public inline fun list(block: ListTagBuilder.() -> Unit): NbtList =
-        ListTagBuilder(NbtList()).also { it.block() }.tag
+    public inline fun list(block: NbtListBuilder.() -> Unit): NbtList =
+        NbtListBuilder(NbtList()).also { it.block() }.tag
 
-    public inline fun list(vararg elements: NbtElement, block: ListTagBuilder.() -> Unit): NbtList =
-        ListTagBuilder(NbtList()).also {
+    public inline fun list(vararg elements: NbtElement, block: NbtListBuilder.() -> Unit): NbtList =
+        NbtListBuilder(NbtList()).also {
             it.addAll(elements.toList())
             it.block()
         }.tag
@@ -56,7 +56,7 @@ public object TagBuilder {
 }
 
 @JvmInline
-@TagBuilderDslMarker
+@NbtBuilderDslMarker
 public value class CompoundTagBuilder(public val tag: NbtCompound) {
     // configuring this tag
 
@@ -69,11 +69,11 @@ public value class CompoundTagBuilder(public val tag: NbtCompound) {
     public inline fun compound(block: CompoundTagBuilder.() -> Unit): NbtCompound =
         CompoundTagBuilder(NbtCompound()).also { it.block() }.tag
 
-    public inline fun list(block: ListTagBuilder.() -> Unit): NbtList =
-        ListTagBuilder(NbtList()).also { it.block() }.tag
+    public inline fun list(block: NbtListBuilder.() -> Unit): NbtList =
+        NbtListBuilder(NbtList()).also { it.block() }.tag
 
-    public inline fun list(vararg elements: NbtElement, block: ListTagBuilder.() -> Unit): NbtList =
-        ListTagBuilder(NbtList()).also {
+    public inline fun list(vararg elements: NbtElement, block: NbtListBuilder.() -> Unit): NbtList =
+        NbtListBuilder(NbtList()).also {
             it.addAll(elements.toList())
             it.block()
         }.tag
@@ -99,8 +99,8 @@ public value class CompoundTagBuilder(public val tag: NbtCompound) {
 }
 
 @JvmInline
-@TagBuilderDslMarker
-public value class ListTagBuilder(public val tag: NbtList) {
+@NbtBuilderDslMarker
+public value class NbtListBuilder(public val tag: NbtList) {
     // configuring this tag
 
     /**
@@ -138,11 +138,11 @@ public value class ListTagBuilder(public val tag: NbtList) {
     public inline fun compound(block: CompoundTagBuilder.() -> Unit): NbtCompound =
         CompoundTagBuilder(NbtCompound()).also { it.block() }.tag
 
-    public inline fun list(block: ListTagBuilder.() -> Unit): NbtList =
-        ListTagBuilder(NbtList()).also { it.block() }.tag
+    public inline fun list(block: NbtListBuilder.() -> Unit): NbtList =
+        NbtListBuilder(NbtList()).also { it.block() }.tag
 
-    public inline fun list(vararg elements: NbtElement, block: ListTagBuilder.() -> Unit): NbtList =
-        ListTagBuilder(NbtList()).also {
+    public inline fun list(vararg elements: NbtElement, block: NbtListBuilder.() -> Unit): NbtList =
+        NbtListBuilder(NbtList()).also {
             it.addAll(elements.toList())
             it.block()
         }.tag

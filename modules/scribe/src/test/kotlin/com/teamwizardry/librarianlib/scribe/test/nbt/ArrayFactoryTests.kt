@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.scribe.test.nbt
 
-import com.teamwizardry.librarianlib.core.util.kotlin.TagBuilder
+import com.teamwizardry.librarianlib.core.util.kotlin.NbtBuilder
 import com.teamwizardry.librarianlib.scribe.nbt.ArraySerializerFactory
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.prism.DeserializationException
@@ -23,7 +23,7 @@ internal class ArrayFactoryTests: NbtPrismTest() {
     fun `read+write for an array with nulls should be symmetrical`() {
         simple<Array<String?>, ArraySerializerFactory.ArraySerializer>(
             arrayOf("first", "second", null, "fourth"),
-            TagBuilder.list {
+            NbtBuilder.list {
                 +compound { "V" *= string("first") }
                 +compound { "V" *= string("second") }
                 +compound {}
@@ -37,7 +37,7 @@ internal class ArrayFactoryTests: NbtPrismTest() {
         val targetArray = arrayOf("value")
 
         val theArray = arrayOf<String?>(null)
-        val theNode = TagBuilder.list {
+        val theNode = NbtBuilder.list {
             +compound { "V" *= string("value") }
         }
         val deserialized = prism[Mirror.reflect<Array<String?>>()].value.read(theNode, theArray)
@@ -54,7 +54,7 @@ internal class ArrayFactoryTests: NbtPrismTest() {
         val targetArray = arrayOf("value")
 
         val theArray = arrayOf<String?>(null, null)
-        val theNode = TagBuilder.list {
+        val theNode = NbtBuilder.list {
             +compound { "V" *= string("value") }
         }
         val deserialized = prism[Mirror.reflect<Array<String?>>()].value.read(theNode, theArray)
@@ -69,7 +69,7 @@ internal class ArrayFactoryTests: NbtPrismTest() {
     fun `reading an array with no existing value should create a new array`() {
         val targetArray = arrayOf("value")
 
-        val theNode = TagBuilder.list {
+        val theNode = NbtBuilder.list {
             +compound { "V" *= string("value") }
         }
         val deserialized = prism[Mirror.reflect<Array<String?>>()].value.read(theNode, null)
@@ -82,14 +82,14 @@ internal class ArrayFactoryTests: NbtPrismTest() {
     @Test
     fun `reading an array with the wrong NBT type should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<Array<String?>>()].value.read(TagBuilder.string("oops!"), null)
+            prism[Mirror.reflect<Array<String?>>()].value.read(NbtBuilder.string("oops!"), null)
         }
     }
 
     @Test
     fun `reading an array with the wrong ListNBT element type should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<Array<String?>>()].value.read(TagBuilder.list { +string("oops!") }, null)
+            prism[Mirror.reflect<Array<String?>>()].value.read(NbtBuilder.list { +string("oops!") }, null)
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.scribe.test.nbt
 
-import com.teamwizardry.librarianlib.core.util.kotlin.TagBuilder
+import com.teamwizardry.librarianlib.core.util.kotlin.NbtBuilder
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.MutableMatrix3d
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test
 internal class LibrarianLibSimpleTests: NbtPrismTest() {
     @Test
     fun `read+write for Vec2d should be symmetrical`() {
-        simple<Vec2d, Vec2dSerializer>(Vec2d(1.0, 2.0), TagBuilder.compound {
+        simple<Vec2d, Vec2dSerializer>(Vec2d(1.0, 2.0), NbtBuilder.compound {
             "X" *= double(1.0)
             "Y" *= double(2.0)
         })
@@ -33,7 +33,7 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
 
     @Test
     fun `read+write for Vec2i should be symmetrical`() {
-        simple<Vec2i, Vec2iSerializer>(Vec2i(1, 2), TagBuilder.compound {
+        simple<Vec2i, Vec2iSerializer>(Vec2i(1, 2), NbtBuilder.compound {
             "X" *= int(1)
             "Y" *= int(2)
         })
@@ -41,7 +41,7 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
 
     @Test
     fun `read+write for Rect2d should be symmetrical`() {
-        simple<Rect2d, Rect2dSerializer>(Rect2d(1.0, 2.0, 3.0, 4.0), TagBuilder.compound {
+        simple<Rect2d, Rect2dSerializer>(Rect2d(1.0, 2.0, 3.0, 4.0), NbtBuilder.compound {
             "X" *= double(1.0)
             "Y" *= double(2.0)
             "Width" *= double(3.0)
@@ -55,7 +55,7 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
             1.0, 2.0, 3.0,
             4.0, 5.0, 6.0,
             7.0, 8.0, 9.0
-        ), TagBuilder.list {
+        ), NbtBuilder.list {
             +double(1.0)
             +double(2.0)
             +double(3.0)
@@ -74,7 +74,7 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
             1.0, 2.0, 3.0,
             4.0, 5.0, 6.0,
             7.0, 8.0, 9.0
-        ), TagBuilder.list {
+        ), NbtBuilder.list {
             +double(1.0)
             +double(2.0)
             +double(3.0)
@@ -96,7 +96,7 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
         )
         val target = MutableMatrix3d()
         val result = prism[Mirror.reflect<MutableMatrix3d>()].value.read(
-            TagBuilder.list {
+            NbtBuilder.list {
                 +double(1.0)
                 +double(2.0)
                 +double(3.0)
@@ -120,7 +120,7 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
             5.0, 6.0, 7.0, 8.0,
             9.0, 10.0, 11.0, 12.0,
             13.0, 14.0, 15.0, 16.0
-        ), TagBuilder.list {
+        ), NbtBuilder.list {
             +double(1.0)
             +double(2.0)
             +double(3.0)
@@ -148,7 +148,7 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
             5.0, 6.0, 7.0, 8.0,
             9.0, 10.0, 11.0, 12.0,
             13.0, 14.0, 15.0, 16.0
-        ), TagBuilder.list {
+        ), NbtBuilder.list {
             +double(1.0)
             +double(2.0)
             +double(3.0)
@@ -179,7 +179,7 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
         )
         val target = MutableMatrix4d()
         val result = prism[Mirror.reflect<MutableMatrix4d>()].value.read(
-            TagBuilder.list {
+            NbtBuilder.list {
                 +double(1.0)
                 +double(2.0)
                 +double(3.0)
@@ -205,7 +205,7 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
 
     @Test
     fun `read+write for Quaternion should be symmetrical`() {
-        simple<Quaternion, QuaternionSerializer>(Quaternion(1.0, 2.0, 3.0, 4.0), TagBuilder.compound {
+        simple<Quaternion, QuaternionSerializer>(Quaternion(1.0, 2.0, 3.0, 4.0), NbtBuilder.compound {
             "X" *= double(1.0)
             "Y" *= double(2.0)
             "Z" *= double(3.0)

@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.scribe.test.nbt
 
-import com.teamwizardry.librarianlib.core.util.kotlin.TagBuilder
+import com.teamwizardry.librarianlib.core.util.kotlin.NbtBuilder
 import com.teamwizardry.librarianlib.scribe.nbt.ListSerializerFactory
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.prism.DeserializationException
@@ -21,7 +21,7 @@ internal class ListFactoryTests: NbtPrismTest() {
     fun `read+write for ArrayList should be symmetrical`() {
         simple<ArrayList<String?>, ListSerializerFactory.ListSerializer>(
             arrayListOf("first", "second", null, "fourth"),
-            TagBuilder.list {
+            NbtBuilder.list {
                 +compound { "V" *= string("first") }
                 +compound { "V" *= string("second") }
                 +compound {}
@@ -35,7 +35,7 @@ internal class ListFactoryTests: NbtPrismTest() {
         val targetList = arrayListOf("value")
 
         val theList = arrayListOf<String?>("junk")
-        val theTag = TagBuilder.list {
+        val theTag = NbtBuilder.list {
             +compound { "V" *= string("value") }
         }
         val deserialized = prism[Mirror.reflect<ArrayList<String?>>()].value.read(theTag, theList)
@@ -48,7 +48,7 @@ internal class ListFactoryTests: NbtPrismTest() {
     fun `reading an ArrayList with no existing value should create a new list`() {
         val targetList = arrayListOf("value")
 
-        val theTag = TagBuilder.list {
+        val theTag = NbtBuilder.list {
             +compound { "V" *= string("value") }
         }
         val deserialized = prism[Mirror.reflect<ArrayList<String?>>()].value.read(theTag, null)
@@ -60,14 +60,14 @@ internal class ListFactoryTests: NbtPrismTest() {
     @Test
     fun `reading an ArrayList with the wrong NBT type should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<ArrayList<String?>>()].value.read(TagBuilder.string("oops!"), null)
+            prism[Mirror.reflect<ArrayList<String?>>()].value.read(NbtBuilder.string("oops!"), null)
         }
     }
 
     @Test
     fun `reading an ArrayList with the wrong ListNBT element type should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<ArrayList<String?>>()].value.read(TagBuilder.list { +string("oops!") }, null)
+            prism[Mirror.reflect<ArrayList<String?>>()].value.read(NbtBuilder.list { +string("oops!") }, null)
         }
     }
 
@@ -86,7 +86,7 @@ internal class ListFactoryTests: NbtPrismTest() {
             })
         }
 
-        val targetTag = TagBuilder.list {
+        val targetTag = NbtBuilder.list {
             +compound {
                 "V" *= list {
                     +compound { "V" *= list {} }
