@@ -21,7 +21,6 @@ public class FlatTextureRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatT
         putByte((g * 255).toInt())
         putByte((b * 255).toInt())
         putByte((a * 255).toInt())
-        @Suppress("UNCHECKED_CAST")
         return this
     }
 
@@ -31,7 +30,6 @@ public class FlatTextureRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatT
         putByte(color.green)
         putByte(color.blue)
         putByte(color.alpha)
-        @Suppress("UNCHECKED_CAST")
         return this
     }
 
@@ -39,7 +37,6 @@ public class FlatTextureRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatT
         start(texCoord)
         putFloat(u)
         putFloat(v)
-        @Suppress("UNCHECKED_CAST")
         return this
     }
 

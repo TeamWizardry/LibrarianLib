@@ -23,6 +23,7 @@ configureFabricTestModJson {
 dependencies {
     liblib(project(":core"))
     liblib(project(":etcetera"))
+    liblib(project(":albedo"))
     testApi(project(":testcore"))
     implementation("org.magicwerk:brownies-collections:0.9.13")
     include("org.magicwerk:brownies-collections:0.9.13")

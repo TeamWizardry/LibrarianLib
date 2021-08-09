@@ -2,9 +2,11 @@ package com.teamwizardry.librarianlib.glitter.modules
 
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableMap
+import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
+import com.teamwizardry.librarianlib.core.mixin.IMatrix3f
+import com.teamwizardry.librarianlib.core.mixin.IMatrix4f
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
@@ -109,8 +111,6 @@ public class SpriteRenderModule private constructor(
         stack.translate(-viewPos.x, -viewPos.y, -viewPos.z)
 
         val modelViewMatrix = stack.peek().model
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val builder = buffer.getBuffer(renderOptions.renderLayer)
 
         val normalMatrix = mixinCast<IMatrix3f>(context.matrixStack().peek().normal)
         val nm00 = normalMatrix.m00
@@ -158,7 +158,11 @@ public class SpriteRenderModule private constructor(
         val widthSizeIndex: Int = if (this.size.contents.size == 2) 1 else 0
         val computeNormal = renderOptions.diffuseLight
 
-        particles.forEach { particle ->
+        val renderBuffer = SpriteRenderBuffer.SHARED
+        renderBuffer.worldMatrix.set(modelViewMatrix)
+        renderBuffer.texture.set(renderOptions.sprite)
+
+        for(particle in particles) {
             for (i in prepModules.indices) {
                 prepModules[i].update(particle)
             }
@@ -357,83 +361,117 @@ public class SpriteRenderModule private constructor(
                 0
             }
 
-            builder.vertex(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ)
+            renderBuffer.point(x, y, z)
+                .up(upX, upY, upZ)
+                .right(rightX, rightY, rightZ)
                 .color(r, g, b, a)
-                .texture(minU, maxV)
-            if(renderOptions.worldLight)
-                builder.light(lightmap)
-            if(renderOptions.diffuseLight)
-                builder.normal(normalX, normalY, normalZ)
-            builder.next()
+                .offset(-width, height)
+                .tex(minU, minV)
+                .endVertex()
 
-            builder.vertex(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ)
+            renderBuffer.point(x, y, z)
+                .up(upX, upY, upZ)
+                .right(rightX, rightY, rightZ)
                 .color(r, g, b, a)
-                .texture(maxU, maxV)
-            if(renderOptions.worldLight)
-                builder.light(lightmap)
-            if(renderOptions.diffuseLight)
-                builder.normal(normalX, normalY, normalZ)
-            builder.next()
+                .offset(-width, -height)
+                .tex(minU, maxV)
+                .endVertex()
 
-            builder.vertex(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ)
+            renderBuffer.point(x, y, z)
+                .up(upX, upY, upZ)
+                .right(rightX, rightY, rightZ)
                 .color(r, g, b, a)
-                .texture(maxU, minV)
-            if(renderOptions.worldLight)
-                builder.light(lightmap)
-            if(renderOptions.diffuseLight)
-                builder.normal(normalX, normalY, normalZ)
-            builder.next()
+                .offset(width, -height)
+                .tex(maxU, maxV)
+                .endVertex()
 
-            builder.vertex(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ)
+            renderBuffer.point(x, y, z)
+                .up(upX, upY, upZ)
+                .right(rightX, rightY, rightZ)
                 .color(r, g, b, a)
-                .texture(minU, minV)
-            if(renderOptions.worldLight)
-                builder.light(lightmap)
-            if(renderOptions.diffuseLight)
-                builder.normal(normalX, normalY, normalZ)
-            builder.next()
+                .offset(width, height)
+                .tex(maxU, minV)
+                .endVertex()
 
-            if(renderOptions.diffuseLight && !renderOptions.cull) {
-
-                builder.vertex(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ)
-                    .color(r, g, b, a)
-                    .texture(minU, minV)
-                if(renderOptions.worldLight)
-                    builder.light(lightmap)
-                if(renderOptions.diffuseLight)
-                    builder.normal(normalX, normalY, normalZ)
-                builder.next()
-
-                builder.vertex(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ)
-                    .color(r, g, b, a)
-                    .texture(maxU, minV)
-                if(renderOptions.worldLight)
-                    builder.light(lightmap)
-                if(renderOptions.diffuseLight)
-                    builder.normal(normalX, normalY, normalZ)
-                builder.next()
-
-                builder.vertex(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ)
-                    .color(r, g, b, a)
-                    .texture(maxU, maxV)
-                if(renderOptions.worldLight)
-                    builder.light(lightmap)
-                if(renderOptions.diffuseLight)
-                    builder.normal(normalX, normalY, normalZ)
-                builder.next()
-
-                builder.vertex(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ)
-                    .color(r, g, b, a)
-                    .texture(minU, maxV)
-                if(renderOptions.worldLight)
-                    builder.light(lightmap)
-                if(renderOptions.diffuseLight)
-                    builder.normal(normalX, normalY, normalZ)
-                builder.next()
-            }
+//            builder.vertex(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ)
+//                .color(r, g, b, a)
+//                .texture(minU, maxV)
+//            if(renderOptions.worldLight)
+//                builder.light(lightmap)
+//            if(renderOptions.diffuseLight)
+//                builder.normal(normalX, normalY, normalZ)
+//            builder.next()
+//
+//            builder.vertex(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ)
+//                .color(r, g, b, a)
+//                .texture(maxU, maxV)
+//            if(renderOptions.worldLight)
+//                builder.light(lightmap)
+//            if(renderOptions.diffuseLight)
+//                builder.normal(normalX, normalY, normalZ)
+//            builder.next()
+//
+//            builder.vertex(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ)
+//                .color(r, g, b, a)
+//                .texture(maxU, minV)
+//            if(renderOptions.worldLight)
+//                builder.light(lightmap)
+//            if(renderOptions.diffuseLight)
+//                builder.normal(normalX, normalY, normalZ)
+//            builder.next()
+//
+//            builder.vertex(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ)
+//                .color(r, g, b, a)
+//                .texture(minU, minV)
+//            if(renderOptions.worldLight)
+//                builder.light(lightmap)
+//            if(renderOptions.diffuseLight)
+//                builder.normal(normalX, normalY, normalZ)
+//            builder.next()
+//
+//            if(renderOptions.diffuseLight && !renderOptions.cull) {
+//
+//                builder.vertex(x - localRightX + localUpX, y - localRightY + localUpY, z - localRightZ + localUpZ)
+//                    .color(r, g, b, a)
+//                    .texture(minU, minV)
+//                if(renderOptions.worldLight)
+//                    builder.light(lightmap)
+//                if(renderOptions.diffuseLight)
+//                    builder.normal(normalX, normalY, normalZ)
+//                builder.next()
+//
+//                builder.vertex(x + localRightX + localUpX, y + localRightY + localUpY, z + localRightZ + localUpZ)
+//                    .color(r, g, b, a)
+//                    .texture(maxU, minV)
+//                if(renderOptions.worldLight)
+//                    builder.light(lightmap)
+//                if(renderOptions.diffuseLight)
+//                    builder.normal(normalX, normalY, normalZ)
+//                builder.next()
+//
+//                builder.vertex(x + localRightX - localUpX, y + localRightY - localUpY, z + localRightZ - localUpZ)
+//                    .color(r, g, b, a)
+//                    .texture(maxU, maxV)
+//                if(renderOptions.worldLight)
+//                    builder.light(lightmap)
+//                if(renderOptions.diffuseLight)
+//                    builder.normal(normalX, normalY, normalZ)
+//                builder.next()
+//
+//                builder.vertex(x - localRightX - localUpX, y - localRightY - localUpY, z - localRightZ - localUpZ)
+//                    .color(r, g, b, a)
+//                    .texture(minU, maxV)
+//                if(renderOptions.worldLight)
+//                    builder.light(lightmap)
+//                if(renderOptions.diffuseLight)
+//                    builder.normal(normalX, normalY, normalZ)
+//                builder.next()
+//            }
         }
 
-        buffer.draw()
+        GlStateManager._disableCull()
+        renderBuffer.draw(Primitive.QUADS)
+        GlStateManager._enableCull()
     }
 
     public companion object {
@@ -609,7 +647,7 @@ public class SpriteRenderModule private constructor(
 }
 
 public class SpriteRenderOptions private constructor(
-    public val renderLayer: RenderLayer,
+    public val sprite: Identifier,
     public val cull: Boolean,
     public val worldLight: Boolean,
     public val diffuseLight: Boolean,
@@ -725,60 +763,7 @@ public class SpriteRenderOptions private constructor(
 //                renderState.build(false)
 //            )
 
-            return SpriteRenderOptions(RenderLayer.getLines(), cull, worldLight, diffuseLight)
-        }
-
-        public companion object {
-            @JvmStatic
-            public val positionColorTexFormat: VertexFormat = VertexFormat(
-                ImmutableList.builder<VertexFormatElement>()
-                    .add(VertexFormats.POSITION_ELEMENT) // position
-                    .add(VertexFormats.COLOR_ELEMENT) // color
-                    .add(VertexFormats.TEXTURE_ELEMENT) // tex
-                    .build()
-            )
-
-            @JvmStatic
-            public val positionColorTexLightmapFormat: VertexFormat = VertexFormat(
-                ImmutableList.builder<VertexFormatElement>()
-                    .add(VertexFormats.POSITION_ELEMENT) // position
-                    .add(VertexFormats.COLOR_ELEMENT) // color
-                    .add(VertexFormats.TEXTURE_ELEMENT) // tex
-                    .add(VertexFormats.LIGHT_ELEMENT) // lightmap
-                    .build()
-            )
-
-            @JvmStatic
-            public val positionColorTexNormalFormat: VertexFormat = VertexFormat(
-                ImmutableList.builder<VertexFormatElement>()
-                    .add(VertexFormats.POSITION_ELEMENT) // position
-                    .add(VertexFormats.COLOR_ELEMENT) // color
-                    .add(VertexFormats.TEXTURE_ELEMENT) // tex
-                    .add(VertexFormats.NORMAL_ELEMENT) // normal
-                    .build()
-            )
-
-            @JvmStatic
-            public val positionColorTexLightmapNormalFormat: VertexFormat = VertexFormat(
-                ImmutableList.builder<VertexFormatElement>()
-                    .add(VertexFormats.POSITION_ELEMENT) // position
-                    .add(VertexFormats.COLOR_ELEMENT) // color
-                    .add(VertexFormats.TEXTURE_ELEMENT) // tex
-                    .add(VertexFormats.LIGHT_ELEMENT) // lightmap
-                    .add(VertexFormats.NORMAL_ELEMENT) // normal
-                    .build()
-            )
-
-            private fun vertexFormatForLighting(worldLight: Boolean, diffuseLight: Boolean): VertexFormat {
-                return when(worldLight to diffuseLight) {
-                    false to false -> positionColorTexFormat
-                    true to false -> positionColorTexLightmapFormat
-                    false to true -> positionColorTexNormalFormat
-                    true to true -> positionColorTexLightmapNormalFormat
-
-                    else -> unreachable()
-                }
-            }
+            return SpriteRenderOptions(sprite, cull, worldLight, diffuseLight)
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.albedo.shader.uniform
 
+import com.teamwizardry.librarianlib.core.util.Client
+import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL20
 import org.lwjgl.system.MemoryStack
 
@@ -11,6 +13,9 @@ public class SamplerUniform(name: String, glConstant: Int, public val textureTar
     public fun get(): Int = value
     public fun set(value: Int) {
         this.value = value
+    }
+    public fun set(texture: Identifier) {
+        this.value = Client.textureManager.getTexture(texture).glId
     }
 
     override fun push() {

@@ -92,8 +92,7 @@ internal object SpriteRenderer {
             }
         }
 
-        val texture = Client.textureManager.getTexture(sprite.texture)
-        rb.texture.set(texture.glId)
+        rb.texture.set(sprite.texture)
         rb.draw(Primitive.QUADS)
     }
 

@@ -80,8 +80,8 @@ public class Shader private constructor(
 
         if (unboundNames.isNotEmpty()) {
             logger.warn(
-                "${missingNames.size} uniforms were never bound for $name: \n" +
-                        "These names were never bound: [${missingNames.sorted().joinToString(", ")}]\n" +
+                "${unboundNames.size} uniforms were never bound for $name: \n" +
+                        "These names were never bound: [${unboundNames.sorted().joinToString(", ")}]\n" +
                         "OpenGL reported these names:  [${glNames.sorted().joinToString(", ")}]\n" +
                         "This will not cause a crash, however it's an indicator of a mismatched glsl shader and " +
                         "shader binding."

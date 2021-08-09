@@ -58,10 +58,10 @@ configure<CommonConfigExtension> {
         create("albedo")
         create("core")
 //        create("courier")
-//        create("etcetera")
+        create("etcetera")
 //        create("facade")
 //        create("foundation")
-//        create("glitter")
+        create("glitter")
         create("mosaic")
         create("scribe")
     }

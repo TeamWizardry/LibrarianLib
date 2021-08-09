@@ -37,6 +37,8 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
     }
 
     public fun draw(primitive: Primitive) {
+        if(this.shader == null)
+            throw IllegalStateException("RenderBuffer not bound to a shader")
         setupState()
         useProgram()
         uploadUniforms()
@@ -111,6 +113,7 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
     protected fun add(attribute: VertexLayoutElement): VertexLayoutElement {
         attribute.offset = stride
         stride += attribute.width
+        ensureCapacity()
         attributes.add(attribute)
         return attribute
     }
