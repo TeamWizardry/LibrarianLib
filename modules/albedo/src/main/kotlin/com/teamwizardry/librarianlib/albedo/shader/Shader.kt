@@ -318,11 +318,12 @@ public class Shader private constructor(
             profiler: Profiler,
             executor: Executor
         ): CompletableFuture<Void> {
-            return CompletableFuture.runAsync {
+            Client.minecraft.execute {
                 allShaders.forEach { shader ->
                     shader.compile(manager)
                 }
             }
+            return CompletableFuture.runAsync {}
         }
     }
 
