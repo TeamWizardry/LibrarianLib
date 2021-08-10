@@ -10,6 +10,7 @@ import net.minecraft.util.Identifier
 
 private val glitterShader = Shader.build("glitter_sprite")
     .vertex(Identifier("liblib-glitter:sprite.vert"))
+    .geometry(Identifier("liblib-glitter:sprite.geom"))
     .fragment(Identifier("liblib-glitter:sprite.frag"))
     .build()
 
@@ -29,13 +30,13 @@ public class SpriteRenderBuffer(vbo: VertexBuffer) : RenderBuffer(vbo) {
         +VertexLayoutElement("Up", VertexLayoutElement.FloatFormat.FLOAT, 3, false)
     private val right: VertexLayoutElement =
         +VertexLayoutElement("Right", VertexLayoutElement.FloatFormat.FLOAT, 3, false)
-    private val offset: VertexLayoutElement =
-        +VertexLayoutElement("Offset", VertexLayoutElement.FloatFormat.FLOAT, 2, false)
+    private val size: VertexLayoutElement =
+        +VertexLayoutElement("Size", VertexLayoutElement.FloatFormat.FLOAT, 2, false)
 
     private val color: VertexLayoutElement =
         +VertexLayoutElement("Color", VertexLayoutElement.FloatFormat.UNSIGNED_BYTE, 4, true)
-    private val texCoord: VertexLayoutElement =
-        +VertexLayoutElement("TexCoord", VertexLayoutElement.FloatFormat.FLOAT, 2, false)
+    private val texCoords: VertexLayoutElement =
+        +VertexLayoutElement("TexCoords", VertexLayoutElement.FloatFormat.FLOAT, 4, false)
 
     init {
         this.bind(glitterShader)
@@ -72,8 +73,8 @@ public class SpriteRenderBuffer(vbo: VertexBuffer) : RenderBuffer(vbo) {
         return this
     }
 
-    public fun offset(x: Double, y: Double): SpriteRenderBuffer {
-        start(offset)
+    public fun size(x: Double, y: Double): SpriteRenderBuffer {
+        start(size)
         putFloat(x.toFloat())
         putFloat(y.toFloat())
         return this
@@ -88,10 +89,12 @@ public class SpriteRenderBuffer(vbo: VertexBuffer) : RenderBuffer(vbo) {
         return this
     }
 
-    public fun tex(u: Float, v: Float): SpriteRenderBuffer {
-        start(texCoord)
-        putFloat(u)
-        putFloat(v)
+    public fun tex(minU: Float, minV: Float, maxU: Float, maxV: Float): SpriteRenderBuffer {
+        start(texCoords)
+        putFloat(minU)
+        putFloat(minV)
+        putFloat(maxU)
+        putFloat(maxV)
         return this
     }
 

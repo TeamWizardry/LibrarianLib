@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL11.*
 public enum class Primitive(
     public val resultType: Int
 ) {
+    POINTS(GL_POINTS),
     TRIANGLES(GL_TRIANGLES),
     QUADS(GL_TRIANGLES),
     LINES(GL_LINES),

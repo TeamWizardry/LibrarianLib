@@ -4,16 +4,19 @@
 
 uniform sampler2D Texture;
 
-in float vertexDistance;
-in vec4 vertexColor;
-in vec2 texCoord;
+in FragmentData
+{
+    float distance;
+    vec4 color;
+    vec2 texCoord;
+} fs_in;
 
 out vec4 fragColor;
 
 void main() {
-    vec4 color = texture(Texture, texCoord) * vertexColor;
+    vec4 color = texture(Texture, fs_in.texCoord) * fs_in.color;
     if (color.a < 1./255.) {
         discard;
     }
-    fragColor = compute_fog(color, vertexDistance);
+    fragColor = compute_fog(color, fs_in.distance);
 }
