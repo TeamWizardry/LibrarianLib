@@ -23,13 +23,14 @@ public class SpriteRenderBuffer(vbo: VertexBuffer) : RenderBuffer(vbo) {
 
     public val worldMatrix: Mat4x4Uniform = +Uniform.mat4.create("WorldMatrix")
     public val texture: SamplerUniform = +Uniform.sampler2D.create("Texture")
+    public val upDominant: BoolUniform = +Uniform.bool.create("UpDominant")
 
-    private val point: VertexLayoutElement =
-        +VertexLayoutElement("Point", VertexLayoutElement.FloatFormat.FLOAT, 3, false)
+    private val position: VertexLayoutElement =
+        +VertexLayoutElement("Position", VertexLayoutElement.FloatFormat.FLOAT, 3, false)
     private val up: VertexLayoutElement =
         +VertexLayoutElement("Up", VertexLayoutElement.FloatFormat.FLOAT, 3, false)
-    private val right: VertexLayoutElement =
-        +VertexLayoutElement("Right", VertexLayoutElement.FloatFormat.FLOAT, 3, false)
+    private val facing: VertexLayoutElement =
+        +VertexLayoutElement("Facing", VertexLayoutElement.FloatFormat.FLOAT, 3, false)
     private val size: VertexLayoutElement =
         +VertexLayoutElement("Size", VertexLayoutElement.FloatFormat.FLOAT, 2, false)
 
@@ -49,8 +50,8 @@ public class SpriteRenderBuffer(vbo: VertexBuffer) : RenderBuffer(vbo) {
         StandardUniforms.setFogParameters(fogStart, fogEnd, fogColor)
     }
 
-    public fun point(x: Double, y: Double, z: Double): SpriteRenderBuffer {
-        start(point)
+    public fun position(x: Double, y: Double, z: Double): SpriteRenderBuffer {
+        start(position)
         putFloat(x.toFloat())
         putFloat(y.toFloat())
         putFloat(z.toFloat())
@@ -65,8 +66,8 @@ public class SpriteRenderBuffer(vbo: VertexBuffer) : RenderBuffer(vbo) {
         return this
     }
 
-    public fun right(x: Double, y: Double, z: Double): SpriteRenderBuffer {
-        start(right)
+    public fun facing(x: Double, y: Double, z: Double): SpriteRenderBuffer {
+        start(facing)
         putFloat(x.toFloat())
         putFloat(y.toFloat())
         putFloat(z.toFloat())

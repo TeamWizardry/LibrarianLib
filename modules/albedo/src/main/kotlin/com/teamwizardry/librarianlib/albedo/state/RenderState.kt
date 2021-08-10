@@ -14,6 +14,7 @@ import net.minecraft.util.Identifier
  * part of the shader, and thus is the responsibility of that shader's [RenderBuffer].
  */
 public class RenderState(parameters: Map<Identifier, State>) {
+    public constructor(vararg parameters: State) : this(parameters.associateBy { it.name })
     public val parameters: Map<Identifier, State> = parameters.unmodifiableCopy()
 
     /**
@@ -60,7 +61,7 @@ public class RenderState(parameters: Map<Identifier, State>) {
         /**
          * The name identifying this parameter
          */
-        public val parameter: Identifier
+        public val name: Identifier
     ) {
         public abstract fun apply()
         public open fun cleanup() {}
@@ -82,7 +83,7 @@ public class RenderState(parameters: Map<Identifier, State>) {
     }
 
     public class Builder(public val parameters: MutableMap<Identifier, State>) {
-        public fun add(state: State): Builder = build { parameters[state.parameter] = state }
+        public fun add(state: State): Builder = build { parameters[state.name] = state }
         public fun remove(parameter: Identifier): Builder = build { parameters.remove(parameter) }
         public fun build(): RenderState = RenderState(parameters)
 

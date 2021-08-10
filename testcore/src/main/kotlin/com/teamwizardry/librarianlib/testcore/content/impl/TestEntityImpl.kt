@@ -90,15 +90,16 @@ public open class TestEntityImpl(public val config: TestEntity, type: EntityType
         return 0f
     }
 
-    public val relativeBoundingBox: Box = run {
-        val size = this.getDimensions(EntityPose.STANDING)
-        val width = size.width.toDouble()
-        val height = size.height.toDouble()
-        Box(
-            -width / 2, -height / 2, -width / 2,
-            +width / 2, +height / 2, +width / 2
-        )
-    }
+    public val relativeBoundingBox: Box
+        get() {
+            val size = this.getDimensions(EntityPose.STANDING)
+            val width = size.width.toDouble()
+            val height = size.height.toDouble()
+            return Box(
+                -width / 2, -height / 2, -width / 2,
+                +width / 2, +height / 2, +width / 2
+            )
+        }
 
     override fun calculateBoundingBox(): Box {
         return relativeBoundingBox.offset(this.x, this.y, this.z)

@@ -4,6 +4,7 @@ layout(triangle_strip, max_vertices=4) out;
 
 uniform mat4 ModelViewMatrix;
 uniform mat4 ProjectionMatrix;
+uniform mat4 WorldMatrix;
 
 in GeometryData
 {
@@ -22,7 +23,7 @@ out FragmentData
 } gs_out;
 
 void emit(vec2 offset, vec2 texCoord) {
-    gl_Position = ProjectionMatrix * ModelViewMatrix * vec4(gs_in[0].position + gs_in[0].matrix * offset, 1.0);
+    gl_Position = ProjectionMatrix * ModelViewMatrix * WorldMatrix * vec4(gs_in[0].position + gs_in[0].matrix * offset, 1.0);
     gs_out.distance = gs_in[0].distance;
     gs_out.color = gs_in[0].color;
     gs_out.texCoord = texCoord;

@@ -1,20 +1,11 @@
 package com.teamwizardry.librarianlib.glitter.modules
 
-import com.google.common.collect.ImmutableList
-import com.google.common.collect.ImmutableMap
-import com.mojang.blaze3d.platform.GlStateManager
-import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.albedo.base.state.BaseRenderStates
+import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
-import com.teamwizardry.librarianlib.core.mixin.IMatrix3f
-import com.teamwizardry.librarianlib.core.mixin.IMatrix4f
-import com.teamwizardry.librarianlib.core.rendering.BlendMode
-import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
+import com.teamwizardry.librarianlib.albedo.state.RenderState
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.builder
-import com.teamwizardry.librarianlib.core.util.kotlin.normal
-import com.teamwizardry.librarianlib.core.util.kotlin.unreachable
-import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.glitter.GlitterLightingCache
 import com.teamwizardry.librarianlib.glitter.ParticleRenderModule
 import com.teamwizardry.librarianlib.glitter.ParticleUpdateModule
@@ -22,14 +13,11 @@ import com.teamwizardry.librarianlib.glitter.ReadParticleBinding
 import com.teamwizardry.librarianlib.glitter.bindings.ConstantBinding
 import com.teamwizardry.librarianlib.math.floorInt
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
-import net.minecraft.client.render.*
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3f
-import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.util.function.Consumer
 
 /**
  * The bread-and-butter render module, a simple billboarded sprite.
@@ -111,31 +99,7 @@ public class SpriteRenderModule private constructor(
         stack.translate(-viewPos.x, -viewPos.y, -viewPos.z)
 
         val modelViewMatrix = stack.peek().model
-
-        val normalMatrix = mixinCast<IMatrix3f>(context.matrixStack().peek().normal)
-        val nm00 = normalMatrix.m00
-        val nm01 = normalMatrix.m01
-        val nm02 = normalMatrix.m02
-        val nm10 = normalMatrix.m10
-        val nm11 = normalMatrix.m11
-        val nm12 = normalMatrix.m12
-        val nm20 = normalMatrix.m20
-        val nm21 = normalMatrix.m21
-        val nm22 = normalMatrix.m22
-
-        val transformMatrix = mixinCast<IMatrix4f>(modelViewMatrix)
-        val tm00 = transformMatrix.m00
-        val tm01 = transformMatrix.m01
-        val tm02 = transformMatrix.m02
-        val tm03 = transformMatrix.m03
-        val tm10 = transformMatrix.m10
-        val tm11 = transformMatrix.m11
-        val tm12 = transformMatrix.m12
-        val tm13 = transformMatrix.m13
-        val tm20 = transformMatrix.m20
-        val tm21 = transformMatrix.m21
-        val tm22 = transformMatrix.m22
-        val tm23 = transformMatrix.m23
+        val normalMatrix = context.matrixStack().peek().normal
 
         val camera = Client.minecraft.gameRenderer.camera
 
@@ -151,16 +115,24 @@ public class SpriteRenderModule private constructor(
         lookUpVec.rotate(camera.rotation)
         lookVec.rotate(camera.rotation)
 
+        val lookUpX = lookUpVec.x.toDouble()
+        val lookUpY = lookUpVec.y.toDouble()
+        val lookUpZ = lookUpVec.z.toDouble()
+
+        val lookX = lookVec.x.toDouble()
+        val lookY = lookVec.y.toDouble()
+        val lookZ = lookVec.z.toDouble()
+
         val spriteSize = 1f / spriteSheetSize
         val spriteIndexMask = spriteSheetSize - 1
         val spriteSheetBits = MathHelper.log2(spriteSheetSize)
 
         val widthSizeIndex: Int = if (this.size.contents.size == 2) 1 else 0
-        val computeNormal = renderOptions.diffuseLight
 
         val renderBuffer = SpriteRenderBuffer.SHARED
         renderBuffer.worldMatrix.set(modelViewMatrix)
         renderBuffer.texture.set(renderOptions.sprite)
+        renderBuffer.upDominant.set(upVector != null)
 
         for(particle in particles) {
             for (i in prepModules.indices) {
@@ -178,142 +150,43 @@ public class SpriteRenderModule private constructor(
                 posZ = Client.worldTime.interp(previousPosition.contents[2], posZ)
             }
 
-            var rightX = lookRightVec.x.toDouble()
-            var rightY = lookRightVec.y.toDouble()
-            var rightZ = lookRightVec.z.toDouble()
+            var upX = lookUpX
+            var upY = lookUpY
+            var upZ = lookUpZ
 
-            var upX = lookUpVec.x.toDouble()
-            var upY = lookUpVec.y.toDouble()
-            var upZ = lookUpVec.z.toDouble()
-
-            var normalX = lookVec.x.toDouble()
-            var normalY = lookVec.y.toDouble()
-            var normalZ = lookVec.z.toDouble()
+            var facingX = lookX
+            var facingY = lookY
+            var facingZ = lookZ
 
             // compute local axes
-            if (facingVector != null || upVector != null) {
-                var facingX = cameraX - posX
-                var facingY = cameraY - posY
-                var facingZ = cameraZ - posZ
-                if (facingVector != null) {
-                    facingVector.load(particle)
-                    facingX = facingVector.contents[0]
-                    facingY = facingVector.contents[1]
-                    facingZ = facingVector.contents[2]
+            if (upVector != null) {
+                upVector.load(particle)
+                upX = upVector.contents[0]
+                upY = upVector.contents[1]
+                upZ = upVector.contents[2]
+
+                if(facingVector == null) {
+                    facingX = cameraX - posX
+                    facingY = cameraY - posY
+                    facingZ = cameraZ - posZ
                 }
+            }
+            if (facingVector != null) {
+                facingVector.load(particle)
+                facingX = facingVector.contents[0]
+                facingY = facingVector.contents[1]
+                facingZ = facingVector.contents[2]
 
-                // cross product formula reference: c = a x b
-                // cX = aY * bZ - aZ * bY
-                // cY = aZ * bX - aX * bZ
-                // cZ = aX * bY - aY * bX
-                if (upVector == null) {
-                    // if we have a facing vector and no up vector, compute the up and right vectors using the Y axis
-                    // as a reference
-                    if (!facingX.isNaN() && !facingY.isNaN() && !facingZ.isNaN()) {
-                        if (facingX == 0.0 && facingZ == 0.0) {
-                            rightX = 1.0
-                            rightY = 0.0
-                            rightZ = 0.0
-
-                            upX = 0.0
-                            upY = 0.0
-                            upZ = -1.0
-                        } else {
-
-                            // note: these cross products don't care about the input normalization. The output magnitude
-                            // will be mangled whether we normalize the inputs or not, so there's no point doing the
-                            // excess calculations
-
-                            // compute the rightward vector using the cross product `facing x (0, 1, 0)`
-                            // the zeros can be simplified away, leaving us with essentially a 2d perpendicular vector
-                            // on the xz plane (x, z) -> (z, -x)
-                            rightX = facingZ
-                            rightY = 0.0
-                            rightZ = -facingX
-                            // the Y axis will always be zero here, so we can do a 2d normalization
-                            val rightInvLength = MathHelper.fastInverseSqrt(rightX * rightX + rightZ * rightZ)
-                            rightX *= rightInvLength
-                            rightZ *= rightInvLength
-
-                            // compute the upward vector using the cross product `facing x right`
-                            // we can simplify some of the factors since `rightY` will always be zero
-                            upX = facingY * rightZ
-                            upY = facingZ * rightX - facingX * rightZ
-                            upZ = -facingY * rightX
-                            val upInvLength = MathHelper.fastInverseSqrt(upX * upX + upY * upY + upZ * upZ)
-                            upX *= upInvLength
-                            upY *= upInvLength
-                            upZ *= upInvLength
-                        }
-                    }
-                } else {
-                    // if we have an up vector, compute the right vector based upon it and the facing vector
-                    // if no custom facing vector is specified, the facingXYZ variables will be toward the camera
-                    upVector.load(particle)
-                    upX = upVector.contents[0]
-                    upY = upVector.contents[1]
-                    upZ = upVector.contents[2]
-                    val upInvLength = MathHelper.fastInverseSqrt(upX * upX + upY * upY + upZ * upZ)
-                    upX *= upInvLength
-                    upY *= upInvLength
-                    upZ *= upInvLength
-
-                    // compute right axis using the cross product `facing x up`
-                    rightX = facingY * upZ - facingZ * upY
-                    rightY = facingZ * upX - facingX * upZ
-                    rightZ = facingX * upY - facingY * upX
-                    val rightInvLength = MathHelper.fastInverseSqrt(rightX * rightX + rightY * rightY + rightZ * rightZ)
-                    rightX *= -rightInvLength
-                    rightY *= -rightInvLength
-                    rightZ *= -rightInvLength
+                if(upVector == null && !(facingX == 0.0 && facingZ == 0.0)) {
+                    upX = 0.0
+                    upY = 1.0
+                    upZ = 0.0
                 }
-
-                if(computeNormal) {
-                    // compute the normal using the cross product `right x up`
-                    // two unit vectors at right angles will produce a unit vector output
-                    normalX = rightY * upZ - rightZ * upY
-                    normalY = rightZ * upX - rightX * upZ
-                    normalZ = rightX * upY - rightY * upX
-                }
-
-                // both of those calculations spit out directions in world space. We need to transform those back into
-                // the rendering space
-                val _rightX = rightX
-                val _rightY = rightY
-                val _rightZ = rightZ
-                rightX = tm00 * _rightX + tm01 * _rightY + tm02 * _rightZ
-                rightY = tm10 * _rightX + tm11 * _rightY + tm12 * _rightZ
-                rightZ = tm20 * _rightX + tm21 * _rightY + tm22 * _rightZ
-
-                val _upX = upX
-                val _upY = upY
-                val _upZ = upZ
-                upX = tm00 * _upX + tm01 * _upY + tm02 * _upZ
-                upY = tm10 * _upX + tm11 * _upY + tm12 * _upZ
-                upZ = tm20 * _upX + tm21 * _upY + tm22 * _upZ
-
-                val _normalX = normalX
-                val _normalY = normalY
-                val _normalZ = normalZ
-                normalX = nm00 * _normalX + nm01 * _normalY + nm02 * _normalZ
-                normalY = nm10 * _normalX + nm11 * _normalY + nm12 * _normalZ
-                normalZ = nm20 * _normalX + nm21 * _normalY + nm22 * _normalZ
             }
 
             size.load(particle)
             val width = size.contents[0] / 2
             val height = size.contents[widthSizeIndex] / 2
-
-            val localRightX = rightX * width
-            val localRightY = rightY * width
-            val localRightZ = rightZ * width
-            val localUpX = upX * height
-            val localUpY = upY * height
-            val localUpZ = upZ * height
-
-            val x = tm00 * posX + tm01 * posY + tm02 * posZ + tm03 * 1
-            val y = tm10 * posX + tm11 * posY + tm12 * posZ + tm13 * 1
-            val z = tm20 * posX + tm21 * posY + tm22 * posZ + tm23 * 1
 
             color.load(particle)
             alphaMultiplier.load(particle)
@@ -361,19 +234,18 @@ public class SpriteRenderModule private constructor(
                 0
             }
 
-            renderBuffer.point(x, y, z)
+            renderBuffer.position(posX, posY, posZ)
                 .up(upX, upY, upZ)
-                .right(rightX, rightY, rightZ)
+                .facing(facingX, facingY, facingZ)
                 .color(r, g, b, a)
                 .size(width, height)
                 .tex(minU, minV, maxU, maxV)
                 .endVertex()
-
         }
 
-        GlStateManager._disableCull()
+        renderOptions.renderState.apply()
         renderBuffer.draw(Primitive.POINTS)
-        GlStateManager._enableCull()
+        renderOptions.renderState.cleanup()
     }
 
     public companion object {
@@ -550,6 +422,7 @@ public class SpriteRenderModule private constructor(
 
 public class SpriteRenderOptions private constructor(
     public val sprite: Identifier,
+    public val renderState: RenderState,
     public val cull: Boolean,
     public val worldLight: Boolean,
     public val diffuseLight: Boolean,
@@ -559,42 +432,40 @@ public class SpriteRenderOptions private constructor(
         public fun build(sprite: Identifier): Builder {
             return Builder(sprite)
         }
+
+        private val defaultState: RenderState = RenderState(
+            DefaultRenderStates.Blend.DEFAULT,
+            DefaultRenderStates.Cull.ENABLED,
+            DefaultRenderStates.DepthTest.LEQUAL,
+        )
     }
 
     public class Builder(private val sprite: Identifier) {
-        private var blendMode: BlendMode? = BlendMode.NORMAL
-        private var writeDepth: Boolean = true
+        private val renderState = defaultState.extend()
         private var blur: Boolean = false
 
         private var cull: Boolean = true
         private var worldLight: Boolean = false
         private var diffuseLight: Boolean = false
 
-        /**
-         * Disable OpenGL blending
-         */
-        public fun disableBlending(): Builder = builder {
-            blendMode = null
+        public fun addState(state: RenderState.State): Builder = builder {
+            renderState.add(state)
         }
 
         /**
-         * The OpenGL source/dest enableBlend factors.
+         * Disable OpenGL blending
          */
-        public fun blendMode(value: BlendMode): Builder = builder {
-            blendMode = value
-        }
+        public fun disableBlending(): Builder = addState(DefaultRenderStates.Blend.DISABLED)
 
         /**
          * Use additive blending
          */
-        public fun additiveBlending(): Builder = blendMode(BlendMode.ADDITIVE)
+        public fun additiveBlending(): Builder = addState(DefaultRenderStates.Blend.ADDITIVE)
 
         /**
          * Whether to write to the depth buffer
          */
-        public fun writeDepth(value: Boolean): Builder = builder {
-            writeDepth = value
-        }
+        public fun writeDepth(value: Boolean): Builder = addState(BaseRenderStates.WriteMask(value, true))
 
         /**
          * Whether to blur the texture (i.e. interpolate colors vs. use nearest-neighbor scaling)
@@ -606,9 +477,7 @@ public class SpriteRenderOptions private constructor(
         /**
          * Whether to enable backface culling (defaults to true)
          */
-        public fun cull(value: Boolean): Builder = builder {
-            cull = value
-        }
+        public fun cull(value: Boolean): Builder = addState(BaseRenderStates.Cull(value))
 
         /**
          * Whether to apply world light (i.e. block and sky light) to the particles. Note: At large scales this may have
@@ -665,7 +534,9 @@ public class SpriteRenderOptions private constructor(
 //                renderState.build(false)
 //            )
 
-            return SpriteRenderOptions(sprite, cull, worldLight, diffuseLight)
+            return SpriteRenderOptions(sprite, renderState.build(), cull, worldLight, diffuseLight)
         }
     }
+
+
 }
