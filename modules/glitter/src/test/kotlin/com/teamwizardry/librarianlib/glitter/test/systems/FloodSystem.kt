@@ -21,11 +21,11 @@ object FloodSystem : TestSystem() {
                 position = position,
                 previousPosition = previousPosition,
                 velocity = velocity,
-                enableCollision = true,
-                gravity = ConstantBinding(0.02),
+                enableCollision = false,
+                gravity = ConstantBinding(0.00),
                 bounciness = ConstantBinding(0.8),
                 friction = ConstantBinding(0.02),
-                damping = ConstantBinding(0.01)
+                damping = ConstantBinding(0.00)
             )
         )
 

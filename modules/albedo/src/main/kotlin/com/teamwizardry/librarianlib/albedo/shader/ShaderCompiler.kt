@@ -44,19 +44,21 @@ public object ShaderCompiler {
     }
 
     @JvmStatic
-    public fun preprocessShader(location: Identifier, resourceManager: ResourceManager): PreprocessorResult {
-        return preprocessShader(location) {
+    public fun preprocessShader(location: Identifier, defines: List<String>, resourceManager: ResourceManager): PreprocessorResult {
+        return preprocessShader(location, defines) {
             resourceManager.getResource(it).inputStream.bufferedReader().readText()
         }
     }
 
     @JvmStatic
-    public fun preprocessShader(location: Identifier, reader: (Identifier) -> String): PreprocessorResult {
+    public fun preprocessShader(location: Identifier, defines: List<String>, reader: (Identifier) -> String): PreprocessorResult {
         val info = PreprocessorResult(location)
         val shaderText = readShader(info, reader, location)
         if (info.glslVersion < 0)
             throw ShaderCompilationException("No GLSL version found while preprocessing $location")
-        info.code = "#version ${info.glslVersion}\n$shaderText"
+
+        val defineText = defines.joinToString("") { "$it\n" }
+        info.code = "#version ${info.glslVersion}\n$defineText$shaderText"
         return info
     }
 

@@ -138,18 +138,22 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
             when (it) {
                 is SamplerUniform -> {
                     val packed = packTextureBinding(it.textureTarget, it.get())
-                    val unit = boundTextureUnits.putIfAbsent(packed, nextUnit)
-                    if (unit == nextUnit)
-                        nextUnit++
-                    it.textureUnit = unit
+                    if(boundTextureUnits.containsKey(packed)) {
+                        it.textureUnit = boundTextureUnits[packed]
+                    } else {
+                        it.textureUnit = nextUnit
+                        boundTextureUnits[packed] = nextUnit++
+                    }
                 }
                 is SamplerArrayUniform -> {
                     for (i in 0 until min(it.length, it.trueLength)) {
                         val packed = packTextureBinding(it.textureTarget, it[i])
-                        val unit = boundTextureUnits.putIfAbsent(packed, nextUnit)
-                        if (unit == nextUnit)
-                            nextUnit++
-                        it.textureUnits[i] = unit
+                        if(boundTextureUnits.containsKey(packed)) {
+                            it.textureUnits[i] = boundTextureUnits[packed]
+                        } else {
+                            it.textureUnits[i] = nextUnit
+                            boundTextureUnits[packed] = nextUnit++
+                        }
                     }
                 }
                 else -> {
@@ -157,7 +161,7 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
             }
         }
         boundTextureUnits.long2IntEntrySet().fastForEach { entry ->
-            bindTexture(unpackTexture(entry.longKey), unpackTarget(entry.longKey), entry.intValue)
+            bindTexture(unpackTarget(entry.longKey), unpackTexture(entry.longKey), entry.intValue)
         }
         RenderSystem.activeTexture(GL_TEXTURE0)
 
@@ -206,7 +210,7 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
         return (packed ushr 32).toInt()
     }
 
-    private fun bindTexture(texture: Int, target: Int, unit: Int) {
+    private fun bindTexture(target: Int, texture: Int, unit: Int) {
         val glUnit = GL_TEXTURE0 + unit
         if (unit < GlStateManager.TEXTURE_COUNT) {
             GlStateManager._activeTexture(glUnit)

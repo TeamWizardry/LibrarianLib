@@ -131,8 +131,12 @@ public class SpriteRenderModule private constructor(
 
         val renderBuffer = SpriteRenderBuffer.SHARED
         renderBuffer.worldMatrix.set(modelViewMatrix)
+        renderBuffer.normalMatrix.set(normalMatrix)
         renderBuffer.texture.set(renderOptions.sprite)
         renderBuffer.upDominant.set(upVector != null)
+        renderBuffer.enableDiffuseLighting.set(renderOptions.diffuseLight)
+        renderBuffer.enableDiffuseBackface.set(renderOptions.diffuseLight && !renderOptions.cull)
+        renderBuffer.enableLightmap.set(renderOptions.worldLight)
 
         for(particle in particles) {
             for (i in prepModules.indices) {
@@ -240,6 +244,7 @@ public class SpriteRenderModule private constructor(
                 .color(r, g, b, a)
                 .size(width, height)
                 .tex(minU, minV, maxU, maxV)
+                .light(lightmap)
                 .endVertex()
         }
 
@@ -477,7 +482,9 @@ public class SpriteRenderOptions private constructor(
         /**
          * Whether to enable backface culling (defaults to true)
          */
-        public fun cull(value: Boolean): Builder = addState(BaseRenderStates.Cull(value))
+        public fun cull(value: Boolean): Builder = builder {
+            cull = value
+        }
 
         /**
          * Whether to apply world light (i.e. block and sky light) to the particles. Note: At large scales this may have
@@ -533,7 +540,7 @@ public class SpriteRenderOptions private constructor(
 //                false,
 //                renderState.build(false)
 //            )
-
+            addState(BaseRenderStates.Cull(cull || diffuseLight))
             return SpriteRenderOptions(sprite, renderState.build(), cull, worldLight, diffuseLight)
         }
     }

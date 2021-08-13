@@ -6,9 +6,8 @@ uniform mat4 ProjectionMatrix;
 uniform mat4 WorldMatrix;
 uniform bool UpDominant;
 
-//uniform mat3 NormalMatrix;
-
-//uniform sampler2D Lightmap;
+uniform bool EnableLightmap;
+uniform sampler2D Lightmap;
 
 in vec3 Position;
 in vec3 Up;
@@ -17,7 +16,7 @@ in vec2 Size;
 
 in vec4 Color;
 in vec4 TexCoords;
-//in ivec2 Lightmap;
+in ivec2 Light;
 
 out GeometryData
 {
@@ -37,4 +36,8 @@ void main() {
     vs_out.distance = length((ModelViewMatrix * WorldMatrix * vec4(Position, 1.0)).xyz);
     vs_out.color = Color;
     vs_out.texCoords = TexCoords;
+
+    if(EnableLightmap) {
+        vs_out.color *= texelFetch(Lightmap, Light / 16, 0);
+    }
 }

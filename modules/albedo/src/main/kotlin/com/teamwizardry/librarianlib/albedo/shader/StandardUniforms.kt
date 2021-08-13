@@ -1,10 +1,14 @@
 package com.teamwizardry.librarianlib.albedo.shader
 
+import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.buffer.RenderBuffer
+import com.teamwizardry.librarianlib.albedo.mixin.LightmapTextureManagerMixin
 import com.teamwizardry.librarianlib.albedo.mixin.RenderSystemMixin
 import com.teamwizardry.librarianlib.albedo.shader.uniform.*
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.mixinCast
+import org.lwjgl.opengl.GL11
 
 /**
  * Standard uniform values (modelview matrix, projection matrix, fog parameters, etc.)
@@ -52,5 +56,19 @@ public object StandardUniforms {
         val directions = RenderSystemMixin.getShaderLightDirections()
         light0Direction.set(directions[0].x, directions[0].y, directions[0].z)
         light1Direction.set(directions[1].x, directions[1].y, directions[1].z)
+    }
+
+    @JvmStatic
+    public fun setLightmap(uniform: SamplerUniform) {
+        uniform.set(getLightmapId())
+    }
+
+    @JvmStatic
+    public fun getLightmapId(): Int {
+        val lightmap = mixinCast<LightmapTextureManagerMixin>(Client.minecraft.gameRenderer.lightmapTextureManager).texture
+        GlStateManager._bindTexture(lightmap.glId)
+        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR)
+        RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR)
+        return lightmap.glId
     }
 }

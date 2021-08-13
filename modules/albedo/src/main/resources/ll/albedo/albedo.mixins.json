@@ -5,8 +5,9 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "ll/albedo/albedo.refmap.json",
   "mixins": [
-    "RenderSystemMixin",
-    "GlStateManagerMixin"
+    "GlStateManagerMixin",
+    "LightmapTextureManagerMixin",
+    "RenderSystemMixin"
   ],
   "client": [
   ],

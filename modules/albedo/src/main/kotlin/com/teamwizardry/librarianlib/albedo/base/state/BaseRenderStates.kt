@@ -87,7 +87,7 @@ public object BaseRenderStates {
 
     public class Cull(
         private val enabled: Boolean,
-    ) : RenderState.State(Identifier("liblib-albedo:culling")) {
+    ) : RenderState.State(Identifier("liblib-albedo:cull")) {
         override fun apply() {
             if (enabled) {
                 RenderSystem.enableCull()

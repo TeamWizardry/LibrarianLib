@@ -8,14 +8,17 @@ import net.minecraft.util.Identifier
 object DiffuseLitSystem : TestSystem() {
     override fun configure() {
         val pos = bind(3)
+        val facing = bind(3)
 
         renderModules.add(
             SpriteRenderModule.build(
                 SpriteRenderOptions.build(Identifier("minecraft", "textures/item/snowball.png"))
                     .diffuseLight(true)
+                    .cull(false)
                     .build(),
                 pos,
             )
+                .facingVector(facing)
                 .size(0.2)
                 .build()
         )
@@ -26,10 +29,13 @@ object DiffuseLitSystem : TestSystem() {
         val look = player.rotationVector
 
         this.addParticle(
-            200,
+            2000,
             eyePos.x + look.x * 2,
             eyePos.y + look.y * 2,
             eyePos.z + look.z * 2,
+            -look.x,
+            -look.y,
+            -look.z,
         )
     }
 }

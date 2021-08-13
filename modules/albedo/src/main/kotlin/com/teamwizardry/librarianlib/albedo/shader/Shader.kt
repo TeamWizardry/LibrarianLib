@@ -26,7 +26,7 @@ public class Shader private constructor(
      * An arbitrary name used for logging
      */
     public val name: String,
-    private val shaders: Map<Stage, Identifier>
+    private val shaders: Map<Stage, ShaderFile>
 ) {
     /**
      * The OpenGL handle for the shader program
@@ -50,7 +50,7 @@ public class Shader private constructor(
     }
 
     public fun bindUniforms(uniforms: List<AbstractUniform>): List<Uniform> {
-        logger.debug("Binding uniforms [${uniforms.joinToString { it.name }}] against shader $name")
+        logger.debug("Binding uniforms [${uniforms.map { it.name }.sorted().joinToString(", ")}] against shader $name")
         val uniformInfos = this.uniforms.associateBy { it.name }
         val resolvedUniforms = resolveUniformNames(uniforms)
         val glNames = uniformInfos.keys.sorted()
@@ -93,7 +93,7 @@ public class Shader private constructor(
     }
 
     public fun bindAttributes(attributes: List<VertexLayoutElement>) {
-        logger.debug("Binding attributes [${attributes.joinToString { it.name }}] against shader $name")
+        logger.debug("Binding attributes [${attributes.map { it.name }.sorted().joinToString(", ")}] against shader $name")
         val attributeInfos = this.attributes.associateBy { it.name }
         val glNames = attributeInfos.keys.sorted()
         val attributeNames = attributes.map { it.name }.sorted()
@@ -159,11 +159,11 @@ public class Shader private constructor(
         glProgram = 0
         val shaderHandles = mutableListOf<Int>()
         try {
-            for((stage, location) in shaders) {
+            for((stage, file) in shaders) {
                 shaderHandles.add(
                     ShaderCompiler.compileShader(
                         stage,
-                        ShaderCompiler.preprocessShader(location, resourceManager)
+                        ShaderCompiler.preprocessShader(file.location, file.defines, resourceManager)
                     )
                 )
             }
@@ -182,10 +182,10 @@ public class Shader private constructor(
         logger.debug("Finished compiling shader program")
         logger.debug("Reading uniforms...")
         readUniforms()
-        logger.debug("Found ${uniforms.size} uniforms: [${uniforms.joinToString { it.name }}]")
+        logger.debug("Found ${uniforms.size} uniforms: [${uniforms.map { it.name }.sorted().joinToString(", ")}]")
         logger.debug("Reading attributes...")
         readAttributes()
-        logger.debug("Found ${attributes.size} attributes: [${attributes.joinToString { it.name }}]")
+        logger.debug("Found ${attributes.size} attributes: [${attributes.map { it.name }.sorted().joinToString(", ")}]")
     }
 
     private fun linkProgram(handles: List<Int>): Int {
@@ -275,23 +275,25 @@ public class Shader private constructor(
     }
 
     public class Builder(public val name: String) {
-        private val stages = mutableMapOf<Stage, Identifier>()
+        private val stages = mutableMapOf<Stage, ShaderFile>()
 
-        public fun add(stage: Stage, shader: Identifier): Builder {
-            stages[stage] = Identifier(shader.namespace, "shaders/${shader.path}")
+        public fun add(stage: Stage, shader: Identifier, vararg defines: String): Builder {
+            stages[stage] = ShaderFile(Identifier(shader.namespace, "shaders/${shader.path}"), defines.toList())
             return this
         }
 
-        public fun vertex(shader: Identifier): Builder = add(Stage.VERTEX, shader)
-        public fun fragment(shader: Identifier): Builder = add(Stage.FRAGMENT, shader)
-        public fun geometry(shader: Identifier): Builder = add(Stage.GEOMETRY, shader)
-        public fun tessellationControl(shader: Identifier): Builder = add(Stage.TESSELLATION_CONTROL, shader)
-        public fun tessellationEvaluation(shader: Identifier): Builder = add(Stage.TESSELLATION_EVALUATION, shader)
+        public fun vertex(shader: Identifier, vararg defines: String): Builder = add(Stage.VERTEX, shader, *defines)
+        public fun fragment(shader: Identifier, vararg defines: String): Builder = add(Stage.FRAGMENT, shader, *defines)
+        public fun geometry(shader: Identifier, vararg defines: String): Builder = add(Stage.GEOMETRY, shader, *defines)
+        public fun tessellationControl(shader: Identifier, vararg defines: String): Builder = add(Stage.TESSELLATION_CONTROL, shader, *defines)
+        public fun tessellationEvaluation(shader: Identifier, vararg defines: String): Builder = add(Stage.TESSELLATION_EVALUATION, shader, *defines)
 
         public fun build(): Shader {
             return Shader(name, stages)
         }
     }
+
+    public class ShaderFile(public val location: Identifier, public val defines: List<String>)
 
     private object ReloadListener : SimpleResourceReloadListener<Unit> {
         val allShaders = weakSetOf<Shader>()
