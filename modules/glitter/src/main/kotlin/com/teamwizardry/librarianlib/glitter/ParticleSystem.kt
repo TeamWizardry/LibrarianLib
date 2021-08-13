@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.glitter.bindings.VariableBinding
 import com.teamwizardry.librarianlib.glitter.modules.DepthSortModule
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
 import net.minecraft.client.option.ParticlesMode
+import net.minecraft.util.Identifier
 import org.magicwerk.brownies.collections.GapList
 import java.lang.RuntimeException
 import java.util.*
@@ -36,7 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * After creating a particle system, add it to the [ParticleSystemManager].
  */
-public abstract class ParticleSystem {
+public abstract class ParticleSystem(public val name: Identifier) {
 
     /**
      * The modules that are called every tick for each particle. They are called in sequence for each particle, meaning
@@ -99,7 +100,8 @@ public abstract class ParticleSystem {
 
     internal val queuedAdditions = ConcurrentLinkedQueue<DoubleArray>()
     internal val shouldQueue = AtomicBoolean(false)
-    internal val particles: MutableList<DoubleArray> = GapList<DoubleArray>()
+    private val particles: MutableList<DoubleArray> = GapList()
+    public val particleCount: Int get() = particles.size
     private val particlePool = ArrayDeque<DoubleArray>(poolSize)
     private var placeholderParticle = doubleArrayOf()
 
@@ -163,6 +165,14 @@ public abstract class ParticleSystem {
         // transformed into a random +1
         val adjusted = count * currentSpawnChance + rand.nextDouble()
         return adjusted.toInt()
+    }
+
+    /**
+     * Clear the particle list and particle pool
+     */
+    public fun clear() {
+        particles.clear()
+        particlePool.clear()
     }
 
     /**

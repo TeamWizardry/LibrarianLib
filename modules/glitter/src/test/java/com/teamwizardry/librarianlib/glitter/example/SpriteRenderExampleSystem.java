@@ -4,8 +4,13 @@ import com.teamwizardry.librarianlib.glitter.ParticleSystem;
 import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding;
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 public class SpriteRenderExampleSystem extends ParticleSystem {
+    public SpriteRenderExampleSystem() {
+        super(new Identifier("example:sprite"));
+    }
+
     @Override
     public void configure() {
         StoredBinding position = bind(3);

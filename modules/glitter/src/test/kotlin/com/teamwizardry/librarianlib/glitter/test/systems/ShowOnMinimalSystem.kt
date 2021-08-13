@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object ShowOnMinimalSystem : TestSystem() {
+object ShowOnMinimalSystem : TestSystem(Identifier("liblib-glitter-test:show_on_minimal")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)

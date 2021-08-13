@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderOptions
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object WorldLitSystem : TestSystem() {
+object WorldLitSystem : TestSystem(Identifier("liblib-glitter-test:world_lit")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)

@@ -6,8 +6,13 @@ import com.teamwizardry.librarianlib.glitter.bindings.StoredBinding;
 import com.teamwizardry.librarianlib.glitter.modules.BasicPhysicsUpdateModule;
 import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 public class QuickstartSystem extends ParticleSystem {
+    public QuickstartSystem() {
+        super(new Identifier("example:quickstart"));
+    }
+
     @Override
     public void configure() {
         StoredBinding position = bind(3);

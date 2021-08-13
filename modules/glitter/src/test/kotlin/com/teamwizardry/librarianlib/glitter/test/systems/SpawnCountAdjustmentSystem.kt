@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 
-object SpawnCountAdjustmentSystem : TestSystem() {
+object SpawnCountAdjustmentSystem : TestSystem(Identifier("liblib-glitter-test:spawn_count_adjustment")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)

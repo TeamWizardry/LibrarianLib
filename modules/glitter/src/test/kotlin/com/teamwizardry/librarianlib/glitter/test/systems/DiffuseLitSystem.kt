@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderOptions
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object DiffuseLitSystem : TestSystem() {
+object DiffuseLitSystem : TestSystem(Identifier("liblib-glitter-test:diffuse_lit")) {
     override fun configure() {
         val pos = bind(3)
         val facing = bind(3)

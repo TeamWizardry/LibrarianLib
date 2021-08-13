@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 
-object FloodSystem : TestSystem() {
+object FloodSystem : TestSystem(Identifier("liblib-glitter-test:flood")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)

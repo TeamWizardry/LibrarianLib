@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object PhysicsSystem : TestSystem() {
+object PhysicsSystem : TestSystem(Identifier("liblib-glitter-test:physics")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)

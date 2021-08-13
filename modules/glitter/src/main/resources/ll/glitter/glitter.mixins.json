@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "ll/glitter/glitter.refmap.json",
   "mixins": [
+    "DebugHudMixin"
   ],
   "client": [
     "MinecraftClientHooks"

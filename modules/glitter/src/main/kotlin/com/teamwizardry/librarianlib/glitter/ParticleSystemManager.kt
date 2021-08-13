@@ -1,10 +1,10 @@
 package com.teamwizardry.librarianlib.glitter
 
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener
-import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.resource.ResourceManager
 import net.minecraft.util.Identifier
 import net.minecraft.util.profiler.Profiler
@@ -20,16 +20,17 @@ public object ParticleSystemManager: SimpleResourceReloadListener<Unit>, WorldRe
 
     override fun getFabricId(): Identifier = Identifier("liblib-glitter:particle_system_manager")
 
-    private val systems: MutableList<ParticleSystem> = mutableListOf()
+    private val _systems: MutableList<ParticleSystem> = mutableListOf()
+    public val systems: List<ParticleSystem> = _systems.unmodifiableView()
 
     public fun add(system: ParticleSystem) {
-        if (!systems.contains(system)) {
-            systems.add(system)
+        if (!_systems.contains(system)) {
+            _systems.add(system)
         }
     }
 
     public fun remove(system: ParticleSystem) {
-        systems.remove(system)
+        _systems.remove(system)
     }
 
     internal fun tickParticles() {
@@ -41,7 +42,7 @@ public object ParticleSystemManager: SimpleResourceReloadListener<Unit>, WorldRe
         val profiler = Client.minecraft.profiler
         profiler.push("liblib_particles")
         try {
-            systems.forEach {
+            _systems.forEach {
                 profiler.push(it.javaClass.simpleName)
                 it.update()
                 profiler.pop()
@@ -62,7 +63,7 @@ public object ParticleSystemManager: SimpleResourceReloadListener<Unit>, WorldRe
 //            var total = 0
 //            systems.forEach { system ->
 //                if (system.particles.isNotEmpty()) {
-//                    event.left.add(" - ${system.javaClass.simpleName}: ${system.particles.size}")
+//
 //                    total += system.particles.size
 //                }
 //            }
@@ -83,7 +84,7 @@ public object ParticleSystemManager: SimpleResourceReloadListener<Unit>, WorldRe
 //        RenderSystem.disableLighting()
 //        if (entity != null) {
         try {
-            systems.forEach {
+            _systems.forEach {
                 it.renderDirect(context)
             }
         } catch (e: ConcurrentModificationException) {
@@ -96,7 +97,7 @@ public object ParticleSystemManager: SimpleResourceReloadListener<Unit>, WorldRe
     }
 
     internal fun clearParticles() {
-        systems.forEach { it.particles.clear() }
+        _systems.forEach { it.clear() }
     }
 
     override fun load(manager: ResourceManager?, profiler: Profiler?, executor: Executor?): CompletableFuture<Unit> {
@@ -110,7 +111,7 @@ public object ParticleSystemManager: SimpleResourceReloadListener<Unit>, WorldRe
         executor: Executor?
     ): CompletableFuture<Void> {
         return CompletableFuture.runAsync {
-            for(system in systems) {
+            for(system in _systems) {
                 system.reload()
             }
         }

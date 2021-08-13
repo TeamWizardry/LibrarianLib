@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object IgnoreParticleSettingSystem : TestSystem() {
+object IgnoreParticleSettingSystem : TestSystem(Identifier("liblib-glitter-test:ignore_particle_setting")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)
