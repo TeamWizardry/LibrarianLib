@@ -318,8 +318,11 @@ public abstract class ParticleSystem(public val name: Identifier) {
         while (true) {
             particles.add(queuedAdditions.poll() ?: break)
         }
+        val profiler = context.profiler()
         for (i in 0 until renderModules.size) {
+            profiler.push("Render module $i")
             renderModules[i].renderDirect(context, particles, renderPrepModules)
+            profiler.pop()
         }
         shouldQueue.set(false)
     }

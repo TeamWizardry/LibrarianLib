@@ -94,6 +94,7 @@ public class SpriteRenderModule private constructor(
         if(particles.isEmpty())
             return
 
+        val profiler = context.profiler()
         val stack = MatrixStack()
         val viewPos = Client.minecraft.gameRenderer.camera.pos
         stack.translate(-viewPos.x, -viewPos.y, -viewPos.z)
@@ -138,6 +139,7 @@ public class SpriteRenderModule private constructor(
         renderBuffer.enableDiffuseBackface.set(renderOptions.diffuseLight && !renderOptions.cull)
         renderBuffer.enableLightmap.set(renderOptions.worldLight)
 
+        profiler.push("Buffer assembly")
         for(particle in particles) {
             for (i in prepModules.indices) {
                 prepModules[i].update(particle)
@@ -247,9 +249,10 @@ public class SpriteRenderModule private constructor(
                 .light(lightmap)
                 .endVertex()
         }
+        profiler.pop()
 
         renderOptions.renderState.apply()
-        renderBuffer.draw(Primitive.POINTS)
+        renderBuffer.draw(Primitive.POINTS, profiler)
         renderOptions.renderState.cleanup()
     }
 

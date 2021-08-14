@@ -21,11 +21,11 @@ object FloodSystem : TestSystem(Identifier("liblib-glitter-test:flood")) {
                 position = position,
                 previousPosition = previousPosition,
                 velocity = velocity,
-                enableCollision = false,
-                gravity = ConstantBinding(0.00),
+                enableCollision = true,
+                gravity = ConstantBinding(0.02),
                 bounciness = ConstantBinding(0.8),
                 friction = ConstantBinding(0.02),
-                damping = ConstantBinding(0.00)
+                damping = ConstantBinding(0.01)
             )
         )
 

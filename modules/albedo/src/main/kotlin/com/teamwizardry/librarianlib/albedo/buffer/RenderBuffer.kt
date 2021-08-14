@@ -12,6 +12,7 @@ import com.teamwizardry.librarianlib.albedo.shader.uniform.SamplerUniform
 import com.teamwizardry.librarianlib.albedo.shader.uniform.Uniform
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
+import net.minecraft.util.profiler.Profiler
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil
 import java.nio.ByteBuffer
@@ -36,14 +37,17 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
         ensureCapacity()
     }
 
-    public fun draw(primitive: Primitive) {
+    @JvmOverloads
+    public fun draw(primitive: Primitive, profiler: Profiler? = null) {
         if(this.shader == null)
             throw IllegalStateException("RenderBuffer not bound to a shader")
+        profiler?.push("RenderBuffer.draw")
         setupState()
         useProgram()
         uploadUniforms()
-        drawVertices(primitive)
+        drawVertices(primitive, profiler)
         teardownState()
+        profiler?.pop()
     }
 
     protected fun start(attribute: VertexLayoutElement) {
@@ -170,11 +174,13 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
         }
     }
 
-    private fun drawVertices(primitive: Primitive) {
+    private fun drawVertices(primitive: Primitive, profiler: Profiler?) {
+        profiler?.push("Upload VBO")
         byteBuffer.position(0)
         byteBuffer.limit(count * stride)
         vbo.upload(0, byteBuffer)
         byteBuffer.limit(byteBuffer.capacity())
+        profiler?.swap("glDraw*")
         glBindVertexArray(vao)
         val indexBuffer = primitive.indexBuffer(primitive.elementCount(count))
         if (indexBuffer != null) {
@@ -191,6 +197,7 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         count = 0
         glUseProgram(0)
+        profiler?.pop()
     }
 
     public open fun delete() {

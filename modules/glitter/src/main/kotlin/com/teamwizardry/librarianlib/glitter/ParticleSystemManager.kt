@@ -40,10 +40,10 @@ public object ParticleSystemManager: SimpleResourceReloadListener<Unit>, WorldRe
             return
 
         val profiler = Client.minecraft.profiler
-        profiler.push("liblib_particles")
+        profiler.push("liblib_glitter")
         try {
             _systems.forEach {
-                profiler.push(it.javaClass.simpleName)
+                profiler.push("${it.name}")
                 it.update()
                 profiler.pop()
             }
@@ -85,7 +85,9 @@ public object ParticleSystemManager: SimpleResourceReloadListener<Unit>, WorldRe
 //        if (entity != null) {
         try {
             _systems.forEach {
+                profiler.push("${it.name}")
                 it.renderDirect(context)
+                profiler.pop()
             }
         } catch (e: ConcurrentModificationException) {
             e.printStackTrace()
