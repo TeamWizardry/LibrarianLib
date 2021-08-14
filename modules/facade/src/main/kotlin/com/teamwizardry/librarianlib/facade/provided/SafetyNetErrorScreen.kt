@@ -53,6 +53,7 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
 
     override fun render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         this.renderBackground(matrixStack)
+        matrixStack.push()
 
         val topLeft = vec(width - guiWidth, height - guiHeight) / 2
         val border = 8
@@ -63,8 +64,7 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
             Color.lightGray.rgb
         )
 
-        RenderSystem.pushMatrix()
-        RenderSystem.translatef(width / 2f, (height - guiHeight) / 2f, 0f)
+        matrixStack.translate(width / 2.0, (height - guiHeight) / 2.0, 0.0)
 
         var y = 0
         parts.forEach { part ->
@@ -72,7 +72,7 @@ public class SafetyNetErrorScreen(private val message: String, private val e: Ex
             y += part.height + gap
         }
 
-        RenderSystem.popMatrix()
+        matrixStack.pop()
     }
 
     private fun drawCenteredStringNoShadow(matrixStack: MatrixStack, fontRenderer: TextRenderer, text: String, x: Int, y: Int, color: Int) {

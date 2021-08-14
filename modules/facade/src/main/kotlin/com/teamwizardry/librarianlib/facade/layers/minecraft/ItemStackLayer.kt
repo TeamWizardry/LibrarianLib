@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade.layers.minecraft
 
+import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
@@ -29,10 +30,10 @@ public class ItemStackLayer(stack: ItemStack, x: Int, y: Int): GuiLayer(x, y, 16
             val itemRender = Client.minecraft.itemRenderer
             itemRender.zOffset = -130f
 
-            context.pushGlMatrix()
+            context.pushModelViewMatrix()
             itemRender.renderInGuiWithOverrides(stack, 0, 0)
             itemRender.renderGuiItemOverlay(Client.minecraft.textRenderer, stack, 0, 0, str)
-            context.popGlMatrix()
+            context.popModelViewMatrix()
 
             itemRender.zOffset = 0.0f
         }

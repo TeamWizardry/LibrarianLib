@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade.test.screens
 
+import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.FacadeScreen
@@ -20,7 +21,7 @@ class BlendingTestScreen(title: Text): FacadeScreen(title) {
 
         val diff = GuiLayer(0, 0, 100, 100)
         diff.pos_rm.animate(vec(100, 0), 40f, Easing.easeInOutQuart).reverseOnRepeat().repeat()
-        diff.blendMode = BlendMode.ADDITIVE
+        diff.blendMode = DefaultRenderStates.Blend.ADDITIVE
         diff.add(RectLayer(Color.GREEN, 10, 10, 80, 80))
 
         main.add(diff)

@@ -14,8 +14,8 @@ import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.ListTag
+import net.minecraft.nbt.NbtCompound
+import net.minecraft.nbt.NbtList
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.ScreenHandlerType
@@ -99,19 +99,19 @@ public class FacadeControllerFactory<T : FacadeController>(private val clazz: Cl
     }
 
     public fun writeArguments(arguments: Array<out Any?>, buffer: PacketByteBuf) {
-        val list = ListTag()
+        val list = NbtList()
         argumentSerializers.mapIndexed { i, serializer ->
-            val tag = CompoundTag()
+            val tag = NbtCompound()
             arguments[i]?.also {
                 tag.put("V", serializer.write(it))
             }
             list.add(tag)
         }.toTypedArray()
-        buffer.writeCompoundTag(CompoundTag().also { it.put("ll", list) })
+        buffer.writeNbt(NbtCompound().also { it.put("ll", list) })
     }
 
     public fun readArguments(buffer: PacketByteBuf): Array<Any?> {
-        val list = buffer.readCompoundTag()!!.getList("ll", NbtType.COMPOUND)
+        val list = buffer.readNbt()!!.getList("ll", NbtType.COMPOUND)
         return argumentSerializers.mapIndexed { i, serializer ->
             list.getCompound(i).get("V")?.let {
                 serializer.read(it, null)

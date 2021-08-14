@@ -27,7 +27,7 @@ import com.teamwizardry.librarianlib.testcore.content.TestItem
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.api.ModInitializer
-import net.minecraft.nbt.StringTag
+import net.minecraft.nbt.NbtString
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
@@ -48,7 +48,7 @@ internal object LibLibFacadeTest {
         override fun onInitialize() {
             CourierServerPlayNetworking.registerGlobalReceiver(SyncSelectionPacket.type) { packet, context ->
                 context.execute {
-                    context.player.mainHandStack.orCreateTag.put("saved_selection", StringTag.of(packet.id))
+                    context.player.mainHandStack.orCreateTag.put("saved_selection", NbtString.of(packet.id))
                 }
             }
 
@@ -92,7 +92,11 @@ internal object LibLibFacadeTest {
             }
             manager.create<TestBlock>("basic_controllers") {
                 name = "Basic Controllers"
-                blockEntity<TestControllerBlockEntity> { TestControllerBlockEntity(it, basicControllers) }
+                blockEntity<TestControllerBlockEntity> { type, pos, state ->
+                    TestControllerBlockEntity(type, pos, state, basicControllers)
+                }
+                blockEntityTickFunction(TestControllerBlockEntity::tick)
+
                 rightClick.server {
                     testControllerSelectorControllerType.open(player as ServerPlayerEntity, Text.of("Basic Controllers"), pos)
                 }

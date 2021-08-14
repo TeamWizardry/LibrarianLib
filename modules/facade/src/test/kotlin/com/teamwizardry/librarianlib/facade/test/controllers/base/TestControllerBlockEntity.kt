@@ -4,11 +4,15 @@ import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable
 import net.minecraft.block.BlockState
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.util.Tickable
+import net.minecraft.nbt.NbtCompound
+import net.minecraft.util.math.BlockPos
 
-class TestControllerBlockEntity(blockEntityType: BlockEntityType<*>, val controllerSet: TestControllerSet) :
-    BlockEntity(blockEntityType), BlockEntityClientSerializable, Tickable {
+class TestControllerBlockEntity(
+    blockEntityType: BlockEntityType<*>,
+    pos: BlockPos,
+    state: BlockState,
+    val controllerSet: TestControllerSet,
+) : BlockEntity(blockEntityType, pos, state), BlockEntityClientSerializable {
 
     val data: ContainerDataSet = ContainerDataSet(controllerSet)
 
@@ -16,27 +20,27 @@ class TestControllerBlockEntity(blockEntityType: BlockEntityType<*>, val control
         return data.getData(dataType)
     }
 
-    override fun tick() {
+    fun tick() {
         data.tick()
         // this is a test block, I don't care if I mark chucks dirty when I don't have to.
         markDirty()
     }
 
-    override fun fromTag(state: BlockState, tag: CompoundTag) {
-        super.fromTag(state, tag)
+    override fun readNbt(nbt: NbtCompound) {
+        super.readNbt(nbt)
+        data.deserialize(nbt.getCompound("test_data"))
+    }
+
+    override fun writeNbt(nbt: NbtCompound): NbtCompound {
+        nbt.put("test_data", data.serialize())
+        return super.writeNbt(nbt)
+    }
+
+    override fun fromClientTag(tag: NbtCompound) {
         data.deserialize(tag.getCompound("test_data"))
     }
 
-    override fun toTag(tag: CompoundTag): CompoundTag {
-        tag.put("test_data", data.serialize())
-        return super.toTag(tag)
-    }
-
-    override fun fromClientTag(tag: CompoundTag) {
-        data.deserialize(tag.getCompound("test_data"))
-    }
-
-    override fun toClientTag(tag: CompoundTag): CompoundTag {
+    override fun toClientTag(tag: NbtCompound): NbtCompound {
         tag.put("test_data", data.serialize())
         return tag
     }
@@ -51,15 +55,15 @@ class TestControllerBlockEntity(blockEntityType: BlockEntityType<*>, val control
             return dataByClass.getValue(dataType) as T
         }
 
-        fun serialize(): CompoundTag {
-            val tag = CompoundTag()
+        fun serialize(): NbtCompound {
+            val tag = NbtCompound()
             for ((type, data) in dataByType) {
                 tag.put(type.id.toString(), data.serialize())
             }
             return tag
         }
 
-        fun deserialize(nbt: CompoundTag) {
+        fun deserialize(nbt: NbtCompound) {
             for ((type, data) in dataByType) {
                 if (nbt.contains(type.id.toString())) {
                     data.deserialize(nbt.getCompound(type.id.toString()))
@@ -67,15 +71,15 @@ class TestControllerBlockEntity(blockEntityType: BlockEntityType<*>, val control
             }
         }
 
-        fun serializeSync(): CompoundTag {
-            val tag = CompoundTag()
+        fun serializeSync(): NbtCompound {
+            val tag = NbtCompound()
             for ((type, data) in dataByType) {
                 tag.put(type.id.toString(), data.serializeSync())
             }
             return tag
         }
 
-        fun deserializeSync(nbt: CompoundTag) {
+        fun deserializeSync(nbt: NbtCompound) {
             for ((type, data) in dataByType) {
                 if (nbt.contains(type.id.toString())) {
                     data.deserializeSync(nbt.getCompound(type.id.toString()))

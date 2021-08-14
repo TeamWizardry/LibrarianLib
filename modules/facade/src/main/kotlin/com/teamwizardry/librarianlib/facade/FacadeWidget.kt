@@ -293,10 +293,8 @@ public open class FacadeWidget(
         safetyNet("rendering") {
             StencilUtil.clear()
             StencilUtil.enable()
-            RenderSystem.pushMatrix()
             val context = GuiDrawContext(matrixStack, Matrix3dStack(), debugOptions, false)
             root.renderLayer(context)
-            RenderSystem.popMatrix()
             StencilUtil.disable()
 
             if(debugOptions.showGuiScaleBasis) {

@@ -1,6 +1,10 @@
 package com.teamwizardry.librarianlib.facade.container
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
+import com.teamwizardry.librarianlib.albedo.state.RenderState
 import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
 import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
@@ -129,31 +133,24 @@ public abstract class FacadeView<T: ScreenHandler>(
     }
 
     override fun drawForeground(matrixStack: MatrixStack, mouseX: Int, mouseY: Int) {
-        RenderSystem.enableDepthTest() // depth testing is disabled because... logic?
+        matrixStack.push()
+        matrixStack.translate(-x.toDouble(), -y.toDouble(), 0.0)
 
-        RenderSystem.translatef(-x.toFloat(), -y.toFloat(), 0.0f)
-
-        RenderSystem.colorMask(false, false, false, false)
-        RenderSystem.depthFunc(GL11.GL_ALWAYS)
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(depthClobberRenderType)
-
+        val rb = FlatColorRenderBuffer.SHARED
+        depthClobberRenderState.apply()
         val windowHeight = Client.window.scaledHeight
         val windowWidth = Client.window.scaledWidth
-        vb.vertex2d(Matrix4d.IDENTITY, 0, windowHeight).color(1f, 0f, 1f, 0.5f).next()
-        vb.vertex2d(Matrix4d.IDENTITY, windowWidth, windowHeight).color(1f, 0f, 1f, 0.5f).next()
-        vb.vertex2d(Matrix4d.IDENTITY, windowWidth, 0).color(1f, 0f, 1f, 0.5f).next()
-        vb.vertex2d(Matrix4d.IDENTITY, 0, 0).color(1f, 0f, 1f, 0.5f).next()
-
-        buffer.draw()
-        RenderSystem.depthFunc(GL11.GL_LEQUAL)
-        RenderSystem.colorMask(true, true, true, true)
+        rb.pos(matrixStack, 0, windowHeight, 0).color(1f, 0f, 1f, 0.5f).endVertex()
+        rb.pos(Matrix4d.IDENTITY, windowWidth, windowHeight, 0).color(1f, 0f, 1f, 0.5f).endVertex()
+        rb.pos(Matrix4d.IDENTITY, windowWidth, 0, 0).color(1f, 0f, 1f, 0.5f).endVertex()
+        rb.pos(Matrix4d.IDENTITY, 0, 0, 0).color(1f, 0f, 1f, 0.5f).endVertex()
+        rb.draw(Primitive.QUADS)
+        depthClobberRenderState.cleanup()
 
         facade.filterRendering { it.zIndex >= 1000 }
         facade.render(matrixStack)
-        RenderSystem.translatef(x.toFloat(), y.toFloat(), 0.0f)
 
-        RenderSystem.disableDepthTest()
+        matrixStack.pop()
     }
 
     override fun mouseMoved(xPos: Double, mouseY: Double) {
@@ -237,8 +234,7 @@ public abstract class FacadeView<T: ScreenHandler>(
     }
 
     public companion object {
-        private val depthClobberRenderType = SimpleRenderLayers.flat(GL11.GL_QUADS) {
-            it.depthTest(DefaultRenderPhases.ALWAYS_DEPTH_TEST)
-        }
+        private val depthClobberRenderState = RenderState.normal
+            .extend(DefaultRenderStates.DepthTest.ALWAYS, DefaultRenderStates.WriteMask.NO_COLOR)
     }
 }

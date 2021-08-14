@@ -5,10 +5,10 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "ll/core/core-refmap.json",
   "mixins": [
-    "IMatrix3f",
-    "IMatrix4f",
+    "IMatrix3fMixin",
+    "IMatrix4fMixin",
     "MinecraftClientMixin",
-    "RenderTickCounterMixin"
+    "RenderTickCounterMixin",
   ],
   "client": [
   ],

@@ -1,13 +1,13 @@
 package com.teamwizardry.librarianlib.facade.pastry.layers
 
-import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.albedo.GLSL
-import com.teamwizardry.librarianlib.albedo.Shader
-import com.teamwizardry.librarianlib.core.bridge.IMutableRenderLayerPhaseParameters
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
+import com.teamwizardry.librarianlib.albedo.base.buffer.BaseRenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
+import com.teamwizardry.librarianlib.albedo.buffer.VertexBuffer
+import com.teamwizardry.librarianlib.albedo.shader.Shader
+import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
+import com.teamwizardry.librarianlib.albedo.shader.uniform.FloatUniform
+import com.teamwizardry.librarianlib.albedo.shader.uniform.Uniform
 import com.teamwizardry.librarianlib.core.util.*
-import com.teamwizardry.librarianlib.core.util.kotlin.texture
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
@@ -17,12 +17,8 @@ import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.math.clamp
 import com.teamwizardry.librarianlib.mosaic.Mosaic
-import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.render.VertexFormats
 import net.minecraft.util.Identifier
 import org.lwjgl.glfw.GLFW
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
 
@@ -132,17 +128,16 @@ public class PastryColorPicker : GuiLayer(0, 0, 80, 50) {
                 val maxX = size.xi.toDouble()
                 val maxY = size.yi.toDouble()
 
-                val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
+                val buffer = ColorPickerRenderBuffer.SHARED
 
-                ColorPickerShader.hue.set(hue)
+                buffer.hue.set(hue)
 
-                val vb = buffer.getBuffer(colorPickerRenderType)
                 // u/v is saturation/brightness
-                vb.vertex2d(context.transform, minX, minY).texture(0, 1).next()
-                vb.vertex2d(context.transform, minX, maxY).texture(0, 0).next()
-                vb.vertex2d(context.transform, maxX, maxY).texture(1, 0).next()
-                vb.vertex2d(context.transform, maxX, minY).texture(1, 1).next()
-                buffer.draw()
+                buffer.pos(context.transform, minX, minY, 0).sv(0, 1).endVertex()
+                buffer.pos(context.transform, minX, maxY, 0).sv(0, 0).endVertex()
+                buffer.pos(context.transform, maxX, maxY, 0).sv(1, 0).endVertex()
+                buffer.pos(context.transform, maxX, minY, 0).sv(1, 1).endVertex()
+                buffer.draw(Primitive.QUADS)
             }
         }
     }
@@ -205,35 +200,33 @@ public class PastryColorPicker : GuiLayer(0, 0, 80, 50) {
         }
     }
 
-    /**
-     * draws the saturation/brightness box
-     */
-    private object ColorPickerShader :
-        Shader("color_picker", null, Identifier("liblib-facade:shaders/color_picker.frag")) {
-        val hue = GLSL.glFloat()
-
-        override fun setupState() {
-            RenderSystem.enableBlend()
-        }
-
-        override fun teardownState() {
-            RenderSystem.disableBlend()
-        }
-    }
-
     private companion object {
         val hueLoc = Identifier("liblib-facade:textures/pastry/colorpicker_hue.png")
         val hueSprite = Mosaic(hueLoc, 8, 256).getSprite("")
 
-        private val colorPickerRenderType: RenderLayer = run {
-            val renderState = RenderLayer.MultiPhaseParameters.builder()
-                .build(false)
+        val colorPickerShader = Shader.build("pastry_color_picker")
+            .vertex(Identifier("liblib-facade:shaders/pastry_color_picker.vert"))
+            .vertex(Identifier("liblib-facade:shaders/pastry_color_picker.frag"))
+            .build()
+    }
 
-            mixinCast<IMutableRenderLayerPhaseParameters>(renderState).addPhase(ColorPickerShader.renderPhase)
+    private class ColorPickerRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<ColorPickerRenderBuffer>(vbo) {
+        val hue: FloatUniform = +Uniform.float.create("Hue")
+        private val texCoordAttribute = +VertexLayoutElement("TexCoord", VertexLayoutElement.FloatFormat.FLOAT, 2, false)
 
-            SimpleRenderLayers.makeType("librarianlib.facade.color_picker",
-                VertexFormats.POSITION_TEXTURE, GL11.GL_QUADS, 256, false, false, renderState
-            )
+        init {
+            bind(colorPickerShader)
+        }
+
+        fun sv(saturation: Int, value: Int): ColorPickerRenderBuffer {
+            start(texCoordAttribute)
+            putFloat(saturation.toFloat())
+            putFloat(value.toFloat())
+            return this
+        }
+
+        companion object {
+            val SHARED = ColorPickerRenderBuffer(VertexBuffer.SHARED)
         }
     }
 }

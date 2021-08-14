@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.facade.layer.supporting
 import com.teamwizardry.librarianlib.core.util.Client
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gl.Framebuffer
+import net.minecraft.client.gl.SimpleFramebuffer
 import java.util.*
 import java.util.function.Consumer
 
@@ -69,7 +70,7 @@ internal object FramebufferPool {
     private fun createFramebuffer(): Framebuffer {
         if (createdBuffers == maxFramebufferCount)
             throw IllegalStateException("Exceeded maximum of $maxFramebufferCount nested framebuffers")
-        val fbo = Framebuffer(Client.window.framebufferWidth, Client.window.framebufferHeight, true, MinecraftClient.IS_SYSTEM_MAC)
+        val fbo = SimpleFramebuffer(Client.window.framebufferWidth, Client.window.framebufferHeight, true, MinecraftClient.IS_SYSTEM_MAC)
         fbo.setClearColor(0f, 0f, 0f, 0f)
         createdBuffers++
         return fbo

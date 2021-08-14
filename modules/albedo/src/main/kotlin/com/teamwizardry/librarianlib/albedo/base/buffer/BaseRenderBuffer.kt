@@ -7,7 +7,11 @@ import com.teamwizardry.librarianlib.albedo.shader.StandardUniforms
 import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
 import com.teamwizardry.librarianlib.albedo.shader.uniform.Mat4x4Uniform
 import com.teamwizardry.librarianlib.albedo.shader.uniform.Uniform
+import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
+import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.math.Matrix4d
+import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.util.math.Matrix4f
 
 /**
  * The base class for most render buffers. It provides the basic vertex position functions and standard transform
@@ -51,6 +55,15 @@ public abstract class BaseRenderBuffer<T : BaseRenderBuffer<T>>(vbo: VertexBuffe
         return this.pos(matrix.transformX(x, y, z), matrix.transformY(x, y, z), matrix.transformZ(x, y, z))
     }
 
+    public fun pos(matrix: Matrix4f, x: Float, y: Float, z: Float): T {
+        val iMatrix = mixinCast<IMatrix4f>(matrix)
+        return this.pos(iMatrix.transformX(x, y, z), iMatrix.transformY(x, y, z), iMatrix.transformZ(x, y, z))
+    }
+
+    public fun pos(stack: MatrixStack, x: Float, y: Float, z: Float): T {
+        return this.pos(stack.peek().model, x, y, z)
+    }
+
     // overloads for kotlin. The boxing gets inlined away.
     @JvmSynthetic
     public inline fun pos(x: Number, y: Number, z: Number): T {
@@ -59,5 +72,13 @@ public abstract class BaseRenderBuffer<T : BaseRenderBuffer<T>>(vbo: VertexBuffe
     @JvmSynthetic
     public inline fun pos(matrix: Matrix4d, x: Number, y: Number, z: Number): T {
         return pos(matrix, x.toDouble(), y.toDouble(), z.toDouble())
+    }
+    @JvmSynthetic
+    public inline fun pos(matrix: Matrix4f, x: Number, y: Number, z: Number): T {
+        return pos(matrix, x.toFloat(), y.toFloat(), z.toFloat())
+    }
+    @JvmSynthetic
+    public inline fun pos(stack: MatrixStack, x: Number, y: Number, z: Number): T {
+        return pos(stack, x.toFloat(), y.toFloat(), z.toFloat())
     }
 }

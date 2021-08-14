@@ -6,8 +6,8 @@ import com.teamwizardry.librarianlib.scribe.nbt.NbtSerializer
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.MethodMirror
 import dev.thecodewarrior.prism.PrismException
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.ListTag
+import net.minecraft.nbt.NbtCompound
+import net.minecraft.nbt.NbtList
 
 public object MessageScanner {
     private val scanCache = mutableMapOf<Class<*>, List<MessageScan>>()
@@ -39,20 +39,20 @@ public object MessageScanner {
             }
         }.unmodifiableView()
 
-        public fun writeArguments(arguments: Array<out Any?>): CompoundTag {
-            val list = ListTag()
+        public fun writeArguments(arguments: Array<out Any?>): NbtCompound {
+            val list = NbtList()
             parameterSerializers.mapIndexed { i, serializer ->
-                val tag = CompoundTag()
+                val tag = NbtCompound()
                 arguments[i]?.also {
                     tag.put("V", serializer.write(it))
                 }
                 list.add(tag)
             }.toTypedArray()
-            return CompoundTag().also { it.put("ll", list) }
+            return NbtCompound().also { it.put("ll", list) }
         }
 
-        public fun readArguments(payload: CompoundTag): Array<Any?> {
-            val list = payload.getList("ll", CompoundTag().type.toInt())
+        public fun readArguments(payload: NbtCompound): Array<Any?> {
+            val list = payload.getList("ll", NbtCompound().type.toInt())
             return parameterSerializers.mapIndexed { i, serializer ->
                 list.getCompound(i).get("V")?.let {
                     serializer.read(it, null)

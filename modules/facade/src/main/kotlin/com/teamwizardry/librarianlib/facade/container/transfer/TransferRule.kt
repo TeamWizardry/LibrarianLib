@@ -53,7 +53,7 @@ public interface TransferRule {
          * @see TransferSlot.isStackSimilar
          */
         private fun defaultIsStackSimilar(slot: Slot, stack: ItemStack): Boolean {
-            return ScreenHandler.canStacksCombine(stack, slot.stack)
+            return ItemStack.canCombine(stack, slot.stack)
         }
 
         /**
@@ -65,7 +65,7 @@ public interface TransferRule {
             val slotStack = slot.stack
 
             // if it's the same item, we should try stacking. if it's empty, we'll just stack onto that zero.
-            if (ScreenHandler.canStacksCombine(transfer.stack, slotStack) || slotStack.isEmpty) {
+            if (ItemStack.canCombine(transfer.stack, slotStack) || slotStack.isEmpty) {
                 // compute how much to actually transfer
                 val maxStackSize = min(slot.getMaxItemCount(transfer.stack), transfer.stack.maxCount)
                 val transferLimit = max(0, maxStackSize - slotStack.count)
@@ -113,8 +113,10 @@ public interface TransferSlot {
      * contain the same stack.
      *
      * Here's a reference implementation:
-     * ```kotlin
-     * Container.areItemsAndTagsEqual(stack, this.stack)
+     * ```java
+     * public boolean isStackSimilar(ItemStack stack) {
+     *     return ItemStack.canCombine(stack, this.getStack());
+     * }
      * ```
      */
     public fun isStackSimilar(stack: ItemStack): Boolean

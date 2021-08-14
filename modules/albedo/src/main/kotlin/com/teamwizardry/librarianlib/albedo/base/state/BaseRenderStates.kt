@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL33.*
  * - [RenderPhase.ALL_MASK] Enabling the depth/color write mask is a no-op
  */
 public object BaseRenderStates {
-    public class Blend(
+    public data class Blend(
         private val enabled: Boolean,
         private val srcFactor: Factor,
         private val dstFactor: Factor,
@@ -85,7 +85,7 @@ public object BaseRenderStates {
         }
     }
 
-    public class Cull(
+    public data class Cull(
         private val enabled: Boolean,
     ) : RenderState.State(Identifier("liblib-albedo:cull")) {
         override fun apply() {
@@ -101,7 +101,7 @@ public object BaseRenderStates {
         }
     }
 
-    public class DepthTest(
+    public data class DepthTest(
         private val enabled: Boolean,
         private val func: Func
     ) : RenderState.State(Identifier("liblib-albedo:depth_test")) {
@@ -133,7 +133,7 @@ public object BaseRenderStates {
         }
     }
 
-    public class WriteMask(
+    public data class WriteMask(
         private val depth: Boolean,
         private val red: Boolean,
         private val green: Boolean,

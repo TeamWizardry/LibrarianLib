@@ -1,6 +1,8 @@
 #version 120
 
+out fragColor;
+
 void main() {
-    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+    fragColor = vec4(0.0, 0.0, 0.0, 0.0);
     gl_FragDepth = 1;
 }

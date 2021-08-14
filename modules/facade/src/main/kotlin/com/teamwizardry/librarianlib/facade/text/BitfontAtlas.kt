@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.facade.text
 
 import com.mojang.blaze3d.platform.GlStateManager
+import com.mojang.blaze3d.platform.TextureUtil
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.rect
 import com.teamwizardry.librarianlib.math.Rect2d
@@ -8,7 +9,6 @@ import dev.thecodewarrior.bitfont.data.BitGrid
 import dev.thecodewarrior.bitfont.utils.RectanglePacker
 import net.minecraft.client.texture.AbstractTexture
 import net.minecraft.client.texture.NativeImage
-import net.minecraft.client.texture.TextureUtil
 import net.minecraft.resource.ResourceManager
 import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
@@ -21,7 +21,7 @@ public object BitfontAtlas: AbstractTexture() {
     public var height: Int = 128
         private set
 
-    private val gpuMaxTexSize = GlStateManager.getInteger(GL11.GL_MAX_TEXTURE_SIZE)
+    private val gpuMaxTexSize = GlStateManager._getInteger(GL11.GL_MAX_TEXTURE_SIZE)
 
     private var packer = RectanglePacker<BitGrid>(width, height, 1)
     private val rects = mutableMapOf<BitGrid, RectanglePacker.Rectangle>()
@@ -86,7 +86,7 @@ public object BitfontAtlas: AbstractTexture() {
             throw IllegalStateException("Ran out of atlas space! OpenGL max texture size: " +
                 "$gpuMaxTexSize x $gpuMaxTexSize and managed to fit ${rects.size} glyphs.")
         packer.expand(width, height)
-        TextureUtil.allocate(glId, width, height)
+        TextureUtil.prepareImage(glId, width, height)
         rects.forEach { (image, rect) ->
             draw(image, rect.x, rect.y)
         }
@@ -96,7 +96,7 @@ public object BitfontAtlas: AbstractTexture() {
         packer = RectanglePacker<BitGrid>(width, height, 1)
         rects.clear()
         this.bindTexture()
-        TextureUtil.allocate(glId, width, height)
+        TextureUtil.prepareImage(glId, width, height)
         val native = NativeImage(width, height, true)
         native.upload(0, 0, 0, false)
         native.close()

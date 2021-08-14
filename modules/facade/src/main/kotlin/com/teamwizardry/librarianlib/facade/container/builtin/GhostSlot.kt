@@ -29,7 +29,7 @@ public open class GhostSlot(inventory: Inventory, index: Int) : FacadeSlot(inven
         clickType: SlotActionType,
         player: PlayerEntity
     ): ItemStack? {
-        val ghostStack = player.inventory.cursorStack
+        val ghostStack = container.cursorStack
         val isValid = canInsert(ghostStack)
 
         when(clickType) {
@@ -46,7 +46,7 @@ public open class GhostSlot(inventory: Inventory, index: Int) : FacadeSlot(inven
         return ItemStack.EMPTY
     }
 
-    override fun isStackSimilar(stack: ItemStack): Boolean = ScreenHandler.canStacksCombine(stack, this.stack)
+    override fun isStackSimilar(stack: ItemStack): Boolean = ItemStack.canCombine(stack, this.stack)
 
     override fun transferIntoSlot(transfer: TransferState) {
         if(isStackSimilar(transfer.stack)) {

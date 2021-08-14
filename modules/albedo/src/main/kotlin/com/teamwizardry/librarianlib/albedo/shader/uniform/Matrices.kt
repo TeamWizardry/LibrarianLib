@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.albedo.shader.uniform
 
-import com.teamwizardry.librarianlib.core.mixin.IMatrix3f
-import com.teamwizardry.librarianlib.core.mixin.IMatrix4f
+import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
+import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d

@@ -21,6 +21,10 @@ public object DefaultRenderStates {
             BaseRenderStates.Blend.Factor.SRC_ALPHA, BaseRenderStates.Blend.Factor.ONE_MINUS_SRC_ALPHA,
             BaseRenderStates.Blend.Equation.REVERSE_SUBTRACT, BaseRenderStates.Blend.Equation.ADD
         )
+        @JvmField
+        public val OVERWRITE: BaseRenderStates.Blend = BaseRenderStates.Blend(true,
+            BaseRenderStates.Blend.Factor.ONE, BaseRenderStates.Blend.Factor.ZERO
+        )
     }
 
     public object Cull {

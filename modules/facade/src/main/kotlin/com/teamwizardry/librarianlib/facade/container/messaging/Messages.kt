@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.inconceivable
 import com.teamwizardry.librarianlib.courier.CourierBuffer
 import com.teamwizardry.librarianlib.courier.PacketType
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.util.Identifier
 import java.util.function.Supplier
 
@@ -21,7 +21,7 @@ public enum class MessageSide {
     }
 }
 
-public data class MessagePacket(val windowId: Int, val name: String, val payload: CompoundTag) {
+public data class MessagePacket(val windowId: Int, val name: String, val payload: NbtCompound) {
     var side: MessageSide = MessageSide.BOTH
 }
 
@@ -31,13 +31,13 @@ internal object MessagePacketType :
     override fun encode(packet: MessagePacket, buffer: CourierBuffer) {
         buffer.writeVarInt(packet.windowId)
         buffer.writeString(packet.name)
-        buffer.writeCompoundTag(packet.payload)
+        buffer.writeNbt(packet.payload)
     }
 
     override fun decode(buffer: CourierBuffer): MessagePacket {
         val windowId = buffer.readVarInt()
         val name = buffer.readString()
-        val payload = buffer.readCompoundTag()!!
+        val payload = buffer.readNbt()!!
         return MessagePacket(windowId, name, payload)
     }
 }

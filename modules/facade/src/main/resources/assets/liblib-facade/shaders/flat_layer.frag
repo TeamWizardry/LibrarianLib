@@ -1,11 +1,15 @@
 #version 120
 
-uniform sampler2D layerImage;
-uniform sampler2D maskImage;
-uniform vec2 displaySize;
-uniform float alphaMultiply;
-uniform int maskMode;
-uniform int renderMode;
+uniform sampler2D LayerImage;
+uniform sampler2D MaskImage;
+uniform vec2 DisplaySize;
+uniform float AlphaMultiply;
+uniform int MaskMode;
+uniform int RenderMode;
+
+in texCoord;
+
+out fragColor;
 
 // luma function courtesy of https://github.com/hughsk/glsl-luma
 float luma(vec4 color) {
@@ -13,27 +17,27 @@ float luma(vec4 color) {
 }
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / displaySize;
-    if (renderMode == 2) {
-        uv = gl_TexCoord[0].xy;
+    vec2 uv = gl_FragCoord.xy / DisplaySize;
+    if (RenderMode == 2) {
+        uv = texCoord[0].xy;
     }
-    vec4 layerColor = texture2D(layerImage, uv);
-    if (maskMode != 0) {
-        vec4 maskColor = texture2D(maskImage, uv);
-        if (maskMode == 1) { // Multiply by alpha
+    vec4 layerColor = texture2D(LayerImage, uv);
+    if (MaskMode != 0) {
+        vec4 maskColor = texture2D(MaskImage, uv);
+        if (MaskMode == 1) { // Multiply by alpha
             layerColor.a *= maskColor.a;
-        } else if (maskMode == 2) { // Multiply by luma on white
+        } else if (MaskMode == 2) { // Multiply by luma on white
             layerColor.a *= (1. - maskColor.a) + luma(maskColor) * maskColor.a;
-        } else if (maskMode == 3) { // Multiply by luma on black
+        } else if (MaskMode == 3) { // Multiply by luma on black
             layerColor.a *= luma(maskColor) * maskColor.a;
-        } else if (maskMode == 4) { // Multiply by inverse alpha
+        } else if (MaskMode == 4) { // Multiply by inverse alpha
             layerColor.a *= 1. - maskColor.a;
-        } else if (maskMode == 5) { // Multiply by inverse luma on white
+        } else if (MaskMode == 5) { // Multiply by inverse luma on white
             layerColor.a *= 1. - ((1. - maskColor.a) + luma(maskColor) * maskColor.a);
-        } else if (maskMode == 6) { // Multiply by inverse luma on black
+        } else if (MaskMode == 6) { // Multiply by inverse luma on black
             layerColor.a *= 1. - (luma(maskColor) * maskColor.a);
         }
     }
-    layerColor.a *= alphaMultiply;
-    gl_FragColor = layerColor;
+    layerColor.a *= AlphaMultiply;
+    fragColor = layerColor;
 }

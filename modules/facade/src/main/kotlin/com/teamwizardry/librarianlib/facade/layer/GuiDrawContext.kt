@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.facade.layer
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Matrix4d
@@ -64,23 +65,28 @@ public class GuiDrawContext(
     private var glMatrixPushed = false
 
     /**
-     * Pushes the current matrix to the GL transform. This matrix can be popped using [popGlMatrix] or, if it isn't, it
-     * will be popped after the layer is drawn. Calling this multiple times will not push the matrix multiple times.
+     * Pushes the current matrix to RenderSystem model-view matrix. This matrix can be popped using
+     * [popModelViewMatrix] or, if it isn't, it will be popped after the layer is drawn. Calling this multiple times
+     * will update the pushed matrix, not push the matrix multiple times.
+     *
+     * This doesn't update the OpenGL transform matrix. To do that, call [RenderSystem.applyModelViewMatrix]
      */
     @Suppress("CAST_NEVER_SUCCEEDS")
-    public fun pushGlMatrix() {
-        if (glMatrixPushed) return
-        glMatrixPushed = true
-        RenderSystem.pushMatrix()
-        RenderSystem.multMatrix(transform.toMatrix4f())
+    public fun pushModelViewMatrix() {
+        if (!glMatrixPushed) {
+            glMatrixPushed = true
+            RenderSystem.getModelViewStack().push()
+        }
+        transform.copyToMatrix4f(RenderSystem.getModelViewStack().peek().model)
     }
 
     /**
-     * Pops the matrix pushed by [pushGlMatrix], if it has been pushed.
+     * Pops the matrix pushed by [pushModelViewMatrix], if it has been pushed.
      */
-    public fun popGlMatrix() {
+    public fun popModelViewMatrix() {
         if (!glMatrixPushed) return
         glMatrixPushed = false
-        RenderSystem.popMatrix()
+        RenderSystem.getModelViewStack().pop()
+        RenderSystem.applyModelViewMatrix()
     }
 }

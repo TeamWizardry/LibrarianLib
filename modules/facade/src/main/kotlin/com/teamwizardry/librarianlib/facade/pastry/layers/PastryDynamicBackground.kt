@@ -1,5 +1,7 @@
 package com.teamwizardry.librarianlib.facade.pastry.layers
 
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatTextureRenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
@@ -48,12 +50,11 @@ public class PastryDynamicBackground(style: IBackgroundStyle, vararg shapeLayers
     }
 
     override fun draw(context: GuiDrawContext) {
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(style.edges.renderType)
+        val buffer = FlatTextureRenderBuffer.SHARED
         for(element in elements) {
-            element.draw(context.transform, vb)
+            element.draw(context.transform, buffer)
         }
-        buffer.draw()
+        buffer.draw(Primitive.QUADS)
     }
 
     // yes this creates a lot of temporary Vec2d objects, but efficiency be damned this is hard enough as it is and
@@ -151,13 +152,13 @@ public class PastryDynamicBackground(style: IBackgroundStyle, vararg shapeLayers
         val maxX: Double get() = pos.x + size.x
         val maxY: Double get() = pos.y + size.y
 
-        fun draw(matrix: Matrix4d, vb: VertexConsumer) {
+        fun draw(matrix: Matrix4d, rb: FlatTextureRenderBuffer) {
             val tint = Color.WHITE
 
-            vb.vertex2d(matrix, minX, maxY).color(tint).texture(minU, maxV).next()
-            vb.vertex2d(matrix, maxX, maxY).color(tint).texture(maxU, maxV).next()
-            vb.vertex2d(matrix, maxX, minY).color(tint).texture(maxU, minV).next()
-            vb.vertex2d(matrix, minX, minY).color(tint).texture(minU, minV).next()
+            rb.pos(matrix, minX, maxY, 0).color(tint).tex(minU, maxV).endVertex()
+            rb.pos(matrix, maxX, maxY, 0).color(tint).tex(maxU, maxV).endVertex()
+            rb.pos(matrix, maxX, minY, 0).color(tint).tex(maxU, minV).endVertex()
+            rb.pos(matrix, minX, minY, 0).color(tint).tex(minU, minV).endVertex()
         }
     }
 }

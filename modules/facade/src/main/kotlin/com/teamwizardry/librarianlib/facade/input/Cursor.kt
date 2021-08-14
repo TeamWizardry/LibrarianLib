@@ -1,8 +1,8 @@
 package com.teamwizardry.librarianlib.facade.input
 
+import com.mojang.blaze3d.platform.TextureUtil
 import com.teamwizardry.librarianlib.core.util.Client
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener
-import net.minecraft.client.texture.TextureUtil
 import net.minecraft.resource.ResourceManager
 import net.minecraft.util.Identifier
 import net.minecraft.util.profiler.Profiler
@@ -58,7 +58,7 @@ public class Cursor @JvmOverloads constructor(
         val stream = Client.resourceManager.getResource(texture).inputStream
         var bytebuffer: ByteBuffer? = null
         try {
-            bytebuffer = TextureUtil.readAllToByteBuffer(stream)
+            bytebuffer = TextureUtil.readResource(stream)
             bytebuffer!!.rewind()
 
             MemoryStack.stackPush().use { stack ->

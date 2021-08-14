@@ -2,10 +2,12 @@
 
 package com.teamwizardry.librarianlib.core.util.kotlin
 
-import com.teamwizardry.librarianlib.core.mixin.IMatrix4f
+import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
+import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.Vec2d
 import net.minecraft.client.render.VertexConsumer
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.math.Matrix4f
 import net.minecraft.util.math.Vec3d
 import java.awt.Color
@@ -61,3 +63,25 @@ public inline fun <reified T: VertexConsumer> T.vertex2d(matrix: Matrix4d, pos: 
     matrix.transformY(pos.x, pos.y, 0.0),
     matrix.transformZ(pos.x, pos.y, 0.0)
 ) as T
+
+/** Sets the position with Z = 0 */
+public inline fun <reified T: VertexConsumer> T.vertex2d(stack: MatrixStack, x: Number, y: Number): T {
+    val matrix = mixinCast<IMatrix4f>(stack.peek().model)
+    this.vertex(
+        matrix.transformX(x.toFloat(), y.toFloat(), 0f),
+        matrix.transformY(x.toFloat(), y.toFloat(), 0f),
+        matrix.transformZ(x.toFloat(), y.toFloat(), 0f)
+    )
+    return this
+}
+
+/** Sets the position with Z = 0 */
+public inline fun <reified T: VertexConsumer> T.vertex2d(stack: MatrixStack, pos: Vec2d): T {
+    val matrix = mixinCast<IMatrix4f>(stack.peek().model)
+    this.vertex(
+        matrix.transformX(pos.x.toFloat(), pos.y.toFloat(), 0f),
+        matrix.transformY(pos.x.toFloat(), pos.y.toFloat(), 0f),
+        matrix.transformZ(pos.x.toFloat(), pos.y.toFloat(), 0f)
+    ) as T
+    return this
+}

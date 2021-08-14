@@ -2,6 +2,10 @@ package com.teamwizardry.librarianlib.facade.layer
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.base.state.BaseRenderStates
+import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.core.bridge.IMutableRenderLayerPhaseParameters
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
@@ -1090,7 +1094,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * The blend mode to use for this layer. Any value other than [BlendMode.NORMAL] will cause the layer to be rendered
      * to a texture using [RenderMode.RENDER_TO_FBO]
      */
-    public var blendMode: BlendMode = BlendMode.NORMAL
+    public var blendMode: BaseRenderStates.Blend = DefaultRenderStates.Blend.DEFAULT
 
     /**
      * What technique to use to render this layer
@@ -1111,7 +1115,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     private fun actualRenderMode(): RenderMode {
         if (renderMode != RenderMode.DIRECT)
             return renderMode
-        if (opacity < 1.0 || maskMode != MaskMode.NONE || blendMode != BlendMode.NORMAL)
+        if (opacity < 1.0 || maskMode != MaskMode.NONE || blendMode != DefaultRenderStates.Blend.DEFAULT)
             return RenderMode.RENDER_TO_FBO
         return RenderMode.DIRECT
     }
@@ -1173,28 +1177,27 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 }
 
 //                layerFilter?.filter(this.layer, layerFBO, maskFBO) TODO: add back filters?
+                val blendMode = blendMode
+                val buffer = FlatLayerRenderBuffer.SHARED
 
-                FlatLayerShader.layerImage.set(layerFBO.fbo) // func_242996_f = getFramebufferTexture
-                FlatLayerShader.maskImage.set(maskFBO?.fbo ?: 0)
-                FlatLayerShader.alphaMultiply.set(opacity.toFloat())
-                FlatLayerShader.maskMode.set(maskMode.ordinal)
-                FlatLayerShader.renderMode.set(renderMode.ordinal)
-                FlatLayerShader.blendMode = blendMode
+                buffer.layerImage.set(layerFBO.fbo) // func_242996_f = getFramebufferTexture
+                buffer.maskImage.set(maskFBO?.fbo ?: 0)
+                buffer.alphaMultiply.set(opacity.toFloat())
+                buffer.maskMode.set(maskMode.ordinal)
+                buffer.renderMode.set(renderMode.ordinal)
 
                 val maxU = (size.xf * rasterizationScale * Client.scaleFactor.toFloat()) / Client.window.framebufferWidth
                 val maxV = (size.yf * rasterizationScale * Client.scaleFactor.toFloat()) / Client.window.framebufferHeight
 
-                val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-                val vb = buffer.getBuffer(flatLayerRenderLayer)
                 // why 1-maxV?
-                vb.vertex2d(context.transform, 0, size.y).texture(0f, 1 - maxV).next()
-                vb.vertex2d(context.transform, size.x, size.y).texture(maxU, 1 - maxV).next()
-                vb.vertex2d(context.transform, size.x, 0).texture(maxU, 1f).next()
-                vb.vertex2d(context.transform, 0, 0).texture(0f, 1f).next()
-                buffer.draw()
-                GlStateManager.activeTexture(GL13.GL_TEXTURE0)
-                GlStateManager.disableTexture()
-                GlStateManager.enableTexture()
+                buffer.pos(context.transform, 0, size.y, 0).tex(0f, 1 - maxV).endVertex()
+                buffer.pos(context.transform, size.x, size.y, 0).tex(maxU, 1 - maxV).endVertex()
+                buffer.pos(context.transform, size.x, 0, 0).tex(maxU, 1f).endVertex()
+                buffer.pos(context.transform, 0, 0, 0).tex(0f, 1f).endVertex()
+
+                blendMode.apply()
+                buffer.draw(Primitive.QUADS)
+                blendMode.cleanup()
             } finally {
                 layerFBO?.also { FramebufferPool.releaseFramebuffer(it) }
                 maskFBO?.also { FramebufferPool.releaseFramebuffer(it) }
@@ -1219,12 +1222,11 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      */
     private fun renderDirect(context: GuiDrawContext) {
         context.matrix.assertEvenDepth {
-            glStateGuarantees()
             context.matrix.push()
             context.matrix.assertEvenDepth {
                 draw(context)
             }
-            context.popGlMatrix()
+            context.popModelViewMatrix()
             context.matrix.pop()
         }
         forEachChild(false) {
@@ -1237,13 +1239,12 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * buffer when rendering to a texture
      */
     private fun clearBounds(context: GuiDrawContext) {
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(clearBufferRenderLayer)
-        vb.vertex2d(context.transform, 0, size.y).next()
-        vb.vertex2d(context.transform, size.x, size.y).next()
-        vb.vertex2d(context.transform, size.x, 0).next()
-        vb.vertex2d(context.transform, 0, 0).next()
-        buffer.draw()
+        val buffer = FramebufferClearRenderBuffer.SHARED
+        buffer.pos(context.transform, 0, size.y, 0).endVertex()
+        buffer.pos(context.transform, size.x, size.y, 0).endVertex()
+        buffer.pos(context.transform, size.x, 0, 0).endVertex()
+        buffer.pos(context.transform, 0, 0, 0).endVertex()
+        buffer.draw(Primitive.QUADS)
     }
 
     private fun stencil(context: GuiDrawContext) {
@@ -1255,16 +1256,15 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
         val color = Color(1f, 0f, 1f, 0.5f)
 
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(flatColorFanRenderLayer)
+        val buffer = FlatColorRenderBuffer.SHARED
 
         val points = getBoundingBoxPoints()
-        vb.vertex2d(context.transform, size.x / 2, size.y / 2).color(color).next()
+        buffer.pos(context.transform, size.x / 2, size.y / 2, 0).color(color).endVertex()
         points.reversed().forEach {
-            vb.vertex2d(context.transform, it.x, it.y).color(color).next()
+            buffer.pos(context.transform, it.x, it.y, 0).color(color).endVertex()
         }
 
-        buffer.draw()
+        buffer.draw(Primitive.TRIANGLE_FAN)
     }
 
     public fun shouldDrawSkeleton(): Boolean = false
@@ -1313,17 +1313,15 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
      * Draws a flat colored box over this layer, rounding corners as necessary
      */
     private fun drawLayerOverlay(context: GuiDrawContext, color: Color) {
-
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(flatColorFanRenderLayer)
+        val buffer = FlatColorRenderBuffer.SHARED
 
         val points = getBoundingBoxPoints()
-        vb.vertex2d(context.transform, size.x / 2, size.y / 2).color(color).next()
+        buffer.pos(context.transform, size.x / 2, size.y / 2, 0).color(color).endVertex()
         points.reversed().forEach {
-            vb.vertex2d(context.transform, it.x, it.y).color(color).next()
+            buffer.pos(context.transform, it.x, it.y, 0).color(color).endVertex()
         }
 
-        buffer.draw()
+        buffer.draw(Primitive.TRIANGLE_FAN)
     }
 
     /**
@@ -1332,14 +1330,13 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     private fun drawBoundingBox(context: GuiDrawContext, color: Color) {
         val points = getBoundingBoxPoints()
 
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(debugBoundingBoxRenderLayer)
+        val buffer = FlatColorRenderBuffer.SHARED
 
         points.forEach {
-            vb.vertex2d(context.transform, it.x, it.y).color(color).next()
+            buffer.pos(context.transform, it.x, it.y, 0).color(color).endVertex()
         }
 
-        buffer.draw()
+        buffer.draw(Primitive.LINE_LOOP)
     }
 
     public var cornerRadius: Double = 0.0
@@ -1777,40 +1774,6 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
          */
         @JvmStatic
         public val UNDERLAY_Z: Double = -1e10
-
-        private val debugBoundingBoxRenderLayer: RenderLayer = SimpleRenderLayers.flat(GL11.GL_LINE_LOOP)
-        private val flatColorFanRenderLayer: RenderLayer = SimpleRenderLayers.flat(GL11.GL_TRIANGLE_FAN)
-        private val flatLayerRenderLayer: RenderLayer = run {
-            val renderState = RenderLayer.MultiPhaseParameters.builder()
-                .build(false)
-            mixinCast<IMutableRenderLayerPhaseParameters>(renderState).addPhase(FlatLayerShader.renderPhase)
-
-            SimpleRenderLayers.makeType("librarianlib.facade.flat_layer",
-                VertexFormats.POSITION_TEXTURE, GL11.GL_QUADS, 256, false, false, renderState
-            )
-        }
-
-        private val clearBufferRenderLayer: RenderLayer = run {
-            val renderState = RenderLayer.MultiPhaseParameters.builder()
-                .depthTest(DefaultRenderPhases.ALWAYS_DEPTH_TEST)
-                .build(false)
-
-            mixinCast<IMutableRenderLayerPhaseParameters>(renderState).addPhase(FramebufferClearShader.renderPhase)
-
-            SimpleRenderLayers.makeType("librarianlib.facade.clear_buffer",
-                VertexFormats.POSITION, GL11.GL_QUADS, 256, false, false, renderState
-            )
-        }
-
-        private fun glStateGuarantees() {
-            RenderSystem.enableTexture()
-            RenderSystem.color4f(1f, 1f, 1f, 1f)
-            RenderSystem.enableBlend()
-            RenderSystem.shadeModel(GL11.GL_SMOOTH)
-            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-            RenderSystem.alphaFunc(GL11.GL_GREATER, 1 / 255f)
-            RenderSystem.disableLighting()
-        }
 
         private val logger = LibLibFacade.makeLogger<GuiLayer>()
     }

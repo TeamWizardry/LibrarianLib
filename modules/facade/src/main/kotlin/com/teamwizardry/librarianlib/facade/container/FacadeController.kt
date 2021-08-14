@@ -14,6 +14,9 @@ import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.ScreenHandlerType
 import net.minecraft.screen.slot.SlotActionType
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.util.crash.CrashException
+import net.minecraft.util.crash.CrashReport
+import net.minecraft.util.registry.Registry
 
 public abstract class FacadeController(
     type: ScreenHandlerType<*>,
@@ -96,13 +99,26 @@ public abstract class FacadeController(
         return transferManager.transferStackInSlot(slots[index])
     }
 
-    override fun onSlotClick(slotId: Int, mouseButton: Int, clickTypeIn: SlotActionType, player: PlayerEntity): ItemStack {
-        val customClickResult =
-            (slots.getOrNull(slotId) as? CustomClickSlot?)?.handleClick(this, mouseButton, clickTypeIn, player)
-        if (customClickResult != null) {
-            return customClickResult
+    override fun onSlotClick(slotIndex: Int, button: Int, actionType: SlotActionType, player: PlayerEntity) {
+        try {
+            val customClickResult = (slots.getOrNull(slotIndex) as? CustomClickSlot?)?.handleClick(this, button, actionType, player)
+//            if (customClickResult != null) {
+//                return customClickResult
+//            }
+        } catch (var8: Exception) {
+            val crashReport = CrashReport.create(var8, "Container click")
+            val crashReportSection = crashReport.addElement("Click info")
+            crashReportSection.add("Menu Type") {
+                if (type != null) Registry.SCREEN_HANDLER.getId(type).toString() else "<no type>"
+            }
+            crashReportSection.add("Menu Class") { this.javaClass.canonicalName }
+            crashReportSection.add("Slot Count", slots.size as Any)
+            crashReportSection.add("Slot", slotIndex as Any?)
+            crashReportSection.add("Button", button as Any?)
+            crashReportSection.add("Type", actionType as Any?)
+            throw CrashException(crashReport)
         }
-        return super.onSlotClick(slotId, mouseButton, clickTypeIn, player)
+        return super.onSlotClick(slotIndex, button, actionType, player)
     }
 
     public companion object {

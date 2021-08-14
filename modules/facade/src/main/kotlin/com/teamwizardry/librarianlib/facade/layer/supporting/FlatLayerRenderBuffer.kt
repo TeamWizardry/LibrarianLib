@@ -1,34 +1,43 @@
 package com.teamwizardry.librarianlib.facade.layer.supporting
 
-import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.albedo.GLSL
-import com.teamwizardry.librarianlib.albedo.Shader
-import com.teamwizardry.librarianlib.core.rendering.BlendMode
+import com.teamwizardry.librarianlib.albedo.base.buffer.BaseRenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.VertexBuffer
+import com.teamwizardry.librarianlib.albedo.shader.Shader
+import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
+import com.teamwizardry.librarianlib.albedo.shader.uniform.Uniform
 import com.teamwizardry.librarianlib.core.util.Client
 import net.minecraft.util.Identifier
 
-internal object FlatLayerShader: Shader("flat_layer", null, Identifier("liblib-facade:shaders/flat_layer.frag")) {
-    val layerImage = GLSL.sampler2D()
-    val maskImage = GLSL.sampler2D()
-    val displaySize = GLSL.vec2()
-    val alphaMultiply = GLSL.glFloat()
-    val maskMode = GLSL.glInt()
-    val renderMode = GLSL.glInt()
+internal class FlatLayerRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatLayerRenderBuffer>(vbo) {
+    val layerImage = +Uniform.sampler2D.create("LayerImage")
+    val maskImage = +Uniform.sampler2D.create("MaskImage")
+    val displaySize = +Uniform.vec2.create("DisplaySize")
+    val alphaMultiply = +Uniform.float.create("AlphaMultiply")
+    val maskMode = +Uniform.int.create("MaskMode")
+    val renderMode = +Uniform.int.create("RenderMode")
+    private val texCoordAttribute = +VertexLayoutElement("TexCoord", VertexLayoutElement.FloatFormat.FLOAT, 2, false)
 
-    /**
-     * This has to be applied here, because MC's state will overwrite it
-     */
-    var blendMode: BlendMode = BlendMode.NORMAL
+    init {
+        bind(shader)
+    }
+
+    fun tex(u: Float, v: Float): FlatLayerRenderBuffer {
+        start(texCoordAttribute)
+        putFloat(u)
+        putFloat(v)
+        return this
+    }
 
     override fun setupState() {
         displaySize.set(Client.window.framebufferWidth.toFloat(), Client.window.framebufferHeight.toFloat())
-        RenderSystem.enableBlend()
-        blendMode.glApply()
     }
 
-    override fun teardownState() {
-        blendMode.reset()
-        RenderSystem.disableBlend()
+    companion object {
+        val shader = Shader.build("framebuffer_clear")
+            .vertex(Identifier("liblib-facade:shaders/flat_layer.vert"))
+            .fragment(Identifier("liblib-facade:shaders/flat_layer.frag"))
+            .build()
+        val SHARED = FlatLayerRenderBuffer(VertexBuffer.SHARED)
     }
 }
 

@@ -51,13 +51,20 @@ public class TestBlock(manager: TestModContentManager, id: Identifier): TestConf
     public val destroy: SidedAction<DestroyContext> = SidedAction()
     public val place: SidedAction<PlaceContext> = SidedAction()
 
-    public var blockEntityFactory: ((BlockEntityType<BlockEntity>) -> BlockEntity)? = null
+    public var blockEntityFactory: ((BlockEntityType<BlockEntity>, BlockPos, BlockState) -> BlockEntity)? = null
+        private set
+    public var blockEntityTickFunction: ((BlockEntity) -> Unit)? = null
         private set
 
-    public fun <T: BlockEntity> blockEntity(factory: (BlockEntityType<T>) -> T) {
+    public fun <T: BlockEntity> blockEntity(factory: (BlockEntityType<T>, BlockPos, BlockState) -> T) {
         if(blockEntityFactory != null) throw IllegalStateException("Can't replace an existing block entity factory")
         @Suppress("UNCHECKED_CAST")
-        this.blockEntityFactory = factory as (BlockEntityType<BlockEntity>) -> BlockEntity
+        this.blockEntityFactory = factory as (BlockEntityType<BlockEntity>, BlockPos, BlockState) -> BlockEntity
+    }
+    public fun <T: BlockEntity> blockEntityTickFunction(ticker: (T) -> Unit) {
+        if(blockEntityTickFunction != null) throw IllegalStateException("Can't replace an existing block entity ticker")
+        @Suppress("UNCHECKED_CAST")
+        this.blockEntityTickFunction = ticker as (BlockEntity) -> Unit
     }
 
     internal val blockInstance: TestBlockImpl by lazy {
@@ -71,7 +78,7 @@ public class TestBlock(manager: TestModContentManager, id: Identifier): TestConf
     }
     internal val blockEntityType: BlockEntityType<BlockEntity>? by lazy {
         blockEntityFactory?.let { factory ->
-            BlockEntityType.Builder.create({ _, _ -> factory(this.blockEntityType!!) }, blockInstance).build(null)
+            BlockEntityType.Builder.create({ pos, state -> factory(this.blockEntityType!!, pos, state) }, blockInstance).build(null)
         }
     }
 

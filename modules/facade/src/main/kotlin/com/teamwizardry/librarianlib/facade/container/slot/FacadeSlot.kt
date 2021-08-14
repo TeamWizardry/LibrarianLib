@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.facade.mixin.SlotPosAccess
 import net.minecraft.inventory.Inventory
 import net.minecraft.screen.slot.Slot
 
-public open class FacadeSlot(itemHandler: Inventory, protected val index: Int) : Slot(itemHandler, index, 0, 0) {
+public open class FacadeSlot(itemHandler: Inventory, index: Int) : Slot(itemHandler, index, 0, 0) {
 
     public fun setX(xPos: Int) {
         mixinCast<SlotPosAccess>(this).slotX = xPos
