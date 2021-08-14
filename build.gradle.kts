@@ -57,7 +57,7 @@ configure<CommonConfigExtension> {
     modules {
         create("albedo")
         create("core")
-//        create("courier")
+        create("courier")
         create("etcetera")
 //        create("facade")
 //        create("foundation")

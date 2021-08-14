@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.courier
 import com.teamwizardry.librarianlib.scribe.Scribe
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.prism.annotation.RefractClass
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtCompound
 import net.minecraft.util.Identifier
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
@@ -23,13 +23,13 @@ public class CourierPacketType<T : CourierPacket>(
     private val serializer = Scribe.nbt[Mirror.reflect(type)].value
 
     override fun encode(packet: T, buffer: CourierBuffer) {
-        val tag = serializer.write(packet) as CompoundTag
-        buffer.writeCompoundTag(tag)
+        val tag = serializer.write(packet) as NbtCompound
+        buffer.writeNbt(tag)
         packet.writeBytes(buffer)
     }
 
     override fun decode(buffer: CourierBuffer): T {
-        val tag = buffer.readCompoundTag() ?: throw IllegalStateException("Packet didn't start with a compound tag")
+        val tag = buffer.readNbt() ?: throw IllegalStateException("Packet didn't start with a compound tag")
 
         @Suppress("UNCHECKED_CAST")
         val packet = serializer.read(tag, null) as T

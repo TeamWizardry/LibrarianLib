@@ -8,7 +8,7 @@ fun includeModule(name: String) {
 include("testcore")
 includeModule("albedo")
 includeModule("core")
-//includeModule("courier")
+includeModule("courier")
 includeModule("etcetera")
 //includeModule("facade")
 //includeModule("foundation")
