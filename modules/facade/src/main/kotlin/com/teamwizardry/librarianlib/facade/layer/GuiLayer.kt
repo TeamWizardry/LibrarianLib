@@ -1,66 +1,33 @@
 package com.teamwizardry.librarianlib.facade.layer
 
-import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
 import com.teamwizardry.librarianlib.albedo.base.state.BaseRenderStates
 import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
-import com.teamwizardry.librarianlib.core.bridge.IMutableRenderLayerPhaseParameters
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
-import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.*
-import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
 import com.teamwizardry.librarianlib.core.util.lerp.Lerper
 import com.teamwizardry.librarianlib.core.util.lerp.Lerpers
-import com.teamwizardry.librarianlib.core.util.mixinCast
-import com.teamwizardry.librarianlib.facade.layer.supporting.StencilUtil
-import com.teamwizardry.librarianlib.facade.layer.supporting.*
-import com.teamwizardry.librarianlib.facade.value.IMValue
-import com.teamwizardry.librarianlib.facade.value.IMValueBoolean
-import com.teamwizardry.librarianlib.facade.value.RMValue
-import com.teamwizardry.librarianlib.facade.value.RMValueDouble
-import com.teamwizardry.librarianlib.math.CoordinateSpace2D
-import com.teamwizardry.librarianlib.math.Matrix3d
-import com.teamwizardry.librarianlib.math.Matrix3dStack
-import com.teamwizardry.librarianlib.math.Matrix3dView
-import com.teamwizardry.librarianlib.math.MutableMatrix3d
-import com.teamwizardry.librarianlib.math.Rect2d
-import com.teamwizardry.librarianlib.math.Vec2d
-import com.teamwizardry.librarianlib.math.fastCos
-import com.teamwizardry.librarianlib.math.fastSin
-import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.etcetera.eventbus.EventBus
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.FacadeWidget
 import com.teamwizardry.librarianlib.facade.LibLibFacade
 import com.teamwizardry.librarianlib.facade.input.Cursor
+import com.teamwizardry.librarianlib.facade.layer.supporting.*
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBasicTooltip
-import com.teamwizardry.librarianlib.facade.value.ChangeListener
-import com.teamwizardry.librarianlib.facade.value.IMValueDouble
-import com.teamwizardry.librarianlib.facade.value.IMValueInt
-import com.teamwizardry.librarianlib.facade.value.IMValueLong
-import com.teamwizardry.librarianlib.facade.value.RMValueBoolean
-import com.teamwizardry.librarianlib.facade.value.RMValueInt
-import com.teamwizardry.librarianlib.facade.value.RMValueLong
+import com.teamwizardry.librarianlib.facade.value.*
+import com.teamwizardry.librarianlib.math.*
 import com.teamwizardry.librarianlib.mosaic.Sprite
 import dev.thecodewarrior.mirror.Mirror
 import net.minecraft.client.gl.Framebuffer
-import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.util.math.MatrixStack
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL13
 import java.awt.Color
-import java.lang.Exception
-import java.util.ConcurrentModificationException
-import java.util.PriorityQueue
+import java.util.*
 import java.util.function.*
 import kotlin.math.PI
 import kotlin.math.abs
@@ -1244,7 +1211,10 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         buffer.pos(context.transform, size.x, size.y, 0).endVertex()
         buffer.pos(context.transform, size.x, 0, 0).endVertex()
         buffer.pos(context.transform, 0, 0, 0).endVertex()
+
+        DefaultRenderStates.WriteMask.NO_COLOR.apply()
         buffer.draw(Primitive.QUADS)
+        DefaultRenderStates.WriteMask.NO_COLOR.cleanup()
     }
 
     private fun stencil(context: GuiDrawContext) {

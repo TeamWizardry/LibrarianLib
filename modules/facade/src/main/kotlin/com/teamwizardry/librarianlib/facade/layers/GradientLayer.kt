@@ -1,16 +1,12 @@
 package com.teamwizardry.librarianlib.facade.layers
 
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
-import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
+import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
+import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.RMValue
 import com.teamwizardry.librarianlib.facade.value.RMValueDouble
-import com.teamwizardry.librarianlib.facade.layer.GuiLayer
-import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.math.Axis2d
-import net.minecraft.client.render.VertexConsumerProvider
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
@@ -40,42 +36,41 @@ public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width:
 
 
         if (stops.isNotEmpty()) {
-            val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-            val vb = buffer.getBuffer(renderType)
+            val buffer = FlatColorRenderBuffer.SHARED
 
             if (axis == Axis2d.X) {
                 if (stops.first().location != 0.0) {
-                    vb.vertex2d(context.transform, minX, minY).color(stops.first().color).next()
-                    vb.vertex2d(context.transform, minX, maxY).color(stops.first().color).next()
+                    buffer.pos(context.transform, minX, minY, 0).color(stops.first().color).endVertex()
+                    buffer.pos(context.transform, minX, maxY, 0).color(stops.first().color).endVertex()
                 }
 
                 stops.forEach { stop ->
-                    vb.vertex2d(context.transform, minX + (maxX - minX) * stop.location, minY).color(stop.color).next()
-                    vb.vertex2d(context.transform, minX + (maxX - minX) * stop.location, maxY).color(stop.color).next()
+                    buffer.pos(context.transform, minX + (maxX - minX) * stop.location, minY, 0).color(stop.color).endVertex()
+                    buffer.pos(context.transform, minX + (maxX - minX) * stop.location, maxY, 0).color(stop.color).endVertex()
                 }
 
                 if (stops.last().location != 1.0) {
-                    vb.vertex2d(context.transform, maxX, minY).color(stops.last().color).next()
-                    vb.vertex2d(context.transform, maxX, maxY).color(stops.last().color).next()
+                    buffer.pos(context.transform, maxX, minY, 0).color(stops.last().color).endVertex()
+                    buffer.pos(context.transform, maxX, maxY, 0).color(stops.last().color).endVertex()
                 }
             } else {
                 if (stops.first().location != 0.0) {
-                    vb.vertex2d(context.transform, minX, minY).color(stops.first().color).next()
-                    vb.vertex2d(context.transform, maxX, minY).color(stops.first().color).next()
+                    buffer.pos(context.transform, minX, minY, 0).color(stops.first().color).endVertex()
+                    buffer.pos(context.transform, maxX, minY, 0).color(stops.first().color).endVertex()
                 }
 
                 stops.forEach { stop ->
-                    vb.vertex2d(context.transform, minX, minY + (maxY - minY) * stop.location).color(stop.color).next()
-                    vb.vertex2d(context.transform, maxX, minY + (maxY - minY) * stop.location).color(stop.color).next()
+                    buffer.pos(context.transform, minX, minY + (maxY - minY) * stop.location, 0).color(stop.color).endVertex()
+                    buffer.pos(context.transform, maxX, minY + (maxY - minY) * stop.location, 0).color(stop.color).endVertex()
                 }
 
                 if (stops.last().location != 1.0) {
-                    vb.vertex2d(context.transform, minX, maxY).color(stops.last().color).next()
-                    vb.vertex2d(context.transform, maxX, maxY).color(stops.last().color).next()
+                    buffer.pos(context.transform, minX, maxY, 0).color(stops.last().color).endVertex()
+                    buffer.pos(context.transform, maxX, maxY, 0).color(stops.last().color).endVertex()
                 }
             }
 
-            buffer.draw()
+            buffer.draw(Primitive.QUADS)
         }
     }
 
@@ -104,9 +99,5 @@ public class GradientLayer(public val axis: Axis2d, posX: Int, posY: Int, width:
         override fun toString(): String {
             return "($color @ $location)"
         }
-    }
-
-    private companion object {
-        private val renderType = SimpleRenderLayers.flat(GL11.GL_QUADS)
     }
 }

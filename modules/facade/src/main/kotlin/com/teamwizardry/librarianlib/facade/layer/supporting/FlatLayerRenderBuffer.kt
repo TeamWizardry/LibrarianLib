@@ -34,8 +34,8 @@ internal class FlatLayerRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatL
 
     companion object {
         val shader = Shader.build("framebuffer_clear")
-            .vertex(Identifier("liblib-facade:shaders/flat_layer.vert"))
-            .fragment(Identifier("liblib-facade:shaders/flat_layer.frag"))
+            .vertex(Identifier("liblib-facade:flat_layer.vert"))
+            .fragment(Identifier("liblib-facade:flat_layer.frag"))
             .build()
         val SHARED = FlatLayerRenderBuffer(VertexBuffer.SHARED)
     }

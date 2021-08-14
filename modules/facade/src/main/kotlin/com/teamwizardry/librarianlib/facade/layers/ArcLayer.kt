@@ -1,24 +1,16 @@
 package com.teamwizardry.librarianlib.facade.layers
 
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
-import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
+import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
+import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
-import com.teamwizardry.librarianlib.facade.layer.GuiLayer
-import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.math.Vec2d
-import net.minecraft.client.render.VertexConsumerProvider
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.lang.Math.PI
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.sin
+import kotlin.math.*
 
 public class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
     public constructor(color: Color, x: Int, y: Int): this(color, x, y, 0, 0)
@@ -79,12 +71,11 @@ public class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): Gu
 
         val c = color
 
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(renderLayer)
+        val buffer = FlatColorRenderBuffer.SHARED
 
         context.matrix.translate(size.x / 2, size.y / 2)
 
-        vb.vertex2d(context.transform, 0, 0).color(c).next()
+        buffer.pos(context.transform, 0, 0, 0).color(c).endVertex()
 
         // we go from end to start because while the angles are measured clockwise, we need the vertices to be in
         // counterclockwise order
@@ -92,20 +83,16 @@ public class ArcLayer(color: Color, x: Int, y: Int, width: Int, height: Int): Gu
         while (a > start) {
             val cos = cos(a)
             val sin = sin(a)
-            vb.vertex2d(context.transform, rX * sin, rY * -cos).color(c).next()
+            buffer.pos(context.transform, rX * sin, rY * -cos, 0).color(c).endVertex()
             a -= segmentSize
         }
 
         if (a != start) {
             val cos = cos(start)
             val sin = sin(start)
-            vb.vertex2d(context.transform, rX * sin, rY * -cos).color(c).next()
+            buffer.pos(context.transform, rX * sin, rY * -cos, 0).color(c).endVertex()
         }
 
-        buffer.draw()
-    }
-
-    private companion object {
-        private val renderLayer = SimpleRenderLayers.flat(GL11.GL_TRIANGLE_FAN)
+        buffer.draw(Primitive.TRIANGLE_FAN)
     }
 }

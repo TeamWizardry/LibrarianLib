@@ -205,8 +205,8 @@ public class PastryColorPicker : GuiLayer(0, 0, 80, 50) {
         val hueSprite = Mosaic(hueLoc, 8, 256).getSprite("")
 
         val colorPickerShader = Shader.build("pastry_color_picker")
-            .vertex(Identifier("liblib-facade:shaders/pastry_color_picker.vert"))
-            .vertex(Identifier("liblib-facade:shaders/pastry_color_picker.frag"))
+            .vertex(Identifier("liblib-facade:pastry_color_picker.vert"))
+            .vertex(Identifier("liblib-facade:pastry_color_picker.frag"))
             .build()
     }
 

@@ -40,6 +40,8 @@ public class FlatTextureRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatT
         return this
     }
 
+    public fun tex(u: Double, v: Double): FlatTextureRenderBuffer = this.tex(u.toFloat(), v.toFloat())
+
     public companion object {
         @JvmStatic
         public val defaultShader: Shader = Shader.build("flat_texture")

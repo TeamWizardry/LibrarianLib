@@ -1,16 +1,13 @@
 package com.teamwizardry.librarianlib.facade.example.visualization
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
-import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.core.util.DistinctColors
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
 import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 
 class AnchorVisualizationLayer(val target: GuiLayer): GuiLayer() {
@@ -37,20 +34,19 @@ class AnchorVisualizationLayer(val target: GuiLayer): GuiLayer() {
 
         RenderSystem.lineWidth(3f)
 
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(SimpleRenderLayers.flatLines)
+        val buffer = FlatColorRenderBuffer.SHARED
 
         // get into parent's space
         context.matrix *= inverseTransform
         // get into their parent space
         context.matrix *= parent.inverseTransform
 
-        vb.vertex2d(context.transform, target.pos.x - anchorSize, target.pos.y - anchorSize).color(color).next()
-        vb.vertex2d(context.transform, target.pos.x + anchorSize, target.pos.y + anchorSize).color(color).next()
-        vb.vertex2d(context.transform, target.pos.x + anchorSize, target.pos.y - anchorSize).color(color).next()
-        vb.vertex2d(context.transform, target.pos.x - anchorSize, target.pos.y + anchorSize).color(color).next()
+        buffer.pos(context.transform, target.pos.x - anchorSize, target.pos.y - anchorSize, 0).color(color).endVertex()
+        buffer.pos(context.transform, target.pos.x + anchorSize, target.pos.y + anchorSize, 0).color(color).endVertex()
+        buffer.pos(context.transform, target.pos.x + anchorSize, target.pos.y - anchorSize, 0).color(color).endVertex()
+        buffer.pos(context.transform, target.pos.x - anchorSize, target.pos.y + anchorSize, 0).color(color).endVertex()
 
-        buffer.draw()
+        buffer.draw(Primitive.LINES)
         RenderSystem.lineWidth(1f)
     }
 }

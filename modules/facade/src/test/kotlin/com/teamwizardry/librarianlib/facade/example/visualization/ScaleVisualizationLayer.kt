@@ -1,16 +1,13 @@
 package com.teamwizardry.librarianlib.facade.example.visualization
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
-import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.core.util.DistinctColors
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
+import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValueDouble
-import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 
 class ScaleVisualizationLayer(gridSize: Double): GuiLayer() {
@@ -35,27 +32,26 @@ class ScaleVisualizationLayer(gridSize: Double): GuiLayer() {
     override fun draw(context: GuiDrawContext) {
         RenderSystem.lineWidth(2f)
 
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(SimpleRenderLayers.flatLines)
+        val buffer = FlatColorRenderBuffer.SHARED
 
         val gridSize = this.gridSize
         if(gridSize < 0) return
 
         var x = gridSize
         while(x < width) {
-            vb.vertex2d(context.transform, x, 0).color(color).next()
-            vb.vertex2d(context.transform, x, height).color(color).next()
+            buffer.pos(context.transform, x, 0, 0).color(color).endVertex()
+            buffer.pos(context.transform, x, height, 0).color(color).endVertex()
             x += gridSize
         }
 
         var y = gridSize
         while(y < height) {
-            vb.vertex2d(context.transform, 0, y).color(color).next()
-            vb.vertex2d(context.transform, width, y).color(color).next()
+            buffer.pos(context.transform, 0, y, 0).color(color).endVertex()
+            buffer.pos(context.transform, width, y, 0).color(color).endVertex()
             y += gridSize
         }
 
-        buffer.draw()
+        buffer.draw(Primitive.LINES)
         RenderSystem.lineWidth(1f)
     }
 }

@@ -1,13 +1,10 @@
 package com.teamwizardry.librarianlib.facade.layers
 
-import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers.flatQuads
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
-import com.teamwizardry.librarianlib.facade.layer.GuiLayer
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
+import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.value.IMValue
-import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 
 public class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): GuiLayer(x, y, width, height) {
@@ -27,14 +24,13 @@ public class RectLayer(color: Color, x: Int, y: Int, width: Int, height: Int): G
 
         val c = color
 
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(flatQuads)
+        val buffer = FlatColorRenderBuffer.SHARED
 
-        vb.vertex2d(context.transform, minX, maxY).color(c).next()
-        vb.vertex2d(context.transform, maxX, maxY).color(c).next()
-        vb.vertex2d(context.transform, maxX, minY).color(c).next()
-        vb.vertex2d(context.transform, minX, minY).color(c).next()
+        buffer.pos(context.transform, minX, maxY, 0).color(c).endVertex()
+        buffer.pos(context.transform, maxX, maxY, 0).color(c).endVertex()
+        buffer.pos(context.transform, maxX, minY, 0).color(c).endVertex()
+        buffer.pos(context.transform, minX, minY, 0).color(c).endVertex()
 
-        buffer.draw()
+        buffer.draw(Primitive.QUADS)
     }
 }

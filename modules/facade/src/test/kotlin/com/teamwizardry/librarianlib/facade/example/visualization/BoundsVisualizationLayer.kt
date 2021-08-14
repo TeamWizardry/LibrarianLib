@@ -1,15 +1,12 @@
 package com.teamwizardry.librarianlib.facade.example.visualization
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
-import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.core.util.DistinctColors
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.client.render.VertexConsumerProvider
 import java.awt.Color
 
 class BoundsVisualizationLayer: GuiLayer() {
@@ -31,14 +28,13 @@ class BoundsVisualizationLayer: GuiLayer() {
     override fun draw(context: GuiDrawContext) {
         RenderSystem.lineWidth(2f)
 
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(SimpleRenderLayers.flatLineStrip)
+        val buffer = FlatColorRenderBuffer.SHARED
 
         getBoundingBoxPoints().forEach {
-            vb.vertex2d(context.transform, it.x, it.y).color(color).next()
+            buffer.pos(context.transform, it.x, it.y, 0).color(color).endVertex()
         }
 
-        buffer.draw()
+        buffer.draw(Primitive.LINE_LOOP)
         RenderSystem.lineWidth(1f)
     }
 }

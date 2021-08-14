@@ -1,4 +1,4 @@
-#version 120
+#version 150
 
 uniform sampler2D LayerImage;
 uniform sampler2D MaskImage;
@@ -7,9 +7,9 @@ uniform float AlphaMultiply;
 uniform int MaskMode;
 uniform int RenderMode;
 
-in texCoord;
+in vec2 texCoord;
 
-out fragColor;
+out vec4 fragColor;
 
 // luma function courtesy of https://github.com/hughsk/glsl-luma
 float luma(vec4 color) {
@@ -19,11 +19,11 @@ float luma(vec4 color) {
 void main() {
     vec2 uv = gl_FragCoord.xy / DisplaySize;
     if (RenderMode == 2) {
-        uv = texCoord[0].xy;
+        uv = texCoord.xy;
     }
-    vec4 layerColor = texture2D(LayerImage, uv);
+    vec4 layerColor = texture(LayerImage, uv);
     if (MaskMode != 0) {
-        vec4 maskColor = texture2D(MaskImage, uv);
+        vec4 maskColor = texture(MaskImage, uv);
         if (MaskMode == 1) { // Multiply by alpha
             layerColor.a *= maskColor.a;
         } else if (MaskMode == 2) { // Multiply by luma on white

@@ -1,9 +1,8 @@
 package com.teamwizardry.librarianlib.facade
 
-import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.kotlin.color
 import com.teamwizardry.librarianlib.facade.layer.supporting.StencilUtil
 import com.teamwizardry.librarianlib.facade.input.Cursor
 import com.teamwizardry.librarianlib.facade.layer.FacadeDebugOptions
@@ -14,7 +13,6 @@ import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.math.MatrixStack
 import org.lwjgl.glfw.GLFW
 import java.awt.Color
@@ -329,14 +327,13 @@ public open class FacadeWidget(
         val minSafeX = (windowWidth - basisWidth) / 2
         val minSafeY = (windowHeight - basisHeight) / 2
 
-        val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-        val vb = buffer.getBuffer(SimpleRenderLayers.flatQuads)
+        val rb = FlatColorRenderBuffer.SHARED
 
         fun drawRect(minX: Double, minY: Double, maxX: Double, maxY: Double) {
-            vb.vertex(minX, maxY, 0.0).color(color).next()
-            vb.vertex(maxX, maxY, 0.0).color(color).next()
-            vb.vertex(maxX, minY, 0.0).color(color).next()
-            vb.vertex(minX, minY, 0.0).color(color).next()
+            rb.pos(minX, maxY, 0.0).color(color).endVertex()
+            rb.pos(maxX, maxY, 0.0).color(color).endVertex()
+            rb.pos(maxX, minY, 0.0).color(color).endVertex()
+            rb.pos(minX, minY, 0.0).color(color).endVertex()
         }
 
         drawRect(0.0, 0.0, windowWidth, minSafeY)
@@ -344,7 +341,7 @@ public open class FacadeWidget(
         drawRect(minSafeX + basisWidth, minSafeY, windowWidth, minSafeY + basisHeight)
         drawRect(0.0, minSafeY + basisHeight, windowWidth, windowHeight)
 
-        buffer.draw()
+        rb.draw(Primitive.QUADS)
     }
 
     /**

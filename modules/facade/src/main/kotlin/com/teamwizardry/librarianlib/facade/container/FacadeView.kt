@@ -1,23 +1,14 @@
 package com.teamwizardry.librarianlib.facade.container
 
-import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
 import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.albedo.state.RenderState
-import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
-import com.teamwizardry.librarianlib.courier.CourierClientPlayNetworking
 import com.teamwizardry.librarianlib.facade.FacadeMouseMask
 import com.teamwizardry.librarianlib.facade.FacadeWidget
 import com.teamwizardry.librarianlib.facade.bridge.FacadeContainerScreenHooks
-import com.teamwizardry.librarianlib.facade.container.builtin.GhostSlot
 import com.teamwizardry.librarianlib.facade.container.messaging.MessageEncoder
-import com.teamwizardry.librarianlib.facade.container.messaging.MessagePacketType
 import com.teamwizardry.librarianlib.facade.container.messaging.MessageSender
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
@@ -26,15 +17,12 @@ import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryDynamicBackground
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.gui.screen.ingame.HandledScreen
-import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.item.ItemStack
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.slot.Slot
 import net.minecraft.text.Text
-import org.lwjgl.opengl.GL11
 
 /**
  * A Facade-backed GUI container.

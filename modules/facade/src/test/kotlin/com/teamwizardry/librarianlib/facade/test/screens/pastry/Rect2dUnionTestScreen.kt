@@ -1,25 +1,24 @@
 package com.teamwizardry.librarianlib.facade.test.screens.pastry
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.rendering.SimpleRenderLayers
-import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
-import com.teamwizardry.librarianlib.facade.FacadeScreen
-import com.teamwizardry.librarianlib.facade.layer.GuiLayer
-import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
-import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
-import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
-import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
+import com.teamwizardry.librarianlib.albedo.base.buffer.BaseRenderBuffer
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.core.util.rect
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
+import com.teamwizardry.librarianlib.facade.FacadeScreen
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
+import com.teamwizardry.librarianlib.facade.layer.GuiLayer
+import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
+import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.pastry.Rect2dUnion
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryBackground
+import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
+import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.math.Vec2d
-import net.minecraft.client.render.VertexConsumerProvider
 import net.minecraft.text.Text
 import java.awt.Color
 import kotlin.math.max
@@ -112,27 +111,30 @@ internal class Rect2dUnionTestScreen(title: Text): FacadeScreen(title) {
             val endColor = Color.RED
             val arrowColor = Color.RED
 
-            val buffer = VertexConsumerProvider.immediate(Client.tessellator.buffer)
-            val vb = buffer.getBuffer(SimpleRenderLayers.flatLines)
+            val buffer = FlatColorRenderBuffer.SHARED
 
             for(segment in rect2dUnion.horizontalSegments + rect2dUnion.verticalSegments) {
                 segment ?: continue
                 if(segment.depth != 0) continue
-                vb.vertex2d(context.transform, segment.startVec).color(startColor).next()
-                vb.vertex2d(context.transform, segment.endVec).color(endColor).next()
+                buffer.pos(context.transform, segment.startVec).color(startColor).endVertex()
+                buffer.pos(context.transform, segment.endVec).color(endColor).endVertex()
                 val sideOffset = segment.side.vector
                 val forwardOffset = segment.side.rotateCW().vector * 3
 
-                vb.vertex2d(context.transform, segment.endVec - forwardOffset + sideOffset).color(arrowColor).next()
-                vb.vertex2d(context.transform, segment.endVec).color(arrowColor).next()
-                vb.vertex2d(context.transform, segment.endVec).color(arrowColor).next()
-                vb.vertex2d(context.transform, segment.endVec - forwardOffset - sideOffset).color(arrowColor).next()
+                buffer.pos(context.transform, segment.endVec - forwardOffset + sideOffset).color(arrowColor).endVertex()
+                buffer.pos(context.transform, segment.endVec).color(arrowColor).endVertex()
+                buffer.pos(context.transform, segment.endVec).color(arrowColor).endVertex()
+                buffer.pos(context.transform, segment.endVec - forwardOffset - sideOffset).color(arrowColor).endVertex()
 
             }
 
             RenderSystem.lineWidth(2f)
-            buffer.draw()
+            buffer.draw(Primitive.LINES)
             RenderSystem.lineWidth(1f)
+        }
+
+        fun <T : BaseRenderBuffer<T>> BaseRenderBuffer<T>.pos(matrix4d: Matrix4d, pos: Vec2d): T {
+            return this.pos(matrix4d, pos.x, pos.y, 0)
         }
     }
 }

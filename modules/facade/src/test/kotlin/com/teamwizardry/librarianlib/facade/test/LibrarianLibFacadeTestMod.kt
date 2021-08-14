@@ -32,7 +32,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 
-@Mod("ll-facade-test")
+@Mod("liblib-facade-test")
 object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
     val groups: Map<String, FacadeTestGroup> = mapOf(
         "basics" to FacadeTestGroup(
@@ -122,7 +122,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
         }
 
         simpleInventoryContainerType = FacadeScreenHandlerType(SimpleInventoryController::class.java)
-        simpleInventoryContainerType.registryName = loc("ll-facade-test", "simple_inventory")
+        simpleInventoryContainerType.registryName = loc("liblib-facade-test", "simple_inventory")
         +TestBlock(TestBlockConfig("simple_inventory", "Simple Inventory") {
             tile(::SimpleInventoryTile)
 
@@ -136,7 +136,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
         })
 
         simpleContainerType = FacadeScreenHandlerType(SimpleController::class.java)
-        simpleContainerType.registryName = loc("ll-facade-test", "simple_container")
+        simpleContainerType.registryName = loc("liblib-facade-test", "simple_container")
         +TestItem(TestItemConfig("simple_container", "Simple Container") {
             rightClick.server {
                 simpleContainerType.open(player as ServerPlayerEntity, StringTextComponent("Simple Container"))
@@ -144,7 +144,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
         })
 
         testContainerSelectorContainerType = FacadeScreenHandlerType(TestContainerSelectorController::class.java)
-        testContainerSelectorContainerType.registryName = loc("ll-facade-test", "container_selector")
+        testContainerSelectorContainerType.registryName = loc("liblib-facade-test", "container_selector")
         containerSets.forEach { (id, containerSet) ->
             +TestBlock(TestBlockConfig(id + "_container_set", "${containerSet.name} Container Set") {
                 tile<TestContainerTile> { TestContainerTile(it, containerSet) }
@@ -160,9 +160,9 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
         }
 
         backpackContainerType = FacadeScreenHandlerType(BackpackController::class.java)
-        backpackContainerType.registryName = loc("ll-facade-test", "backpack")
+        backpackContainerType.registryName = loc("liblib-facade-test", "backpack")
         backpackItem = BackpackItem(itemGroup)
-        backpackItem.registryName = loc("ll-facade-test", "backpack")
+        backpackItem.registryName = loc("liblib-facade-test", "backpack")
         +backpackItem
 
         +UnitTestSuite("rmvalue") {
@@ -170,7 +170,7 @@ object LibrarianLibFacadeTestMod : TestMod(LibrarianLibFacadeModule) {
         }
 
         +DirtSetterItem(Item.Properties().group(itemGroup).maxStackSize(1)).also {
-            it.registryName = loc("ll-facade-test", "dirt_setter")
+            it.registryName = loc("liblib-facade-test", "dirt_setter")
         }
     }
 
