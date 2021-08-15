@@ -38,7 +38,7 @@ internal class FramebufferClearRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffe
                 StencilUtil.disable()
             }
         }
-        val renderState = RenderState.normal.extend(DefaultRenderStates.DepthTest.DISABLED, DefaultRenderStates.Blend.OVERWRITE, stencilState)
+        val renderState = RenderState.normal.extend(DefaultRenderStates.DepthTest.ALWAYS, DefaultRenderStates.Blend.OVERWRITE, stencilState)
         val SHARED = FramebufferClearRenderBuffer(VertexBuffer.SHARED)
     }
 }

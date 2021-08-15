@@ -12,6 +12,7 @@ import java.nio.ByteBuffer
 public class VertexBuffer {
     public var usage: Int = GL_DYNAMIC_DRAW
     public var vbo: Int by GlResourceGc.track(this, glGenBuffers()) { glDeleteBuffers(it) }
+        private set
     private var size: Int = 0
 
     public fun upload(start: Int, data: ByteBuffer) {

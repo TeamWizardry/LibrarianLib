@@ -1,9 +1,12 @@
 package com.teamwizardry.librarianlib.facade.layer
 
+import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatTextureRenderBuffer
 import com.teamwizardry.librarianlib.albedo.base.state.BaseRenderStates
 import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
+import com.teamwizardry.librarianlib.albedo.buffer.Framebuffer
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.util.*
@@ -23,9 +26,9 @@ import com.teamwizardry.librarianlib.facade.value.*
 import com.teamwizardry.librarianlib.math.*
 import com.teamwizardry.librarianlib.mosaic.Sprite
 import dev.thecodewarrior.mirror.Mirror
-import net.minecraft.client.gl.Framebuffer
 import net.minecraft.client.util.math.MatrixStack
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL30
 import java.awt.Color
 import java.util.*
 import java.util.function.*
@@ -1120,8 +1123,25 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             renderDirect(context)
         } else {
             val flatContext = if (renderMode == RenderMode.RENDER_TO_QUAD) {
-                GuiDrawContext(MatrixStack(), Matrix3dStack(), context.debugOptions, context.isInMask).also {
-                    it.matrix.scale(max(1, rasterizationScale).toDouble())
+
+                // Based on observation and originating from this in GameRenderer.render()
+                /*
+                   MatrixStack matrixStack = RenderSystem.getModelViewStack();
+                   matrixStack.loadIdentity();
+                   matrixStack.translate(0.0D, 0.0D, -2000.0D);
+                 */
+                val systemStack = RenderSystem.getModelViewStack()
+                systemStack.push()
+                systemStack.loadIdentity()
+                systemStack.translate(0.0, 0.0, -2000.0)
+
+                try {
+                    val rasterScale = max(1, rasterizationScale)
+                    val flatMatrix = Matrix3dStack()
+                    flatMatrix.scale(rasterScale / Client.scaleFactor)
+                    GuiDrawContext(MatrixStack(), flatMatrix, context.debugOptions, context.isInMask)
+                } finally {
+                    systemStack.pop()
                 }
             } else {
                 context
@@ -1131,6 +1151,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             try {
 
                 layerFBO = FramebufferPool.renderToFramebuffer {
+                    flatContext.hashCode()
                     clearBounds(flatContext)
                     renderDirect(flatContext)
                 }
@@ -1138,6 +1159,8 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 if (maskMode != MaskMode.NONE && maskLayer != null) {
                     flatContext.isInMask = true
                     maskFBO = FramebufferPool.renderToFramebuffer {
+                        maskLayer.hashCode()
+                        flatContext.hashCode()
                         clearBounds(flatContext)
                         maskLayer.renderLayer(flatContext)
                     }
@@ -1147,27 +1170,33 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 val blendMode = blendMode
                 val buffer = FlatLayerRenderBuffer.SHARED
 
-                buffer.layerImage.set(layerFBO.fbo) // func_242996_f = getFramebufferTexture
-                buffer.maskImage.set(maskFBO?.fbo ?: 0)
+                buffer.layerImage.set(layerFBO[GL30.GL_COLOR_ATTACHMENT0].glId)
+                buffer.maskImage.set(maskFBO?.get(GL30.GL_COLOR_ATTACHMENT0)?.glId ?: 0)
                 buffer.alphaMultiply.set(opacity.toFloat())
                 buffer.maskMode.set(maskMode.ordinal)
-                buffer.renderMode.set(renderMode.ordinal)
+                buffer.renderMode.set(renderMode.ordinal + 0)
 
-                val maxU = (size.xf * rasterizationScale * Client.scaleFactor.toFloat()) / Client.window.framebufferWidth
-                val maxV = (size.yf * rasterizationScale * Client.scaleFactor.toFloat()) / Client.window.framebufferHeight
+                val left = 0f
+                val right = size.xf * rasterizationScale
+                val top = Client.window.framebufferHeight.toFloat()
+                val bottom = top - size.yf * rasterizationScale
 
-                // why 1-maxV?
-                buffer.pos(context.transform, 0, size.y, 0).tex(0f, 1 - maxV).endVertex()
-                buffer.pos(context.transform, size.x, size.y, 0).tex(maxU, 1 - maxV).endVertex()
-                buffer.pos(context.transform, size.x, 0, 0).tex(maxU, 1f).endVertex()
-                buffer.pos(context.transform, 0, 0, 0).tex(0f, 1f).endVertex()
+                buffer.pos(context.transform, 0, 0, 0).texel(left, top).endVertex()
+                buffer.pos(context.transform, 0, size.y, 0).texel(left, bottom).endVertex()
+                buffer.pos(context.transform, size.x, size.y, 0).texel(right, bottom).endVertex()
+                buffer.pos(context.transform, size.x, 0, 0).texel(right, top).endVertex()
 
+                GL30.glDisable(GL30.GL_STENCIL_TEST)
+                DefaultRenderStates.DepthTest.ALWAYS.apply()
                 blendMode.apply()
                 buffer.draw(Primitive.QUADS)
                 blendMode.cleanup()
+                DefaultRenderStates.DepthTest.ALWAYS.cleanup()
+                GL30.glEnable(GL30.GL_STENCIL_TEST)
+
             } finally {
-                layerFBO?.also { FramebufferPool.releaseFramebuffer(it) }
                 maskFBO?.also { FramebufferPool.releaseFramebuffer(it) }
+                layerFBO?.also { FramebufferPool.releaseFramebuffer(it) }
             }
         }
 
@@ -1211,10 +1240,9 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         buffer.pos(context.transform, size.x, size.y, 0).endVertex()
         buffer.pos(context.transform, size.x, 0, 0).endVertex()
         buffer.pos(context.transform, 0, 0, 0).endVertex()
-
-        DefaultRenderStates.WriteMask.NO_COLOR.apply()
+        FramebufferClearRenderBuffer.renderState.apply()
         buffer.draw(Primitive.QUADS)
-        DefaultRenderStates.WriteMask.NO_COLOR.cleanup()
+        FramebufferClearRenderBuffer.renderState.cleanup()
     }
 
     private fun stencil(context: GuiDrawContext) {

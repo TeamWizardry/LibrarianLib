@@ -1,9 +1,10 @@
 package com.teamwizardry.librarianlib.facade.layer.supporting
 
+import com.teamwizardry.librarianlib.albedo.buffer.Framebuffer
+import com.teamwizardry.librarianlib.albedo.buffer.FramebufferAttachment
+import com.teamwizardry.librarianlib.albedo.buffer.FramebufferAttachmentFormat
 import com.teamwizardry.librarianlib.core.util.Client
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gl.Framebuffer
-import net.minecraft.client.gl.SimpleFramebuffer
+import org.lwjgl.opengl.GL30.*
 import java.util.*
 import java.util.function.Consumer
 
@@ -23,10 +24,23 @@ internal object FramebufferPool {
     fun getFramebuffer(): Framebuffer {
         val fbo = bufferPool.pollFirst() ?: createFramebuffer()
         if (
-            fbo.viewportWidth != Client.window.framebufferWidth ||
-            fbo.viewportHeight != Client.window.framebufferHeight
+            fbo.width != Client.window.framebufferWidth ||
+            fbo.height != Client.window.framebufferHeight
         ) {
-            fbo.resize(Client.window.framebufferWidth, Client.window.framebufferHeight, MinecraftClient.IS_SYSTEM_MAC)
+            fbo.initFramebuffer(
+                Client.window.framebufferWidth,
+                Client.window.framebufferHeight,
+                listOf(
+                    FramebufferAttachment(
+                        GL_COLOR_ATTACHMENT0,
+                        FramebufferAttachmentFormat.Texture(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE)
+                    ),
+                    FramebufferAttachment(
+                        GL_DEPTH_STENCIL_ATTACHMENT,
+                        FramebufferAttachmentFormat.Renderbuffer(GL_DEPTH24_STENCIL8)
+                    )
+                )
+            )
         }
 
         return fbo
@@ -60,9 +74,9 @@ internal object FramebufferPool {
 
     private fun useFramebuffer(framebuffer: Framebuffer?) {
         if (framebuffer == null) {
-            Client.minecraft.framebuffer.beginWrite(true)
+            Client.minecraft.framebuffer.beginWrite(false)
         } else {
-            framebuffer.beginWrite(true)
+            framebuffer.begin(false)
         }
         current = framebuffer
     }
@@ -70,9 +84,7 @@ internal object FramebufferPool {
     private fun createFramebuffer(): Framebuffer {
         if (createdBuffers == maxFramebufferCount)
             throw IllegalStateException("Exceeded maximum of $maxFramebufferCount nested framebuffers")
-        val fbo = SimpleFramebuffer(Client.window.framebufferWidth, Client.window.framebufferHeight, true, MinecraftClient.IS_SYSTEM_MAC)
-        fbo.setClearColor(0f, 0f, 0f, 0f)
         createdBuffers++
-        return fbo
+        return Framebuffer()
     }
 }

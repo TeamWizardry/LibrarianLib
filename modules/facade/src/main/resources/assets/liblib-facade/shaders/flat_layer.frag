@@ -7,7 +7,7 @@ uniform float AlphaMultiply;
 uniform int MaskMode;
 uniform int RenderMode;
 
-in vec2 texCoord;
+in vec2 texelCoord;
 
 out vec4 fragColor;
 
@@ -17,13 +17,13 @@ float luma(vec4 color) {
 }
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / DisplaySize;
+    ivec2 texel = ivec2(gl_FragCoord.xy);
     if (RenderMode == 2) {
-        uv = texCoord.xy;
+        texel = ivec2(texelCoord);
     }
-    vec4 layerColor = texture(LayerImage, uv);
+    vec4 layerColor = texelFetch(LayerImage, texel, 0);
     if (MaskMode != 0) {
-        vec4 maskColor = texture(MaskImage, uv);
+        vec4 maskColor = texelFetch(MaskImage, texel, 0);
         if (MaskMode == 1) { // Multiply by alpha
             layerColor.a *= maskColor.a;
         } else if (MaskMode == 2) { // Multiply by luma on white

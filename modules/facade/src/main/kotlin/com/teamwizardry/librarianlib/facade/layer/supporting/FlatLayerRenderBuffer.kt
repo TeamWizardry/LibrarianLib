@@ -4,6 +4,7 @@ import com.teamwizardry.librarianlib.albedo.base.buffer.BaseRenderBuffer
 import com.teamwizardry.librarianlib.albedo.buffer.VertexBuffer
 import com.teamwizardry.librarianlib.albedo.shader.Shader
 import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
+import com.teamwizardry.librarianlib.albedo.shader.uniform.SamplerUniform
 import com.teamwizardry.librarianlib.albedo.shader.uniform.Uniform
 import com.teamwizardry.librarianlib.core.util.Client
 import net.minecraft.util.Identifier
@@ -11,29 +12,29 @@ import net.minecraft.util.Identifier
 internal class FlatLayerRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatLayerRenderBuffer>(vbo) {
     val layerImage = +Uniform.sampler2D.create("LayerImage")
     val maskImage = +Uniform.sampler2D.create("MaskImage")
-    val displaySize = +Uniform.vec2.create("DisplaySize")
     val alphaMultiply = +Uniform.float.create("AlphaMultiply")
     val maskMode = +Uniform.int.create("MaskMode")
     val renderMode = +Uniform.int.create("RenderMode")
-    private val texCoordAttribute = +VertexLayoutElement("TexCoord", VertexLayoutElement.FloatFormat.FLOAT, 2, false)
+
+    private val texelCoordAttribute = +VertexLayoutElement("TexelCoord", VertexLayoutElement.FloatFormat.FLOAT, 2, false)
 
     init {
         bind(shader)
     }
 
-    fun tex(u: Float, v: Float): FlatLayerRenderBuffer {
-        start(texCoordAttribute)
-        putFloat(u)
-        putFloat(v)
+    fun texel(x: Float, y: Float): FlatLayerRenderBuffer {
+        start(texelCoordAttribute)
+        putFloat(x)
+        putFloat(y)
         return this
     }
 
     override fun setupState() {
-        displaySize.set(Client.window.framebufferWidth.toFloat(), Client.window.framebufferHeight.toFloat())
+        super.setupState()
     }
 
     companion object {
-        val shader = Shader.build("framebuffer_clear")
+        val shader = Shader.build("flat_layer")
             .vertex(Identifier("liblib-facade:flat_layer.vert"))
             .fragment(Identifier("liblib-facade:flat_layer.frag"))
             .build()
