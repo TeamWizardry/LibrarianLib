@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.facade.layer
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
-import com.teamwizardry.librarianlib.albedo.base.buffer.FlatTextureRenderBuffer
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatLinesRenderBuffer
 import com.teamwizardry.librarianlib.albedo.base.state.BaseRenderStates
 import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
 import com.teamwizardry.librarianlib.albedo.buffer.Framebuffer
@@ -1174,7 +1174,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
                 buffer.maskImage.set(maskFBO?.get(GL30.GL_COLOR_ATTACHMENT0)?.glId ?: 0)
                 buffer.alphaMultiply.set(opacity.toFloat())
                 buffer.maskMode.set(maskMode.ordinal)
-                buffer.renderMode.set(renderMode.ordinal + 0)
+                buffer.renderMode.set(renderMode.ordinal)
 
                 val left = 0f
                 val right = size.xf * rasterizationScale
@@ -1273,11 +1273,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         if (context.debugOptions.showDebugBoundingBox && !context.isInMask &&
             GuiLayer.showDebugTilt && shouldDrawSkeleton()
         ) {
-            RenderSystem.lineWidth(1f)
-            GL11.glEnable(GL11.GL_LINE_STIPPLE)
-            GL11.glLineStipple(2, 0b0011_0011_0011_0011.toShort())
-            drawBoundingBox(context, Color(.75f, 0f, .75f, 1f))
-            GL11.glDisable(GL11.GL_LINE_STIPPLE)
+            drawBoundingBox(context, Color(.75f, 0f, .75f, 1f), 1f)
         }
     }
 
@@ -1288,12 +1284,10 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         val options = context.debugOptions
         val debugColor = Color(.75f, 0f, .75f, 1f)
         if (options.showDebugBoundingBox) {
-            RenderSystem.lineWidth(1f)
-            drawBoundingBox(context, if (mouseOver) Color.WHITE else debugColor)
+            drawBoundingBox(context, if (mouseOver) Color.WHITE else debugColor, 1f)
         }
         if (options.showClippedBoundingBoxes && clipToBounds) {
-            RenderSystem.lineWidth(2f)
-            drawBoundingBox(context, Color.RED)
+            drawBoundingBox(context, Color.RED, 2f)
         }
 
         if (options.highlightLayout && didLayout) {
@@ -1302,8 +1296,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
         if (options.highlightFractionalScale &&
             (abs(scale2d.x - scale2d.xi) > 0.001 || abs(scale2d.y - scale2d.yi) > 0.001)
         ) {
-            RenderSystem.lineWidth(2f)
-            drawBoundingBox(context, Color.RED)
+            drawBoundingBox(context, Color.RED, 2f)
         }
     }
 
@@ -1325,16 +1318,24 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     /**
      * Draws a bounding box around the edge of this layer
      */
-    private fun drawBoundingBox(context: GuiDrawContext, color: Color) {
-        val points = getBoundingBoxPoints()
+    private fun drawBoundingBox(context: GuiDrawContext, color: Color, width: Float) {
+        val points = getBoundingBoxPoints().asReversed() // the line code expects ccw vertices
+        if(points.size < 2)
+            return
 
-        val buffer = FlatColorRenderBuffer.SHARED
+        val buffer = FlatLinesRenderBuffer.SHARED
 
+        points[points.size - 2].also {
+            buffer.pos(context.transform, it.x, it.y, 0).inset(0f).outset(width).color(color).endVertex()
+        }
         points.forEach {
-            buffer.pos(context.transform, it.x, it.y, 0).color(color).endVertex()
+            buffer.pos(context.transform, it.x, it.y, 0).inset(0f).outset(width).color(color).endVertex()
+        }
+        points[1].also {
+            buffer.pos(context.transform, it.x, it.y, 0).inset(0f).outset(width).color(color).endVertex()
         }
 
-        buffer.draw(Primitive.LINE_LOOP)
+        buffer.draw(Primitive.LINE_STRIP_ADJACENCY)
     }
 
     public var cornerRadius: Double = 0.0
