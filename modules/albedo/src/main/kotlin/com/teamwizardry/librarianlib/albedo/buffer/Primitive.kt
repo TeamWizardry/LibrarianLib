@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.albedo.buffer
 
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.render.VertexFormat
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL40.*
 
 public enum class Primitive(
     public val resultType: Int
@@ -14,7 +14,12 @@ public enum class Primitive(
     LINE_STRIP(GL_LINE_STRIP),
     LINE_LOOP(GL_LINE_LOOP),
     TRIANGLE_STRIP(GL_TRIANGLE_STRIP),
-    TRIANGLE_FAN(GL_TRIANGLE_FAN);
+    TRIANGLE_FAN(GL_TRIANGLE_FAN),
+    LINE_STRIP_ADJACENCY(GL_LINE_STRIP_ADJACENCY),
+    LINES_ADJACENCY(GL_LINES_ADJACENCY),
+    TRIANGLE_STRIP_ADJACENCY(GL_TRIANGLE_STRIP_ADJACENCY),
+    TRIANGLES_ADJACENCY(GL_TRIANGLES_ADJACENCY),
+    ;
 
     public fun indexBuffer(vertexCount: Int): RenderSystem.IndexBuffer? {
         return when(this) {
