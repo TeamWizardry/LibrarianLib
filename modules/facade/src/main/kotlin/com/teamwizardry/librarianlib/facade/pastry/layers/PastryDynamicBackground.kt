@@ -51,6 +51,7 @@ public class PastryDynamicBackground(style: IBackgroundStyle, vararg shapeLayers
 
     override fun draw(context: GuiDrawContext) {
         val buffer = FlatTextureRenderBuffer.SHARED
+        buffer.texture.set(style.edges.texture)
         for(element in elements) {
             element.draw(context.transform, buffer)
         }
