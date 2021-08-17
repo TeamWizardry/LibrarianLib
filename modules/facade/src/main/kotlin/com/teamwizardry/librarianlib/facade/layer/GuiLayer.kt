@@ -1276,12 +1276,12 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             return
 
         val options = context.debugOptions
-        val debugColor = Color(.75f, 0f, .75f, 1f)
+        val debugColor = Color(.75f, 0f, .75f, .5f)
         if (options.showDebugBoundingBox) {
             drawBoundingBox(context, if (mouseOver) Color.WHITE else debugColor, 1f)
         }
         if (options.showClippedBoundingBoxes && clipToBounds) {
-            drawBoundingBox(context, Color.RED, 2f)
+            drawBoundingBox(context, Color.RED, 4f)
         }
 
         if (options.highlightLayout && didLayout) {
