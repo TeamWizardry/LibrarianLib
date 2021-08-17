@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.albedo.base.buffer.FlatTextureRenderBuffer
+import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.albedo.state.RenderState
 import com.teamwizardry.librarianlib.core.util.Client
@@ -12,13 +13,16 @@ import net.minecraft.client.render.VertexConsumer
 import java.awt.Color
 
 internal object SpriteRenderer {
+
     fun draw(sprite: Sprite, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
+        RenderState.normal.apply()
         if(sprite.pinTop && sprite.pinBottom && sprite.pinLeft && sprite.pinRight &&
             sprite.minUCap == 0f && sprite.minVCap == 0f && sprite.maxUCap == 0f && sprite.maxVCap == 0f) {
             drawSimple(sprite, matrix, x, y, width, height, animFrames, tint)
         } else {
             drawComplex(sprite, matrix, x, y, width, height, animFrames, tint)
         }
+        RenderState.normal.cleanup()
     }
 
     private fun drawSimple(sprite: Sprite, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
@@ -38,8 +42,7 @@ internal object SpriteRenderer {
         rb.pos(matrix, maxX, minY, 0).color(tint).tex(maxU, minV).endVertex()
         rb.pos(matrix, minX, minY, 0).color(tint).tex(minU, minV).endVertex()
 
-        val texture = Client.textureManager.getTexture(sprite.texture)
-        rb.texture.set(texture.glId)
+        rb.texture.set(sprite.texture)
         rb.draw(Primitive.QUADS)
     }
 

@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.facade.text
 
 import com.teamwizardry.librarianlib.albedo.base.buffer.FlatTextureRenderBuffer
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
+import com.teamwizardry.librarianlib.albedo.state.RenderState
 import com.teamwizardry.librarianlib.math.Matrix4d
 import dev.thecodewarrior.bitfont.data.Glyph
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
@@ -36,8 +37,10 @@ public object BitfontRenderer {
             }
         }
 
+        RenderState.normal.apply()
         buffer.texture.set(BitfontAtlas.ATLAS_LOCATION)
         buffer.draw(Primitive.QUADS)
+        RenderState.normal.cleanup()
 
         deferredEmbeds.forEach {
             val color = it.glyph[BitfontFormatting.color] ?: defaultColor

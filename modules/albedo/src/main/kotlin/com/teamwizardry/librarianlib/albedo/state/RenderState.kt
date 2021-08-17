@@ -70,7 +70,7 @@ public class RenderState(parameters: Map<Identifier, State>) {
     public companion object {
         @JvmStatic
         public val normal: RenderState = builder()
-            .add(DefaultRenderStates.Blend.DISABLED)
+            .add(DefaultRenderStates.Blend.DEFAULT)
             .add(DefaultRenderStates.Cull.ENABLED)
             .add(DefaultRenderStates.DepthTest.LEQUAL)
             .add(DefaultRenderStates.WriteMask.ENABLED)

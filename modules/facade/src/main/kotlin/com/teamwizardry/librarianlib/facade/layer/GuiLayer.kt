@@ -101,14 +101,8 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     /**
      * Draws the layer's contents. This is the method to override when creating custom layer rendering.
      *
-     * Unless necessary, layers shouldn't change any global GL state. However, as a precaution, there are a number of
-     * state guarantees made before every call to [draw]. The authoritative list is provided as a "sample" in these
-     * docs.
-     *
      * The passed context's matrix can be modified. Any changes will be popped at the end. However, if any more matrices
      * are pushed in the draw method, they *must* be popped by the end.
-     *
-     * @sample glStateGuarantees
      */
     public open fun draw(context: GuiDrawContext) {}
 
