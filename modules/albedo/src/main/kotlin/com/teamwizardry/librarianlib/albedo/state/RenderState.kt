@@ -35,7 +35,7 @@ public class RenderState(parameters: Map<Identifier, State>) {
      */
     public fun cleanup() {
         for(parameter in parameters.values) {
-            parameter.apply()
+            parameter.cleanup()
         }
     }
 
