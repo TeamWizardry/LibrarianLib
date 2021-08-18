@@ -20,7 +20,7 @@ public class TestBlockWithEntityImpl(config: TestBlock) : TestBlockImpl(config),
         type: BlockEntityType<T>
     ): BlockEntityTicker<T>? {
         @Suppress("UNCHECKED_CAST")
-        return ticker as BlockEntityTicker<T>
+        return ticker as BlockEntityTicker<T>?
     }
 
     override fun createBlockEntity(pos: BlockPos, state: BlockState): BlockEntity {
