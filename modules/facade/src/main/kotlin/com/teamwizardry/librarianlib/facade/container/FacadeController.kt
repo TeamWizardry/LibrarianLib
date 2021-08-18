@@ -101,10 +101,9 @@ public abstract class FacadeController(
 
     override fun onSlotClick(slotIndex: Int, button: Int, actionType: SlotActionType, player: PlayerEntity) {
         try {
-            val customClickResult = (slots.getOrNull(slotIndex) as? CustomClickSlot?)?.handleClick(this, button, actionType, player)
-//            if (customClickResult != null) {
-//                return customClickResult
-//            }
+            if((slots.getOrNull(slotIndex) as? CustomClickSlot?)?.handleClick(this, button, actionType, player) == true) {
+                return
+            }
         } catch (var8: Exception) {
             val crashReport = CrashReport.create(var8, "Container click")
             val crashReportSection = crashReport.addElement("Click info")

@@ -28,7 +28,7 @@ public open class GhostSlot(inventory: Inventory, index: Int) : FacadeSlot(inven
         mouseButton: Int,
         clickType: SlotActionType,
         player: PlayerEntity
-    ): ItemStack? {
+    ): Boolean {
         val ghostStack = container.cursorStack
         val isValid = canInsert(ghostStack)
 
@@ -43,7 +43,7 @@ public open class GhostSlot(inventory: Inventory, index: Int) : FacadeSlot(inven
             }
             else -> {}
         }
-        return ItemStack.EMPTY
+        return true
     }
 
     override fun isStackSimilar(stack: ItemStack): Boolean = ItemStack.canCombine(stack, this.stack)

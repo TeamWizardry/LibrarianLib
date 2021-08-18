@@ -7,13 +7,13 @@ import net.minecraft.screen.slot.SlotActionType
 
 public interface CustomClickSlot {
     /**
-     * Optionally override the default [slot click handling][ScreenHandler.onSlotClick]. Returning a non-null value will
-     * bypass the default click behavior, while returning null will fall through to the default click behavior.
+     * Optionally override the default [slot click handling][ScreenHandler.onSlotClick]. Returning true will bypass the
+     * default click behavior.
      */
     public fun handleClick(
         container: ScreenHandler,
         mouseButton: Int,
         clickType: SlotActionType,
         player: PlayerEntity
-    ): ItemStack?
+    ): Boolean
 }
