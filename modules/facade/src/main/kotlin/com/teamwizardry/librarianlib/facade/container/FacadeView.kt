@@ -129,9 +129,9 @@ public abstract class FacadeView<T: ScreenHandler>(
         val windowHeight = Client.window.scaledHeight
         val windowWidth = Client.window.scaledWidth
         rb.pos(matrixStack, 0, windowHeight, 0).color(1f, 0f, 1f, 0.5f).endVertex()
-        rb.pos(Matrix4d.IDENTITY, windowWidth, windowHeight, 0).color(1f, 0f, 1f, 0.5f).endVertex()
-        rb.pos(Matrix4d.IDENTITY, windowWidth, 0, 0).color(1f, 0f, 1f, 0.5f).endVertex()
-        rb.pos(Matrix4d.IDENTITY, 0, 0, 0).color(1f, 0f, 1f, 0.5f).endVertex()
+        rb.pos(matrixStack, windowWidth, windowHeight, 0).color(1f, 0f, 1f, 0.5f).endVertex()
+        rb.pos(matrixStack, windowWidth, 0, 0).color(1f, 0f, 1f, 0.5f).endVertex()
+        rb.pos(matrixStack, 0, 0, 0).color(1f, 0f, 1f, 0.5f).endVertex()
         rb.draw(Primitive.QUADS)
         depthClobberRenderState.cleanup()
 
