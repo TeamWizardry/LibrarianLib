@@ -12,6 +12,7 @@ import com.teamwizardry.librarianlib.albedo.shader.uniform.SamplerUniform
 import com.teamwizardry.librarianlib.albedo.shader.uniform.Uniform
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
+import net.minecraft.client.render.BufferRenderer
 import net.minecraft.util.profiler.Profiler
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil
@@ -39,6 +40,7 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
 
     @JvmOverloads
     public fun draw(primitive: Primitive, profiler: Profiler? = null) {
+        BufferRenderer.unbindAll() // Tell Mojang to wrap up their rendering
         if(this.shader == null)
             throw IllegalStateException("RenderBuffer not bound to a shader")
         profiler?.push("RenderBuffer.draw")
