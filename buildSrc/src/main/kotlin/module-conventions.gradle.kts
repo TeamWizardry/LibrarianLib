@@ -84,8 +84,8 @@ sourceSets {
     }
 }
 
-minecraft {
-    refmapName = "ll/${project.name}/${project.name}-refmap.json"
+loom {
+    mixin.defaultRefmapName.set("ll/${project.name}/${project.name}-refmap.json")
 }
 
 val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod") {

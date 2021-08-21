@@ -103,7 +103,7 @@ public abstract class FacadeView<T: ScreenHandler>(
 
     override fun isMouseMasked(mouseX: Double, mouseY: Double): Boolean {
         return hoveredElement(mouseX, mouseY).isPresent || handler.slots.any {
-            isPointWithinBounds(it.x, it.y, 16, 16, mouseX, mouseY) && it.doDrawHoveringEffect()
+            isPointWithinBounds(it.x, it.y, 16, 16, mouseX, mouseY) && it.isEnabled
         }
     }
 

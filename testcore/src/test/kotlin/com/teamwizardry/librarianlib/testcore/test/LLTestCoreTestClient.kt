@@ -25,14 +25,14 @@ internal object LLTestCoreTestClient : ClientModInitializer {
 
         manager.named<TestItem>("empty_screen") {
             rightClick.client {
-                Client.minecraft.openScreen(TestScreen {
+                Client.minecraft.setScreen(TestScreen {
                 })
             }
         }
 
         manager.named<TestItem>("simple_screen") {
             rightClick.client {
-                Client.minecraft.openScreen(TestScreen {
+                Client.minecraft.setScreen(TestScreen {
                     draw {
                         fill(0, 0, 10, 10, 0xFFFF00FFu)
                     }
@@ -42,7 +42,7 @@ internal object LLTestCoreTestClient : ClientModInitializer {
 
         manager.named<TestItem>("sized_screen") {
             rightClick.client {
-                Client.minecraft.openScreen(TestScreen {
+                Client.minecraft.setScreen(TestScreen {
                     size = vec(20, 20)
 
                     draw {

@@ -48,7 +48,7 @@ internal object LibLibFacadeTest {
         override fun onInitialize() {
             CourierServerPlayNetworking.registerGlobalReceiver(SyncSelectionPacket.type) { packet, context ->
                 context.execute {
-                    context.player.mainHandStack.orCreateTag.put("saved_selection", NbtString.of(packet.id))
+                    context.player.mainHandStack.orCreateNbt.put("saved_selection", NbtString.of(packet.id))
                 }
             }
 
@@ -180,7 +180,7 @@ internal object LibLibFacadeTest {
                         Client.openScreen(TestSelectorScreen(name, selector))
                     }
                     notSneaking {
-                        val saved = stack.tag?.getString("saved_selection") ?: ""
+                        val saved = stack.nbt?.getString("saved_selection") ?: ""
                         val screen = selector.index[saved]?.create()
                         if(screen != null) {
                             Client.openScreen(screen)

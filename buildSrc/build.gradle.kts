@@ -19,12 +19,10 @@ val gradle_dokka_version: String by project
 val gradle_loom_version: String by project
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:$gradle_dokka_version")
-    implementation("net.fabricmc:fabric-loom:0.8.9")
-    // rolled back from 4.0.4 to 4.0.1 due to issues with sources relocation:
-    // https://github.com/johnrengelman/shadow/issues/425
-    implementation("com.github.jengelman.gradle.plugins:shadow:4.0.1")
+    implementation("net.fabricmc:fabric-loom:0.9.46") // update root buildscript block when changing this
+    implementation("gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0")
     implementation("org.freemarker:freemarker:2.3.31")
 }
 

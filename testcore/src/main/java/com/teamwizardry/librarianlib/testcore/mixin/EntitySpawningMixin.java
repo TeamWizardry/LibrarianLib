@@ -28,7 +28,7 @@ public class EntitySpawningMixin {
                 entity.refreshPositionAfterTeleport(x, y, z);
                 entity.setPitch((float)(packet.getPitch() * 360) / 256.0F);
                 entity.setYaw((float)(packet.getYaw() * 360) / 256.0F);
-                entity.setEntityId(i);
+                entity.setId(i);
                 entity.setUuid(packet.getUuid());
                 this.world.addEntity(i, entity);
             }

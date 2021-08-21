@@ -274,7 +274,7 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
     @Test
     fun `read+write for ItemStack with Tag should be symmetrical`() {
         val stack = ItemStack(Items.DIAMOND, 16)
-        stack.tag = NbtBuilder.compound {
+        stack.nbt = NbtBuilder.compound {
             "Custom" *= string("value")
         }
         simple<ItemStack, ItemStackSerializer>(

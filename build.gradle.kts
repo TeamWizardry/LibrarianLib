@@ -3,8 +3,6 @@ import java.util.*
 // loom expects the decompiler to be in the buildscript classpath. However, it seems that applying the plugin in
 // buildSrc scripts means loom isn't properly in the buildscript classpath.
 buildscript {
-    val gradle_loom_version = "0.7.15" // plugin version duplicated from buildsrc
-
     repositories {
         maven {
             name = "Fabric"
@@ -15,7 +13,8 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("net.fabricmc:fabric-loom:0.8-SNAPSHOT")
+        // update this to match version in buildSrc
+        classpath("net.fabricmc:fabric-loom:0.9.46")
     }
 }
 
@@ -34,10 +33,7 @@ allprojects {
         maven("https://www.cursemaven.com") {
             content { includeGroup("curse.maven") }
         }
-        maven("https://thedarkcolour.github.io/KotlinForForge/") { name = "kotlinforforge" }
         maven("https://repo.spongepowered.org/repository/maven-public/")
-        maven("https://dvs1.progwml6.com/files/maven/") { name = "Progwml6 maven (JEI)" }
-        maven("https://modmaven.k-4u.nl") { name = "ModMaven (JEI mirror)" }
 
         maven("https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/") // for ARRP
         maven("https://maven.terraformersmc.com/releases") // for ModMenu

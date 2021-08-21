@@ -1,13 +1,12 @@
-import net.fabricmc.loom.LoomGradleExtension
+import net.fabricmc.loom.api.LoomGradleExtensionAPI
 
 plugins {
     id("fabric-loom")
 }
 
-configure<LoomGradleExtension> {
-    shareCaches = true
+configure<LoomGradleExtensionAPI> {
+    shareCaches()
 }
-
 
 dependencies {
     val minecraft_version: String by project
@@ -18,7 +17,7 @@ dependencies {
     "minecraft"("com.mojang:minecraft:$minecraft_version")
     "mappings"("net.fabricmc:yarn:$yarn_mappings:v2")
     "modImplementation"("net.fabricmc.fabric-api:fabric-api:$fabric_version")
-    "modImplementation"("net.fabricmc:fabric-language-kotlin:1.5.0+kotlin.1.4.31")
+    "modImplementation"("net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version")
 }
 
 // The genSources task demands that loom be on the buildscript classpath. However, applying the plugin through buildSrc

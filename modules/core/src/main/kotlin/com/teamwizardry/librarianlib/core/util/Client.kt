@@ -62,7 +62,7 @@ public object Client {
     public val worldTime: GameTime = GameTime()
 
     public fun openScreen(screen: Screen?) {
-        minecraft.openScreen(screen)
+        minecraft.setScreen(screen)
     }
 
     public class GameTime {

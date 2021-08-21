@@ -84,9 +84,8 @@ open class ShadowSources : Copy() {
             return
         }
         relocators.get().forEach { relocator ->
-            val pathContext = RelocatePathContext(copyDetails.sourcePath, shadowStats)
-            if(relocator.canRelocatePath(pathContext)) {
-                copyDetails.path = relocator.relocatePath(pathContext)
+            if(relocator.canRelocatePath(copyDetails.sourcePath)) {
+                copyDetails.path = relocator.relocatePath(RelocatePathContext(copyDetails.sourcePath, shadowStats))
             }
 
             copyDetails.filter { line ->

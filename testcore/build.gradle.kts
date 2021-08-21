@@ -36,6 +36,6 @@ dependencies {
     modImplementation("net.devtech:arrp:0.3.11")
 }
 
-minecraft {
-    refmapName = "liblib-testcore-refmap.json"
+loom {
+    mixin.defaultRefmapName.set("liblib-testcore-refmap.json")
 }
