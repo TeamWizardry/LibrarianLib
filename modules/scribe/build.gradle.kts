@@ -23,6 +23,5 @@ configureFabricTestModJson {
 dependencies {
     liblib(project(":core"))
     testApi(project(":testcore"))
-    api("dev.thecodewarrior.prism:prism:0.1.0b1")
-    include("dev.thecodewarrior.prism:prism:0.1.0b1")
+    includeApi("dev.thecodewarrior.prism:prism:0.1.0b1")
 }

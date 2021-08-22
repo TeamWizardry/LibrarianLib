@@ -1,6 +1,9 @@
 @file:Suppress("PublicApiImplicitType", "UnstableApiUsage")
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import groovy.util.NodeList
+import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.RemapSourcesJarTask
 import org.jetbrains.dokka.DokkaVersion
 import org.jetbrains.dokka.gradle.DokkaMultiModuleFileLayout
 import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
@@ -56,14 +59,35 @@ configurations {
         api.get().extendsFrom(this)
     }
 
+    val include = named("include")
+    val publishedApi = named("publishedApi")
+    val publishedRuntime = named("publishedRuntime")
+
     val liblib = named("liblib") { // `named` because liblib is already created by the module plugin
         description = "Inter-module dependencies"
 
         canBe(consumed = false, resolved = false)
         api.get().extendsFrom(this)
-//        getByName("publishedApi").extendsFrom(this)
+        publishedApi.get().extendsFrom(this)
     }
 
+    create("includeApi") {
+        description = "Jar-in-jar 'api' dependencies"
+
+        canBe(consumed = false, resolved = false)
+        include.get().extendsFrom(this)
+        api.get().extendsFrom(this)
+        publishedApi.get().extendsFrom(this)
+    }
+
+    create("includeImplementation") {
+        description = "Jar-in-jar 'implementation' dependencies"
+
+        canBe(consumed = false, resolved = false)
+        include.get().extendsFrom(this)
+        implementation.get().extendsFrom(this)
+        publishedRuntime.get().extendsFrom(this)
+    }
 }
 
 dependencies {
@@ -153,38 +177,39 @@ tasks.named<ProcessResources>("processTestResources") {
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Build configuration
 
-tasks.named("jar") { enabled = false }
-tasks.whenTaskAdded {
-    // disable the one automatically created for the `jar` task, since that jar won't exist when it tries to run
-    if (name == "reobfJar") {
-        enabled = false
-    }
+tasks.named<Jar>("jar") {
+    archiveClassifier.set("x")
+    enabled = false
 }
+//tasks.whenTaskAdded {
+//    // disable the one automatically created for the `jar` task, since that jar won't exist when it tries to run
+//    if (name == "reobfJar") {
+//        enabled = false
+//    }
+//}
 
-val deobfJar = tasks.register<ShadowJar>("deobfJar") {
+val shadowJar = tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(project.configurations.getByName("shade"))
-    archiveClassifier.set("")
+    archiveClassifier.set("shadow")
     includeEmptyDirs = false
 
-    from(sourceSets.main.map { it.output })
-    dependsOn(tasks.named("classes"))
-    dependsOn(tasks.named("processResources"))
+//    from(sourceSets.main.map { it.output })
+//    dependsOn(tasks.named("classes"))
+//    dependsOn(tasks.named("processResources"))
 
     commonConfig.shadowRules {
         relocate(it.from, it.to)
     }
 }
 
-val obfJar = tasks.register<Jar>("obfJar") {
-    dependsOn(deobfJar)
-    archiveClassifier.set("obf")
-    from(deobfJar.map { zipTree(it.archiveFile) })
+val remapJar = tasks.named<RemapJarTask>("remapJar") {
+    input.set(shadowJar.map { it.archiveFile.get() })
 }
-//reobf.create("obfJar")
 
 val shadowSources = tasks.register<ShadowSources>("shadowSources") {
-    relocators.set(deobfJar.get().relocators)
+    relocators.set(shadowJar.get().relocators)
 
+    dependsOn(generateFabricMod)
     from(sourceSets.main.map { it.allSource })
     sourcesFrom(configurations["shade"])
     into("$buildDir/shadowSources")
@@ -194,6 +219,12 @@ val sourcesJar = tasks.register<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
     includeEmptyDirs = false
     from(shadowSources.map { it.outputs })
+}
+
+val remapSourcesJar = tasks.named<RemapSourcesJarTask>("remapSourcesJar") {
+    dependsOn(sourcesJar)
+    this.setInput(sourcesJar.map { it.archiveFile.get().asFile })
+    this.setOutput(sourcesJar.map { it.archiveFile.get().asFile })
 }
 
 //endregion // Build configuration
@@ -213,6 +244,8 @@ val dokkaPartialHtml = tasks.register<DokkaTaskPartial>("dokkaPartialHtml") {
     group = "Documentation"
     description = "Generates partial documentation to be merged by 'dokkaMergedHtml'"
     outputDirectory.set(file("$buildDir/dokka/partial"))
+    dependsOn(tasks.named("compileJava"))
+    dependsOn(tasks.named("compileKotlin"))
 }
 
 val dokkaMergedHtml = tasks.register<DokkaMultiModuleTask>("dokkaMergedHtml") {
@@ -226,10 +259,13 @@ val dokkaMergedHtml = tasks.register<DokkaMultiModuleTask>("dokkaMergedHtml") {
     fileLayout.set(ModuleLayout)
     outputDirectory.set(file("$buildDir/dokka/merged"))
 
+    dependsOn("dokkaPartialHtml")
     addChildTask("dokkaPartialHtml")
     module.moduleInfo.allDependencies {
+        dependsOn("${it.path}:dokkaPartialHtml")
         addChildTask("${it.path}:dokkaPartialHtml")
     }
+
 }
 
 val styledDokkaDir = file("$buildDir/dokka/styled")
@@ -256,20 +292,16 @@ val dokkaJar = tasks.register<Jar>("dokkaJar") {
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Publishing
 
-//dependencies {
-////    "publishedRuntime"(project(":zzz:librarianlib"))
-//}
-//
-//artifacts {
-//    add("publishedApi", deobfJar)
-//    add("publishedSources", sourcesJar)
-//    add("publishedJavadoc", dokkaJar)
-//    add("publishedObf", obfJar)
-//}
-//
-//publishing.publications.named<MavenPublication>("maven") {
-//    artifactId = module.name
-//}
+artifacts {
+    add("publishedApi", remapJar)
+    add("publishedRuntime", remapJar)
+    add("publishedSources", sourcesJar)
+    add("publishedJavadoc", dokkaJar)
+}
+
+publishing.publications.named<MavenPublication>("maven") {
+    artifactId = module.name
+}
 
 //endregion // Publishing
 // ---------------------------------------------------------------------------------------------------------------------

@@ -8,11 +8,6 @@ object LibLibAttributes {
 
         const val public: String = "public"
         const val internal: String = "internal"
-        const val moduleJavadocs: String = "moduleJavadocs"
-        const val testmod: String = "testmod"
-        const val clientMods: String = "clientMods"
-        const val serverMods: String = "serverMods"
-        const val dataMods: String = "dataMods"
 
     }
 
