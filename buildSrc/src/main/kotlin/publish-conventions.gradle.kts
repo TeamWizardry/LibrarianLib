@@ -151,3 +151,9 @@ signing {
 
     sign(publishing.publications["maven"])
 }
+
+tasks.configureEach {
+    if(name == "generateMetadataFileForMavenPublication") {
+        enabled = false
+    }
+}

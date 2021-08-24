@@ -45,3 +45,7 @@ fun Project.configureFabricModJson(block: GenerateFabricModJson.() -> Unit) {
 fun Project.configureFabricTestModJson(block: GenerateFabricModJson.() -> Unit) {
     this.tasks.named("generateFabricTestMod", block)
 }
+
+
+@Suppress("UNCHECKED_CAST")
+fun <T : ModuleDependency> T.excludeKotlin(): T = this.exclude(mapOf("module" to "org.jetbrains.kotlin")) as T

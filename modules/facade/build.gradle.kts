@@ -32,6 +32,7 @@ dependencies {
 
     includeApi("dev.thecodewarrior:bitfont:$bitfont_version") {
         exclude(module = "icu4j")
+        excludeKotlin()
     }
     includeImplementation("org.msgpack:msgpack-core:0.8.16")
 

@@ -78,6 +78,7 @@ configurations {
         include.get().extendsFrom(this)
         api.get().extendsFrom(this)
         publishedApi.get().extendsFrom(this)
+        publishedRuntime.get().extendsFrom(this)
     }
 
     create("includeImplementation") {
@@ -92,6 +93,9 @@ configurations {
 
 dependencies {
     testImplementation(project(":testcore"))
+
+    val fabric_kotlin_version: String by project
+    "includeImplementation"("net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version")
 }
 
 val generated: File = file("$buildDir/generated/main")
