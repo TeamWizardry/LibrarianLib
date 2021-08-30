@@ -5,6 +5,7 @@ plugins {
 module {
     displayName = "Facade"
     description = "A feature-rich, flexible GUI framework"
+    shadow("dev.thecodewarrior.bitfont")
 }
 
 configureFabricModJson {
@@ -30,10 +31,7 @@ dependencies {
     liblib(project(":scribe"))
     liblib(project(":courier"))
 
-    includeApi("dev.thecodewarrior:bitfont:$bitfont_version") {
-        exclude(module = "icu4j")
-        excludeKotlin()
-    }
+    shade("dev.thecodewarrior:bitfont:$bitfont_version")
     includeImplementation("org.msgpack:msgpack-core:0.8.16")
 
     testApi(project(":testcore"))

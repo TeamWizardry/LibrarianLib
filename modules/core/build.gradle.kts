@@ -6,6 +6,7 @@ plugins {
 module {
     displayName = "Core"
     description = "Core classes used by the other LibrarianLib modules"
+    shadow("dev.thecodewarrior.mirror")
 }
 
 configureFabricModJson {
@@ -23,8 +24,5 @@ configureFabricTestModJson {
 }
 
 dependencies {
-    includeApi("dev.thecodewarrior.mirror:mirror:1.0.0b1") {
-        excludeKotlin()
-    }
-    testApi(project(":testcore"))
+    shade("dev.thecodewarrior.mirror:mirror:1.0.0b1")
 }

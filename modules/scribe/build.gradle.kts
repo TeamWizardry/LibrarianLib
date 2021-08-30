@@ -5,6 +5,7 @@ plugins {
 module {
     displayName = "Scribe"
     description = "Automatic, annotation-driven serialization"
+    shadow("dev.thecodewarrior.prism")
 }
 
 configureFabricModJson {
@@ -23,5 +24,5 @@ configureFabricTestModJson {
 dependencies {
     liblib(project(":core"))
     testApi(project(":testcore"))
-    includeApi("dev.thecodewarrior.prism:prism:0.1.0b1")
+    shade("dev.thecodewarrior.prism:prism:0.1.0b1")
 }
