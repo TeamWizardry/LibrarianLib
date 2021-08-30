@@ -48,4 +48,5 @@ fun Project.configureFabricTestModJson(block: GenerateFabricModJson.() -> Unit) 
 
 
 @Suppress("UNCHECKED_CAST")
-fun <T : ModuleDependency> T.excludeKotlin(): T = this.exclude(mapOf("module" to "org.jetbrains.kotlin")) as T
+fun <T : ModuleDependency> T.excludeKotlin(): T =
+    this.exclude(mapOf("group" to "org.jetbrains.kotlin")).exclude(mapOf("group" to "org.jetbrains.kotlinx")) as T

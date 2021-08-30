@@ -15,6 +15,3 @@ includeModule("facade")
 includeModule("glitter")
 includeModule("mosaic")
 includeModule("scribe")
-
-include("zz_runtime")
-project(":zz_runtime").projectDir = rootDir.resolve("runtime")

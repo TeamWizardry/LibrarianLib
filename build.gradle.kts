@@ -19,6 +19,7 @@ buildscript {
 }
 
 plugins {
+    `attribute-conventions`
     `minecraft-conventions`
 }
 
@@ -64,12 +65,39 @@ configure<CommonConfigExtension> {
 
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+//region // Runtime environment
+
 loom {
     runConfigs.configureEach {
-        isIdeConfigGenerated = false
+        vmArg("-Dlibrarianlib.logging.debug=liblib-*")
+    }
+
+    log4jConfigs.setFrom(file("log4j.xml"))
+}
+
+dependencies {
+    subprojects.forEach {
+        runtimeOnly(project(it.path, configuration = "devRuntime"))
+        modRuntime(project(it.path, configuration = "devMod"))
+    }
+    modRuntime("com.terraformersmc:modmenu:2.0.5")
+}
+tasks.named("processResources") {
+    subprojects.forEach {
+        dependsOn("${it.path}:processResources")
+        dependsOn("${it.path}:processTestResources")
+    }
+}
+tasks.named("classes") {
+    subprojects.forEach {
+        dependsOn("${it.path}:classes")
+        dependsOn("${it.path}:testClasses")
     }
 }
 
+//endregion // Runtime environment
+// ---------------------------------------------------------------------------------------------------------------------
 open class CreateModule: CopyFreemarker() {
     @Option(option = "name", description = "The name of the module in Title Case. e.g. 'Cool Thing'. " +
             "The PascalCase and lowercase names will be inferred from this")

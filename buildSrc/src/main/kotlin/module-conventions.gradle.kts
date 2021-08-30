@@ -39,7 +39,7 @@ configurations {
 
     // ----- Providers -----
 
-    create("devClasspath") {
+    create("devRuntime") {
         description = "Dependencies to put on the development runtime classpath"
 
         canBe(consumed = true, resolved = false)
@@ -96,6 +96,11 @@ dependencies {
 
     val fabric_kotlin_version: String by project
     "publishedRuntime"("net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version")
+
+    "devRuntime"(configurations["include"])
+    "devRuntime"(configurations["shade"])
+    "devRuntime"(sourceSets.main.get().output)
+    "devRuntime"(sourceSets.test.get().output)
 }
 
 val generated: File = file("$buildDir/generated/main")
