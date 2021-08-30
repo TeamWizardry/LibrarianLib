@@ -5,6 +5,7 @@ import com.teamwizardry.gradle.ModuleInfo
 import com.teamwizardry.gradle.CommonConfigExtension
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.component.AdhocComponentWithVariants
+import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.the
 
 /**
@@ -20,7 +21,7 @@ open class ModuleExtension(private val ctx: DslContext) {
     private val _shadowRules = mutableListOf<ShadowRule>()
 
     val name: String = ctx.project.name
-    val moduleInfo: ModuleInfo = commonConfig.modules.getByName(name)
+    val moduleInfo: ModuleInfo = commonConfig.modules[name]
     val component: AdhocComponentWithVariants
         get() = ctx.project.components.getByName("module") as AdhocComponentWithVariants
 
@@ -42,10 +43,7 @@ open class ModuleExtension(private val ctx: DslContext) {
         ctx.project.configurations.register("liblib") {
             this.dependencies.all {
                 if(this is ProjectDependency) {
-                    val dep = commonConfig.modules.find { it.project == this.dependencyProject }
-                    if(dep != null) {
-                        moduleInfo.dependencies.add(dep)
-                    }
+                    moduleInfo.dependencies.add(commonConfig.modules[dependencyProject.name])
                 }
             }
         }

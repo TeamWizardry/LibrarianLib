@@ -8,5 +8,4 @@ dependencies {
     liblib(project(":scribe"))
     liblib(project(":courier"))
     liblib(project(":facade"))
-    testApi(project(":testcore"))
 }

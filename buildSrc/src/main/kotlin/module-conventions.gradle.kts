@@ -134,18 +134,18 @@ configureFabricModJson {
     icon.set("ll/icon.png")
     iconFile.set(rootDir.resolve("logo/icon.png"))
 
-    depends("fabricloader", project.property("fabricmodjson.depends.fabricloader") as String)
-    depends("minecraft", project.property("fabricmodjson.depends.minecraft") as String)
-    depends("fabric-language-kotlin", "*")
+    depends("fabricloader", project.property("mod.dependencies.fabricloader") as String)
+    depends("minecraft", project.property("mod.dependencies.minecraft") as String)
+    depends("fabric-language-kotlin", project.property("mod.dependencies.flk") as String)
 
     module.moduleInfo.dependencies {
         depends(it.modid, commonConfig.version)
     }
     modMenu.badges.add("library")
     modMenu.parent(
-        id = project.property("fabricmodjson.modmenu.liblib_id") as String,
-        name = project.property("fabricmodjson.modmenu.liblib_name") as String,
-        description = project.property("fabricmodjson.modmenu.liblib_description") as String,
+        id = "librarianlib",
+        name = project.property("mod.modmenu.liblib_name") as String,
+        description = project.property("mod.modmenu.liblib_description") as String,
         badges = listOf("library")
     )
 }
@@ -165,9 +165,9 @@ val generateFabricTestMod = tasks.register<GenerateFabricModJson>("generateFabri
     icon.set("ll/test_icon.png")
     iconFile.set(rootDir.resolve("logo/test_icon.png"))
 
-    depends("fabricloader", project.property("fabricmodjson.depends.fabricloader") as String)
-    depends("minecraft", project.property("fabricmodjson.depends.minecraft") as String)
-    depends("fabric-language-kotlin", "*")
+    depends("fabricloader", project.property("mod.dependencies.fabricloader") as String)
+    depends("minecraft", project.property("mod.dependencies.minecraft") as String)
+    depends("fabric-language-kotlin", project.property("mod.dependencies.flk") as String)
     depends(module.moduleInfo.modid, commonConfig.version)
 
     modMenu.badges.add("library")

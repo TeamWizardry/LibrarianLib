@@ -22,5 +22,4 @@ configureFabricTestModJson {
 
 dependencies {
     liblib(project(":core"))
-    testApi(project(":testcore"))
 }

@@ -164,7 +164,8 @@ open class GenerateFabricModJson : DefaultTask() {
     }
 
     private fun makeModMenuJson(): String {
-
+        if(modMenu.hidden.get())
+            return ""
         val links = modMenu.links.get()
         val linkBlock = if(links.isEmpty())
             null
@@ -213,6 +214,9 @@ open class GenerateFabricModJson : DefaultTask() {
     data class Entrypoint(val type: String, val adapter: String?, val value: String)
 
     inner class ModMenuData {
+        @Input
+        val hidden: Property<Boolean> = ctx.property() { false }
+
         @Input
         val links: MapProperty<String, String> = ctx.mapProperty() { mapOf() }
 

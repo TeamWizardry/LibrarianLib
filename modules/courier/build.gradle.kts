@@ -23,5 +23,4 @@ configureFabricTestModJson {
 dependencies {
     liblib(project(":core"))
     liblib(project(":scribe"))
-    testApi(project(":testcore"))
 }
