@@ -66,10 +66,8 @@ configure<CommonConfigExtension> {
 
 loom {
     runConfigs.configureEach {
-        vmArg("-Dlibrarianlib.logging.debug=liblib-*")
+        isIdeConfigGenerated = false
     }
-
-    log4jConfigs.setFrom(file("runtime/log4j.xml"))
 }
 
 open class CreateModule: CopyFreemarker() {

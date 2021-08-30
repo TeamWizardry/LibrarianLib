@@ -23,6 +23,7 @@ dependencies {
 loom {
     runConfigs.configureEach {
         vmArg("-Dlibrarianlib.logging.debug=liblib-*")
+        isIdeConfigGenerated = true
     }
 
     log4jConfigs.setFrom(file("log4j.xml"))
