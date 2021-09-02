@@ -1,1 +1,1 @@
-This dependency is runtime-only. The individual modules provide sources.
+This artifact is only intended for release. The individual modules provide sources.

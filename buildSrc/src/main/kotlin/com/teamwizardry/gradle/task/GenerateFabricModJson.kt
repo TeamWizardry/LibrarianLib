@@ -53,6 +53,9 @@ open class GenerateFabricModJson : DefaultTask() {
     @Nested
     val modMenu: ModMenuData = ModMenuData()
 
+    @Input
+    val jars: ListProperty<String> = ctx.listProperty() { listOf() }
+
     fun entrypoint(type: String, adapter: String? = null, value: String) {
         entrypoints.add(Entrypoint(type, adapter, value))
     }
@@ -137,7 +140,7 @@ open class GenerateFabricModJson : DefaultTask() {
         |  },
         |  "custom": {
         |${makeModMenuJson().prependIndent("    ")}
-        |  }
+        |  }${makeJarsJson()}
         |}
         """.trimMargin()
     }
@@ -160,6 +163,21 @@ open class GenerateFabricModJson : DefaultTask() {
             |  "value": "${entrypoint.value}"
             |}
             """.trimMargin()
+        }
+    }
+
+    private fun makeJarsJson(): String {
+        val jars = this.jars.get()
+        return if (jars.isEmpty()) {
+            ""
+        } else {
+            ",\n  \"jars\": [\n" + jars.joinToString(",\n") {
+                """
+                |    {
+                |      "file": "META-INF/jars/$it"
+                |    }
+                """.trimMargin()
+            } + "\n  ]"
         }
     }
 

@@ -5,7 +5,7 @@ plugins {
 }
 
 configure<LoomGradleExtensionAPI> {
-//    shareCaches()
+    shareCaches()
 }
 
 dependencies {

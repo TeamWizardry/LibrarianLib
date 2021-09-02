@@ -1,8 +1,5 @@
 import java.net.URI
 
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import org.jetbrains.kotlin.gradle.plugin.ProjectLocalConfigurations
-
 plugins {
     id("attribute-conventions")
     `java-library`
@@ -79,8 +76,6 @@ modComponent.addVariantsFromConfiguration(configurations["publishedSources"]) {
 }
 modComponent.addVariantsFromConfiguration(configurations["publishedJavadoc"]) {
 }
-
-val commonConfig = rootProject.the<CommonConfigExtension>()
 
 publishing {
     publications {

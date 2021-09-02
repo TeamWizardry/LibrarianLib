@@ -43,8 +43,7 @@ allprojects {
     }
 }
 
-val commonConfig = the<CommonConfigExtension>()
-commonConfig.apply {
+commonConfig {
     val snapshotVersion = System.getenv("SNAPSHOT_REF")?.let { ref ->
         if(!ref.startsWith("refs/heads/"))
             throw IllegalStateException("SNAPSHOT_REF `$ref` doesn't start with refs/heads/")
@@ -54,92 +53,19 @@ commonConfig.apply {
     val mod_version: String by project
     version = snapshotVersion ?: mod_version
 
-    // I have no idea why, but having this somehow fixes the module initialization order,
-    // meaning the runtime dependencies work. I haven't the slightest clue how.
     modules {
         subprojects.forEach {
-            if(it.name != "testcore") create(it.name)
+            if(it.name !in setOf("testcore", "runtime", "dist"))
+                create(it.name)
         }
     }
-
 }
-
-// ---------------------------------------------------------------------------------------------------------------------
-//region // Runtime environment
 
 loom {
     runConfigs.configureEach {
-        vmArg("-Dlibrarianlib.logging.debug=liblib-*")
-    }
-
-    log4jConfigs.setFrom(file("log4j.xml"))
-}
-
-dependencies {
-    subprojects.forEach {
-        runtimeOnly(project(it.path, configuration = "devRuntime"))
-        modRuntime(project(it.path, configuration = "devMod"))
-    }
-    modRuntime("com.terraformersmc:modmenu:2.0.5")
-}
-tasks.named("processResources") {
-    subprojects.forEach {
-        dependsOn("${it.path}:processResources")
-        dependsOn("${it.path}:processTestResources")
+        isIdeConfigGenerated = false
     }
 }
-tasks.named("classes") {
-    subprojects.forEach {
-        dependsOn("${it.path}:classes")
-        dependsOn("${it.path}:testClasses")
-    }
-}
-
-//endregion // Runtime environment
-// ---------------------------------------------------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------------------------------------------------
-//region // Build configuration
-
-dependencies {
-    for(module in subprojects) {
-        if(module.name == "testcore") continue
-
-        include(module)
-    }
-}
-
-val generated: File = file("$buildDir/generated/main")
-val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod") {
-    outputRoot.set(generated.resolve("resources"))
-}
-
-configureFabricModJson {
-    id.set("librarianlib")
-    version.set(commonConfig.version)
-
-    name.set(project.property("mod.modmenu.liblib_name") as String)
-    description.set(project.property("mod.modmenu.liblib_description") as String)
-    icon.set("ll/icon.png")
-    iconFile.set(rootDir.resolve("logo/icon.png"))
-
-    depends("fabricloader", project.property("mod.dependencies.fabricloader") as String)
-    depends("minecraft", project.property("mod.dependencies.minecraft") as String)
-    depends("fabric-language-kotlin", project.property("mod.dependencies.flk") as String)
-
-    modMenu.hidden.set(true)
-}
-
-tasks.named<ProcessResources>("processResources") {
-    dependsOn(generateFabricMod)
-}
-
-tasks.named<Jar>("jar") {
-    from(generated.resolve("resources"))
-}
-
-//endregion // Build configuration
-// ---------------------------------------------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Utilities

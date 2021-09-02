@@ -5,7 +5,6 @@ fun includeModule(name: String) {
     project(":$name").projectDir = rootDir.resolve("modules/$name")
 }
 
-include("testcore")
 includeModule("albedo")
 includeModule("core")
 includeModule("courier")
@@ -15,3 +14,7 @@ includeModule("facade")
 includeModule("glitter")
 includeModule("mosaic")
 includeModule("scribe")
+
+include("testcore")
+include("runtime")
+include("dist")

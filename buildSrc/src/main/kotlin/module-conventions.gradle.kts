@@ -21,7 +21,6 @@ plugins {
 
 apply<LibLibModulePlugin>()
 val module = the<ModuleExtension>()
-val commonConfig = rootProject.the<CommonConfigExtension>()
 
 group = "com.teamwizardry.librarianlib"
 version = commonConfig.version
@@ -93,9 +92,6 @@ configurations {
 
 dependencies {
     testImplementation(project(":testcore"))
-
-    val fabric_kotlin_version: String by project
-    "publishedRuntime"("net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version")
 
     "devRuntime"(configurations["include"])
     "devRuntime"(configurations["shade"])
@@ -187,24 +183,13 @@ tasks.named<ProcessResources>("processTestResources") {
 //region // Build configuration
 
 tasks.named<Jar>("jar") {
-    archiveClassifier.set("x")
     enabled = false
 }
-//tasks.whenTaskAdded {
-//    // disable the one automatically created for the `jar` task, since that jar won't exist when it tries to run
-//    if (name == "reobfJar") {
-//        enabled = false
-//    }
-//}
 
 val shadowJar = tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(project.configurations.getByName("shade"))
     archiveClassifier.set("shadow")
     includeEmptyDirs = false
-
-//    from(sourceSets.main.map { it.output })
-//    dependsOn(tasks.named("classes"))
-//    dependsOn(tasks.named("processResources"))
 
     commonConfig.shadowRules {
         relocate(it.from, it.to)
@@ -225,15 +210,21 @@ val shadowSources = tasks.register<ShadowSources>("shadowSources") {
 }
 
 val sourcesJar = tasks.register<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
+    archiveClassifier.set("shadow-sources")
     includeEmptyDirs = false
     from(shadowSources.map { it.outputs })
 }
 
 val remapSourcesJar = tasks.named<RemapSourcesJarTask>("remapSourcesJar") {
     dependsOn(sourcesJar)
-    this.setInput(sourcesJar.map { it.archiveFile.get().asFile })
-    this.setOutput(sourcesJar.map { it.archiveFile.get().asFile })
+}
+afterEvaluate {
+    // RemapConfiguration.setupDefaultRemap runs in afterEvaluate and clobbers both the input an output to be identical
+    remapSourcesJar.get().setInput(sourcesJar.map { it.archiveFile.get().asFile })
+    remapSourcesJar.get().setOutput(sourcesJar.map {
+        val f = it.archiveFile.get().asFile
+        f.resolveSibling(f.name.replace("-shadow", ""))
+    })
 }
 
 //endregion // Build configuration
@@ -302,9 +293,15 @@ val dokkaJar = tasks.register<Jar>("dokkaJar") {
 //region // Publishing
 
 artifacts {
-    add("publishedApi", remapJar)
-    add("publishedRuntime", remapJar)
-    add("publishedSources", sourcesJar)
+    add("publishedApi", remapJar) {
+        builtBy(remapJar, rootProject.tasks["remapAllJars"])
+    }
+    add("publishedRuntime", remapJar) {
+        builtBy(remapJar, rootProject.tasks["remapAllJars"])
+    }
+    add("publishedSources", sourcesJar) {
+        builtBy(sourcesJar, rootProject.tasks["remapAllSources"])
+    }
     add("publishedJavadoc", dokkaJar)
 }
 
