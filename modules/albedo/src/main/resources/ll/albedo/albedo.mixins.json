@@ -3,7 +3,7 @@
   "required": true,
   "package": "com.teamwizardry.librarianlib.albedo.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "ll/albedo/albedo.refmap.json",
+  "refmap": "ll/albedo/albedo-refmap.json",
   "mixins": [
     "GlStateManagerMixin",
     "LightmapTextureManagerMixin",

@@ -3,7 +3,7 @@
   "required": true,
   "package": "com.teamwizardry.librarianlib.courier.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "ll/courier/courier.refmap.json",
+  "refmap": "ll/courier/courier-refmap.json",
   "mixins": [
   ],
   "client": [
