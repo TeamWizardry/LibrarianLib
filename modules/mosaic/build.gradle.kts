@@ -11,7 +11,7 @@ configureFabricModJson {
     entrypoint("main", adapter = "kotlin", value = "com.teamwizardry.librarianlib.mosaic.LibLibMosaic\$CommonInitializer")
     entrypoint("client", adapter = "kotlin", value = "com.teamwizardry.librarianlib.mosaic.LibLibMosaic\$ClientInitializer")
     entrypoint("server", adapter = "kotlin", value = "com.teamwizardry.librarianlib.mosaic.LibLibMosaic\$ServerInitializer")
-    mixin("ll/mosaic/mosaic.mixins.json")
+//    mixin("ll/mosaic/mosaic.mixins.json")
 }
 
 configureFabricTestModJson {

@@ -11,7 +11,7 @@ configureFabricModJson {
     entrypoint("main", adapter = "kotlin", value = "com.teamwizardry.librarianlib.courier.LibLibCourier\$CommonInitializer")
     entrypoint("client", adapter = "kotlin", value = "com.teamwizardry.librarianlib.courier.LibLibCourier\$ClientInitializer")
     entrypoint("server", adapter = "kotlin", value = "com.teamwizardry.librarianlib.courier.LibLibCourier\$ServerInitializer")
-    mixin("ll/courier/courier.mixins.json")
+//    mixin("ll/courier/courier.mixins.json")
 }
 
 configureFabricTestModJson {
