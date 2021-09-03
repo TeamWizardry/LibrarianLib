@@ -210,21 +210,13 @@ val shadowSources = tasks.register<ShadowSources>("shadowSources") {
 }
 
 val sourcesJar = tasks.register<Jar>("sourcesJar") {
-    archiveClassifier.set("shadow-sources")
+    archiveClassifier.set("sources")
     includeEmptyDirs = false
     from(shadowSources.map { it.outputs })
 }
 
 val remapSourcesJar = tasks.named<RemapSourcesJarTask>("remapSourcesJar") {
     dependsOn(sourcesJar)
-}
-afterEvaluate {
-    // RemapConfiguration.setupDefaultRemap runs in afterEvaluate and clobbers both the input an output to be identical
-    remapSourcesJar.get().setInput(sourcesJar.map { it.archiveFile.get().asFile })
-    remapSourcesJar.get().setOutput(sourcesJar.map {
-        val f = it.archiveFile.get().asFile
-        f.resolveSibling(f.name.replace("-shadow", ""))
-    })
 }
 
 //endregion // Build configuration

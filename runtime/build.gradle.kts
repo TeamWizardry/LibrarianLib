@@ -12,6 +12,7 @@ loom {
     }
 
     log4jConfigs.setFrom(file("log4j.xml"))
+    remapArchives.set(false)
 }
 
 val allModules = commonConfig.modules.map { it.path } + listOf(":testcore")
