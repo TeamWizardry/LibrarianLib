@@ -67,6 +67,11 @@ loom {
     }
 }
 
+tasks.configureEach {
+    if(name == "remapAllJars")
+        dependsOn(":remapJar")
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Utilities
 
