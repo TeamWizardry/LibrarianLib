@@ -17,6 +17,7 @@ plugins {
     id("publish-conventions")
     id("testmod-conventions")
     id("com.github.johnrengelman.shadow")
+    id("org.jetbrains.dokka")
 }
 
 apply<LibLibModulePlugin>()
