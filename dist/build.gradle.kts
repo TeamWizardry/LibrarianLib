@@ -1,11 +1,19 @@
 @file:Suppress("PublicApiImplicitType", "UnstableApiUsage")
 
+import com.matthewprenger.cursegradle.CurseArtifact
+import com.matthewprenger.cursegradle.CurseRelation
+import com.matthewprenger.cursegradle.Options
+import com.modrinth.minotaur.TaskModrinthUpload
+import com.modrinth.minotaur.request.Dependency.DependencyType
+import com.modrinth.minotaur.request.VersionType
 import net.fabricmc.loom.configuration.JarManifestConfiguration
 import java.util.jar.Manifest
 
 plugins {
     `java-library`
     `publish-conventions`
+    id("com.modrinth.minotaur") version "1.2.1"
+    id("com.matthewprenger.cursegradle") version "1.4.0"
 }
 
 configurations {
@@ -92,4 +100,41 @@ artifacts {
 
 publishing.publications.named<MavenPublication>("maven") {
     artifactId = "librarianlib"
+}
+
+curseforge {
+    apiKey = project.findProperty("curseforgeApiToken") as String? ?: System.getenv("CURSEFORGE_API_TOKEN") ?: ""
+
+    project(closureOf<com.matthewprenger.cursegradle.CurseProject> {
+        id = "252910"
+        changelog = ""
+        releaseType = project.property("release.curseforge.type") as String
+        addGameVersion(project.property("minecraft_version") as String)
+        relations(closureOf<CurseRelation> {
+            requiredDependency("fabric-language-kotlin")
+        })
+        mainArtifact(jar.get(), closureOf<CurseArtifact> {
+            displayName = "LibrarianLib ${commonConfig.version}"
+        })
+    })
+    options(closureOf<Options> {
+        detectNewerJava = true
+        forgeGradleIntegration = false
+    })
+}
+
+val publishModrinth = tasks.register<TaskModrinthUpload>("publishModrinth") {
+    token = project.findProperty("modrinthAuthToken") as String? ?: System.getenv("MODRINTH_AUTH_TOKEN") ?: ""
+    projectId = "9uQhkMe5"
+    versionNumber = commonConfig.version
+    versionType = VersionType.valueOf(project.property("release.modrinth.type") as String)
+    uploadFile = jar.get()
+    addGameVersion(project.property("minecraft_version") as String)
+    addLoader("fabric")
+    addDependency(project.property("release.modrinth.flk_version_id") as String, DependencyType.REQUIRED)
+    dependsOn(jar)
+}
+
+tasks.register("release") {
+    dependsOn("curseforge", publishModrinth)
 }
