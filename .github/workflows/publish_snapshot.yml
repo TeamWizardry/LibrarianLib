@@ -22,7 +22,6 @@ jobs:
 
       - name: Publish to OSSRH
         run: ./gradlew publish
-        if: ${{ false }}
         env:
           SNAPSHOT_REF: ${{ github.ref }}
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
