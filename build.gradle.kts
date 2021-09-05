@@ -125,42 +125,30 @@ tasks.register<ReplaceTextInPlace>("updateReadmeVersions") {
         return """<img id="$id" src="https://img.shields.io/badge/$cleanLabel-$cleanMessage-$color" alt="$alt"/>"""
     }
 
-//    val mc_version: String by project
-//    val forge_version: String by project
-//    val mc_mappings_channel: String by project
-//    val mc_mappings_version: String by project
-//    val mcpVersion = "${mc_mappings_channel}_${mc_mappings_version}"
-//
-//    replaceIn("README.md") {
-//        add("""<img id="([^"]*-badge)".*?/>""".toRegex()) { _, match ->
-//            when (match.group(1)) {
-//                "mc-version-badge" -> formatBadge(
-//                    id = "mc-version-badge",
-//                    label = "Minecraft",
-//                    message = mc_version,
-//                    color = "blue",
-//                    alt = "Minecraft $mc_version"
-//                )
-//                "forge-version-badge" ->
-//                    formatBadge(
-//                        id = "forge-version-badge",
-//                        label = "Forge",
-//                        message = forge_version,
-//                        color = "blue",
-//                        alt = "Minecraft Forge $forge_version"
-//                    )
-//                "mcp-mappings-badge" ->
-//                    formatBadge(
-//                        id = "mcp-mappings-badge",
-//                        label = "MCP",
-//                        message = mcpVersion,
-//                        color = "blue",
-//                        alt = "MCP $mcpVersion"
-//                    )
-//                else -> match.group()
-//            }
-//        }
-//    }
+    val minecraft_version: String by project
+    val mod_version: String by project
+
+    replaceIn("README.md") {
+        add("""<img id="([^"]*-badge)".*?/>""".toRegex()) { _, match ->
+            when (match.group(1)) {
+                "mod-version-badge" -> formatBadge(
+                    id = "mod-version-badge",
+                    label = "LibrarianLib",
+                    message = mod_version,
+                    color = "blue",
+                    alt = "LibrarianLib $mod_version"
+                )
+                "mc-version-badge" -> formatBadge(
+                    id = "mc-version-badge",
+                    label = "Minecraft",
+                    message = minecraft_version,
+                    color = "blue",
+                    alt = "Minecraft $minecraft_version"
+                )
+                else -> match.group()
+            }
+        }
+    }
 }
 
 //endregion // Utilities

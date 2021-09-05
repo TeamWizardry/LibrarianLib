@@ -35,6 +35,7 @@ tasks.named("classes") {
         dependsOn("$it:classes")
         dependsOn("$it:testClasses")
     }
+    dependsOn(rootProject.tasks["updateReadmeVersions"])
 }
 
 //endregion // Runtime environment

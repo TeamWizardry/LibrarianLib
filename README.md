@@ -1,53 +1,35 @@
 <h1 align="center">
   <br>
-    <img src="https://raw.github.com/TeamWizardry/LibrarianLib/1.15/logo/logo_500x500.png" title="LibrarianLib" 
+    <img src="https://raw.github.com/TeamWizardry/LibrarianLib/5c982d5/logo/logo_500x500.png" title="LibrarianLib" 
     width="200" height="200" alt="LibrarianLib">
   <br>
   LibrarianLib
   <br>
-  <img id="mc-version-badge" src="https://img.shields.io/badge/Minecraft-1.16.4-blue" alt="Minecraft 1.16.4"/>
-  <img id="forge-version-badge" src="https://img.shields.io/badge/Forge-35.1.37-blue" alt="Minecraft Forge 35.1.37"/>
-  <img id="mcp-mappings-badge" src="https://img.shields.io/badge/MCP-snapshot__20201028--1.16.3-blue" alt="MCP snapshot_20201028-1.16.3"/>
-  <img src="https://github.com/TeamWizardry/LibrarianLib/workflows/Publish%20Snapshots/badge.svg?branch=1.15" alt="Publish Snapshots"/>
+  <img id="mc-version-badge" src="https://img.shields.io/badge/Minecraft-1.17.1-blue" alt="Minecraft 1.17.1"/>
+  <img id="mod-version-badge" src="https://img.shields.io/badge/LibrarianLib-5.0.0--alpha.7-blue" alt="LibrarianLib 5.0.0-alpha.7"/>
 </h1>
 
 # Using LibrarianLib
-
-Note: LibrarianLib uses Gradle's [variant model](https://docs.gradle.org/current/userguide/variant_model.html), which 
-isn't supported by the default version of Gradle that Forge ships with. Gradle 6.8.3 has been confirmed working, and 
-supports the variant model. To update the Gradle wrapper run this command:
-```shell
-./gradlew wrapper --gradle-version 6.8.3
-```
 
 Release builds:
 ```goovy
 repositories {
     mavenCentral()
-    maven { url = 'https://thedarkcolour.github.io/KotlinForForge/' }
 }
-
 dependencies {
-    implementation 'com.teamwizardry.librarianlib:(module):(version)'
+    modImplementation "com.teamwizardry.librarianlib:<module>:<version>"
 }
 ```
 Snapshot builds:
 ```goovy
 repositories {
-    mavenCentral()
-    maven { url = 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
-    maven { url = 'https://thedarkcolour.github.io/KotlinForForge/' }
+    maven { url = "https://s01.oss.sonatype.org/content/repositories/snapshots" }
 }
-
 dependencies {
-    implementation 'com.teamwizardry.librarianlib:(module):(branch)-SNAPSHOT'
+    modImplementation "com.teamwizardry.librarianlib:<module>:<branch>-SNAPSHOT"
 }
 ```
 
-Due to the fact that (as of April 24th 2020) ForgeGradle's `fg.deobf` is broken (it doesn't properly link sources, 
-doesn't support any kind of transitive dependencies, and I would be shocked if it supported Gradle's variant model), 
-LibrarianLib is distributed in its deobfuscated form. This may necessitate matching your project's MCP mappings to 
-LibrarianLib's MCP mappings, which are listed at the top of this README.
 
 # Modules
 LibrarianLib is divided into multiple modules, each with a particular focus. You only need to depend on the modules you
@@ -64,8 +46,6 @@ math code, such as LibLib's vector and matrix classes, easing functions, and abs
 contains simple helpers. More details in the core readme.
 
 #### Flagship features
-- `foundation` – A set of utilities designed to form the "foundation" of your mod. This module aims to curb the 
-ever-increasing amount of boilerplate Forge requires.
 - `facade` – A feature-rich, flexible GUI framework.
 - `glitter` – High-performance particle systems.
 
