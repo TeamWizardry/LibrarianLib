@@ -24,7 +24,7 @@ internal object EventHookAnnotationReflector {
                 event.type,
                 event.priority,
                 event.receiveCanceled
-            ) { event.method.callFast(obj, it) }
+            ) { event.method.call(obj, it) }
         }
     }
 

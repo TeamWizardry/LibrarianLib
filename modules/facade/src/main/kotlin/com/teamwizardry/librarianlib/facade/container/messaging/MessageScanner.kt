@@ -15,7 +15,7 @@ public object MessageScanner {
     public fun getMessages(targetType: Class<*>): List<MessageScan> {
         return scanCache.getOrPut(targetType) {
             Mirror.reflectClass(targetType).methods.mapNotNull {
-                if(it.isAnnotationPresent<Message>())
+                if(it.annotations.isPresent<Message>())
                     MessageScan(it)
                 else
                     null
@@ -24,7 +24,7 @@ public object MessageScanner {
     }
 
     public class MessageScan(public val method: MethodMirror) {
-        private val messageAnnotation = method.getDeclaredAnnotation<Message>()!!
+        private val messageAnnotation = method.annotations.get<Message>()!!
         public val name: String = messageAnnotation.name.let {
             if(it == "") method.name else it
         }
@@ -35,7 +35,7 @@ public object MessageScanner {
             try {
                 Scribe.nbt[parameter.type].value
             } catch(e: PrismException) {
-                throw IllegalStateException("Error getting serializer for parameter ${parameter.index} of message '$name'")
+                throw IllegalStateException("Error getting serializer for parameter ${parameter.index} of message '$name'", e)
             }
         }.unmodifiableView()
 

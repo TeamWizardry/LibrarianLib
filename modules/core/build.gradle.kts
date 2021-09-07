@@ -24,5 +24,5 @@ configureFabricTestModJson {
 }
 
 dependencies {
-    shade("dev.thecodewarrior.mirror:mirror:1.0.0b1")
+    shade("dev.thecodewarrior:mirror:1.0.0-beta.3")
 }

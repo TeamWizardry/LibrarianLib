@@ -72,7 +72,7 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
 
         val nameMap = mutableMapOf<String, MutableList<FieldMirror>>()
         mirror.fields.forEach { field ->
-            val name = field.getAnnotation<SimpleSerializationName>()?.name ?: field.name
+            val name = field.annotations.get<SimpleSerializationName>()?.name ?: field.name
 
             val markers = field.annotations.filter { it.annotationType().isAnnotationPresent(SimpleSerializationMarker::class.java) }
             if (markers.isEmpty()) return@forEach

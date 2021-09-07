@@ -15,14 +15,14 @@ public class SimpleUniformType<T : Uniform, A : ArrayUniform>(
         Mirror.reflectClass(arrayType).getDeclaredConstructor(Mirror.reflect<String>(), Mirror.types.int)
 
     public fun create(name: String): T {
-        return constructor(name)
+        return constructor.call(name)
     }
 
     /**
      * @param length The length of the array
      */
     public fun createArray(name: String, length: Int): A {
-        return arrayConstructor(name, length)
+        return arrayConstructor.call(name, length)
     }
 }
 
@@ -43,23 +43,23 @@ public class SamplerUniformType(private val glConstant: Int, private val texture
 
 public object StructUniformType : UniformType() {
     public fun <T : GLSLStruct> create(type: Class<T>, name: String): T {
-        return Mirror.reflectClass(type).getDeclaredConstructor(Mirror.reflect<String>()).invoke(name)
+        return Mirror.reflectClass(type).getDeclaredConstructor(Mirror.reflect<String>()).call(name)
     }
 
     public fun <T : GLSLStruct> createArray(type: Class<T>, name: String, length: Int): GLSLStructArray<T> {
         val constructor = Mirror.reflectClass(type).getDeclaredConstructor(Mirror.reflect<String>())
-        return GLSLStructArray(name, length) { constructor("$it") }
+        return GLSLStructArray(name, length) { constructor.call("$it") }
     }
 
     @JvmSynthetic
     public inline fun <reified T : GLSLStruct> create(name: String): T {
-        return Mirror.reflectClass<T>().getDeclaredConstructor(Mirror.reflect<String>()).invoke(name)
+        return Mirror.reflectClass<T>().getDeclaredConstructor(Mirror.reflect<String>()).call(name)
     }
 
     @JvmSynthetic
     public inline fun <reified T : GLSLStruct> createArray(name: String, length: Int): GLSLStructArray<T> {
         val constructor = Mirror.reflectClass<T>().getDeclaredConstructor()
-        return GLSLStructArray(name, length) { constructor("$it") }
+        return GLSLStructArray(name, length) { constructor.call("$it") }
     }
 }
 
