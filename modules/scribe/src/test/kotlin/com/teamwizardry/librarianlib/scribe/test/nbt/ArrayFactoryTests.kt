@@ -33,46 +33,13 @@ internal class ArrayFactoryTests: NbtPrismTest() {
     }
 
     @Test
-    fun `reading an array with an existing value with the same size should fill the existing array`() {
-        val targetArray = arrayOf("value")
-
-        val theArray = arrayOf<String?>(null)
-        val theNode = NbtBuilder.list {
-            +compound { "V" *= string("value") }
-        }
-        val deserialized = prism[Mirror.reflect<Array<String?>>()].value.read(theNode, theArray)
-
-
-        assertSame(theArray, deserialized)
-        assertEquals(Array<String>::class.java, deserialized.javaClass)
-        @Suppress("UNCHECKED_CAST")
-        assertArrayEquals(targetArray, deserialized as Array<String>)
-    }
-
-    @Test
-    fun `reading an array with an existing value with the wrong size should create a new array`() {
-        val targetArray = arrayOf("value")
-
-        val theArray = arrayOf<String?>(null, null)
-        val theNode = NbtBuilder.list {
-            +compound { "V" *= string("value") }
-        }
-        val deserialized = prism[Mirror.reflect<Array<String?>>()].value.read(theNode, theArray)
-
-        assertNotSame(theArray, deserialized)
-        assertEquals(Array<String>::class.java, deserialized.javaClass)
-        @Suppress("UNCHECKED_CAST")
-        assertArrayEquals(targetArray, deserialized as Array<String?>)
-    }
-
-    @Test
-    fun `reading an array with no existing value should create a new array`() {
+    fun `reading an array should create a new array`() {
         val targetArray = arrayOf("value")
 
         val theNode = NbtBuilder.list {
             +compound { "V" *= string("value") }
         }
-        val deserialized = prism[Mirror.reflect<Array<String?>>()].value.read(theNode, null)
+        val deserialized = prism[Mirror.reflect<Array<String?>>()].value.read(theNode)
 
         assertEquals(Array<String>::class.java, deserialized.javaClass)
         @Suppress("UNCHECKED_CAST")
@@ -82,14 +49,14 @@ internal class ArrayFactoryTests: NbtPrismTest() {
     @Test
     fun `reading an array with the wrong NBT type should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<Array<String?>>()].value.read(NbtBuilder.string("oops!"), null)
+            prism[Mirror.reflect<Array<String?>>()].value.read(NbtBuilder.string("oops!"))
         }
     }
 
     @Test
     fun `reading an array with the wrong ListNBT element type should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<Array<String?>>()].value.read(NbtBuilder.list { +string("oops!") }, null)
+            prism[Mirror.reflect<Array<String?>>()].value.read(NbtBuilder.list { +string("oops!") })
         }
     }
 }

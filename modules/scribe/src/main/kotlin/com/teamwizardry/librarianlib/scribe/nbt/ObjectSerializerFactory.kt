@@ -6,7 +6,7 @@ import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.DeserializationException
 import dev.thecodewarrior.prism.SerializationException
 import dev.thecodewarrior.prism.annotation.RefractClass
-import dev.thecodewarrior.prism.base.analysis.auto.ObjectAnalyzer
+import dev.thecodewarrior.prism.base.analysis.ObjectAnalyzer
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtElement
 
@@ -21,16 +21,16 @@ internal class ObjectSerializerFactory(prism: NbtPrism): NBTSerializerFactory(pr
         private val analyzer = ObjectAnalyzer<Any, NbtSerializer<*>>(prism, type.asClassMirror())
 
         @Suppress("UNCHECKED_CAST")
-        override fun deserialize(tag: NbtElement, existing: Any?): Any {
-            analyzer.getReader(existing).use { state ->
+        override fun deserialize(tag: NbtElement): Any {
+            analyzer.getReader().use { state ->
                 @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
                 state.properties.forEach { property ->
                     try {
-                        val Nbtvalue = tag[property.name]
-                        if (Nbtvalue != null) {
-                            property.value = property.serializer.read(Nbtvalue, property.existing)
+                        val nbtvalue = tag[property.name]
+                        if (nbtvalue != null) {
+                            property.setValue(property.serializer.read(nbtvalue))
                         } else {
-                            property.value = null
+                            property.setValue(null)
                         }
                     } catch (e: Exception) {
                         // TODO: if `setValue` fails it'll throw an exception with the property name already. Write a test
@@ -38,7 +38,7 @@ internal class ObjectSerializerFactory(prism: NbtPrism): NBTSerializerFactory(pr
                         throw DeserializationException("Property ${property.name}", e)
                     }
                 }
-                return state.apply()
+                return state.build()
             }
         }
 

@@ -33,7 +33,7 @@ internal class EnumFactoryTests: NbtPrismTest() {
     fun `reading a non-existent enum case name should throw`() {
         val serializer = prism[Mirror.reflect<TestEnum>()].value
         assertThrows<DeserializationException> {
-            serializer.read(NbtBuilder.string("OOPS"), null)
+            serializer.read(NbtBuilder.string("OOPS"))
         }
     }
 

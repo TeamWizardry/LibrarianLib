@@ -32,7 +32,7 @@ public class CourierPacketType<T : CourierPacket>(
         val tag = buffer.readNbt() ?: throw IllegalStateException("Packet didn't start with a compound tag")
 
         @Suppress("UNCHECKED_CAST")
-        val packet = serializer.read(tag, null) as T
+        val packet = serializer.read(tag) as T
         packet.readBytes(buffer)
         return packet
     }

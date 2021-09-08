@@ -18,29 +18,30 @@ internal class ListSerializerFactory(prism: NbtPrism): NBTSerializerFactory(pris
         private val analyzer = ListAnalyzer<Any?, NbtSerializer<*>>(prism, type)
 
         @Suppress("UNCHECKED_CAST")
-        override fun deserialize(tag: NbtElement, existing: MutableList<Any?>?): MutableList<Any?> {
-            analyzer.getReader(existing).use { state ->
+        override fun deserialize(tag: NbtElement): MutableList<Any?> {
+            analyzer.getReader().use { state ->
                 @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtList>("tag")
                 state.reserve(tag.size)
                 tag.forEachIndexed { i, it ->
                     try {
                         val entry = it.expectType<NbtCompound>("element $i")
                         if (entry.contains("V"))
-                            state.add(state.serializer.read(entry.expect("V"), existing?.getOrNull(i)))
+                            state.add(state.serializer.read(entry.expect("V")))
                         else
                             state.add(null)
                     } catch (e: Exception) {
                         throw DeserializationException("Deserializing element $i", e)
                     }
                 }
-                return state.apply()
+                return state.build() as MutableList<Any?>
             }
         }
 
         override fun serialize(value: MutableList<Any?>): NbtElement {
             analyzer.getWriter(value).use { state ->
                 val tag = NbtList()
-                state.elements.forEach { v ->
+                for(i in 0 until state.size) {
+                    val v = state.get(i)
                     val entry = NbtCompound()
                     if (v != null)
                         entry.put("V", state.serializer.write(v))

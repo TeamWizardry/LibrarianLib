@@ -15,8 +15,8 @@ object TestPacketTypes {
 
 @RefractClass
 data class TestPacket @RefractConstructor constructor(
-    @Refract val block: Block,
-    @Refract val value: Int
+    @Refract("block") val block: Block,
+    @Refract("value") val value: Int
 ) : CourierPacket {
 
     var manual: Int = 0

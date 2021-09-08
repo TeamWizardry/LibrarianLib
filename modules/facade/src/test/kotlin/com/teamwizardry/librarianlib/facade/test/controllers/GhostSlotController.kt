@@ -28,7 +28,7 @@ class GhostSlotController(windowId: Int, player: PlayerEntity, pos: BlockPos) :
     }
 
     class Data: TestControllerData() {
-        @Save
+        @Save("items")
         val items: DefaultedList<ItemStack> = DefaultedList.ofSize(5, ItemStack.EMPTY)
         val inventory: Inventory = DefaultInventoryImpl.of(items)
     }

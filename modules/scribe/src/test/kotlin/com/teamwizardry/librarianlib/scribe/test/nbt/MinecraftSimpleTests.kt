@@ -165,7 +165,7 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
         else
             assertSame(original, serialized)
 
-        val deserialized = serializer.read(serialized, null)
+        val deserialized = serializer.read(serialized)
         assertEquals(original, deserialized)
         if(shouldCopy)
             assertNotSame(serialized, deserialized)
@@ -214,7 +214,7 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
     @Test
     fun `read for Tag passthrough with the wrong tag type should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<NbtByte>()].value.read(NbtString.of("oops!"), null)
+            prism[Mirror.reflect<NbtByte>()].value.read(NbtString.of("oops!"))
         }
     }
 

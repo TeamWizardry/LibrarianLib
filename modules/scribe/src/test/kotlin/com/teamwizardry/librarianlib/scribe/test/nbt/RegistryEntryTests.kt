@@ -58,7 +58,7 @@ internal class RegistryEntryTests: NbtPrismTest() {
     @Test
     fun `reading with a non-existent id and registry with no default value should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<UnitTestSuite>()].value.read(NbtBuilder.string("oops:oops"), null)
+            prism[Mirror.reflect<UnitTestSuite>()].value.read(NbtBuilder.string("oops:oops"))
         }
     }
 }

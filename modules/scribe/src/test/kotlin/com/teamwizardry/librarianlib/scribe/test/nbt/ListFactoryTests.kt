@@ -31,27 +31,13 @@ internal class ListFactoryTests: NbtPrismTest() {
     }
 
     @Test
-    fun `reading an ArrayList with an existing value should clear and fill the existing list`() {
-        val targetList = arrayListOf("value")
-
-        val theList = arrayListOf<String?>("junk")
-        val theTag = NbtBuilder.list {
-            +compound { "V" *= string("value") }
-        }
-        val deserialized = prism[Mirror.reflect<ArrayList<String?>>()].value.read(theTag, theList)
-
-        assertSame(theList, deserialized)
-        assertEquals(targetList, deserialized)
-    }
-
-    @Test
     fun `reading an ArrayList with no existing value should create a new list`() {
         val targetList = arrayListOf("value")
 
         val theTag = NbtBuilder.list {
             +compound { "V" *= string("value") }
         }
-        val deserialized = prism[Mirror.reflect<ArrayList<String?>>()].value.read(theTag, null)
+        val deserialized = prism[Mirror.reflect<ArrayList<String?>>()].value.read(theTag)
 
         assertEquals(ArrayList::class.java, deserialized.javaClass)
         assertEquals(targetList, deserialized)
@@ -60,14 +46,14 @@ internal class ListFactoryTests: NbtPrismTest() {
     @Test
     fun `reading an ArrayList with the wrong NBT type should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<ArrayList<String?>>()].value.read(NbtBuilder.string("oops!"), null)
+            prism[Mirror.reflect<ArrayList<String?>>()].value.read(NbtBuilder.string("oops!"))
         }
     }
 
     @Test
     fun `reading an ArrayList with the wrong ListNBT element type should throw`() {
         assertThrows<DeserializationException> {
-            prism[Mirror.reflect<ArrayList<String?>>()].value.read(NbtBuilder.list { +string("oops!") }, null)
+            prism[Mirror.reflect<ArrayList<String?>>()].value.read(NbtBuilder.list { +string("oops!") })
         }
     }
 

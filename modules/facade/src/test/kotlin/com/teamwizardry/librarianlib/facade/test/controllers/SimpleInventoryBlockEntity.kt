@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos
 class SimpleInventoryBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state: BlockState) :
     BlockEntity(type, pos, state) {
 
-    @Save
+    @Save("items")
     val items: DefaultedList<ItemStack> = DefaultedList.ofSize(16, ItemStack.EMPTY)
     val inventory: Inventory = DefaultInventoryImpl.of(items)
 }

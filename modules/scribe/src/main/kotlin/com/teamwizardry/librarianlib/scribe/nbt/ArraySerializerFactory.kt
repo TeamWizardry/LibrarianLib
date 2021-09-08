@@ -19,8 +19,8 @@ internal class ArraySerializerFactory(prism: NbtPrism): NBTSerializerFactory(pri
         private val analyzer = ArrayAnalyzer<Any?, NbtSerializer<*>>(prism, type)
 
         @Suppress("UNCHECKED_CAST")
-        override fun deserialize(tag: NbtElement, existing: Array<Any?>?): Array<Any?> {
-            analyzer.getReader(existing).use { state ->
+        override fun deserialize(tag: NbtElement): Array<Any?> {
+            analyzer.getReader().use { state ->
                 @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtList>("tag")
 
                 state.reserve(tag.size)
@@ -28,21 +28,22 @@ internal class ArraySerializerFactory(prism: NbtPrism): NBTSerializerFactory(pri
                     try {
                         val entry = it.expectType<NbtCompound>("element $i")
                         if (entry.contains("V"))
-                            state.add(state.serializer.read(entry.expect("V"), existing?.getOrNull(i)))
+                            state.add(state.serializer.read(entry.expect("V")))
                         else
                             state.add(null)
                     } catch (e: Exception) {
                         throw DeserializationException("Error deserializing element $i", e)
                     }
                 }
-                return state.apply()
+                return state.build()
             }
         }
 
         override fun serialize(value: Array<Any?>): NbtElement {
             analyzer.getWriter(value).use { state ->
                 val tag = NbtList()
-                state.elements.forEachIndexed { i, v ->
+                for(i in 0 until state.size) {
+                    val v = state.get(i)
                     try {
                         val entry = NbtCompound()
                         if (v != null)

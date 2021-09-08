@@ -14,13 +14,13 @@ public abstract class NbtSerializer<T: Any>: Serializer<T> {
     public constructor(type: TypeMirror): super(type)
     public constructor(): super()
 
-    protected abstract fun deserialize(tag: NbtElement, existing: T?): T
+    protected abstract fun deserialize(tag: NbtElement): T
     protected abstract fun serialize(value: T): NbtElement
 
     @Suppress("UNCHECKED_CAST")
-    public fun read(tag: NbtElement, existing: Any?): Any {
+    public fun read(tag: NbtElement): Any {
         try {
-            return deserialize(tag, existing as T?)
+            return deserialize(tag)
         } catch (e: Exception) {
             throw DeserializationException("Error deserializing $type", e)
         }

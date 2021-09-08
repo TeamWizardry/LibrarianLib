@@ -114,7 +114,7 @@ public class FacadeControllerFactory<T : FacadeController>(private val clazz: Cl
         val list = buffer.readNbt()!!.getList("ll", NbtType.COMPOUND)
         return argumentSerializers.mapIndexed { i, serializer ->
             list.getCompound(i).get("V")?.let {
-                serializer.read(it, null)
+                serializer.read(it)
             }
         }.toTypedArray()
     }

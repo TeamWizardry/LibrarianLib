@@ -17,7 +17,7 @@ public class RegistryEntrySerializer<T : Any>(private val registry: Registry<T>,
         name = registries.getId(registry) ?: throw IllegalArgumentException("Couldn't find registry")
     }
 
-    override fun deserialize(tag: NbtElement, existing: T?): T {
+    override fun deserialize(tag: NbtElement): T {
         val id = Identifier(tag.expectType<NbtString>("id").asString())
         return registry.get(id) ?: throw DeserializationException("No entry in $name with id $id")
     }

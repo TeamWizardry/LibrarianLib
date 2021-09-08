@@ -23,5 +23,5 @@ configureFabricTestModJson {
 
 dependencies {
     liblib(project(":core"))
-    shade("dev.thecodewarrior.prism:prism:0.1.0b1")
+    shade("dev.thecodewarrior:prism:0.2.0-beta.1")
 }

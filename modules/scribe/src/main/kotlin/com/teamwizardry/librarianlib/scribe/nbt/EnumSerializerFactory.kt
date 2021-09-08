@@ -18,7 +18,7 @@ internal class EnumSerializerFactory(prism: NbtPrism): NBTSerializerFactory(pris
         private val cases: Map<String, Enum<*>> = type.asClassMirror().enumConstants!!.associateBy { it.name }
 
         @Suppress("UNCHECKED_CAST")
-        override fun deserialize(tag: NbtElement, existing: Enum<*>?): Enum<*> {
+        override fun deserialize(tag: NbtElement): Enum<*> {
             val name = tag.expectType<NbtString>("tag").asString()
             return cases[name] ?: throw DeserializationException("Unknown enum case name '$name'")
         }

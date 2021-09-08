@@ -22,7 +22,7 @@ abstract class NbtPrismTest {
         assertEquals(S::class.java, serializer.javaClass)
         val serialized = serializer.write(value)
         assertEquals(serialized, tag)
-        val deserialized = serializer.read(serialized, null)
+        val deserialized = serializer.read(serialized)
         // if an equality callback isn't provided, use assertEquals for the equals check
         // if an equality callback is provided, use assertEquals for the error message
         if(equality == null || !equality(value, deserialized))
@@ -40,7 +40,7 @@ abstract class NbtPrismTest {
         assertEquals(S::class.java, serializer.javaClass)
         val serialized = serializer.write(value)
         assertEquals(tag, serialized)
-        val deserialized = serializer.read(serialized, null)
+        val deserialized = serializer.read(serialized)
         // if an equality callback isn't provided, use assertEquals for the equals check
         // if an equality callback is provided, use assertEquals for the error message
         if(equality == null || !(deserialized is T && equality(value, deserialized)))
@@ -55,7 +55,7 @@ abstract class NbtPrismTest {
     inline fun<reified S> simpleRead(type: TypeMirror, value: Any, tag: NbtElement, noinline equality: ((Any, Any) -> Boolean)? = null) {
         val serializer = prism[type].value
         assertEquals(S::class.java, serializer.javaClass)
-        val deserialized = serializer.read(tag, null)
+        val deserialized = serializer.read(tag)
         // if an equality callback isn't provided, use assertEquals for the equals check
         // if an equality callback is provided, use assertEquals for the error message
         if(equality == null || !equality(value, deserialized))
@@ -70,7 +70,7 @@ abstract class NbtPrismTest {
     inline fun<reified T: Any, reified S> simpleRead(value: T, tag: NbtElement, noinline equality: ((T, T) -> Boolean)? = null) {
         val serializer = prism[Mirror.reflect<T>()].value
         assertEquals(S::class.java, serializer.javaClass)
-        val deserialized = serializer.read(tag, null)
+        val deserialized = serializer.read(tag)
         // if an equality callback isn't provided, use assertEquals for the equals check
         // if an equality callback is provided, use assertEquals for the error message
         if(equality == null || !(deserialized is T && equality(value, deserialized)))

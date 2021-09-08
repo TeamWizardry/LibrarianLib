@@ -88,32 +88,6 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
     }
 
     @Test
-    fun `read+write for MutableMatrix3d should modify the existing value`() {
-        val goal = MutableMatrix3d(
-            1.0, 2.0, 3.0,
-            4.0, 5.0, 6.0,
-            7.0, 8.0, 9.0
-        )
-        val target = MutableMatrix3d()
-        val result = prism[Mirror.reflect<MutableMatrix3d>()].value.read(
-            NbtBuilder.list {
-                +double(1.0)
-                +double(2.0)
-                +double(3.0)
-                +double(4.0)
-                +double(5.0)
-                +double(6.0)
-                +double(7.0)
-                +double(8.0)
-                +double(9.0)
-            },
-            target
-        )
-        assertSame(target, result)
-        assertEquals(goal, target)
-    }
-
-    @Test
     fun `read+write for Matrix4d should be symmetrical`() {
         simple<Matrix4d, Matrix4dSerializer>(Matrix4d(
             1.0, 2.0, 3.0, 4.0,
@@ -168,40 +142,6 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
         })
     }
 
-
-    @Test
-    fun `read+write for MutableMatrix4d should modify the existing value`() {
-        val goal = MutableMatrix4d(
-            1.0, 2.0, 3.0, 4.0,
-            5.0, 6.0, 7.0, 8.0,
-            9.0, 10.0, 11.0, 12.0,
-            13.0, 14.0, 15.0, 16.0
-        )
-        val target = MutableMatrix4d()
-        val result = prism[Mirror.reflect<MutableMatrix4d>()].value.read(
-            NbtBuilder.list {
-                +double(1.0)
-                +double(2.0)
-                +double(3.0)
-                +double(4.0)
-                +double(5.0)
-                +double(6.0)
-                +double(7.0)
-                +double(8.0)
-                +double(9.0)
-                +double(10.0)
-                +double(11.0)
-                +double(12.0)
-                +double(13.0)
-                +double(14.0)
-                +double(15.0)
-                +double(16.0)
-            },
-            target
-        )
-        assertSame(target, result)
-        assertEquals(goal, target)
-    }
 
     @Test
     fun `read+write for Quaternion should be symmetrical`() {

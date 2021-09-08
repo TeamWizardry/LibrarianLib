@@ -3,26 +3,23 @@ package com.teamwizardry.librarianlib.scribe
 import com.teamwizardry.librarianlib.scribe.nbt.NbtSerializer
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.member.FieldMirror
+import dev.thecodewarrior.mirror.member.MethodMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.DeserializationException
 import dev.thecodewarrior.prism.InvalidTypeException
 import dev.thecodewarrior.prism.PrismException
 import dev.thecodewarrior.prism.SerializationException
 import net.minecraft.nbt.NbtCompound
+import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import java.util.function.Predicate
+import kotlin.reflect.full.hasAnnotation
 
 /**
  * Any annotations with this meta-annotation will be treated as markers for simple serializers
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 public annotation class SimpleSerializationMarker
-
-/**
- * Sets a custom name for a property
- */
-@Target(AnnotationTarget.FIELD)
-public annotation class SimpleSerializationName(val name: String)
 
 public interface SimpleSerializer<T: Any> {
     /**
@@ -55,6 +52,23 @@ public interface SimpleSerializer<T: Any> {
             @Suppress("UNCHECKED_CAST")
             return typeMap.getOrPut(clazz) { SimpleSerializerImpl(clazz) } as SimpleSerializer<T>
         }
+
+        private val nameMethods = mutableMapOf<Class<*>, MethodMirror>()
+
+        @JvmStatic
+        public fun getMarkerName(annotation: Annotation): String {
+            val annotationClass = annotation.annotationClass.java
+            if(!annotation.annotationClass.hasAnnotation<SimpleSerializationMarker>())
+                throw IllegalArgumentException("Annotation type ${annotation.annotationClass.qualifiedName} " +
+                        "is not a serialization marker")
+            val method = nameMethods.getOrPut(annotationClass) {
+                val method = Mirror.reflectClass(annotationClass).getMethod("value")
+                if(method.returnType != Mirror.reflect<String>())
+                    throw IllegalArgumentException("Expected `value` to be a String")
+                method
+            }
+            return method.call(annotation)
+        }
     }
 }
 
@@ -71,12 +85,17 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
         fun Annotation.annotationType() = (this as java.lang.annotation.Annotation).annotationType()
 
         val nameMap = mutableMapOf<String, MutableList<FieldMirror>>()
-        mirror.fields.forEach { field ->
-            val name = field.annotations.get<SimpleSerializationName>()?.name ?: field.name
-
+        for(field in mirror.fields) {
             val markers = field.annotations.filter { it.annotationType().isAnnotationPresent(SimpleSerializationMarker::class.java) }
-            if (markers.isEmpty()) return@forEach
-            logger.debug("Found marked field $field")
+            if (markers.isEmpty()) continue
+            if(field.isFinal)
+                throw InvalidTypeException("SimpleSerializer can't modify the final field `${field.name}`")
+            val names = markers.map { SimpleSerializer.getMarkerName(it) }
+            if(names.count { it != "" } != 1)
+                throw InvalidTypeException("Exactly one marker annotation for each field should have a name")
+            val name = names.single { it != "" }
+
+            logger.debug("Found marked field `$field`")
 
             nameMap.getOrPut(name) { mutableListOf() }.add(field)
 
@@ -84,14 +103,14 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
                 Scribe.nbt[field.type]
             } catch (e: PrismException) {
                 noSerializerErrors[field] = e
-                logger.error("Error getting serializer for $field", e)
+                logger.error("Error getting serializer for `$field`", e)
                 null
             }
 
             if (serializer != null) {
                 properties.add(Property(name, markers, markers.map { it.annotationType() }.toSet(), field,
                     serializer.value))
-                logger.debug("Successfully added field $field")
+                logger.debug("Successfully added field `$field`")
             }
         }
         logger.debug("Found ${properties.size} fields")
@@ -150,18 +169,14 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
     }
 
     private inline fun applyTagImpl(tag: NbtCompound, instance: T, test: (Property) -> Boolean) {
-        properties.forEach { property ->
+        for(property in properties) {
             try {
                 if (test(property)) {
-                    val existingValue = property.field.get<Any?>(instance)
                     val propertyTag = tag.get(property.name)
                     val newValue = when {
-                        propertyTag != null -> property.nbtSerializer.read(propertyTag, existingValue)
-                        property.field.isFinal -> existingValue // assume no tag and final field => keep existing value
+                        propertyTag != null -> property.nbtSerializer.read(propertyTag)
+                        property.field.isFinal -> continue // assume no tag and final field => keep existing value
                         else -> defaultValue(property.field.type)
-                    }
-                    if(newValue !== existingValue && property.field.isFinal) {
-                        throw IllegalStateException("The serializer created a new object for an immutable property")
                     }
                     property.field.set(instance, newValue)
                 }

@@ -2,26 +2,21 @@ package com.teamwizardry.librarianlib.scribe.nbt
 
 import com.mojang.authlib.GameProfile
 import com.teamwizardry.librarianlib.core.util.kotlin.inconceivable
-import com.teamwizardry.librarianlib.core.util.mixinCast
-import com.teamwizardry.librarianlib.scribe.mixin.DefaultedListScribeHooks
 import dev.thecodewarrior.mirror.Mirror
 import dev.thecodewarrior.mirror.type.ClassMirror
 import dev.thecodewarrior.mirror.type.TypeMirror
 import dev.thecodewarrior.prism.DeserializationException
-import dev.thecodewarrior.prism.SerializationException
 import net.minecraft.block.BlockState
 import net.minecraft.enchantment.EnchantmentLevelEntry
-import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import net.minecraft.util.collection.DefaultedList
 import net.minecraft.util.math.*
 import net.minecraft.util.registry.Registry
 
 internal object IdentifierSerializer: NbtSerializer<Identifier>() {
-    override fun deserialize(tag: NbtElement, existing: Identifier?): Identifier {
+    override fun deserialize(tag: NbtElement): Identifier {
         return Identifier(tag.expectType<NbtString>("tag").asString())
     }
 
@@ -33,7 +28,7 @@ internal object IdentifierSerializer: NbtSerializer<Identifier>() {
 //region Math stuff
 
 internal object Vec3dSerializer: NbtSerializer<Vec3d>() {
-    override fun deserialize(tag: NbtElement, existing: Vec3d?): Vec3d {
+    override fun deserialize(tag: NbtElement): Vec3d {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         return Vec3d(
             tag.expect<AbstractNbtNumber>("X").doubleValue(),
@@ -52,7 +47,7 @@ internal object Vec3dSerializer: NbtSerializer<Vec3d>() {
 }
 
 internal object Vec2fSerializer: NbtSerializer<Vec2f>() {
-    override fun deserialize(tag: NbtElement, existing: Vec2f?): Vec2f {
+    override fun deserialize(tag: NbtElement): Vec2f {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         return Vec2f(
             tag.expect<AbstractNbtNumber>("X").floatValue(),
@@ -69,7 +64,7 @@ internal object Vec2fSerializer: NbtSerializer<Vec2f>() {
 }
 
 internal object BlockPosSerializer: NbtSerializer<BlockPos>() {
-    override fun deserialize(tag: NbtElement, existing: BlockPos?): BlockPos {
+    override fun deserialize(tag: NbtElement): BlockPos {
         return NbtHelper.toBlockPos(tag.expectType("tag"))
     }
 
@@ -80,7 +75,7 @@ internal object BlockPosSerializer: NbtSerializer<BlockPos>() {
 
 
 internal object ChunkPosSerializer: NbtSerializer<ChunkPos>() {
-    override fun deserialize(tag: NbtElement, existing: ChunkPos?): ChunkPos {
+    override fun deserialize(tag: NbtElement): ChunkPos {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         return ChunkPos(
             tag.expect<AbstractNbtNumber>("X").intValue(),
@@ -97,7 +92,7 @@ internal object ChunkPosSerializer: NbtSerializer<ChunkPos>() {
 }
 
 internal object ColumnPosSerializer: NbtSerializer<ColumnPos>() {
-    override fun deserialize(tag: NbtElement, existing: ColumnPos?): ColumnPos {
+    override fun deserialize(tag: NbtElement): ColumnPos {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         return ColumnPos(
             tag.expect<AbstractNbtNumber>("X").intValue(),
@@ -114,7 +109,7 @@ internal object ColumnPosSerializer: NbtSerializer<ColumnPos>() {
 }
 
 internal object ChunkSectionPosSerializer: NbtSerializer<ChunkSectionPos>() {
-    override fun deserialize(tag: NbtElement, existing: ChunkSectionPos?): ChunkSectionPos {
+    override fun deserialize(tag: NbtElement): ChunkSectionPos {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         return ChunkSectionPos.from(
             ChunkPos(
@@ -136,7 +131,7 @@ internal object ChunkSectionPosSerializer: NbtSerializer<ChunkSectionPos>() {
 
 // Dimension types seem to be "dynamic registry entries" now, which means you need to get them from a World instance.
 //internal object GlobalPosSerializer: NBTSerializer<GlobalPos>() {
-//    override fun deserialize(tag: NbtElement, existing: GlobalPos?): GlobalPos {
+//    override fun deserialize(tag: NbtElement): GlobalPos {
 //        @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
 //        val dimensionName = Identifier(tag.expect<NbtString>("Dimension").string)
 //        return GlobalPos.of(
@@ -160,7 +155,7 @@ internal object ChunkSectionPosSerializer: NbtSerializer<ChunkSectionPos>() {
 //}
 
 internal object EulerAngleSerializer: NbtSerializer<EulerAngle>() {
-    override fun deserialize(tag: NbtElement, existing: EulerAngle?): EulerAngle {
+    override fun deserialize(tag: NbtElement): EulerAngle {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         return EulerAngle(
             tag.expect<AbstractNbtNumber>("Pitch").floatValue(),
@@ -179,7 +174,7 @@ internal object EulerAngleSerializer: NbtSerializer<EulerAngle>() {
 }
 
 internal object BoxSerializer: NbtSerializer<Box>() {
-    override fun deserialize(tag: NbtElement, existing: Box?): Box {
+    override fun deserialize(tag: NbtElement): Box {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         return Box(
             tag.expect<AbstractNbtNumber>("MinX").doubleValue(),
@@ -204,7 +199,7 @@ internal object BoxSerializer: NbtSerializer<Box>() {
 }
 
 internal object BlockBoxSerializer: NbtSerializer<BlockBox>() {
-    override fun deserialize(tag: NbtElement, existing: BlockBox?): BlockBox {
+    override fun deserialize(tag: NbtElement): BlockBox {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         return BlockBox(
             tag.expect<AbstractNbtNumber>("MinX").intValue(),
@@ -241,11 +236,11 @@ internal class MCPairSerializerFactory(prism: NbtPrism): NBTSerializerFactory(pr
         private val firstSerializer by prism[type.typeParameters[0]]
         private val secondSerializer by prism[type.typeParameters[1]]
 
-        override fun deserialize(tag: NbtElement, existing: MCPair<Any?, Any?>?): MCPair<Any?, Any?> {
+        override fun deserialize(tag: NbtElement): MCPair<Any?, Any?> {
             @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
             return MCPair(
-                if (tag.contains("A")) firstSerializer.read(tag.expect("A"), existing?.left) else null,
-                if (tag.contains("B")) secondSerializer.read(tag.expect("B"), existing?.right) else null
+                if (tag.contains("A")) firstSerializer.read(tag.expect("A")) else null,
+                if (tag.contains("B")) secondSerializer.read(tag.expect("B")) else null
             )
         }
 
@@ -258,6 +253,7 @@ internal class MCPairSerializerFactory(prism: NbtPrism): NBTSerializerFactory(pr
     }
 }
 
+/*
 internal class DefaultedListSerializerFactory(prism: NbtPrism): NBTSerializerFactory(prism, Mirror.reflect<DefaultedList<*>>()) {
     override fun create(mirror: TypeMirror): NbtSerializer<*> {
         return DefaultedListSerializer(prism, mirror as ClassMirror)
@@ -271,7 +267,7 @@ internal class DefaultedListSerializerFactory(prism: NbtPrism): NBTSerializerFac
                     )
         ]
 
-        override fun deserialize(tag: NbtElement, existing: DefaultedList<Any>?): DefaultedList<Any> {
+        override fun deserialize(tag: NbtElement): DefaultedList<Any> {
             if(existing == null)
                 throw DeserializationException("Expected an existing DefaultedList instance")
             val result = listSerializer.read(tag, null) as List<*>
@@ -284,6 +280,7 @@ internal class DefaultedListSerializerFactory(prism: NbtPrism): NBTSerializerFac
         }
     }
 }
+*/
 
 internal class TagPassthroughSerializerFactory(prism: NbtPrism): NBTSerializerFactory(prism, Mirror.reflect<NbtElement>()) {
     override fun create(mirror: TypeMirror): NbtSerializer<*> {
@@ -294,7 +291,7 @@ internal class TagPassthroughSerializerFactory(prism: NbtPrism): NBTSerializerFa
         @Suppress("UNCHECKED_CAST")
         private val nbtClass = type.erasure as Class<NbtElement>
 
-        override fun deserialize(tag: NbtElement, existing: NbtElement?): NbtElement {
+        override fun deserialize(tag: NbtElement): NbtElement {
             return expectType(tag, nbtClass, "tag").copy()
         }
 
@@ -312,7 +309,7 @@ internal class TextSerializerFactory(prism: NbtPrism): NBTSerializerFactory(pris
     class TextSerializer(type: ClassMirror): NbtSerializer<Text>(type) {
         private val componentClass = type.erasure
 
-        override fun deserialize(tag: NbtElement, existing: Text?): Text {
+        override fun deserialize(tag: NbtElement): Text {
             val component = Text.Serializer.fromJson(tag.expectType<NbtString>("tag").asString())
                 ?: inconceivable("ITextComponent.Serializer.fromJson doesn't seem to ever return null")
             if(!componentClass.isAssignableFrom(component.javaClass))
@@ -328,7 +325,7 @@ internal class TextSerializerFactory(prism: NbtPrism): NBTSerializerFactory(pris
 }
 
 internal object GameProfileSerializer: NbtSerializer<GameProfile>() {
-    override fun deserialize(tag: NbtElement, existing: GameProfile?): GameProfile {
+    override fun deserialize(tag: NbtElement): GameProfile {
         return NbtHelper.toGameProfile(tag.expectType("tag"))
             ?: throw DeserializationException("Reading GameProfile") // it only returns null if an error occurs
     }
@@ -341,7 +338,7 @@ internal object GameProfileSerializer: NbtSerializer<GameProfile>() {
 }
 
 internal object BlockStateSerializer: NbtSerializer<BlockState>() {
-    override fun deserialize(tag: NbtElement, existing: BlockState?): BlockState {
+    override fun deserialize(tag: NbtElement): BlockState {
         return NbtHelper.toBlockState(tag.expectType("tag"))
     }
 
@@ -351,7 +348,7 @@ internal object BlockStateSerializer: NbtSerializer<BlockState>() {
 }
 
 internal object ItemStackSerializer: NbtSerializer<ItemStack>() {
-    override fun deserialize(tag: NbtElement, existing: ItemStack?): ItemStack {
+    override fun deserialize(tag: NbtElement): ItemStack {
         return ItemStack.fromNbt(tag.expectType("tag"))
     }
 
@@ -362,7 +359,7 @@ internal object ItemStackSerializer: NbtSerializer<ItemStack>() {
 
 /*
 internal object StatusEffectInstanceSerializer: NbtSerializer<StatusEffectInstance>() {
-    override fun deserialize(tag: NbtElement, existing: StatusEffectInstance?): StatusEffectInstance {
+    override fun deserialize(tag: NbtElement): StatusEffectInstance {
         return StatusEffectInstance.fromNbt(tag.expectType("tag")) // May return null. How should we handle this?
     }
 
@@ -373,7 +370,7 @@ internal object StatusEffectInstanceSerializer: NbtSerializer<StatusEffectInstan
  */
 
 internal object EnchantmentLevelEntrySerializer: NbtSerializer<EnchantmentLevelEntry>() {
-    override fun deserialize(tag: NbtElement, existing: EnchantmentLevelEntry?): EnchantmentLevelEntry {
+    override fun deserialize(tag: NbtElement): EnchantmentLevelEntry {
         @Suppress("NAME_SHADOWING") val tag = tag.expectType<NbtCompound>("tag")
         val id = Identifier(tag.expect<NbtString>("Enchantment").asString())
         val enchantment = Registry.ENCHANTMENT.get(id)

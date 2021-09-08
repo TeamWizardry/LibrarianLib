@@ -69,7 +69,7 @@ class TestSelectorBuilder private constructor(private val selector: TestSelector
 
 @RefractClass
 data class SyncSelectionPacket @RefractConstructor constructor(
-    @Refract val id: String,
+    @Refract("id") val id: String,
 ) : CourierPacket {
 
     companion object {

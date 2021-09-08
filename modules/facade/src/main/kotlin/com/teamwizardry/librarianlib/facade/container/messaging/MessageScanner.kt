@@ -55,7 +55,7 @@ public object MessageScanner {
             val list = payload.getList("ll", NbtCompound().type.toInt())
             return parameterSerializers.mapIndexed { i, serializer ->
                 list.getCompound(i).get("V")?.let {
-                    serializer.read(it, null)
+                    serializer.read(it)
                 }
             }.toTypedArray()
         }
