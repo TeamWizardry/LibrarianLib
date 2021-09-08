@@ -32,6 +32,9 @@ allprojects {
         mavenLocal()
         jcenter()
         mavenCentral()
+        // OSSRH, just in case a version hasn't synced to central yet
+        maven("https://s01.oss.sonatype.org/content/repositories/releases/")
+
         maven("https://jitpack.io")
         maven("https://www.cursemaven.com") {
             content { includeGroup("curse.maven") }
