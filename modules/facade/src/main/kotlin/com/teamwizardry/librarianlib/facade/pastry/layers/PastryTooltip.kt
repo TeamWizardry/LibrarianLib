@@ -9,6 +9,7 @@ import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
 import com.teamwizardry.librarianlib.facade.provided.VanillaTooltipRenderer
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import net.minecraft.item.ItemStack
 import java.awt.Color
@@ -74,7 +75,7 @@ public class PastryBasicTooltip: PastryTooltip() {
 
     override fun layoutContents(maxWidth: Double) {
         textLayer.width = maxWidth - 4
-        textLayer.fitToText(TextLayer.FitType.VERTICAL_SHRINK)
+        textLayer.fitToText(TextFit.VERTICAL_SHRINK)
 
         contents.size = vec(textLayer.width + 2, textLayer.height + 2)
     }

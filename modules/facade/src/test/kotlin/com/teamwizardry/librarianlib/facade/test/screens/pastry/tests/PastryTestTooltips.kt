@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.facade.pastry.layers.PastryTooltip
 import com.teamwizardry.librarianlib.facade.pastry.layers.VanillaTooltip
 import com.teamwizardry.librarianlib.facade.test.screens.pastry.PastryTestBase
 import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import java.awt.Color
@@ -78,7 +79,7 @@ class ComplexTooltip(val stack: ItemStack, val text: String): PastryTooltip() {
 
     override fun layoutContents(maxWidth: Double) {
         textLayer.width = maxWidth - 20
-        textLayer.fitToText(TextLayer.FitType.VERTICAL_SHRINK)
+        textLayer.fitToText(TextFit.VERTICAL_SHRINK)
 
         contents.size = vec(textLayer.frame.maxX + 2, textLayer.height + 2)
     }

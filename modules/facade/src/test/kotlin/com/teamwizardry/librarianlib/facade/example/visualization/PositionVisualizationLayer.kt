@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
+import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import com.teamwizardry.librarianlib.facade.text.BitfontFormatting
 import dev.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import java.awt.Color
@@ -19,7 +20,7 @@ class PositionVisualizationLayer(val target: GuiLayer): GuiLayer() {
 
     init {
         this.zIndex = 102.0
-        coordinateLayer.textFitting = TextLayer.FitType.BOTH
+        coordinateLayer.textFitting = TextFit.BOTH
         coordinateLayer.textMargins = TextLayer.Margins(2.0, 2.0, 2.0, 2.0)
         coordinateLayer.color = DistinctColors.blue
         this.add(coordinateLayer)

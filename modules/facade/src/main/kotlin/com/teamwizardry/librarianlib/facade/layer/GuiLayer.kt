@@ -418,6 +418,12 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
     public val root: GuiLayer
         get() = this.parent?.root ?: this
 
+    public fun <T: GuiLayer> add(layer: T): T {
+        @Suppress("RemoveRedundantSpreadOperator")
+        this.add(*arrayOf<GuiLayer>(layer))
+        return layer
+    }
+
     /**
      * Adds children to this layer. Any layers that are already children of this layer will be ignored after logging a
      * warning.
@@ -1714,6 +1720,11 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             BUS.fire(event)
         }
         forEachChild { it.updateDirtyLayout(event) }
+        if (isLayoutDirty) {
+            didLayout = true
+            layoutChildren()
+            BUS.fire(event)
+        }
         isLayoutDirty = false
     }
 
