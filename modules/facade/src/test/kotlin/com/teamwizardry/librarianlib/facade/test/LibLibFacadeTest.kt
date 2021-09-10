@@ -21,6 +21,7 @@ import com.teamwizardry.librarianlib.facade.test.controllers.base.TestController
 import com.teamwizardry.librarianlib.facade.test.controllers.base.TestControllerSet
 import com.teamwizardry.librarianlib.facade.test.screens.*
 import com.teamwizardry.librarianlib.facade.test.screens.pastry.*
+import com.teamwizardry.librarianlib.facade.test.screens.textinput.*
 import com.teamwizardry.librarianlib.testcore.TestModContentManager
 import com.teamwizardry.librarianlib.testcore.content.TestBlock
 import com.teamwizardry.librarianlib.testcore.content.TestItem
@@ -70,6 +71,7 @@ internal object LibLibFacadeTest {
             manager.create<TestItem>("animations") { name = "Animations/Time" }
             manager.create<TestItem>("clipping_compositing") { name = "Clipping/Compositing" }
             manager.create<TestItem>("advanced") { name = "Advanced" }
+            manager.create<TestItem>("text_input") { name = "Text Input" }
             manager.create<TestItem>("examples") { name = "Examples" }
 
             manager.create<TestItem>("simple_controller") {
@@ -141,6 +143,9 @@ internal object LibLibFacadeTest {
             setupTests("advanced") {
                 screen("Pastry", ::PastryTestScreen)
                 screen("Rect2dUnion", ::Rect2dUnionTestScreen)
+            }
+            setupTests("text_input") {
+                screen("Simple text input", ::SimpleTextInputTestScreen)
             }
             setupTests("examples") {
                 screen("Alignment", ::ExampleAlignmentScreen)

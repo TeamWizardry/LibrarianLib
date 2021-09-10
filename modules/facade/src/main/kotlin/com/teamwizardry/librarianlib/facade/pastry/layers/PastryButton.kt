@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.facade.pastry.Pastry
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
+import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
@@ -71,7 +72,7 @@ public class PastryButton: PastryActivatedControl {
     }
 
     @JvmOverloads
-    public fun fitLabel(fitType: TextLayer.FitType = TextLayer.FitType.BOTH) {
+    public fun fitLabel(fitType: TextFit = TextFit.BOTH) {
         label.textAlignment = TextLayoutManager.Alignment.LEFT
         label.fitToText(fitType)
         label.textAlignment = TextLayoutManager.Alignment.CENTER

@@ -16,8 +16,8 @@ import com.teamwizardry.librarianlib.etcetera.eventbus.CancelableEvent
  * * Updates animations
  * * Fires [Update]
  * * **Layout phase:**
- * * Fires [PrepareLayout]
- * * Calls [GuiLayer.layoutChildren][GuiLayer.layoutChildren] and fires [LayoutChildren] for all dirty layers
+ * * Calls [GuiLayer.prepareLayout] and fires [PrepareLayout]
+ * * Calls [GuiLayer.layoutChildren] and fires [LayoutChildren] for all dirty layers
  * * **Draw phase:**
  *
  * ## †Input notes:

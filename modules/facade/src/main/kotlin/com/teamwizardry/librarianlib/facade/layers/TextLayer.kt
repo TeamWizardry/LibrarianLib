@@ -8,6 +8,9 @@ import com.teamwizardry.librarianlib.facade.text.BitfontFormatting
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.core.util.rect
+import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.facade.layers.text.TextContainerLayer
+import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
@@ -15,6 +18,9 @@ import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * A managed wrapper around a [TextLayoutContainer]
+ */
 public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text: String):
     GuiLayer(posX, posY, width, height) {
     public constructor(posX: Int, posY: Int, text: String): this(posX, posY, 0, 0, text)
@@ -23,7 +29,8 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     public constructor(posX: Int, posY: Int): this(posX, posY, "")
     public constructor(): this(0, 0, "")
 
-    private val container: TextContainer = TextContainer(1)
+    private val containerLayer = add(TextContainerLayer(0, 0, width, height))
+
     private val layoutManager: TextLayoutManager = TextLayoutManager(Fonts.classic)
     private var _attributedText: AttributedString = BitfontFormatting.convertMC(text)
 
@@ -81,10 +88,10 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     public val options: TextLayoutManager.Options = layoutManager.options
 
     public var maxLines: Int
-        get() = container.maxLines
+        get() = containerLayer.container.maxLines
         set(value) {
-            if(value != container.maxLines) {
-                container.maxLines = value
+            if(value != containerLayer.container.maxLines) {
+                containerLayer.container.maxLines = value
                 markTextDirty()
             }
         }
@@ -104,36 +111,13 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     /**
      * If and how this layer should automatically fit its size to the contained text.
      */
-    public var textFitting: FitType = FitType.NONE
+    public var textFitting: TextFit = TextFit.NONE
         set(value) {
             if(field != value) {
                 field = value
                 markTextDirty()
             }
         }
-
-    public enum class FitType {
-        /**
-         * Don't fit the layer's size to the text size at all.
-         */
-        NONE,
-        /**
-         * Lay out the text with infinite vertical space, then update the layer height to fit the actual text.
-         */
-        VERTICAL,
-        /**
-         * Lay out the text with infinite vertical space, then update the layer width and height to fit the actual text.
-         */
-        VERTICAL_SHRINK,
-        /**
-         * Lay out the text with infinite horizontal space, then update the layer width to fit the actual text.
-         */
-        HORIZONTAL,
-        /**
-         * Lay out the text with infinite space, then update the layer width and height to fit the actual text.
-         */
-        BOTH
-    }
 
     /**
      * The logical bounds of the text
@@ -156,7 +140,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     }
 
     init {
-        layoutManager.textContainers.add(container)
+        layoutManager.textContainers.add(containerLayer.container)
         markTextDirty()
     }
 
@@ -171,7 +155,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
      *
      * @param textFitting if and how to resize this layer based on the text layout
      */
-    public fun fitToText(textFitting: FitType) {
+    public fun fitToText(textFitting: TextFit) {
         layoutText(textFitting)
     }
 
@@ -182,63 +166,37 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
         layoutText(this.textFitting)
     }
 
-    private fun layoutText(textFitting: FitType) {
+    private fun layoutText(textFitting: TextFit) {
         updateMCText()
 
-        updateContainerSize()
-
-        when(textFitting) {
-            FitType.NONE -> {}
-            FitType.VERTICAL_SHRINK, FitType.VERTICAL -> {
-                container.height = Int.MAX_VALUE
-            }
-            FitType.HORIZONTAL -> {
-                container.width = Int.MAX_VALUE
-            }
-            FitType.BOTH -> {
-                container.height = Int.MAX_VALUE
-                container.width = Int.MAX_VALUE
-            }
-        }
+        containerLayer.pos = vec(textMargins.left, textMargins.top)
+        containerLayer.size = this.size - vec(textMargins.horizontalSum, textMargins.verticalSum)
+        containerLayer.textFitting = textFitting
+        containerLayer.prepareTextContainer()
 
         layoutManager.attributedString = this.attributedText
         layoutManager.layoutText()
 
-        var minX = 0
-        var minY = 0
-        var maxX = 0
-        var maxY = 0
-        container.lines.forEach { line ->
-            minX = min(minX, line.posX)
-            minY = min(minY, line.posY)
+        containerLayer.applyTextLayout()
 
-            maxX = max(maxX, line.posX + (line.clusters.lastOrNull() { !it.isInvisible }?.main?.afterX ?: 0))
-            maxY = max(maxY, line.posY + line.height)
-        }
-        textBounds = rect(minX + textMargins.left, minY + textMargins.top, maxX + textMargins.left, maxY + textMargins.top)
+        textBounds = containerLayer.textBounds.offset(vec(textMargins.left, textMargins.top))
 
         when(textFitting) {
-            FitType.NONE -> {}
-            FitType.VERTICAL -> {
-                height = maxY + textMargins.verticalSum
+            TextFit.NONE -> {}
+            TextFit.VERTICAL -> {
+                height = containerLayer.height + textMargins.verticalSum
             }
-            FitType.HORIZONTAL -> {
-                width = maxX + textMargins.horizontalSum
+            TextFit.HORIZONTAL -> {
+                width = containerLayer.width + textMargins.horizontalSum
             }
-            FitType.VERTICAL_SHRINK, FitType.BOTH -> {
-                height = maxY + textMargins.verticalSum
-                width = maxX + textMargins.horizontalSum
+            TextFit.VERTICAL_SHRINK, TextFit.BOTH -> {
+                height = containerLayer.height + textMargins.verticalSum
+                width = containerLayer.width + textMargins.horizontalSum
             }
         }
 
-        updateContainerSize()
         isTextDirty = false
         lastState = getDirtyState()
-    }
-
-    private fun updateContainerSize() {
-        container.width = (this.width - textMargins.horizontalSum).toInt()
-        container.height = (this.height - textMargins.verticalSum).toInt()
     }
 
     private var lastText: String? = null
@@ -251,26 +209,16 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
         }
     }
 
-//    private var lastState: DirtyState =
-//        private data class DirtyState(
-//            val text: String?,
-//            val options: TextLayoutManager.Options,
-//            val containerWidth: Int,
-//            val containerHeight: Int,
-//            val textFitting: FitType
-//        )
-
     private var lastState: List<Any> = emptyList()
     private fun getDirtyState(): List<Any> = listOf(
         options.copy(),
-        container.width,
-        container.height,
+        width,
+        height,
         textFitting
     )
 
     private fun markTextDirtyIfDataChanged() {
         updateMCText()
-        updateContainerSize()
         if(getDirtyState() != lastState) {
             markTextDirty()
         }
@@ -291,13 +239,8 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
         if(isTextDirty) {
             // too late to change the layer size. This also clears the text dirty flag, allowing layout code to assert
             // itself over the fitting, preventing infinite back and forth
-            layoutText(FitType.NONE)
+            layoutText(TextFit.NONE)
         }
-    }
-
-    override fun draw(context: GuiDrawContext) {
-        context.matrix.translate(textMargins.left, textMargins.top)
-        BitfontRenderer.draw(context.transform, container, color)
     }
 
     public data class Margins(val left: Double, val top: Double, val right: Double, val bottom: Double) {

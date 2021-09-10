@@ -5,6 +5,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.StackLayout
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
+import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryColorPicker
 import com.teamwizardry.librarianlib.facade.pastry.layers.PastryLabel
@@ -17,7 +18,7 @@ class PastryTestColorPicker: PastryTestBase() {
         val colorLabel = PastryLabel(0, 0, "#")
         val container = GuiLayer(175, 150)
 
-        colorLabel.textFitting = TextLayer.FitType.HORIZONTAL
+        colorLabel.textFitting = TextFit.HORIZONTAL
 
         val colorPicker = PastryColorPicker()
         colorPicker.pos = vec(10, 10)

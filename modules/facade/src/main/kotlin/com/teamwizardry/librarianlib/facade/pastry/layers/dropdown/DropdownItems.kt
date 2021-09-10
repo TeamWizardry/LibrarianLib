@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.facade.pastry.layers.dropdown
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.SpriteLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
+import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import com.teamwizardry.librarianlib.facade.pastry.PastryTexture
 
 public abstract class PastryDropdownItem<T>(
@@ -31,7 +32,7 @@ public class DropdownTextItem<T>(value: T, public val string: String): PastryDro
     override fun createLayer(): GuiLayer {
         val layer = TextLayer(0, 0, string)
         layer.maxLines = 1
-        layer.fitToText(TextLayer.FitType.BOTH)
+        layer.fitToText(TextFit.BOTH)
         return layer
     }
 }
