@@ -1,4 +1,4 @@
-#version 330
+#version 150
 
 uniform int primitive;
 int primitive_expected = 10;

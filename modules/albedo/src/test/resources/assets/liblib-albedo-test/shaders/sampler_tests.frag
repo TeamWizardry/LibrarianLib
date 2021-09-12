@@ -1,4 +1,4 @@
-#version 330
+#version 150
 
 uniform sampler2D sampler1;
 uniform sampler2D sampler2;

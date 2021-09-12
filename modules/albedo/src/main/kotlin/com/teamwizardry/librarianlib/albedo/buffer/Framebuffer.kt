@@ -5,7 +5,7 @@ import com.teamwizardry.librarianlib.albedo.AlbedoException
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableCopy
-import org.lwjgl.opengl.GL33.*
+import org.lwjgl.opengl.GL32.*
 import java.nio.ByteBuffer
 
 public class Framebuffer {

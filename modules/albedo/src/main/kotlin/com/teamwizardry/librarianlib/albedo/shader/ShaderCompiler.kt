@@ -133,9 +133,9 @@ public object ShaderCompiler {
     private fun requireVersion(result: PreprocessorResult, file: Identifier, line: String) {
         val match = """^\s*#version\s+(\d+)\s*$""".toRegex().find(line) ?: return
         val version = match.groupValues[1].toInt()
-        if (version > 410) // As of macOS 10.9 Apple supports up to GLSL 4.1.
-            throw ShaderCompilationException(
-                "Maximum GLSL version supported by all platforms is 4.1. " +
+        if (version > 150) // Mojang's shaders are all GLSL 1.50
+            logger.warn(
+                "Maximum recommended OpenGL version 3.2 (GLSL 150). " +
                         "Found `${match.value}` in $file while preprocessing ${result.location}"
             )
         if (version > result.glslVersion)

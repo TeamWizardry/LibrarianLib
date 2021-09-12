@@ -6,7 +6,7 @@ import net.minecraft.util.math.Vec3d
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL40
 
-public class DoubleUniform(name: String) : Uniform(name, GL40.GL_DOUBLE) {
+public class DoubleUniform(name: String) : Uniform(name, GL20.GL_DOUBLE) {
     private var value: Double = 0.0
 
     public fun get(): Double = value

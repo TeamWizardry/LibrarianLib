@@ -15,7 +15,8 @@ import net.minecraft.resource.ResourceManager
 import net.minecraft.resource.ResourceType
 import net.minecraft.util.Identifier
 import net.minecraft.util.profiler.Profiler
-import org.lwjgl.opengl.GL40.*
+import org.lwjgl.opengl.GL32.*
+import org.lwjgl.opengl.GL40
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.util.concurrent.CompletableFuture
@@ -264,8 +265,8 @@ public class Shader private constructor(
 
     public enum class Stage(public val glConstant: Int, public val stageName: String) {
         VERTEX(GL_VERTEX_SHADER, "vertex"),
-        TESSELLATION_CONTROL(GL_TESS_CONTROL_SHADER, "tessellation control"),
-        TESSELLATION_EVALUATION(GL_TESS_EVALUATION_SHADER, "tessellation evaluation"),
+        TESSELLATION_CONTROL(GL40.GL_TESS_CONTROL_SHADER, "tessellation control"),
+        TESSELLATION_EVALUATION(GL40.GL_TESS_EVALUATION_SHADER, "tessellation evaluation"),
         GEOMETRY(GL_GEOMETRY_SHADER, "geometry"),
         FRAGMENT(GL_FRAGMENT_SHADER, "fragment");
 

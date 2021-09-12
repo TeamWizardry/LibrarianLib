@@ -1,4 +1,4 @@
-#version 330
+#version 150
 
 uniform int index;
 // 4xN

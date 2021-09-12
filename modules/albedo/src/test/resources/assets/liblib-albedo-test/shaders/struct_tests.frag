@@ -1,4 +1,4 @@
-#version 330
+#version 150
 
 struct Embedded {
     float embed;

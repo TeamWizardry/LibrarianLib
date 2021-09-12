@@ -1,4 +1,4 @@
-#version 330
+#version 150
 
 uniform int index;
 uniform sampler2D[2] sampler1;

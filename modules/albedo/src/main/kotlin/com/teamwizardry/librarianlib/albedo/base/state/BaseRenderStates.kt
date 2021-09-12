@@ -5,7 +5,8 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.state.RenderState
 import net.minecraft.client.render.RenderPhase
 import net.minecraft.util.Identifier
-import org.lwjgl.opengl.GL33.*
+import org.lwjgl.opengl.GL32.*
+import org.lwjgl.opengl.GL33
 
 /**
  * Yes, I know we shouldn't have to "undo" our state changes, but this is Mojang we're talking about, so it is.
@@ -70,10 +71,10 @@ public object BaseRenderStates {
             CONSTANT_ALPHA(GL_CONSTANT_ALPHA),
             ONE_MINUS_CONSTANT_ALPHA(GL_ONE_MINUS_CONSTANT_ALPHA),
             SRC_ALPHA_SATURATE(GL_SRC_ALPHA_SATURATE),
-            SRC1_COLOR(GL_SRC1_COLOR),
-            ONE_MINUS_SRC1_COLOR(GL_ONE_MINUS_SRC1_COLOR),
+            SRC1_COLOR(GL33.GL_SRC1_COLOR),
+            ONE_MINUS_SRC1_COLOR(GL33.GL_ONE_MINUS_SRC1_COLOR),
             SRC1_ALPHA(GL_SRC1_ALPHA),
-            ONE_MINUS_SRC1_ALPHA(GL_ONE_MINUS_SRC1_ALPHA),
+            ONE_MINUS_SRC1_ALPHA(GL33.GL_ONE_MINUS_SRC1_ALPHA),
         }
 
         public enum class Equation(public val value: Int) {

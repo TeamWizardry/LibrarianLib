@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.albedo.shader.uniform
 
-import org.lwjgl.opengl.GL41.*
+import org.lwjgl.opengl.GL32.*
+import org.lwjgl.opengl.GL40
 
 public sealed class AbstractUniform(
     /**
@@ -301,19 +302,19 @@ public sealed class Uniform(name: String, public val glConstant: Int): AbstractU
         public val samplerCubeShadow: SamplerUniformType = sampler(GL_SAMPLER_CUBE_SHADOW, GL_TEXTURE_CUBE_MAP)
 
         @JvmField
-        public val samplerCubeArray: SamplerUniformType = sampler(GL_SAMPLER_CUBE_MAP_ARRAY, GL_TEXTURE_CUBE_MAP_ARRAY)
+        public val samplerCubeArray: SamplerUniformType = sampler(GL40.GL_SAMPLER_CUBE_MAP_ARRAY, GL40.GL_TEXTURE_CUBE_MAP_ARRAY)
 
         @JvmField
         public val samplerCubeArrayShadow: SamplerUniformType =
-            sampler(GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW, GL_TEXTURE_CUBE_MAP_ARRAY)
+            sampler(GL40.GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW, GL40.GL_TEXTURE_CUBE_MAP_ARRAY)
 
         @JvmField
         public val isamplerCubeArray: SamplerUniformType =
-            sampler(GL_INT_SAMPLER_CUBE_MAP_ARRAY, GL_TEXTURE_CUBE_MAP_ARRAY)
+            sampler(GL40.GL_INT_SAMPLER_CUBE_MAP_ARRAY, GL40.GL_TEXTURE_CUBE_MAP_ARRAY)
 
         @JvmField
         public val usamplerCubeArray: SamplerUniformType =
-            sampler(GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY, GL_TEXTURE_CUBE_MAP_ARRAY)
+            sampler(GL40.GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY, GL40.GL_TEXTURE_CUBE_MAP_ARRAY)
         //endregion
 
         //region GLSL 4.20 - OpenGL 4.2

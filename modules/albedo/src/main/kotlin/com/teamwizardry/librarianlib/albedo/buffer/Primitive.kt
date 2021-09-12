@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.albedo.buffer
 
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.render.VertexFormat
-import org.lwjgl.opengl.GL40.*
+import org.lwjgl.opengl.GL32.*
 
 public enum class Primitive(
     public val resultType: Int

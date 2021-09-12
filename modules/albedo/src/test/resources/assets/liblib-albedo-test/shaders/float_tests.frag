@@ -1,4 +1,4 @@
-#version 330
+#version 150
 
 uniform float primitive;
 float primitive_expected = 10;

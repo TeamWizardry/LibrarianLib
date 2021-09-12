@@ -1,4 +1,4 @@
-#version 330
+#version 150
 
 uniform bool primitive;
 bool primitive_expected = true;

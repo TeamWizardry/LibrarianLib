@@ -3,7 +3,6 @@ package com.teamwizardry.librarianlib.albedo.buffer
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import net.minecraft.util.math.MathHelper
 import org.lwjgl.opengl.GL15.*
-import org.lwjgl.system.MemoryUtil
 import java.nio.ByteBuffer
 
 /**
