@@ -87,9 +87,9 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int, text:
                     if (cluster.main.characterIndex == cursorIndex ||
                         cluster.attachments.any { it.characterIndex == cursorIndex }
                     ) {
-                        cursorLayer.xi = cluster.main.posX
-                        cursorLayer.yi = cluster.main.posY - cluster.main.textObject.ascent
-                        cursorLayer.heighti = cluster.main.textObject.ascent + cluster.main.textObject.descent
+                        cursorLayer.xi = line.posX + cluster.main.posX
+                        cursorLayer.yi = line.posY
+                        cursorLayer.heighti = line.height
                     }
                 }
             }
