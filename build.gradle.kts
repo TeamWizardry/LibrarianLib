@@ -154,5 +154,10 @@ tasks.register<ReplaceTextInPlace>("updateReadmeVersions") {
     }
 }
 
+tasks.configureEach {
+    if(name == "publish")
+        dependsOn(":updateReadmeVersions")
+}
+
 //endregion // Utilities
 // ---------------------------------------------------------------------------------------------------------------------
