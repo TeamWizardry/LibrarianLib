@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.shader.uniform
 
+import com.teamwizardry.librarianlib.albedo.shader.Shader
 import org.lwjgl.opengl.GL32.*
 import org.lwjgl.opengl.GL40
 
@@ -11,8 +12,12 @@ public sealed class AbstractUniform(
 )
 
 public sealed class Uniform(name: String, public val glConstant: Int): AbstractUniform(name) {
-    public var location: Int = -1
-        @JvmSynthetic internal set
+    @get:JvmSynthetic
+    @set:JvmSynthetic
+    internal var info: Shader.UniformInfo? = null
+
+    public val location: Int
+        get() = info?.location ?: -1
 
     @JvmSynthetic
     internal abstract fun push()
@@ -433,5 +438,5 @@ public sealed class Uniform(name: String, public val glConstant: Int): AbstractU
 }
 
 public sealed class ArrayUniform(name: String, glConstant: Int, public val length: Int) : Uniform(name, glConstant) {
-    internal var trueLength: Int = length
+    internal val trueLength: Int get() = info?.size ?: length
 }

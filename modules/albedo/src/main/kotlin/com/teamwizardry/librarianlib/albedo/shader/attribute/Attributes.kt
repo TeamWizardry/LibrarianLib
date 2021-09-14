@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.albedo.shader.attribute
 
+import com.teamwizardry.librarianlib.albedo.shader.Shader
 import org.lwjgl.opengl.GL32.*
 import org.lwjgl.opengl.GL33
 import org.lwjgl.opengl.GL41
@@ -30,8 +31,11 @@ public class VertexLayoutElement private constructor(
         components: Int
     ) : this(name, format as AttributeFormat, components, false)
 
-    public var index: Int = -1
-        @JvmSynthetic internal set
+    @get:JvmSynthetic
+    @set:JvmSynthetic
+    internal var info: Shader.AttributeInfo? = null
+    public val location: Int
+        get() = info?.location ?: -1
     public var offset: Int = 0
         @JvmSynthetic internal set
 
@@ -44,22 +48,22 @@ public class VertexLayoutElement private constructor(
     }
 
     public fun setupVertexAttribPointer(stride: Int) {
-        if (index == -1)
+        if (location == -1)
             return
-        glEnableVertexAttribArray(index)
+        glEnableVertexAttribArray(location)
         when (format) {
             is FloatFormat -> glVertexAttribPointer(
-                index,
+                location,
                 components, format.glType, normalized,
                 stride, offset.toLong()
             )
             is IntFormat -> glVertexAttribIPointer(
-                index,
+                location,
                 components, format.glType,
                 stride, offset.toLong()
             )
             is DoubleFormat -> GL41.glVertexAttribLPointer(
-                index,
+                location,
                 components, format.glType,
                 stride, offset.toLong()
             )

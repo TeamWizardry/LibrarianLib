@@ -34,9 +34,9 @@ public class Shader private constructor(
      */
     public var glProgram: Int by GlResourceGc.track(this, 0) { glDeleteProgram(it) }
         private set
-    public var uniforms: List<UniformInfo> = emptyList()
+    public var uniforms: Map<String, UniformInfo> = mapOf()
         private set
-    public var attributes: List<AttributeInfo> = emptyList()
+    public var attributes: Map<String, AttributeInfo> = mapOf()
         private set
 
     init {
@@ -52,16 +52,12 @@ public class Shader private constructor(
 
     public fun bindUniforms(uniforms: List<AbstractUniform>): List<Uniform> {
         logger.debug("Binding uniforms [${uniforms.map { it.name }.sorted().joinToString(", ")}] against shader $name")
-        val uniformInfos = this.uniforms.associateBy { it.name }
         val resolvedUniforms = resolveUniformNames(uniforms)
-        val glNames = uniformInfos.keys.sorted()
+        val glNames = this.uniforms.keys.sorted()
         val uniformNames = resolvedUniforms.keys.sorted()
 
         for((name, uniform) in resolvedUniforms) {
-            val uniformInfo = uniformInfos[name] ?: continue
-            uniform.location = uniformInfo.location
-            if (uniform is ArrayUniform)
-                uniform.trueLength = uniformInfo.size
+            uniform.info = this.uniforms[name] ?: continue
         }
 
         val missingNames = uniformNames - glNames
@@ -95,13 +91,12 @@ public class Shader private constructor(
 
     public fun bindAttributes(attributes: List<VertexLayoutElement>) {
         logger.debug("Binding attributes [${attributes.map { it.name }.sorted().joinToString(", ")}] against shader $name")
-        val attributeInfos = this.attributes.associateBy { it.name }
-        val glNames = attributeInfos.keys.sorted()
+        val glNames = this.attributes.keys.sorted()
         val attributeNames = attributes.map { it.name }.sorted()
 
         for(attribute in attributes) {
-            val attributeInfo = attributeInfos[attribute.name] ?: continue
-            attribute.index = attributeInfo.index
+            val attributeInfo = this.attributes[attribute.name] ?: continue
+            attribute.info = attributeInfo
         }
 
         val missingNames = attributeNames - glNames
@@ -183,10 +178,10 @@ public class Shader private constructor(
         logger.debug("Finished compiling shader program")
         logger.debug("Reading uniforms...")
         readUniforms()
-        logger.debug("Found ${uniforms.size} uniforms: [${uniforms.map { it.name }.sorted().joinToString(", ")}]")
+        logger.debug("Found ${uniforms.size} uniforms: [${uniforms.map { (_, info) -> "${info.name}@${info.location}" }.sorted().joinToString(", ")}]")
         logger.debug("Reading attributes...")
         readAttributes()
-        logger.debug("Found ${attributes.size} attributes: [${attributes.map { it.name }.sorted().joinToString(", ")}]")
+        logger.debug("Found ${attributes.size} attributes: [${attributes.map { (_, info) -> "${info.name}@${info.location}" }.sorted().joinToString(", ")}]")
     }
 
     private fun linkProgram(handles: List<Int>): Int {
@@ -214,7 +209,7 @@ public class Shader private constructor(
     }
 
     private fun readUniforms() {
-        val uniforms = mutableListOf<UniformInfo>()
+        val uniforms = mutableMapOf<String, UniformInfo>()
         MemoryStack.stackPush().use { stack ->
             val uniformCount = glGetProgrami(glProgram, GL_ACTIVE_UNIFORMS)
             val maxNameLength = glGetProgrami(glProgram, GL_ACTIVE_UNIFORM_MAX_LENGTH)
@@ -231,37 +226,47 @@ public class Shader private constructor(
                 glGetActiveUniform(glProgram, index, nameLength, size, glType, nameBuffer)
                 val name = MemoryUtil.memASCII(nameBuffer, nameLength.get())
                 val location = glGetUniformLocation(glProgram, name)
-                uniforms.add(UniformInfo(name, glType.get(), size.get(), location))
+                uniforms[name] = this.uniforms[name]?.also {
+                    it.type = glType.get()
+                    it.size = size.get()
+                    it.location = location
+                } ?: UniformInfo(name, glType.get(), size.get(), location)
             }
         }
         this.uniforms = uniforms.unmodifiableView()
     }
 
     private fun readAttributes() {
-        val attributes = mutableListOf<AttributeInfo>()
+        val attributes = mutableMapOf<String, AttributeInfo>()
         MemoryStack.stackPush().use { stack ->
-            val uniformCount = glGetProgrami(glProgram, GL_ACTIVE_ATTRIBUTES)
+            val attributeCount = glGetProgrami(glProgram, GL_ACTIVE_ATTRIBUTES)
             val maxNameLength = glGetProgrami(glProgram, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH)
 
             val glType = stack.mallocInt(1)
             val size = stack.mallocInt(1)
             val nameLength = stack.mallocInt(1)
             val nameBuffer = stack.malloc(maxNameLength)
-            for (index in 0 until uniformCount) {
+            for (index in 0 until attributeCount) {
                 glType.rewind()
                 size.rewind()
                 nameLength.rewind()
                 nameBuffer.rewind()
                 glGetActiveAttrib(glProgram, index, nameLength, size, glType, nameBuffer)
                 val name = MemoryUtil.memASCII(nameBuffer, nameLength.get())
-                attributes.add(AttributeInfo(name, glType.get(), size.get(), index))
+                val location = glGetAttribLocation(glProgram, name)
+
+                attributes[name] = this.attributes[name]?.also {
+                    it.type = glType.get()
+                    it.size = size.get()
+                    it.location = location
+                } ?: AttributeInfo(name, glType.get(), size.get(), location)
             }
         }
         this.attributes = attributes.unmodifiableView()
     }
 
-    public data class UniformInfo(val name: String, val type: Int, val size: Int, val location: Int)
-    public data class AttributeInfo(val name: String, val type: Int, val size: Int, val index: Int)
+    public data class UniformInfo(val name: String, var type: Int, var size: Int, var location: Int)
+    public data class AttributeInfo(val name: String, var type: Int, var size: Int, var location: Int)
 
     public enum class Stage(public val glConstant: Int, public val stageName: String) {
         VERTEX(GL_VERTEX_SHADER, "vertex"),
