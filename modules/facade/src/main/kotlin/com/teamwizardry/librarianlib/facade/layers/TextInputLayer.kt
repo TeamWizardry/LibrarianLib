@@ -3,7 +3,7 @@ package com.teamwizardry.librarianlib.facade.layers
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
-import com.teamwizardry.librarianlib.facade.layers.text.TextContainerLayer
+import com.teamwizardry.librarianlib.facade.layers.text.BitfontLayer
 import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import com.teamwizardry.librarianlib.facade.text.BitfontFormatting
 import com.teamwizardry.librarianlib.facade.text.Fonts
@@ -13,7 +13,7 @@ import java.awt.Color
 import kotlin.math.max
 
 public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int, text: String): GuiLayer(posX, posY, width, height) {
-    public val containerLayer: TextContainerLayer = TextContainerLayer(0, 0, width, height)
+    public val bitfontLayer: BitfontLayer = BitfontLayer(0, 0, width, height)
     private val layoutManager = TextLayoutManager(Fonts.classic)
 
     /**
@@ -24,7 +24,7 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     /**
      * If and how this layer should automatically fit its size to the contained text.
      */
-    public var textFitting: TextFit by containerLayer::textFitting
+    public var textFitting: TextFit by bitfontLayer::textFitting
 
     private var cursorLayer = RectLayer(Color.GREEN, 0, 0, 1, 0)
 
@@ -33,10 +33,10 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     private var cursorIndex: Int = 0
 
     init {
-        layoutManager.textContainers.add(containerLayer.container)
+        layoutManager.textContainers.add(bitfontLayer.container)
         layoutManager.attributedString = attributedText
 
-        add(containerLayer, cursorLayer)
+        add(bitfontLayer, cursorLayer)
 
         attributedText.insert(12, "red ", BitfontFormatting.color to Color.RED)
         layoutText()
@@ -44,11 +44,11 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     }
 
     private fun layoutText() {
-        containerLayer.size = this.size
-        containerLayer.prepareTextContainer()
+        bitfontLayer.size = this.size
+        bitfontLayer.prepareTextContainer()
         layoutManager.layoutText()
-        containerLayer.applyTextLayout()
-        this.size = containerLayer.size
+        bitfontLayer.applyTextLayout()
+        this.size = bitfontLayer.size
         updateCursorPosition()
     }
 
@@ -64,41 +64,28 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     }
 
     private fun updateCursorPosition() {
-        if(cursorIndex == attributedText.length) {
-            var lastChar = -1
-            var last: Pair<TextContainer.TypesetLine, GraphemeCluster>? = null
-            for (line in containerLayer.container.lines) {
-                for (cluster in line.clusters) {
-                    val maxChar = max(cluster.main.characterIndex, cluster.attachments.maxOfOrNull { it.characterIndex } ?: -1)
-                    if(maxChar > lastChar) {
-                        lastChar = maxChar
-                        last = line to cluster
-                    }
-                }
-            }
-            if(last != null) {
-                cursorLayer.xi = last.first.posX + last.second.main.afterX
-                cursorLayer.yi = last.first.posY
-                cursorLayer.heighti = last.first.height
-            }
+        val cursorInfo = BitfontLayer.CursorQuery.ByIndex(cursorIndex, true).apply(bitfontLayer.container)
+        if(cursorInfo == null) {
+            cursorLayer.isVisible = false
         } else {
-            for (line in containerLayer.container.lines) {
-                for (cluster in line.clusters) {
-                    if (cluster.main.characterIndex == cursorIndex ||
-                        cluster.attachments.any { it.characterIndex == cursorIndex }
-                    ) {
-                        cursorLayer.xi = line.posX + cluster.main.posX
-                        cursorLayer.yi = line.posY
-                        cursorLayer.heighti = line.height
-                    }
-                }
-            }
+            cursorLayer.isVisible = true
+            cursorLayer.x = cursorInfo.pos.x - 1
+            cursorLayer.y = cursorInfo.pos.y - cursorInfo.ascent
+            cursorLayer.height = cursorInfo.ascent + cursorInfo.descent
         }
     }
 
     @Hook
-    private fun click(e: GuiLayerEvents.MouseMove) {
-
+    private fun click(e: GuiLayerEvents.MouseDown) {
+        if(e.button == 0) {
+            val cursorInfo = BitfontLayer.CursorQuery.ByPosition(convertPointTo(e.pos, bitfontLayer), true).apply(bitfontLayer.container)
+            if(cursorInfo != null) {
+                if(cursorInfo.outOfBoundsType == BitfontLayer.CursorOutOfBoundsType.POSITION_AFTER_END)
+                    setCursor(attributedText.length)
+                else
+                    setCursor(cursorInfo.clusterStart)
+            }
+        }
     }
 
     @Hook
