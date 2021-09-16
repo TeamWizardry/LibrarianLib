@@ -10,9 +10,7 @@ import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
-import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
-@ExperimentalBitfont
 public class PastryButton: PastryActivatedControl {
     public val label: PastryLabel
     private val sprite: SpriteLayer

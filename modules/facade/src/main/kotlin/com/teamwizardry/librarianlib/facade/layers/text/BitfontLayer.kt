@@ -177,45 +177,59 @@ public class BitfontLayer(posX: Int, posY: Int, width: Int, height: Int) : GuiLa
              * Use the line's Y position and height, instead of the individual glyph's Y position and height
              */
             override val useLineVMetrics: Boolean,
+            /**
+             * Query a specific line, ignoring the Y coordinate
+             */
+            val specificLine: Int? = null
         ) : CursorQuery() {
 
             override fun apply(container: TextContainer): CursorPosition? {
-                if(container.lines.isEmpty())
-                    return null
+                val closestRow: Int
+                val closestLine: TextContainer.TypesetLine
+                if(specificLine != null) {
+                    closestRow = specificLine
+                    closestLine = container.lines.getOrNull(specificLine) ?: return null
+                } else {
+                    if(container.lines.isEmpty())
+                        return null
 
-                container.lines.first().also { line ->
-                    if(pos.y < line.posY - line.height/2) {
-                        val min = line.clusters.withIndex().minByOrNull { (_, cluster) -> cluster.main.characterIndex }
-                            ?: return@apply null
-                        return@apply cursor(
-                            line,
-                            min.value.main,
-                            useLineVMetrics,
-                            0,
-                            min.index,
-                            bounds = CursorOutOfBoundsType.POSITION_BEFORE_START
-                        )
+                    container.lines.first().also { line ->
+                        if(pos.y < line.posY - line.height/2) {
+                            val min = line.clusters.withIndex().minByOrNull { (_, cluster) -> cluster.main.characterIndex }
+                                ?: return@apply null
+                            return@apply cursor(
+                                line,
+                                min.value.main,
+                                useLineVMetrics,
+                                specificLine ?: 0,
+                                min.index,
+                                bounds = CursorOutOfBoundsType.POSITION_BEFORE_START
+                            )
+                        }
+                    }
+                    container.lines.last().also { line ->
+                        if(pos.y > line.posY + line.height + line.height/2) {
+                            val max = line.clusters.withIndex().maxByOrNull { (_, cluster) -> cluster.main.characterIndex }
+                                ?: return@apply null
+                            return@apply cursor(
+                                line,
+                                max.value.main,
+                                useLineVMetrics,
+                                specificLine ?: container.lines.lastIndex,
+                                max.index,
+                                after = true,
+                                bounds = CursorOutOfBoundsType.POSITION_AFTER_END
+                            )
+                        }
+                    }
+
+                    val closest = container.lines.withIndex().minByOrNull { (_, line) ->
+                        min(abs(pos.y - line.posY), abs(pos.y - (line.posY + line.height)))
+                    }!!.also { // non-null because lines will never be empty (we check at the start)
+                        closestRow = it.index
+                        closestLine = it.value
                     }
                 }
-                container.lines.last().also { line ->
-                    if(pos.y > line.posY + line.height + line.height/2) {
-                        val max = line.clusters.withIndex().maxByOrNull { (_, cluster) -> cluster.main.characterIndex }
-                            ?: return@apply null
-                        return@apply cursor(
-                            line,
-                            max.value.main,
-                            useLineVMetrics,
-                            container.lines.lastIndex,
-                            max.index,
-                            after = true,
-                            bounds = CursorOutOfBoundsType.POSITION_AFTER_END
-                        )
-                    }
-                }
-
-                val (closestRow, closestLine) = container.lines.withIndex().minByOrNull { (_, line) ->
-                    min(abs(pos.y - line.posY), abs(pos.y - (line.posY + line.height)))
-                }!! // non-null because container.lines will never be empty (we check at the start)
 
                 if(closestLine.clusters.isEmpty())
                     return null
