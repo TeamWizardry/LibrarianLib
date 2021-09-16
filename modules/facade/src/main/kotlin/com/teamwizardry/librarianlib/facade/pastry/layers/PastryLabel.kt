@@ -2,9 +2,7 @@ package com.teamwizardry.librarianlib.facade.pastry.layers
 
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.layers.text.TextFit
-import dev.thecodewarrior.bitfont.utils.ExperimentalBitfont
 
-@ExperimentalBitfont
 public class PastryLabel: TextLayer {
     public constructor(posX: Int, posY: Int, width: Int, height: Int): super(posX, posY, width, height, "") {
         textMargins = Margins(2.0, 2.0, 2.0, 2.0)
