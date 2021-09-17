@@ -97,7 +97,7 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     }
 
     private fun updateCursorPosition() {
-        val cursorInfo = BitfontLayer.CursorQuery.ByIndex(cursorMarker.position, true).apply(bitfontLayer.container)
+        val cursorInfo = BitfontLayer.CursorQuery.ByIndex(cursorMarker.position).apply(bitfontLayer.container)
         if(cursorInfo == null) {
             cursorLayer.isVisible = false
         } else {
@@ -113,12 +113,9 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int, text:
         focused = this.mouseOver
         if(!focused) return
         if(e.button == 0) {
-            val cursorInfo = BitfontLayer.CursorQuery.ByPosition(convertPointTo(e.pos, bitfontLayer), true).apply(bitfontLayer.container)
+            val cursorInfo = BitfontLayer.CursorQuery.ByPosition(convertPointTo(e.pos, bitfontLayer)).apply(bitfontLayer.container)
             if(cursorInfo != null) {
-                if(cursorInfo.outOfBoundsType == BitfontLayer.CursorOutOfBoundsType.POSITION_AFTER_END)
-                    moveCursor(attributedText.length, input.isSelectModifierDown())
-                else
-                    moveCursor(cursorInfo.clusterStart, input.isSelectModifierDown())
+                moveCursor(cursorInfo.index, input.isSelectModifierDown())
             }
         }
     }
@@ -190,7 +187,7 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     }
 
     private fun doMoveVertically(lines: Int) {
-        val current = BitfontLayer.CursorQuery.ByIndex(cursorMarker.position, true)
+        val current = BitfontLayer.CursorQuery.ByIndex(cursorMarker.position)
             .apply(bitfontLayer.container) ?: return
         val targetX = verticalNavigationX ?: current.pos.x
         val destination = current.line + lines
@@ -199,12 +196,9 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int, text:
         } else if(current.line >= bitfontLayer.container.lines.size) {
             moveCursor(attributedText.length, input.isSelectModifierDown())
         } else {
-            val targetInfo = BitfontLayer.CursorQuery.ByPosition(vec(targetX, 0), true, destination)
+            val targetInfo = BitfontLayer.CursorQuery.ByPosition(vec(targetX, 0), destination)
                 .apply(bitfontLayer.container) ?: return
-            if(targetInfo.outOfBoundsType == BitfontLayer.CursorOutOfBoundsType.POSITION_AFTER_END)
-                moveCursor(attributedText.length, input.isSelectModifierDown())
-            else
-                moveCursor(targetInfo.clusterStart, input.isSelectModifierDown())
+            moveCursor(targetInfo.index, input.isSelectModifierDown())
         }
         verticalNavigationX = targetX
     }
@@ -234,13 +228,11 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int, text:
                 return pos
             }
             InputLayout.JumpType.LINE -> {
-                val line = BitfontLayer.CursorQuery.ByIndex(cursorMarker.position, true)
+                val line = BitfontLayer.CursorQuery.ByIndex(cursorMarker.position)
                     .apply(bitfontLayer.container)?.line ?: return start
-                val cursorInfo = BitfontLayer.CursorQuery.ByPosition(vec(Double.POSITIVE_INFINITY * count, 0), true, line)
+                val cursorInfo = BitfontLayer.CursorQuery.ByPosition(vec(Double.POSITIVE_INFINITY * count, 0), line)
                     .apply(bitfontLayer.container) ?: return start
-                if(cursorInfo.outOfBoundsType == BitfontLayer.CursorOutOfBoundsType.POSITION_AFTER_END)
-                    return attributedText.length
-                return cursorInfo.clusterStart
+                return cursorInfo.index
             }
         }
     }
