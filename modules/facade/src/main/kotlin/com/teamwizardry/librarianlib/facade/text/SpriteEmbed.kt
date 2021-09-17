@@ -1,9 +1,8 @@
 package com.teamwizardry.librarianlib.facade.text
 
-import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.mosaic.Sprite
-import dev.thecodewarrior.bitfont.typesetting.TypesetGlyph
+import dev.thecodewarrior.bitfont.typesetting.PositionedGlyph
 import java.awt.Color
 
 public class SpriteEmbed(
@@ -20,7 +19,7 @@ public class SpriteEmbed(
     override val height: Int
         get() = sprite.height
 
-    override fun draw(matrix: Matrix4d, typesetGlyph: TypesetGlyph, posX: Int, posY: Int, color: Color) {
+    override fun draw(matrix: Matrix4d, glyph: PositionedGlyph, posX: Int, posY: Int, color: Color) {
         sprite.draw(matrix,
             posX.toFloat() + bearingX, posY.toFloat() + bearingY,
             width.toFloat(), height.toFloat(),

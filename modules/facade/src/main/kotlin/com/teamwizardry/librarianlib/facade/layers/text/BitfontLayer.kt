@@ -9,7 +9,6 @@ import com.teamwizardry.librarianlib.core.util.rect
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.math.Vec2d
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
-import dev.thecodewarrior.bitfont.typesetting.TypesetGlyph
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.max
@@ -41,10 +40,9 @@ public class BitfontLayer(posX: Int, posY: Int, width: Int, height: Int) : GuiLa
 
     public data class CursorPosition(
         /**
-         * The index of the grapheme cluster. Note that this will be inaccurate when the cursor is placed beyond the
-         * end of the test range
+         * The index of the grapheme cluster.
          */
-        val clusterStart: Int,
+        val index: Int,
         /**
          * The position of the character. [ascent] and [descent] are relative to this, but this is not necessarily
          * between them (e.g. when the cursor is on a combining character beyond the line bounds)
@@ -68,7 +66,25 @@ public class BitfontLayer(posX: Int, posY: Int, width: Int, height: Int) : GuiLa
         val column: Int,
 
         val outOfBoundsType: CursorOutOfBoundsType
-    )
+    ) {
+        public constructor(
+            clusterStart: Int,
+            lineMetrics: TextContainer.TypesetLine,
+            baselinePos: Int,
+            line: Int,
+            column: Int,
+            outOfBoundsType: CursorOutOfBoundsType
+        ) : this(
+            clusterStart,
+            vec(
+                lineMetrics.posX + baselinePos,
+                lineMetrics.posY + lineMetrics.baseline
+            ),
+            lineMetrics.baseline.toDouble(), lineMetrics.height.toDouble() - lineMetrics.baseline,
+            line, column,
+            outOfBoundsType
+        )
+    }
 
     public enum class CursorOutOfBoundsType {
         IN_BOUNDS,
@@ -79,92 +95,51 @@ public class BitfontLayer(posX: Int, posY: Int, width: Int, height: Int) : GuiLa
     }
 
     public sealed class CursorQuery {
-        /**
-         * Use the line's Y position and height, instead of the individual glyph's Y position and height
-         */
-        public abstract val useLineVMetrics: Boolean
-
         public abstract fun apply(container: TextContainer): CursorPosition?
-
-        protected fun cursor(
-            line: TextContainer.TypesetLine,
-            glyph: TypesetGlyph,
-            useLineVMetrics: Boolean,
-            row: Int,
-            column: Int,
-            after: Boolean = false,
-            bounds: CursorOutOfBoundsType = CursorOutOfBoundsType.IN_BOUNDS
-        ): CursorPosition {
-            val pos = vec(
-                line.posX + if(after) glyph.afterX else glyph.posX,
-                line.posY + glyph.posY
-            )
-            return CursorPosition(
-                glyph.characterIndex,
-                pos,
-                (if (useLineVMetrics) glyph.posY else glyph.ascent).toDouble(),
-                (if (useLineVMetrics) line.height - glyph.posY else glyph.descent).toDouble(),
-                row, column,
-                bounds
-            )
-        }
 
         public data class ByIndex(
             /**
              * The index of the character in the string
              */
             val index: Int,
-            /**
-             * Use the line's Y position and height, instead of the individual glyph's Y position and height
-             */
-            override val useLineVMetrics: Boolean,
         ) : CursorQuery() {
             override fun apply(container: TextContainer): CursorPosition? {
-                var min: CursorPosition? = null
-                var minIndex = Int.MAX_VALUE
-                var max: CursorPosition? = null
-                var maxIndex = Int.MIN_VALUE
+                if(container.lines.isEmpty())
+                    return null
 
-                for ((row, line) in container.lines.withIndex()) {
-                    for ((column, cluster) in line.clusters.withIndex()) {
-                        if(cluster.main.characterIndex < minIndex) {
-                            minIndex = cluster.main.characterIndex
-                            min = cursor(
-                                line,
-                                cluster.main,
-                                useLineVMetrics,
-                                row,
-                                column,
-                                bounds = CursorOutOfBoundsType.INDEX_BEFORE_START
-                            )
-                        }
-                        if(cluster.main.characterIndex > maxIndex) {
-                            maxIndex = cluster.main.characterIndex
-                            max = cursor(
-                                line,
-                                cluster.main,
-                                useLineVMetrics,
-                                row,
-                                column,
-                                after = true,
-                                bounds = CursorOutOfBoundsType.INDEX_AFTER_END
-                            )
-                        }
-                        if (cluster.main.characterIndex == index || cluster.attachments.any { it.characterIndex == index }) {
-                            return cursor(
-                                line,
-                                cluster.main,
-                                useLineVMetrics,
-                                row,
-                                column
+                if(index < container.startIndex) {
+                    val line = container.lines.first()
+                    return CursorPosition(
+                        container.startIndex,
+                        line, line.baselineStart,
+                        0, 0,
+                        CursorOutOfBoundsType.INDEX_BEFORE_START
+                    )
+                }
+                if(index >= container.endIndex) {
+                    val line = container.lines.last()
+                    return CursorPosition(
+                        container.endIndex,
+                        line, line.baselineEnd,
+                        container.lines.lastIndex, line.clusters.size,
+                        CursorOutOfBoundsType.INDEX_AFTER_END
+                    )
+                }
+
+                for((row, line) in container.lines.withIndex()) {
+                    for((col, cluster) in line.clusters.withIndex()) {
+                        if(index in cluster.index until cluster.afterIndex) {
+                            return CursorPosition(
+                                container.endIndex,
+                                line, cluster.baselineStart,
+                                row, col,
+                                CursorOutOfBoundsType.IN_BOUNDS
                             )
                         }
                     }
                 }
-                if(index < minIndex)
-                    return min
-                else
-                    return max
+
+                return null
             }
         }
 
@@ -173,10 +148,6 @@ public class BitfontLayer(posX: Int, posY: Int, width: Int, height: Int) : GuiLa
              * The position to search
              */
             val pos: Vec2d,
-            /**
-             * Use the line's Y position and height, instead of the individual glyph's Y position and height
-             */
-            override val useLineVMetrics: Boolean,
             /**
              * Query a specific line, ignoring the Y coordinate
              */
@@ -193,37 +164,26 @@ public class BitfontLayer(posX: Int, posY: Int, width: Int, height: Int) : GuiLa
                     if(container.lines.isEmpty())
                         return null
 
-                    container.lines.first().also { line ->
-                        if(pos.y < line.posY - line.height/2) {
-                            val min = line.clusters.withIndex().minByOrNull { (_, cluster) -> cluster.main.characterIndex }
-                                ?: return@apply null
-                            return@apply cursor(
-                                line,
-                                min.value.main,
-                                useLineVMetrics,
-                                specificLine ?: 0,
-                                min.index,
-                                bounds = CursorOutOfBoundsType.POSITION_BEFORE_START
-                            )
-                        }
+                    val first = container.lines.first()
+                    if(pos.y < first.posY - first.height/2) {
+                        return CursorPosition(
+                            container.startIndex,
+                            first, first.baselineStart,
+                            0, 0,
+                            CursorOutOfBoundsType.POSITION_BEFORE_START
+                        )
                     }
-                    container.lines.last().also { line ->
-                        if(pos.y > line.posY + line.height + line.height/2) {
-                            val max = line.clusters.withIndex().maxByOrNull { (_, cluster) -> cluster.main.characterIndex }
-                                ?: return@apply null
-                            return@apply cursor(
-                                line,
-                                max.value.main,
-                                useLineVMetrics,
-                                specificLine ?: container.lines.lastIndex,
-                                max.index,
-                                after = true,
-                                bounds = CursorOutOfBoundsType.POSITION_AFTER_END
-                            )
-                        }
+                    val last = container.lines.last()
+                    if(pos.y > last.posY + last.height + last.height/2) {
+                        return CursorPosition(
+                            container.endIndex,
+                            last, last.baselineEnd,
+                            container.lines.lastIndex, last.clusters.size,
+                            CursorOutOfBoundsType.POSITION_AFTER_END
+                        )
                     }
 
-                    val closest = container.lines.withIndex().minByOrNull { (_, line) ->
+                    container.lines.withIndex().minByOrNull { (_, line) ->
                         min(abs(pos.y - line.posY), abs(pos.y - (line.posY + line.height)))
                     }!!.also { // non-null because lines will never be empty (we check at the start)
                         closestRow = it.index
@@ -234,46 +194,51 @@ public class BitfontLayer(posX: Int, posY: Int, width: Int, height: Int) : GuiLa
                 if(closestLine.clusters.isEmpty())
                     return null
 
-                closestLine.also { line ->
-                    val min = line.clusters.withIndex().minByOrNull { (_, cluster) -> cluster.main.posX }!!
-                    if(pos.x < line.posX + min.value.main.posX) {
-                        return@apply cursor(
-                            line,
-                            min.value.main,
-                            useLineVMetrics,
-                            closestRow,
-                            min.index,
-                            bounds = CursorOutOfBoundsType.POSITION_BEFORE_START
-                        )
-                    }
+                if(pos.x < closestLine.posX + closestLine.baselineStart) {
+                    return CursorPosition(
+                        closestLine.startIndex,
+                        closestLine, closestLine.baselineStart,
+                        closestRow, 0,
+                        CursorOutOfBoundsType.POSITION_BEFORE_START
+                    )
                 }
-                closestLine.also { line ->
-                    val max = line.clusters.withIndex().maxByOrNull { (_, cluster) -> cluster.main.posX }!!
-                    if(pos.x > line.posX + max.value.main.afterX) {
-                        return@apply cursor(
-                            line,
-                            max.value.main,
-                            useLineVMetrics,
-                            closestRow,
-                            max.index,
-                            after = true,
-                            bounds = CursorOutOfBoundsType.POSITION_AFTER_END
-                        )
+                if(pos.x > closestLine.posX + closestLine.baselineEnd) {
+                    return CursorPosition(
+                        closestLine.endIndexNoNewline,
+                        closestLine, closestLine.baselineEnd,
+                        closestRow, closestLine.clusters.size,
+                        CursorOutOfBoundsType.POSITION_AFTER_END
+                    )
+                }
+
+                var closestDistance = Double.POSITIVE_INFINITY
+                var closestColumn = 0
+                var closestIndex = 0
+                var closestBaseline = 0
+
+                val lineX = pos.x - closestLine.posX
+                for((column, cluster) in closestLine.clusters.withIndex()) {
+                    val startDistance = abs(cluster.baselineStart - lineX)
+                    if(startDistance < closestDistance) {
+                        closestDistance = startDistance
+                        closestColumn = column
+                        closestIndex = cluster.index
+                        closestBaseline = cluster.baselineStart
+                    }
+                    val endDistance = abs(cluster.baselineEnd - lineX)
+                    if(endDistance < closestDistance) {
+                        closestDistance = endDistance
+                        closestColumn = column + 1
+                        closestIndex = cluster.afterIndex
+                        closestBaseline = cluster.baselineEnd
                     }
                 }
 
-                val (closestColumn, closestCluster) = closestLine.clusters.withIndex().minByOrNull { (_, cluster) ->
-                    abs(pos.x - (closestLine.posX + cluster.main.posX))
-                }!!
-
-                return cursor(
-                    closestLine,
-                    closestCluster.main,
-                    useLineVMetrics,
-                    closestRow,
-                    closestColumn,
-                    after = true,
-                    bounds = CursorOutOfBoundsType.IN_BOUNDS
+                return CursorPosition(
+                    closestIndex,
+                    closestLine, closestBaseline,
+                    closestRow, closestColumn,
+                    CursorOutOfBoundsType.IN_BOUNDS
                 )
             }
         }
@@ -308,7 +273,7 @@ public class BitfontLayer(posX: Int, posY: Int, width: Int, height: Int) : GuiLa
             minX = min(minX, line.posX)
             minY = min(minY, line.posY)
 
-            maxX = max(maxX, line.posX + (line.clusters.lastOrNull() { !it.isInvisible }?.main?.afterX ?: 0))
+            maxX = max(maxX, line.posX + (line.clusters.maxOfOrNull { if(it.isBlank) 0 else it.baselineEnd } ?: 0))
             maxY = max(maxY, line.posY + line.height)
         }
         textBounds = rect(minX, minY, maxX, maxY)
