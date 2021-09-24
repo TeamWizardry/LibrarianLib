@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.core.util.rect
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.facade.layers.text.BitfontLayer
+import com.teamwizardry.librarianlib.facade.layers.text.BitfontContainerLayer
 import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
@@ -24,7 +24,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     public constructor(posX: Int, posY: Int): this(posX, posY, "")
     public constructor(): this(0, 0, "")
 
-    private val bitfontLayer = add(BitfontLayer(0, 0, width, height))
+    private val bitfontContainerLayer = add(BitfontContainerLayer(0, 0, width, height))
 
     private val layoutManager: TextLayoutManager = TextLayoutManager(Fonts.classic)
     private var _attributedText: AttributedString = BitfontFormatting.convertMC(text)
@@ -83,10 +83,10 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     public val options: TextLayoutManager.Options = layoutManager.options
 
     public var maxLines: Int
-        get() = bitfontLayer.container.maxLines
+        get() = bitfontContainerLayer.container.maxLines
         set(value) {
-            if(value != bitfontLayer.container.maxLines) {
-                bitfontLayer.container.maxLines = value
+            if(value != bitfontContainerLayer.container.maxLines) {
+                bitfontContainerLayer.container.maxLines = value
                 markTextDirty()
             }
         }
@@ -135,7 +135,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     }
 
     init {
-        layoutManager.textContainers.add(bitfontLayer.container)
+        layoutManager.textContainers.add(bitfontContainerLayer.container)
         markTextDirty()
     }
 
@@ -164,29 +164,29 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     private fun layoutText(textFitting: TextFit) {
         updateMCText()
 
-        bitfontLayer.pos = vec(textMargins.left, textMargins.top)
-        bitfontLayer.size = this.size - vec(textMargins.horizontalSum, textMargins.verticalSum)
-        bitfontLayer.textFitting = textFitting
-        bitfontLayer.prepareTextContainer()
+        bitfontContainerLayer.pos = vec(textMargins.left, textMargins.top)
+        bitfontContainerLayer.size = this.size - vec(textMargins.horizontalSum, textMargins.verticalSum)
+        bitfontContainerLayer.textFitting = textFitting
+        bitfontContainerLayer.prepareTextContainer()
 
         layoutManager.attributedString = this.attributedText
         layoutManager.layoutText()
 
-        bitfontLayer.applyTextLayout()
+        bitfontContainerLayer.applyTextLayout()
 
-        textBounds = bitfontLayer.textBounds.offset(vec(textMargins.left, textMargins.top))
+        textBounds = bitfontContainerLayer.textBounds.offset(vec(textMargins.left, textMargins.top))
 
         when(textFitting) {
             TextFit.NONE -> {}
             TextFit.VERTICAL -> {
-                height = bitfontLayer.height + textMargins.verticalSum
+                height = bitfontContainerLayer.height + textMargins.verticalSum
             }
             TextFit.HORIZONTAL -> {
-                width = bitfontLayer.width + textMargins.horizontalSum
+                width = bitfontContainerLayer.width + textMargins.horizontalSum
             }
             TextFit.VERTICAL_SHRINK, TextFit.BOTH -> {
-                height = bitfontLayer.height + textMargins.verticalSum
-                width = bitfontLayer.width + textMargins.horizontalSum
+                height = bitfontContainerLayer.height + textMargins.verticalSum
+                width = bitfontContainerLayer.width + textMargins.horizontalSum
             }
         }
 
