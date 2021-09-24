@@ -23,7 +23,8 @@ import kotlin.math.min
 
 public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
     public val bitfontContainerLayer: BitfontContainerLayer = BitfontContainerLayer(0, 0, width, height)
-    private val editor = TextEditor(Fonts.classic, listOf(bitfontContainerLayer.container), null)
+    private val containerLayers = mutableListOf<BitfontContainerLayer>()
+    private val editor = TextEditor(Fonts.classic, listOf(), null)
 
     public val cursorColor: Color = Color.GREEN
     public val selectionColor: Color = Color(0f, 1f, 1f, 0.25f)
@@ -50,22 +51,39 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
     private val input = InputLayout.system
 
     init {
-        bitfontContainerLayer.add(InputOverlayLayer(bitfontContainerLayer))
-        add(bitfontContainerLayer)
+        addContainer(bitfontContainerLayer)
 
         editor.layoutManager.delegate = object : TextLayoutDelegate.Wrapper(editor.layoutManager.delegate) {
             override fun textWillLayout() {
-                bitfontContainerLayer.size = this@TextInputLayer.size
-                bitfontContainerLayer.prepareTextContainer()
+                if(containerLayers.size == 1) {
+                    containerLayers.single().size = this@TextInputLayer.size
+                }
+                for(layer in containerLayers) {
+                    layer.prepareTextContainer()
+                }
                 super.textWillLayout()
             }
 
             override fun textDidLayout() {
-                bitfontContainerLayer.applyTextLayout()
-                this@TextInputLayer.size = bitfontContainerLayer.size
+                for(layer in containerLayers) {
+                    layer.applyTextLayout()
+                }
+                if(containerLayers.size == 1) {
+                    this@TextInputLayer.size = containerLayers.single().size
+                }
                 super.textDidLayout()
             }
         }
+    }
+
+    public fun addContainer(layer: BitfontContainerLayer) {
+        containerLayers.add(layer)
+        editor.layoutManager.textContainers.add(layer.container)
+        layer.add(InputOverlayLayer(layer))
+        layer.BUS.hook<GuiLayerEvents.MouseDown> {
+            mouseDown(layer, it)
+        }
+        add(layer)
     }
 
     override fun prepareLayout() {
@@ -108,24 +126,6 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
         verticalNavigationX = null
     }
 
-    @Hook
-    private fun click(e: GuiLayerEvents.MouseDown) {
-        focused = this.mouseOver
-        if(!focused) return
-        if(e.button == 0) {
-            val line = editor.queryLine(bitfontContainerLayer.container, e.pos.yi) ?: return
-            val position = editor.queryColumn(bitfontContainerLayer.container, line, e.pos.xi) ?: return
-            moveCursor(position, input.isSelectModifierDown())
-        }
-    }
-
-    @Hook
-    private fun charTyped(e: GuiLayerEvents.CharTyped) {
-        if(!focused) return
-        write(e.codepoint.toString())
-        markLayoutDirty()
-    }
-
     private fun write(text: String) {
         val formatting = if(selectionActive) {
             this.text.getAttributes(max(0, selectionStart-1))
@@ -142,12 +142,16 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
             this.text.insert(mainCursor.index, text)
         }
         selectionActive = false
-        markLayoutDirty()
     }
 
     private fun erase(jumpType: InputLayout.JumpType, count: Int) {
-        val jumpPosition = getJumpPosition(mainCursor.position ?: return, jumpType, count)
-        erase(jumpPosition - mainCursor.index)
+        if(selectionActive) {
+            this.text.delete(selectionStart, selectionEnd)
+            selectionActive = false
+        } else {
+            val jumpPosition = getJumpPosition(mainCursor.position ?: return, jumpType, count)
+            erase(jumpPosition - mainCursor.index)
+        }
     }
 
     private fun erase(offset: Int) {
@@ -159,7 +163,6 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
             val end = max(mainCursor.index, mainCursor.index+offset)
             this.text.delete(start, end)
         }
-        markLayoutDirty()
     }
 
     private fun doSelectAll() {
@@ -192,19 +195,35 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
             logger.error("Main cursor position is null. Cursor is at ${mainCursor.index}")
             return
         }
+        val containers = editor.layoutManager.textContainers
         val targetX = verticalNavigationX ?: position.x
-        val destination = position.line + lines
-        if(destination < 0) {
-            moveCursor(0, input.isSelectModifierDown())
-        } else if(destination >= bitfontContainerLayer.container.lines.size) {
-            moveCursor(text.length, input.isSelectModifierDown())
-        } else {
+        var containerIndex = containers.indexOf(position.container)
+        if(containerIndex == -1) return
+        var destination = position.line + lines
+
+        run move@{
+            while(destination < 0) {
+                if(--containerIndex < 0) {
+                    moveCursor(0, input.isSelectModifierDown())
+                    return@move
+                }
+                destination += containers[containerIndex].lines.size
+            }
+            while(destination >= containers[containerIndex].lines.size) {
+                destination -= containers[containerIndex].lines.size
+                if(++containerIndex >= containers.size) {
+                    moveCursor(text.length, input.isSelectModifierDown())
+                    return@move
+                }
+            }
+
+
             moveCursor(
                 editor.queryColumn(
-                    bitfontContainerLayer.container,
-                    bitfontContainerLayer.container.lines[destination],
+                    containers[containerIndex],
+                    containers[containerIndex].lines[destination],
                     targetX
-                ) ?: return,
+                ) ?: return@doMoveVertically,
                 input.isSelectModifierDown()
             )
         }
@@ -241,6 +260,21 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
                 return if(count < 0) line.startIndex else line.endIndex
             }
         }
+    }
+
+    private fun mouseDown(containerLayer: BitfontContainerLayer, e: GuiLayerEvents.MouseDown) {
+        focused = containerLayers.any { it.mouseOver }
+        if(containerLayer.mouseOver && e.button == 0) {
+            val line = editor.queryLine(containerLayer.container, e.pos.yi) ?: return
+            val position = editor.queryColumn(containerLayer.container, line, e.pos.xi) ?: return
+            moveCursor(position, input.isSelectModifierDown())
+        }
+    }
+
+    @Hook
+    private fun charTyped(e: GuiLayerEvents.CharTyped) {
+        if(!focused) return
+        write(e.codepoint.toString())
     }
 
     @Hook

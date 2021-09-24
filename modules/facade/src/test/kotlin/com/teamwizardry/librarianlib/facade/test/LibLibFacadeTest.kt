@@ -146,6 +146,7 @@ internal object LibLibFacadeTest {
             }
             setupTests("text_input") {
                 screen("Simple text input", ::SimpleTextInputTestScreen)
+                screen("Multi-container text input", ::MultiContainerTextInputTestScreen)
             }
             setupTests("examples") {
                 screen("Alignment", ::ExampleAlignmentScreen)
