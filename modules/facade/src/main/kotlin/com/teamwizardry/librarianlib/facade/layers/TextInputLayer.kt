@@ -1,15 +1,17 @@
 package com.teamwizardry.librarianlib.facade.layers
 
 import com.ibm.icu.text.BreakIterator
+import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
+import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
+import com.teamwizardry.librarianlib.albedo.state.RenderState
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.LibLibFacade
+import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.text.BitfontContainerLayer
-import com.teamwizardry.librarianlib.facade.layers.text.TextFit
-import com.teamwizardry.librarianlib.facade.text.BitfontFormatting
 import com.teamwizardry.librarianlib.facade.text.Fonts
 import com.teamwizardry.librarianlib.math.clamp
 import dev.thecodewarrior.bitfont.editor.TextEditor
@@ -23,6 +25,9 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
     public val bitfontContainerLayer: BitfontContainerLayer = BitfontContainerLayer(0, 0, width, height)
     private val editor = TextEditor(Fonts.classic, listOf(bitfontContainerLayer.container), null)
 
+    public val cursorColor: Color = Color.GREEN
+    public val selectionColor: Color = Color(0f, 1f, 1f, 0.25f)
+
     /**
      * The text layout and typesetting options
      */
@@ -32,9 +37,6 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
      * position appropriately
      */
     public val text: MutableAttributedString get() = editor.text
-
-    private val cursorLayer = RectLayer(Color.GREEN, 0, 0, 1, 0)
-
 
     private val mainCursor = editor.createCursor()
     private val selectionRangeCursor = editor.createCursor()
@@ -48,7 +50,8 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
     private val input = InputLayout.system
 
     init {
-        add(bitfontContainerLayer, cursorLayer)
+        bitfontContainerLayer.add(InputOverlayLayer(bitfontContainerLayer))
+        add(bitfontContainerLayer)
 
         editor.layoutManager.delegate = object : TextLayoutDelegate.Wrapper(editor.layoutManager.delegate) {
             override fun textWillLayout() {
@@ -68,15 +71,6 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
     override fun prepareLayout() {
         if(editor.layoutManager.isStringDirty())
             editor.layoutManager.layoutText()
-
-        val position = mainCursor.position
-        if(position == null) {
-            cursorLayer.isVisible = false
-        } else {
-            cursorLayer.isVisible = true
-            cursorLayer.pos = vec(position.x - 1, position.y - position.ascent)
-            cursorLayer.heighti = position.ascent + position.descent
-        }
     }
 
     public fun layoutText() {
@@ -90,8 +84,8 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
     public fun moveCursor(position: TextEditor.CursorPosition, selecting: Boolean) {
         if(selecting && !selectionActive) {
             selectionRangeCursor.position = mainCursor.position
-            selectionActive = true
         }
+        selectionActive = selecting
         mainCursor.position = position
         if(mainCursor.index == selectionRangeCursor.index) {
             selectionActive = false
@@ -102,8 +96,8 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
     public fun moveCursor(pos: Int, selecting: Boolean) {
         if(selecting && !selectionActive) {
             selectionRangeCursor.position = mainCursor.position
-            selectionActive = true
         }
+        selectionActive = selecting
         if(pos !in 0 .. text.length) {
             logger.warn("Clamping out-of-bounds cursor position. (${pos} is outside of [0, ${text.length}])")
         }
@@ -274,6 +268,66 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
                     GLFW_KEY_ENTER -> write("\n")
                 }
             }
+        }
+    }
+
+    private inner class InputOverlayLayer(private val containerLayer: BitfontContainerLayer): GuiLayer() {
+        private val state = RenderState.normal.extend().add(DefaultRenderStates.Blend.DEFAULT).build()
+
+        override fun draw(context: GuiDrawContext) {
+            state.apply()
+            val buffer = FlatColorRenderBuffer.SHARED
+            if(selectionActive)
+                for(line in containerLayer.container.lines)
+                    drawSelection(context, buffer, line, selectionColor)
+            drawCursor(context, buffer, mainCursor, cursorColor)
+            buffer.draw(Primitive.QUADS)
+            state.cleanup()
+        }
+
+        private fun drawCursor(
+            context: GuiDrawContext,
+            buffer: FlatColorRenderBuffer,
+            cursor: TextEditor.Cursor,
+            color: Color
+        ) {
+            val position = cursor.position ?: return
+            if(position.container !== containerLayer.container) return
+
+            val minX = position.x - 1
+            val minY = position.y - position.ascent
+            val maxX = minX + 1
+            val maxY = position.y + position.descent
+
+            buffer.pos(context.transform, minX, maxY, 0).color(color).endVertex()
+            buffer.pos(context.transform, maxX, maxY, 0).color(color).endVertex()
+            buffer.pos(context.transform, maxX, minY, 0).color(color).endVertex()
+            buffer.pos(context.transform, minX, minY, 0).color(color).endVertex()
+        }
+
+        private fun drawSelection(
+            context: GuiDrawContext,
+            buffer: FlatColorRenderBuffer,
+            line: TextContainer.TypesetLine,
+            color: Color
+        ) {
+            if(line.endIndex <= selectionStart || line.startIndex > selectionEnd)
+                return
+
+            val minX = line.columnOf(selectionStart.clamp(line.startIndex, line.endIndex))
+                ?.let { line.positionAt(it) }
+                ?: return
+            val maxX = line.columnOf(selectionEnd.clamp(line.startIndex, line.endIndex))
+                ?.let { line.positionAt(it) }
+                ?: return
+
+            val minY = line.posY
+            val maxY = line.posY + line.height
+
+            buffer.pos(context.transform, minX, maxY, 0).color(color).endVertex()
+            buffer.pos(context.transform, maxX, maxY, 0).color(color).endVertex()
+            buffer.pos(context.transform, maxX, minY, 0).color(color).endVertex()
+            buffer.pos(context.transform, minX, minY, 0).color(color).endVertex()
         }
     }
 
