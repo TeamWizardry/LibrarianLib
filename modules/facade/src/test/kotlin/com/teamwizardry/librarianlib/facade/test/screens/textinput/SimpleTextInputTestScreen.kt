@@ -11,8 +11,12 @@ import java.awt.Color
 class SimpleTextInputTestScreen(title: Text): FacadeScreen(title) {
     init {
         val bg = RectLayer(Color.WHITE, 0, 0, 200, 200)
-        val text = TextInputLayer(10, 10, 180, 180, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
+        val input = TextInputLayer(10, 10, 180, 180)
+        input.text.insert(0, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
+        input.text.insert(12, "red ", BitfontFormatting.color to Color.RED)
+        input.setCursor(input.text.length)
+
         main.size = bg.size
-        main.add(bg, text)
+        main.add(bg, input)
     }
 }

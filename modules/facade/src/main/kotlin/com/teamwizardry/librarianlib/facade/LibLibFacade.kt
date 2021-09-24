@@ -11,6 +11,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.supporting.StencilUtil
 import com.teamwizardry.librarianlib.facade.text.Fonts
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
+import dev.thecodewarrior.bitfont.typesetting.SimpleTextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import net.fabricmc.api.ClientModInitializer
@@ -74,7 +75,7 @@ internal object LibLibFacade : LibLibModule("liblib-facade", "Facade") {
             Fonts
 
             // The text layout manager loads some ICU stuff (e.g. break iterators and combining classes)
-            val manager = TextLayoutManager(Fonts.classic, TextContainer(10, 50))
+            val manager = TextLayoutManager(Fonts.classic, SimpleTextContainer(10, 50))
             manager.attributedString = AttributedString("x x x x")
             manager.layoutText()
         }
