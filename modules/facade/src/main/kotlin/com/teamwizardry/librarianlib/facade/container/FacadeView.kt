@@ -216,6 +216,16 @@ public abstract class FacadeView<T: ScreenHandler>(
         return true
     }
 
+    override fun init() {
+        Client.minecraft.keyboard.setRepeatEvents(true)
+        super.init()
+    }
+
+    override fun removed() {
+        super.removed()
+        Client.minecraft.keyboard.setRepeatEvents(false)
+    }
+
     override fun onClose() {
         super.onClose()
         facade.onClose()

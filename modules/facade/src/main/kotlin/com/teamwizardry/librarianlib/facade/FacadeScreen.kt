@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade
 
+import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.util.math.MatrixStack
@@ -20,7 +21,7 @@ import net.minecraft.text.Text
  * Any crashes from the GUI code will be caught and displayed as an error screen instead of crashing the game. However,
  * it is impossible to wrap subclass constructors in try-catch statements so those may still crash.
  */
-public open class FacadeScreen(title: Text): Screen(title /* todo behavior #2 */) {
+public open class FacadeScreen(title: Text): Screen(title) {
     @Suppress("LeakingThis")
     public val facade: FacadeWidget = FacadeWidget(this)
 
@@ -44,13 +45,16 @@ public open class FacadeScreen(title: Text): Screen(title /* todo behavior #2 */
         return facade.charTyped(p_charTyped_1_, p_charTyped_2_)
     }
 
-//    override fun func_212932_b(eventListener: IGuiEventListener?) {
-//        facade.func_212932_b(eventListener)
-//    }
+    override fun init() {
+        Client.minecraft.keyboard.setRepeatEvents(true)
+        super.init()
+    }
 
-    //    override fun getEventListenerForPos(mouseX: Double, mouseY: Double): Optional<IGuiEventListener> {
-//        return facade.getEventListenerForPos(mouseX, mouseY)
-//    }
+    override fun removed() {
+        super.removed()
+        Client.minecraft.keyboard.setRepeatEvents(false)
+    }
+
     override fun keyPressed(p_keyPressed_1_: Int, p_keyPressed_2_: Int, p_keyPressed_3_: Int): Boolean {
         return facade.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)
     }
