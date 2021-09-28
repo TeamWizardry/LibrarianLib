@@ -24,7 +24,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     public constructor(posX: Int, posY: Int): this(posX, posY, "")
     public constructor(): this(0, 0, "")
 
-    private val bitfontContainerLayer = add(BitfontContainerLayer(0, 0, width, height))
+    private val containerLayer = add(BitfontContainerLayer(0, 0, width, height))
 
     private val layoutManager: TextLayoutManager = TextLayoutManager(Fonts.classic)
     private var _attributedText: AttributedString = BitfontFormatting.convertMC(text)
@@ -83,10 +83,10 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     public val options: TextLayoutManager.Options = layoutManager.options
 
     public var maxLines: Int
-        get() = bitfontContainerLayer.container.maxLines
+        get() = containerLayer.container.maxLines
         set(value) {
-            if(value != bitfontContainerLayer.container.maxLines) {
-                bitfontContainerLayer.container.maxLines = value
+            if(value != containerLayer.container.maxLines) {
+                containerLayer.container.maxLines = value
                 markTextDirty()
             }
         }
@@ -106,10 +106,11 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     /**
      * If and how this layer should automatically fit its size to the contained text.
      */
-    public var textFitting: TextFit = TextFit.NONE
+    public var textFitting: TextFit
+        get() = containerLayer.textFitting
         set(value) {
-            if(field != value) {
-                field = value
+            if(containerLayer.textFitting != value) {
+                containerLayer.textFitting = value
                 markTextDirty()
             }
         }
@@ -135,7 +136,8 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     }
 
     init {
-        layoutManager.textContainers.add(bitfontContainerLayer.container)
+        layoutManager.textContainers.add(containerLayer.container)
+        containerLayer.color_im.set { this.color }
         markTextDirty()
     }
 
@@ -164,29 +166,29 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     private fun layoutText(textFitting: TextFit) {
         updateMCText()
 
-        bitfontContainerLayer.pos = vec(textMargins.left, textMargins.top)
-        bitfontContainerLayer.size = this.size - vec(textMargins.horizontalSum, textMargins.verticalSum)
-        bitfontContainerLayer.textFitting = textFitting
-        bitfontContainerLayer.prepareTextContainer()
+        containerLayer.pos = vec(textMargins.left, textMargins.top)
+        containerLayer.size = this.size - vec(textMargins.horizontalSum, textMargins.verticalSum)
+        containerLayer.textFitting = textFitting
+        containerLayer.prepareTextContainer()
 
         layoutManager.attributedString = this.attributedText
         layoutManager.layoutText()
 
-        bitfontContainerLayer.applyTextLayout()
+        containerLayer.applyTextLayout()
 
-        textBounds = bitfontContainerLayer.textBounds.offset(vec(textMargins.left, textMargins.top))
+        textBounds = containerLayer.textBounds.offset(vec(textMargins.left, textMargins.top))
 
         when(textFitting) {
             TextFit.NONE -> {}
             TextFit.VERTICAL -> {
-                height = bitfontContainerLayer.height + textMargins.verticalSum
+                height = containerLayer.height + textMargins.verticalSum
             }
             TextFit.HORIZONTAL -> {
-                width = bitfontContainerLayer.width + textMargins.horizontalSum
+                width = containerLayer.width + textMargins.horizontalSum
             }
             TextFit.VERTICAL_SHRINK, TextFit.BOTH -> {
-                height = bitfontContainerLayer.height + textMargins.verticalSum
-                width = bitfontContainerLayer.width + textMargins.horizontalSum
+                height = containerLayer.height + textMargins.verticalSum
+                width = containerLayer.width + textMargins.horizontalSum
             }
         }
 
