@@ -4,13 +4,10 @@ import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layers.RectLayer
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.layers.minecraft.ItemStackLayer
-import com.teamwizardry.librarianlib.facade.pastry.layers.ItemStackTooltip
-import com.teamwizardry.librarianlib.facade.pastry.layers.PastryButton
-import com.teamwizardry.librarianlib.facade.pastry.layers.PastryTooltip
-import com.teamwizardry.librarianlib.facade.pastry.layers.VanillaTooltip
 import com.teamwizardry.librarianlib.facade.test.screens.pastry.PastryTestBase
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layers.text.TextFit
+import com.teamwizardry.librarianlib.facade.pastry.layers.*
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import java.awt.Color
@@ -36,8 +33,15 @@ class PastryTestTooltips: PastryTestBase() {
             it.tooltip = tt
             tt.lines = listOf(
                 "§6§nI'm important",
-                "Wheee! Such §evanilla§r, much §7plain"
+                "Wheee! Such §evanilla§r, much §7plain",
+                "Many lines!"
             )
+        })
+        this.stack.add(PastryButton("Faux vanilla", 0, 0, 100).also {
+            val tt = PastryBasicTooltip(vanilla = true)
+            it.tooltip = tt
+            tt.text = "§6§nI'm important\n§rLooks vanilla, but it's actually not! It's like vanilla tooltips but not " +
+                    "garbage!"
         })
 
         this.stack.add(PastryButton("ItemStack", 0, 0, 100).also {
