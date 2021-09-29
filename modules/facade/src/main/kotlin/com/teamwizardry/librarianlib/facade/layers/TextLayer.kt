@@ -24,7 +24,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     public constructor(posX: Int, posY: Int): this(posX, posY, "")
     public constructor(): this(0, 0, "")
 
-    private val containerLayer = add(BitfontContainerLayer(0, 0, width, height))
+    public val containerLayer: BitfontContainerLayer = add(BitfontContainerLayer(0, 0, width, height))
 
     private val layoutManager: TextLayoutManager = TextLayoutManager(Fonts.classic)
     private var _attributedText: AttributedString = BitfontFormatting.convertMC(text)

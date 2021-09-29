@@ -6,6 +6,7 @@ import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.albedo.state.RenderState
 import com.teamwizardry.librarianlib.core.util.Client
+import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.LibLibFacade
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
@@ -21,14 +22,26 @@ import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 
-public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiLayer(posX, posY, width, height) {
-    public val bitfontContainerLayer: BitfontContainerLayer = BitfontContainerLayer(0, 0, width, height)
-    private val containerLayers = mutableListOf<BitfontContainerLayer>()
+/**
+ * @param containers an explicit list of containers, or null to use the default container. If this is null this input
+ *   layer's dimensions will be tied to the default container's dimensions. If additional containers are later added
+ *   using [addContainer], this link will be broken.
+ */
+public class TextInputLayer @JvmOverloads constructor(
+    posX: Int, posY: Int, width: Int, height: Int,
+    containers: List<BitfontContainerLayer>? = null
+): GuiLayer(posX, posY, width, height) {
+    private val _containerLayers = mutableListOf<BitfontContainerLayer>()
+    private val linkLayerSize: Boolean
     private val editor = TextEditor(Fonts.classic, listOf(), null)
 
     public val cursorColor: Color = Color.GREEN
     public val selectionColor: Color = Color(0f, 1f, 1f, 0.25f)
 
+    /**
+     * The attached container layers
+     */
+    public val containerLayers: List<BitfontContainerLayer> = _containerLayers.unmodifiableView()
     /**
      * The text layout and typesetting options
      */
@@ -51,11 +64,17 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
     private val input = InputLayout.system
 
     init {
-        addContainer(bitfontContainerLayer)
+        if(containers == null) {
+            addContainer(BitfontContainerLayer(0, 0, width, height))
+            linkLayerSize = true
+        } else {
+            containers.forEach { addContainer(it) }
+            linkLayerSize = false
+        }
 
         editor.layoutManager.delegate = object : TextLayoutDelegate.Wrapper(editor.layoutManager.delegate) {
             override fun textWillLayout() {
-                if(containerLayers.size == 1) {
+                if(linkLayerSize && containerLayers.size == 1) {
                     containerLayers.single().size = this@TextInputLayer.size
                 }
                 for(layer in containerLayers) {
@@ -68,7 +87,7 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
                 for(layer in containerLayers) {
                     layer.applyTextLayout()
                 }
-                if(containerLayers.size == 1) {
+                if(linkLayerSize && containerLayers.size == 1) {
                     this@TextInputLayer.size = containerLayers.single().size
                 }
                 super.textDidLayout()
@@ -77,7 +96,7 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
     }
 
     public fun addContainer(layer: BitfontContainerLayer) {
-        containerLayers.add(layer)
+        _containerLayers.add(layer)
         editor.layoutManager.textContainers.add(layer.container)
         layer.add(InputOverlayLayer(layer))
         layer.BUS.hook<GuiLayerEvents.MouseDown> {
@@ -256,7 +275,7 @@ public class TextInputLayer(posX: Int, posY: Int, width: Int, height: Int): GuiL
             }
             InputLayout.JumpType.LINE -> {
                 val position = mainCursor.position ?: return start.index
-                val line = bitfontContainerLayer.container.lines.getOrNull(position.line) ?: return start.index
+                val line = position.container.lines.getOrNull(position.line) ?: return start.index
                 return if(count < 0) line.startIndex else line.endIndex
             }
         }

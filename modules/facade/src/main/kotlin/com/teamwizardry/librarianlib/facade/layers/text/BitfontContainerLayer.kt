@@ -16,7 +16,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 public class BitfontContainerLayer(posX: Int, posY: Int, width: Int, height: Int) : GuiLayer(posX, posY, width, height) {
-    public val container: TextContainer = SimpleTextContainer(1)
+    private var _container: TextContainer = SimpleTextContainer(1)
+
+    public val container: TextContainer = ContainerWrapper { _container }
 
     /**
      * The color of the text. (can be overridden by color attributes in the string)
@@ -38,6 +40,13 @@ public class BitfontContainerLayer(posX: Int, posY: Int, width: Int, height: Int
      */
     public var textBounds: Rect2d = rect(0, 0, 0, 0)
         private set
+
+    /**
+     * Swap out the underlying text container. This will not automatically recalculate the text layout.
+     */
+    public fun replaceContainer(container: TextContainer) {
+        this._container = container
+    }
 
     public fun prepareTextContainer() {
         container.width = this.widthi
@@ -94,5 +103,19 @@ public class BitfontContainerLayer(posX: Int, posY: Int, width: Int, height: Int
 
     override fun draw(context: GuiDrawContext) {
         BitfontRenderer.draw(context.transform, container, color)
+    }
+
+    private class ContainerWrapper(val wrapped: () -> TextContainer) : TextContainer {
+        override var height: Int
+            get() = wrapped().height
+            set(value) { wrapped().height = value }
+        override val lines: MutableList<TextContainer.TypesetLine>
+            get() = wrapped().lines
+        override var maxLines: Int
+            get() = wrapped().maxLines
+            set(value) { wrapped().maxLines = value }
+        override var width: Int
+            get() = wrapped().width
+            set(value) { wrapped().width = value }
     }
 }
