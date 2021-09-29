@@ -61,7 +61,7 @@ public class TextInputLayer @JvmOverloads constructor(
     private var verticalNavigationX: Int? = null
     private var focused: Boolean = true
 
-    private val input = InputLayout.system
+    public var inputLayout: InputLayout = InputLayout.system
 
     init {
         if(containers == null) {
@@ -223,7 +223,7 @@ public class TextInputLayer @JvmOverloads constructor(
         run move@{
             while(destination < 0) {
                 if(--containerIndex < 0) {
-                    moveCursor(0, input.isSelectModifierDown())
+                    moveCursor(0, inputLayout.isSelectModifierDown())
                     return@move
                 }
                 destination += containers[containerIndex].lines.size
@@ -231,7 +231,7 @@ public class TextInputLayer @JvmOverloads constructor(
             while(destination >= containers[containerIndex].lines.size) {
                 destination -= containers[containerIndex].lines.size
                 if(++containerIndex >= containers.size) {
-                    moveCursor(text.length, input.isSelectModifierDown())
+                    moveCursor(text.length, inputLayout.isSelectModifierDown())
                     return@move
                 }
             }
@@ -243,7 +243,7 @@ public class TextInputLayer @JvmOverloads constructor(
                     containers[containerIndex].lines[destination],
                     targetX
                 ) ?: return@doMoveVertically,
-                input.isSelectModifierDown()
+                inputLayout.isSelectModifierDown()
             )
         }
         verticalNavigationX = targetX
@@ -286,7 +286,7 @@ public class TextInputLayer @JvmOverloads constructor(
         if(containerLayer.mouseOver && e.button == 0) {
             val line = editor.queryLine(containerLayer.container, e.pos.yi) ?: return
             val position = editor.queryColumn(containerLayer.container, line, e.pos.xi) ?: return
-            moveCursor(position, input.isSelectModifierDown())
+            moveCursor(position, inputLayout.isSelectModifierDown())
         }
     }
 
@@ -302,22 +302,22 @@ public class TextInputLayer @JvmOverloads constructor(
         layoutText()
 
         when {
-            input.isSelectAll(e.keyCode) -> doSelectAll()
-            input.isSelectNone(e.keyCode) -> doSelectNone()
-            input.isCopy(e.keyCode) && selectionActive -> doCopy()
-            input.isPaste(e.keyCode) -> doPaste()
-            input.isCut(e.keyCode) && selectionActive -> doCut()
+            inputLayout.isSelectAll(e.keyCode) -> doSelectAll()
+            inputLayout.isSelectNone(e.keyCode) -> doSelectNone()
+            inputLayout.isCopy(e.keyCode) && selectionActive -> doCopy()
+            inputLayout.isPaste(e.keyCode) -> doPaste()
+            inputLayout.isCut(e.keyCode) && selectionActive -> doCut()
             else -> {
                 when (e.keyCode) {
                     GLFW_KEY_INSERT, GLFW_KEY_PAGE_UP, GLFW_KEY_PAGE_DOWN -> {}
-                    GLFW_KEY_BACKSPACE -> erase(input.jumpType(), -1)
-                    GLFW_KEY_DELETE -> erase(input.jumpType(), 1)
-                    GLFW_KEY_RIGHT -> moveCursor(getJumpPosition(mainCursor.position ?: return, input.jumpType(), 1), input.isSelectModifierDown())
-                    GLFW_KEY_LEFT -> moveCursor(getJumpPosition(mainCursor.position ?: return, input.jumpType(), -1), input.isSelectModifierDown())
+                    GLFW_KEY_BACKSPACE -> erase(inputLayout.jumpType(), -1)
+                    GLFW_KEY_DELETE -> erase(inputLayout.jumpType(), 1)
+                    GLFW_KEY_RIGHT -> moveCursor(getJumpPosition(mainCursor.position ?: return, inputLayout.jumpType(), 1), inputLayout.isSelectModifierDown())
+                    GLFW_KEY_LEFT -> moveCursor(getJumpPosition(mainCursor.position ?: return, inputLayout.jumpType(), -1), inputLayout.isSelectModifierDown())
                     GLFW_KEY_DOWN -> doMoveVertically(1)
                     GLFW_KEY_UP -> doMoveVertically(-1)
-                    GLFW_KEY_HOME -> moveCursor(0, input.isSelectModifierDown())
-                    GLFW_KEY_END -> moveCursor(text.length, input.isSelectModifierDown())
+                    GLFW_KEY_HOME -> moveCursor(0, inputLayout.isSelectModifierDown())
+                    GLFW_KEY_END -> moveCursor(text.length, inputLayout.isSelectModifierDown())
                     GLFW_KEY_ENTER -> write("\n")
                 }
             }

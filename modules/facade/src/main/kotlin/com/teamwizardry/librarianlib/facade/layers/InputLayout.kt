@@ -33,14 +33,11 @@ public abstract class InputLayout {
 
     public companion object {
         @JvmStatic
-        public var system: InputLayout = if(MinecraftClient.IS_SYSTEM_MAC) MacLayout else TODO()
+        public var system: InputLayout = if(MinecraftClient.IS_SYSTEM_MAC) MacInputLayout else WindowsInputLayout
     }
 }
 
-//public object WinLayout : InputLayout() {
-//}
-
-public object MacLayout : InputLayout() {
+public object MacInputLayout : InputLayout() {
     public val cmd: Boolean get() = superkey
 
     override fun isSelectModifierDown(): Boolean = shift
@@ -65,4 +62,34 @@ public object MacLayout : InputLayout() {
         cmd: Boolean? = false
     ): Boolean = (ctrl == null || ctrl == this.ctrl) && (alt == null || alt == this.alt) &&
             (shift == null || shift == this.shift) && (cmd == null || cmd == this.cmd)
+}
+
+public object WindowsInputLayout : InputLayout() {
+    public val win: Boolean get() = superkey
+
+    override fun isSelectModifierDown(): Boolean = shift
+
+    override fun isSelectAll(keyCode: Int): Boolean = modifiers(ctrl = true) && keyCode == GLFW_KEY_A
+    override fun isSelectNone(keyCode: Int): Boolean = false // there is no standard "select none" shortcut on Windows
+
+    override fun isCopy(keyCode: Int): Boolean = modifiers(ctrl = true) && keyCode == GLFW_KEY_C ||
+            modifiers(ctrl = true) && keyCode == GLFW_KEY_INSERT
+    override fun isPaste(keyCode: Int): Boolean = modifiers(ctrl = true) && keyCode == GLFW_KEY_V ||
+            modifiers(shift = true) && keyCode == GLFW_KEY_INSERT
+    override fun isCut(keyCode: Int): Boolean = modifiers(ctrl = true) && keyCode == GLFW_KEY_X ||
+            modifiers(shift = true) && keyCode == GLFW_KEY_DELETE
+
+    override fun jumpType(): JumpType = when {
+        // -> JumpType.LINE - there is no standard modifier for jumping to the line ends
+        ctrl && !alt && !win -> JumpType.WORD
+        else -> JumpType.CHARACTER
+    }
+
+    private fun modifiers(
+        ctrl: Boolean? = false,
+        alt: Boolean? = false,
+        shift: Boolean? = false,
+        win: Boolean? = false
+    ): Boolean = (ctrl == null || ctrl == this.ctrl) && (alt == null || alt == this.alt) &&
+            (shift == null || shift == this.shift) && (win == null || win == this.win)
 }
