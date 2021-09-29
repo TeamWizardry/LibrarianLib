@@ -33,8 +33,8 @@ dependencies {
     "devRuntime"("org.junit.jupiter:junit-jupiter-api:5.6.2")
     "devRuntime"("org.junit.jupiter:junit-jupiter-engine:5.6.2")
     "devRuntime"("org.junit.platform:junit-platform-launcher:1.6.2")
-    "devMod"("net.devtech:arrp:0.3.11")
-    modImplementation("net.devtech:arrp:0.3.11")
+    "devMod"("net.devtech:arrp:0.4.4")
+    modImplementation("net.devtech:arrp:0.4.4")
 
     "devRuntime"(sourceSets.main.get().output)
     "devRuntime"(sourceSets.test.get().output)

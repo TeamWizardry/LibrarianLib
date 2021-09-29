@@ -41,7 +41,7 @@ allprojects {
         }
         maven("https://repo.spongepowered.org/repository/maven-public/")
 
-        maven("https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/") // for ARRP
+        maven("https://storage.googleapis.com/devan-maven/") // for ARRP
         maven("https://maven.terraformersmc.com/releases") // for ModMenu
     }
 }
