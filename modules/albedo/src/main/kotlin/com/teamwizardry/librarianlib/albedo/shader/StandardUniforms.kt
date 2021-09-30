@@ -53,7 +53,7 @@ public object StandardUniforms {
     /** Populates the given uniforms with the current standard light directions */
     @JvmStatic
     public fun setLights(light0Direction: FloatVec3Uniform, light1Direction: FloatVec3Uniform) {
-        val directions = RenderSystemMixin.getShaderLightDirections()
+        val directions = RenderSystemMixin._getShaderLightDirections()
         light0Direction.set(directions[0].x, directions[0].y, directions[0].z)
         light1Direction.set(directions[1].x, directions[1].y, directions[1].z)
     }

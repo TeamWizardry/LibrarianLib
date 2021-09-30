@@ -7,8 +7,12 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(RenderSystem.class)
 public interface RenderSystemMixin {
-    @Accessor
-    public static Vec3f[] getShaderLightDirections() {
+    /**
+     * This method isn't named `getShaderLightDirections` because for god knows what reason doing that prevents me from
+     * hot swapping code across the entire project.
+     */
+    @Accessor("shaderLightDirections")
+    public static Vec3f[] _getShaderLightDirections() {
         throw new UnsupportedOperationException();
     }
 }
