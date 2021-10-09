@@ -27,6 +27,12 @@ import kotlin.math.min
 public interface FacadeControllerType<T : FacadeController> {
     public val id: Identifier
     public val screenHandlerType: ScreenHandlerType<T>
+
+    /**
+     * Opens a controller on the server and open an identical one on the client.
+     *
+     * The first two constructor arguments `int windowId, PlayerEntity player,
+     */
     public fun open(player: ServerPlayerEntity, title: Text, vararg arguments: Any?)
 }
 
@@ -120,6 +126,8 @@ public class FacadeControllerFactory<T : FacadeController>(private val clazz: Cl
     }
 
     public fun create(syncId: Int, player: PlayerEntity, arguments: Array<out Any?>): T {
+        if(constructor.parameters.size - 2 != arguments.size)
+            throw IllegalArgumentException("Expected ${constructor.parameters.size} additional arguments, not ${arguments.size}")
         return constructor.call(syncId, player, *arguments)
     }
 }

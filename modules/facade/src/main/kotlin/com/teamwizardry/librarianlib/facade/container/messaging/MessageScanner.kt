@@ -40,6 +40,8 @@ public object MessageScanner {
         }.unmodifiableView()
 
         public fun writeArguments(arguments: Array<out Any?>): NbtCompound {
+            if(parameterSerializers.size != arguments.size)
+                throw IllegalArgumentException("Expected ${parameterSerializers.size} arguments, not ${arguments.size}")
             val list = NbtList()
             parameterSerializers.mapIndexed { i, serializer ->
                 val tag = NbtCompound()
