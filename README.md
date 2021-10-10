@@ -9,7 +9,7 @@
   <a href="https://modrinth.com/mod/librarianlib"><img src="https://img.shields.io/badge/Download-Modrinth-5da426" alt="Modrinth"/></a>
   <br>
   <img id="mc-version-badge" src="https://img.shields.io/badge/Minecraft-1.17.1-blue" alt="Minecraft 1.17.1"/>
-  <img id="mod-version-badge" src="https://img.shields.io/badge/LibrarianLib-5.0.0--alpha.7-blue" alt="LibrarianLib 5.0.0-alpha.8"/>
+  <img id="mod-version-badge" src="https://img.shields.io/badge/LibrarianLib-5.0.0--alpha.9-blue" alt="LibrarianLib 5.0.0-alpha.9"/>
 </h1>
 
 # Using LibrarianLib

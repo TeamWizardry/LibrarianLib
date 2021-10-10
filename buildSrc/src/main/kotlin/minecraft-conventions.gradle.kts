@@ -18,6 +18,7 @@ dependencies {
     "mappings"("net.fabricmc:yarn:$yarn_mappings:v2")
     "modApi"("net.fabricmc.fabric-api:fabric-api:$fabric_version")
     "modApi"("net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version")
+    "modImplementation"("net.fabricmc:fabric-loader:$loader_version")
 }
 
 // The genSources task demands that loom be on the buildscript classpath. However, applying the plugin through buildSrc

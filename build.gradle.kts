@@ -120,7 +120,7 @@ tasks.register<CreateModule>("createModule") {
     }
 }
 
-tasks.register<ReplaceTextInPlace>("updateReadmeVersions") {
+val updateReadmeVersions = tasks.register<ReplaceTextInPlace>("updateReadmeVersions") {
 
     fun formatBadge(id: String, label: String, message: String, color: String, alt: String): String {
         val cleanLabel = label.replace("_", "__").replace("-", "--").replace(" ", "_")
@@ -152,11 +152,6 @@ tasks.register<ReplaceTextInPlace>("updateReadmeVersions") {
             }
         }
     }
-}
-
-tasks.configureEach {
-    if(name == "publish")
-        dependsOn(":updateReadmeVersions")
 }
 
 //endregion // Utilities

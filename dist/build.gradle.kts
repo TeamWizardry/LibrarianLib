@@ -136,5 +136,5 @@ val publishModrinth = tasks.register<TaskModrinthUpload>("publishModrinth") {
 }
 
 tasks.register("release") {
-    dependsOn("curseforge", publishModrinth)
+    dependsOn(":updateReadmeVersions", "curseforge", publishModrinth)
 }
