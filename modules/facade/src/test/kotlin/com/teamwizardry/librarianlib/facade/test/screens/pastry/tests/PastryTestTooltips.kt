@@ -40,8 +40,7 @@ class PastryTestTooltips: PastryTestBase() {
         this.stack.add(PastryButton("Faux vanilla", 0, 0, 100).also {
             val tt = PastryBasicTooltip(vanilla = true)
             it.tooltip = tt
-            tt.text = "§6§nI'm important\n§rLooks vanilla, but it's actually not! It's like vanilla tooltips but not " +
-                    "garbage!"
+            tt.text = "§6§nI'm important\n§rWheee! Such §evanilla§r, much §7plain§r\nMany lines!"
         })
 
         this.stack.add(PastryButton("ItemStack", 0, 0, 100).also {

@@ -14,6 +14,7 @@ import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
+import dev.thecodewarrior.bitfont.typesetting.TextAttribute
 import net.minecraft.item.ItemStack
 import java.awt.Color
 import kotlin.math.max
@@ -78,6 +79,16 @@ public class PastryBasicTooltip(vanilla: Boolean = false): PastryTooltip(vanilla
     init {
         contents.add(textLayer)
         textLayer.color = Color.WHITE
+        if(vanilla) {
+            textLayer.options.leading += 1
+            textLayer.shadow = true
+            textLayer.hook<TextLayer.TextChangedEvent> { event ->
+                val firstNewline = event.text.plaintext.indexOf('\n')
+                if(firstNewline != -1) {
+                    event.text.setAttribute(firstNewline, firstNewline+1, TextAttribute.leading, 2)
+                }
+            }
+        }
     }
 
     override fun layoutContents(maxWidth: Double) {
