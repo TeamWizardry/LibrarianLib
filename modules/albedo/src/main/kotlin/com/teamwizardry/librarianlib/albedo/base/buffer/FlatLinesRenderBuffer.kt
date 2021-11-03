@@ -28,6 +28,15 @@ public class FlatLinesRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatLin
         return this
     }
 
+    public fun color(r: Int, g: Int, b: Int, a: Int): FlatLinesRenderBuffer {
+        start(color)
+        putByte(r)
+        putByte(g)
+        putByte(b)
+        putByte(a)
+        return this
+    }
+
     public fun color(color: Color): FlatLinesRenderBuffer {
         start(this.color)
         putByte(color.red)

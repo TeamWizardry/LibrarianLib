@@ -20,6 +20,15 @@ public class FlatColorRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatCol
         return this
     }
 
+    public fun color(r: Int, g: Int, b: Int, a: Int): FlatColorRenderBuffer {
+        start(color)
+        putByte(r)
+        putByte(g)
+        putByte(b)
+        putByte(a)
+        return this
+    }
+
     public fun color(color: Color): FlatColorRenderBuffer {
         start(this.color)
         putByte(color.red)

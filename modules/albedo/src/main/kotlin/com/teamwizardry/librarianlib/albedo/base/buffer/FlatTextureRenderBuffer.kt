@@ -24,6 +24,15 @@ public class FlatTextureRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatT
         return this
     }
 
+    public fun color(r: Int, g: Int, b: Int, a: Int): FlatTextureRenderBuffer {
+        start(color)
+        putByte(r)
+        putByte(g)
+        putByte(b)
+        putByte(a)
+        return this
+    }
+
     public fun color(color: Color): FlatTextureRenderBuffer {
         start(this.color)
         putByte(color.red)
