@@ -64,6 +64,7 @@ public class TextInputLayer @JvmOverloads constructor(
     public var inputLayout: InputLayout = InputLayout.system
 
     init {
+        options.leading = 1
         if(containers == null) {
             addContainer(BitfontContainerLayer(0, 0, width, height))
             linkLayerSize = true

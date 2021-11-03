@@ -136,6 +136,7 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     }
 
     init {
+        layoutManager.options.leading = 1
         layoutManager.textContainers.add(containerLayer.container)
         containerLayer.color_im.set { this.color }
         markTextDirty()
