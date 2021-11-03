@@ -73,11 +73,13 @@ public class GuiDrawContext(
      */
     @Suppress("CAST_NEVER_SUCCEEDS")
     public fun pushModelViewMatrix() {
-        if (!glMatrixPushed) {
-            glMatrixPushed = true
-            RenderSystem.getModelViewStack().push()
+        if (glMatrixPushed) {
+            RenderSystem.getModelViewStack().pop()
         }
-        transform.copyToMatrix4f(RenderSystem.getModelViewStack().peek().model)
+        RenderSystem.getModelViewStack().push()
+        RenderSystem.getModelViewStack().peek().model.multiply(transformStack.peek().model)
+        RenderSystem.applyModelViewMatrix()
+        glMatrixPushed = true
     }
 
     /**
