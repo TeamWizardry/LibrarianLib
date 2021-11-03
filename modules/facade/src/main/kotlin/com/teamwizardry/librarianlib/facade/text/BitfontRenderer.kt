@@ -8,6 +8,7 @@ import dev.thecodewarrior.bitfont.data.Glyph
 import dev.thecodewarrior.bitfont.typesetting.PositionedGlyph
 import dev.thecodewarrior.bitfont.typesetting.TextContainer
 import java.awt.Color
+import kotlin.random.Random
 
 public object BitfontRenderer {
     @JvmStatic
@@ -20,11 +21,29 @@ public object BitfontRenderer {
         }
 
         val deferredEmbeds = mutableListOf<DeferredTextEmbed>()
+        val seed = Random.nextInt()
 
+        var rng = Random(seed)
         for (glyph in container.glyphs) {
             when(val textObject = glyph.textObject) {
                 is Glyph -> {
-                    drawGlyph(matrix, buffer, glyph, textObject, glyph.posX, glyph.posY, defaultColor)
+                    drawGlyph(
+                        matrix, buffer, rng,
+                        glyph, textObject, glyph.posX + 1, glyph.posY + 1,
+                        defaultColor, shadow = true
+                    )
+                }
+            }
+        }
+        rng = Random(seed)
+        for (glyph in container.glyphs) {
+            when(val textObject = glyph.textObject) {
+                is Glyph -> {
+                    drawGlyph(
+                        matrix, buffer, rng,
+                        glyph, textObject, glyph.posX, glyph.posY,
+                        defaultColor, shadow = false
+                    )
                 }
                 is FacadeTextEmbed -> {
                     deferredEmbeds.add(DeferredTextEmbed(glyph, textObject, glyph.posX, glyph.posY))
@@ -45,10 +64,14 @@ public object BitfontRenderer {
 
     private class DeferredTextEmbed(val glyph: PositionedGlyph, val embed: FacadeTextEmbed, val posX: Int, val posY: Int)
 
-    private fun drawGlyph(matrix: Matrix4d, buffer: FlatTextureRenderBuffer, positionedGlyph: PositionedGlyph, textObject: Glyph, posX: Int, posY: Int, defaultColor: Color) {
+    private fun drawGlyph(
+        matrix: Matrix4d, buffer: FlatTextureRenderBuffer, rng: Random,
+        positionedGlyph: PositionedGlyph, textObject: Glyph, posX: Int, posY: Int,
+        defaultColor: Color, shadow: Boolean
+    ) {
         val solid = BitfontAtlas.solidTex()
         val obf = positionedGlyph[BitfontFormatting.obfuscated] == true
-        val codepoint = if (obf) ObfTransform.transform(textObject.font, positionedGlyph.codepoint) else positionedGlyph.codepoint
+        val codepoint = if (obf) ObfTransform.transform(textObject.font, rng, positionedGlyph.codepoint) else positionedGlyph.codepoint
         val glyph = if (obf) textObject.font.glyphs[codepoint] else textObject
 
         val tex = BitfontAtlas.rectFor(glyph.image)
@@ -60,7 +83,16 @@ public object BitfontRenderer {
         var minV = tex.y
         var maxU = tex.x + tex.width
         var maxV = tex.y + tex.height
-        val color = positionedGlyph[BitfontFormatting.color] ?: defaultColor
+        var color = positionedGlyph[BitfontFormatting.color] ?: defaultColor
+
+        if(shadow) {
+            val shadowColor = positionedGlyph[BitfontFormatting.shadow] ?: return
+            color = if(shadowColor == Color(0, 0, 0, 0)) {
+                getShadowColor(color)
+            } else {
+                shadowColor
+            }
+        }
 
         buffer.pos(matrix, minX, maxY, 0).color(color).tex(minU, maxV).endVertex()
         buffer.pos(matrix, maxX, maxY, 0).color(color).tex(maxU, maxV).endVertex()
@@ -69,8 +101,9 @@ public object BitfontRenderer {
 
         var underline = positionedGlyph[BitfontFormatting.underline]
         if (underline != null && positionedGlyph.codepoint !in newlines) {
-            if (underline == Color(0, 0, 0, 0))
+            if (underline == Color(0, 0, 0, 0)) {
                 underline = color
+            }
             minX = posX - 1
             minY = posY + 1
             maxX = posX + textObject.advance + 1
@@ -96,4 +129,9 @@ public object BitfontRenderer {
         '\u2028'.code,
         '\u2029'.code
     )
+
+    public fun getShadowColor(color: Color): Color {
+        // the vanilla shadow colors are just `floor(component / 4)`
+        return Color(color.red / 4, color.green / 4, color.blue / 4, color.alpha)
+    }
 }

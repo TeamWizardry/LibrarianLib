@@ -13,6 +13,7 @@ public object BitfontFormatting {
     public val obfuscated: TextAttribute<Boolean> = TextAttribute.get("obfuscated")
     public val bold: TextAttribute<Boolean> = TextAttribute.get("bold")
     public val underline: TextAttribute<Color> = TextAttribute.get("underline")
+    public val shadow: TextAttribute<Color> = TextAttribute.get("shadow")
 
     @JvmStatic
     public fun convertMC(mcString: String): AttributedString {
@@ -93,24 +94,6 @@ public object BitfontFormatting {
         'd' to Color(0xff55ff),
         'e' to Color(0xffff55),
         'f' to Color(0xffffff)
-    )
-    private val shadowColors = mapOf(
-        '0' to Color(0x000000),
-        '1' to Color(0x00002a),
-        '2' to Color(0x002a00),
-        '3' to Color(0x002a2a),
-        '4' to Color(0x2a0000),
-        '5' to Color(0x2a002a),
-        '6' to Color(0x3f2a00),
-        '7' to Color(0x2a2a2a),
-        '8' to Color(0x151515),
-        '9' to Color(0x15153f),
-        'a' to Color(0x153f15),
-        'b' to Color(0x153f3f),
-        'c' to Color(0x3f1515),
-        'd' to Color(0x3f153f),
-        'e' to Color(0x3f3f15),
-        'f' to Color(0x3f3f3f)
     )
 
     private class Formatting<T: Any>(val attributedString: MutableAttributedString, val i: () -> Int, val mapGen: (T) -> Map<TextAttribute<*>, Any>) {
