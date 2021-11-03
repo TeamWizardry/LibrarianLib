@@ -7,9 +7,11 @@ import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.math.Rect2d
 import com.teamwizardry.librarianlib.core.util.rect
 import com.teamwizardry.librarianlib.core.util.vec
+import com.teamwizardry.librarianlib.etcetera.eventbus.Event
 import com.teamwizardry.librarianlib.facade.layers.text.BitfontContainerLayer
 import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
+import dev.thecodewarrior.bitfont.typesetting.MutableAttributedString
 import dev.thecodewarrior.bitfont.typesetting.TextLayoutManager
 import java.awt.Color
 
@@ -24,9 +26,19 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
     public constructor(posX: Int, posY: Int): this(posX, posY, "")
     public constructor(): this(0, 0, "")
 
+    /**
+     * Fired whenever the text is set, allowing you to modify the actual text that will be rendered.
+     */
+    public class TextChangedEvent(public val text: MutableAttributedString) : Event()
+    /**
+     * Fired before laying out text, to allow last-minute modification of the text.
+     */
+    public class PrepareTextEvent(public var text: AttributedString) : Event()
+
     public val containerLayer: BitfontContainerLayer = add(BitfontContainerLayer(0, 0, width, height))
 
     private val layoutManager: TextLayoutManager = TextLayoutManager(Fonts.classic)
+    private val _renderText: MutableAttributedString = MutableAttributedString("")
     private var _attributedText: AttributedString = BitfontFormatting.convertMC(text)
 
     /**
@@ -71,6 +83,11 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
      * The color of the text. (can be overridden by color attributes in the string)
      */
     public var color: Color by color_im
+
+    /**
+     * Whether to enable the text shadow
+     */
+    public var shadow: Boolean = false
 
     /**
      * Margins to offset the text by
@@ -166,13 +183,32 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
 
     private fun layoutText(textFitting: TextFit) {
         updateMCText()
+        if(isTextDirty) {
+            _renderText.delete(0, _renderText.length)
+            _renderText.append(_attributedText)
+            BUS.fire(TextChangedEvent(_renderText))
+            if(shadow) {
+                val shadowAttribute = _renderText.getAllAttributes()[BitfontFormatting.shadow]
+                var start = 0
+                for(entry in shadowAttribute?.entries.orEmpty()) {
+                    if(start < entry.start) {
+                        _renderText.setAttribute(start, entry.start, BitfontFormatting.shadow, Color(0, 0, 0, 0))
+                    }
+                    start = entry.end
+                }
+                if(start < _renderText.length) {
+                    _renderText.setAttribute(start, _renderText.length, BitfontFormatting.shadow, Color(0, 0, 0, 0))
+                }
+            }
+            isTextDirty = false
+        }
 
         containerLayer.pos = vec(textMargins.left, textMargins.top)
         containerLayer.size = this.size - vec(textMargins.horizontalSum, textMargins.verticalSum)
         containerLayer.textFitting = textFitting
         containerLayer.prepareTextContainer()
 
-        layoutManager.attributedString = this.attributedText
+        layoutManager.attributedString = BUS.fire(PrepareTextEvent(this._renderText)).text
         layoutManager.layoutText()
 
         containerLayer.applyTextLayout()
@@ -193,7 +229,6 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
             }
         }
 
-        isTextDirty = false
         lastState = getDirtyState()
     }
 
@@ -204,6 +239,8 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
         if (plainText != null && plainText != lastText) {
             lastText = plainText
             _attributedText = BitfontFormatting.convertMC(plainText)
+            // mark the text dirty, signalling that a TextChangedEvent should be fired
+            markTextDirty()
         }
     }
 
@@ -212,7 +249,8 @@ public open class TextLayer(posX: Int, posY: Int, width: Int, height: Int, text:
         options.copy(),
         width,
         height,
-        textFitting
+        textFitting,
+        shadow
     )
 
     private fun markTextDirtyIfDataChanged() {
