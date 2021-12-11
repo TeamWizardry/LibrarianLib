@@ -2,7 +2,7 @@
   "minVersion": "0.8.2",
   "required": true,
   "package": "com.teamwizardry.librarianlib.${lowername}.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "refmap": "ll/${lowername}/${lowername}-refmap.json",
   "mixins": [
   ],

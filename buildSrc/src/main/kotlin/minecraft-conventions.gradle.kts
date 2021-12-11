@@ -24,7 +24,7 @@ dependencies {
 // The genSources task demands that loom be on the buildscript classpath. However, applying the plugin through buildSrc
 // doesn't seem to do that. We manually add it to the classpath of the root project, so we only enable genSources for
 // that project.
-tasks.whenTaskAdded {
+tasks.configureEach {
     if(name.startsWith("genSources") || name.startsWith("unpickJar"))
         enabled = project == project.rootProject
 }

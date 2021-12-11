@@ -5,9 +5,12 @@ plugins {
     `minecraft-conventions`
 }
 
+val mixinDir = buildDir.resolve("agent")
+
 loom {
     runConfigs.configureEach {
         vmArg("-Dlibrarianlib.logging.debug=liblib-*")
+        vmArg("-javaagent:${mixinDir.resolve("mixin.jar").absolutePath}")
         isIdeConfigGenerated = true
     }
 
@@ -24,7 +27,18 @@ dependencies {
     }
     modRuntime("com.terraformersmc:modmenu:2.0.5")
 }
+
+val copyMixinAgent = tasks.register<Sync>("copyMixinAgent") {
+    from(configurations.runtimeClasspath)
+    include("sponge-mixin-*")
+    into(mixinDir)
+    eachFile {
+        name = "mixin.jar"
+    }
+}
+
 tasks.named("processResources") {
+    dependsOn(copyMixinAgent)
     allModules.forEach {
         dependsOn("$it:processResources")
         dependsOn("$it:processTestResources")

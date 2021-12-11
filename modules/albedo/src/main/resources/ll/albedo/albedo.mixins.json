@@ -2,7 +2,7 @@
   "minVersion": "0.8.2",
   "required": true,
   "package": "com.teamwizardry.librarianlib.albedo.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "refmap": "ll/albedo/albedo-refmap.json",
   "mixins": [
     "GlStateManagerMixin",

@@ -16,7 +16,7 @@ buildscript {
     }
     dependencies {
         // update this to match version in buildSrc
-        classpath("net.fabricmc:fabric-loom:0.9.46")
+        classpath("net.fabricmc:fabric-loom:0.10.64")
     }
 }
 

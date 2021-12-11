@@ -69,7 +69,7 @@ public object BitfontAtlas: AbstractTexture() {
         for (x in 0 until image.width) {
             for (y in 0 until image.height) {
                 if (image[x, y]) {
-                    native.setPixelColor(x, y, 0.inv())
+                    native.setColor(x, y, 0.inv())
                 }
             }
         }
