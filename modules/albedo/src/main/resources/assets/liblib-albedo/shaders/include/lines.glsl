@@ -13,11 +13,17 @@ vec2 unit_corner(vec2 a, vec2 b, vec2 c) {
         return abNormal;
     }
 
-    float u = dot(abNormal * abNormal, vec2(1)) / dot(abNormal.xy * bcNormal.yx * vec2(1, -1), vec2(1));
-    return u * vec2(bcNormal.y - abNormal.y, abNormal.x - bcNormal.x);
+    float ax = abNormal.x;
+    float ay = abNormal.y;
+    float bx = bcNormal.x;
+    float by = bcNormal.y;
+
+    float u = (ax * ax + ay * ay) / (ax * by - ay * bx);
+    return vec2(by - ay, ax - bx) * u;
 }
 
-vec4 get_corner(vec2 displaySize, vec4 a, vec4 b, vec4 c, float offset) {
-    // no idea why the * 2 is necessary here
-    return vec4(b.xy + unit_corner(a.xy, b.xy, c.xy) / displaySize * offset * 2., b.zw);
+vec4 pixel_corner(vec2 displaySize, vec4 a, vec4 b, vec4 c) {
+    // we need the / 2 because screen coordinates are from -1 to +1
+    vec2 corner = unit_corner(a.xy / a.w * displaySize, b.xy / b.w * displaySize, c.xy / c.w * displaySize) / (displaySize / 2.);
+    return vec4(corner * b.w, 0, 0);
 }

@@ -32,11 +32,12 @@ void main() {
     vec4 pos2 = gl_in[2].gl_Position;
     vec4 pos3 = gl_in[3].gl_Position;
 
-    vec4 outerA = get_corner(DisplaySize, pos0, pos1, pos2, gs_in[1].outsetWidth);
-    vec4 innerA = get_corner(DisplaySize, pos0, pos1, pos2, -gs_in[1].insetWidth);
-    vec4 outerB = get_corner(DisplaySize, pos1, pos2, pos3, gs_in[2].outsetWidth);
-    vec4 innerB = get_corner(DisplaySize, pos1, pos2, pos3, -gs_in[2].insetWidth);
-
+    vec4 cornerA = pixel_corner(DisplaySize, pos0, pos1, pos2);
+    vec4 cornerB = pixel_corner(DisplaySize, pos1, pos2, pos3);
+    vec4 outerA = pos1 + cornerA * gs_in[1].outsetWidth;
+    vec4 innerA = pos1 + cornerA * -gs_in[1].insetWidth;
+    vec4 outerB = pos2 + cornerB * gs_in[2].outsetWidth;
+    vec4 innerB = pos2 + cornerB * -gs_in[2].insetWidth;
 
     emit(outerA, gs_in[1].color);
     emit(outerB, gs_in[2].color);
