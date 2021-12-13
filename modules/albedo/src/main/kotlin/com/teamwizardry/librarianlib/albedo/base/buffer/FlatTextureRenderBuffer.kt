@@ -15,6 +15,10 @@ public class FlatTextureRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatT
     private val texCoord: VertexLayoutElement =
         +VertexLayoutElement("TexCoord", VertexLayoutElement.FloatFormat.FLOAT, 2, false)
 
+    init {
+        bind(defaultShader)
+    }
+
     public fun color(r: Float, g: Float, b: Float, a: Float): FlatTextureRenderBuffer {
         start(color)
         putByte((r * 255).toInt())
@@ -52,8 +56,7 @@ public class FlatTextureRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatT
     public fun tex(u: Double, v: Double): FlatTextureRenderBuffer = this.tex(u.toFloat(), v.toFloat())
 
     public companion object {
-        @JvmStatic
-        public val defaultShader: Shader = Shader.build("flat_texture")
+        private val defaultShader: Shader = Shader.build("flat_texture")
             .vertex(Identifier("liblib-albedo:builtin/flat_texture.vert"))
             .fragment(Identifier("liblib-albedo:builtin/flat_texture.frag"))
             .build()
@@ -61,9 +64,7 @@ public class FlatTextureRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatT
         @JvmStatic
         @get:JvmName("getShared")
         public val SHARED: FlatTextureRenderBuffer by lazy {
-            val buffer = FlatTextureRenderBuffer(VertexBuffer.SHARED)
-            buffer.bind(defaultShader)
-            buffer
+            FlatTextureRenderBuffer(VertexBuffer.SHARED)
         }
     }
 }

@@ -301,6 +301,30 @@ public open class Matrix3d(
             m20 * x + m21 * y + m22 * z)
     }
 
+    /**
+     * Transforms the passed vector using this matrix, returning the X axis of the result. This method, along with
+     * [transformY] and [transformZ], allow applying transforms without creating new [Vec3d] objects.
+     */
+    public fun transformX(x: Double, y: Double, z: Double): Double {
+        return m00 * x + m01 * y + m02 * z
+    }
+
+    /**
+     * Transforms the passed vector using this matrix, returning the Y axis of the result. This method, along with
+     * [transformX] and [transformZ], allow applying transforms without creating new [Vec3d] objects.
+     */
+    public fun transformY(x: Double, y: Double, z: Double): Double {
+        return m10 * x + m11 * y + m12 * z
+    }
+
+    /**
+     * Transforms the passed vector using this matrix, returning the Z axis of the result. This method, along with
+     * [transformX] and [transformY], allow applying transforms without creating new [Vec3d] objects.
+     */
+    public fun transformZ(x: Double, y: Double, z: Double): Double {
+        return m20 * x + m21 * y + m22 * z
+    }
+
     public open fun floor(): Matrix3d {
         return Matrix3d(
             floor(m00), floor(m01), floor(m02),

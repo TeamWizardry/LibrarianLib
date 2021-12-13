@@ -1,6 +1,7 @@
 @file:Suppress("NOTHING_TO_INLINE")
 package com.teamwizardry.librarianlib.albedo.base.buffer
 
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.albedo.buffer.RenderBuffer
 import com.teamwizardry.librarianlib.albedo.buffer.VertexBuffer
 import com.teamwizardry.librarianlib.albedo.shader.StandardUniforms
@@ -12,6 +13,7 @@ import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.math.Matrix4f
+import net.minecraft.util.math.Vec3d
 
 /**
  * The base class for most render buffers. It provides the basic vertex position functions and standard transform
@@ -29,7 +31,11 @@ import net.minecraft.util.math.Matrix4f
  * }
  * ```
  */
-public abstract class BaseRenderBuffer<T : BaseRenderBuffer<T>>(vbo: VertexBuffer) : RenderBuffer(vbo) {
+public abstract class BaseRenderBuffer<T : BaseRenderBuffer<T>>(
+    vbo: VertexBuffer,
+    vararg supportedPrimitives: Primitive
+) : RenderBuffer(vbo, *supportedPrimitives), PositionBuffer<T> {
+
     protected val modelViewMatrix: Mat4x4Uniform = +Uniform.mat4.create("ModelViewMatrix")
     protected val projectionMatrix: Mat4x4Uniform = +Uniform.mat4.create("ProjectionMatrix")
 
@@ -42,26 +48,13 @@ public abstract class BaseRenderBuffer<T : BaseRenderBuffer<T>>(vbo: VertexBuffe
         StandardUniforms.setProjectionMatrix(projectionMatrix)
     }
 
-    public fun pos(x: Double, y: Double, z: Double): T {
+    public override fun pos(x: Double, y: Double, z: Double): T {
         start(position)
         putFloat(x.toFloat())
         putFloat(y.toFloat())
         putFloat(z.toFloat())
         @Suppress("UNCHECKED_CAST")
         return this as T
-    }
-
-    public fun pos(matrix: Matrix4d, x: Double, y: Double, z: Double): T {
-        return this.pos(matrix.transformX(x, y, z), matrix.transformY(x, y, z), matrix.transformZ(x, y, z))
-    }
-
-    public fun pos(matrix: Matrix4f, x: Float, y: Float, z: Float): T {
-        val iMatrix = mixinCast<IMatrix4f>(matrix)
-        return this.pos(iMatrix.transformX(x, y, z), iMatrix.transformY(x, y, z), iMatrix.transformZ(x, y, z))
-    }
-
-    public fun pos(stack: MatrixStack, x: Float, y: Float, z: Float): T {
-        return this.pos(stack.peek().model, x, y, z)
     }
 
     // overloads for kotlin. The boxing gets inlined away.

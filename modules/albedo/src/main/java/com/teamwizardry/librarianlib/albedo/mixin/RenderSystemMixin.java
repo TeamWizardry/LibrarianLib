@@ -11,8 +11,8 @@ public interface RenderSystemMixin {
      * This method isn't named `getShaderLightDirections` because for god knows what reason doing that prevents me from
      * hot swapping code across the entire project.
      */
-    @Accessor("shaderLightDirections")
-    public static Vec3f[] _getShaderLightDirections() {
+    @Accessor
+    public static Vec3f[] getShaderLightDirections() {
         throw new UnsupportedOperationException();
     }
 }

@@ -35,4 +35,8 @@ public enum class Primitive(
             vertexCount
     }
 
+    public companion object {
+        @JvmStatic
+        public val allPrimitives: Set<Primitive> = values().toSet()
+    }
 }

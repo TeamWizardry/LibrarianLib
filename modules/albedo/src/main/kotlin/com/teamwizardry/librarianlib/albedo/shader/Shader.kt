@@ -342,5 +342,15 @@ public class Shader private constructor(
         public fun build(name: String): Builder {
             return Builder(name)
         }
+
+        /**
+         * Reload and recompile all shaders. This should only be used as a development tool.
+         */
+        @JvmStatic
+        public fun reloadShaders() {
+            ReloadListener.allShaders.forEach {
+                it.compile(Client.resourceManager)
+            }
+        }
     }
 }

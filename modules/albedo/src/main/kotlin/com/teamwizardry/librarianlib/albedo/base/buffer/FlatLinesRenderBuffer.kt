@@ -1,15 +1,20 @@
 package com.teamwizardry.librarianlib.albedo.base.buffer
 
+import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.albedo.buffer.VertexBuffer
 import com.teamwizardry.librarianlib.albedo.shader.Shader
 import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
+import com.teamwizardry.librarianlib.albedo.shader.uniform.FloatUniform
 import com.teamwizardry.librarianlib.albedo.shader.uniform.FloatVec2Uniform
 import com.teamwizardry.librarianlib.albedo.shader.uniform.Uniform
 import com.teamwizardry.librarianlib.core.util.Client
 import net.minecraft.util.Identifier
-import java.awt.Color
+import java.lang.Math
 
-public class FlatLinesRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatLinesRenderBuffer>(vbo) {
+public class FlatLinesRenderBuffer(vbo: VertexBuffer) :
+    BaseRenderBuffer<FlatLinesRenderBuffer>(vbo, Primitive.LINES_ADJACENCY, Primitive.LINE_STRIP_ADJACENCY),
+    ColorBuffer<FlatLinesRenderBuffer> {
+
     private val color: VertexLayoutElement =
         +VertexLayoutElement("Color", VertexLayoutElement.FloatFormat.UNSIGNED_BYTE, 4, true)
     private val insetWidth: VertexLayoutElement =
@@ -19,30 +24,16 @@ public class FlatLinesRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatLin
 
     private val displaySize: FloatVec2Uniform = +Uniform.vec2.create("DisplaySize")
 
-    public fun color(r: Float, g: Float, b: Float, a: Float): FlatLinesRenderBuffer {
-        start(color)
-        putByte((r * 255).toInt())
-        putByte((g * 255).toInt())
-        putByte((b * 255).toInt())
-        putByte((a * 255).toInt())
-        return this
+    init {
+        bind(defaultShader)
     }
 
-    public fun color(r: Int, g: Int, b: Int, a: Int): FlatLinesRenderBuffer {
+    public override fun color(r: Int, g: Int, b: Int, a: Int): FlatLinesRenderBuffer {
         start(color)
         putByte(r)
         putByte(g)
         putByte(b)
         putByte(a)
-        return this
-    }
-
-    public fun color(color: Color): FlatLinesRenderBuffer {
-        start(this.color)
-        putByte(color.red)
-        putByte(color.green)
-        putByte(color.blue)
-        putByte(color.alpha)
         return this
     }
 
@@ -63,9 +54,9 @@ public class FlatLinesRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatLin
      */
     public fun width(width: Float): FlatLinesRenderBuffer {
         start(insetWidth)
-        putFloat(width/2)
+        putFloat(width / 2)
         start(outsetWidth)
-        putFloat(width/2)
+        putFloat(width / 2)
         return this
     }
 
@@ -75,8 +66,7 @@ public class FlatLinesRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatLin
     }
 
     public companion object {
-        @JvmStatic
-        public val defaultShader: Shader = Shader.build("flat_lines")
+        private val defaultShader: Shader = Shader.build("flat_lines")
             .vertex(Identifier("liblib-albedo:builtin/flat_lines.vert"))
             .geometry(Identifier("liblib-albedo:builtin/flat_lines.geom"))
             .fragment(Identifier("liblib-albedo:builtin/flat_lines.frag"))
@@ -85,9 +75,7 @@ public class FlatLinesRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatLin
         @JvmStatic
         @get:JvmName("getShared")
         public val SHARED: FlatLinesRenderBuffer by lazy {
-            val buffer = FlatLinesRenderBuffer(VertexBuffer.SHARED)
-            buffer.bind(defaultShader)
-            buffer
+            FlatLinesRenderBuffer(VertexBuffer.SHARED)
         }
     }
 }

@@ -11,6 +11,8 @@ loom {
     runConfigs.configureEach {
         vmArg("-Dlibrarianlib.logging.debug=liblib-*")
         vmArg("-javaagent:${mixinDir.resolve("mixin.jar").absolutePath}")
+        vmArg("-Xlog:redefine+class+normalize=info")
+        vmArg("-Dmixin.agentLogging=false")
         isIdeConfigGenerated = true
     }
 

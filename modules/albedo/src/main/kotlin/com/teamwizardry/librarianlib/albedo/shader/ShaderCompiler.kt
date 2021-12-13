@@ -57,7 +57,7 @@ public object ShaderCompiler {
         if (info.glslVersion < 0)
             throw ShaderCompilationException("No GLSL version found while preprocessing $location")
 
-        val defineText = defines.joinToString("") { "$it\n" }
+        val defineText = defines.joinToString("") { "#define $it 1\n" }
         info.code = "#version ${info.glslVersion}\n$defineText$shaderText"
         return info
     }

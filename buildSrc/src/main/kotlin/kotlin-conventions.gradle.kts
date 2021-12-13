@@ -19,9 +19,7 @@ tasks.withType<KotlinCompile> {
         javaParameters = true
         freeCompilerArgs = freeCompilerArgs + listOf(
             "-Xjvm-default=all",
-            "-Xuse-experimental=kotlin.Experimental",
-            "-Xopt-in=kotlin.ExperimentalStdlibApi",
-            "-Xopt-in=kotlin.ExperimentalUnsignedTypes",
+            "-Xopt-in=kotlin.ExperimentalStdlibApi,kotlin.ExperimentalUnsignedTypes,kotlin.contracts.ExperimentalContracts",
             "-Xinline-classes"
         )
     }

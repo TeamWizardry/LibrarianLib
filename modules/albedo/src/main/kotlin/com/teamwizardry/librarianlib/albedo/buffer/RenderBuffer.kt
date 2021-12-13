@@ -3,6 +3,7 @@ package com.teamwizardry.librarianlib.albedo.buffer
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.AlbedoTypeConversion
+import com.teamwizardry.librarianlib.albedo.base.buffer.BasicBufferImpl
 import com.teamwizardry.librarianlib.albedo.shader.StandardUniforms
 import com.teamwizardry.librarianlib.albedo.shader.Shader
 import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
@@ -16,10 +17,13 @@ import net.minecraft.client.render.BufferRenderer
 import net.minecraft.util.profiler.Profiler
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil
+import java.lang.IllegalArgumentException
 import java.nio.ByteBuffer
 import kotlin.math.min
 
-public abstract class RenderBuffer(private val vbo: VertexBuffer) {
+public abstract class RenderBuffer(private val vbo: VertexBuffer, vararg supportedPrimitives: Primitive) {
+
+    private val supportedPrimitives = supportedPrimitives.toSet()
     private var vao: Int by GlResourceGc.track(this, glGenVertexArrays()) { glDeleteVertexArrays(it) }
     private var byteBuffer: ByteBuffer by GlResourceGc.track(this, MemoryUtil.memAlloc(1)) { MemoryUtil.memFree(it) }
 
@@ -38,8 +42,28 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
         ensureCapacity()
     }
 
-    @JvmOverloads
-    public fun draw(primitive: Primitive, profiler: Profiler? = null) {
+    /**
+     * Duplicate the last vertex
+     */
+    public fun dupVertex() {
+        if(count == 0)
+            throw IllegalStateException("Can't duplicate last vertex of empty buffer")
+        byteBuffer.put(count * stride, byteBuffer, count * stride - 1, stride)
+    }
+
+    public fun clear() {
+        count = 0
+    }
+    public fun draw(primitive: Primitive) {
+        draw(primitive, null)
+    }
+    public fun draw(primitive: Primitive, profiler: Profiler?) {
+        if(supportedPrimitives.isNotEmpty() && primitive !in supportedPrimitives) {
+            throw IllegalArgumentException(
+                "Unsupported primitive $primitive. This render buffer only supports these primitives: " +
+                        "[${supportedPrimitives.joinToString()}]"
+            )
+        }
         BufferRenderer.unbindAll() // Tell Mojang to wrap up their rendering
         if(this.shader == null)
             throw IllegalStateException("RenderBuffer not bound to a shader")
@@ -129,6 +153,44 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer) {
 
     @JvmSynthetic
     protected operator fun VertexLayoutElement.unaryPlus(): VertexLayoutElement = add(this)
+
+    /**
+     * Provides public access to the internal configuration and buffer manipulation functions. Designed for code
+     * requiring mixin-style access (e.g. [BasicBufferImpl])
+     */
+    public interface InternalAccess {
+        public fun add(uniform: Uniform): Uniform
+        public fun add(attribute: VertexLayoutElement): VertexLayoutElement
+        public fun start(attribute: VertexLayoutElement)
+        public fun bind(shader: Shader)
+
+        public fun putDouble(value: Double)
+        public fun putFloat(value: Float)
+        public fun putInt(value: Int)
+        public fun putShort(value: Short)
+        public fun putByte(value: Int)
+        public fun putHalfFloat(value: Float)
+        public fun putFixedFloat(value: Float)
+    }
+
+    /**
+     * Provides public access to the internal configuration and buffer manipulation functions. Designed for code
+     * requiring mixin-style access (e.g. [BasicBufferImpl])
+     */
+    protected val internalAccess: InternalAccess = object : InternalAccess {
+        override fun add(uniform: Uniform): Uniform = this@RenderBuffer.add(uniform)
+        override fun add(attribute: VertexLayoutElement): VertexLayoutElement = this@RenderBuffer.add(attribute)
+        override fun bind(shader: Shader): Unit = this@RenderBuffer.bind(shader)
+
+        override fun start(attribute: VertexLayoutElement): Unit = this@RenderBuffer.start(attribute)
+        override fun putDouble(value: Double): Unit = this@RenderBuffer.putDouble(value)
+        override fun putFloat(value: Float): Unit = this@RenderBuffer.putFloat(value)
+        override fun putInt(value: Int): Unit = this@RenderBuffer.putInt(value)
+        override fun putShort(value: Short): Unit = this@RenderBuffer.putShort(value)
+        override fun putByte(value: Int): Unit = this@RenderBuffer.putByte(value)
+        override fun putHalfFloat(value: Float): Unit = this@RenderBuffer.putHalfFloat(value)
+        override fun putFixedFloat(value: Float): Unit = this@RenderBuffer.putFixedFloat(value)
+    }
 
     private fun useProgram() {
         val shader = this.shader ?: return
