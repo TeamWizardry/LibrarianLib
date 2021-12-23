@@ -1,12 +1,12 @@
 #version 150
 layout (lines_adjacency) in;
+//layout (line_strip, max_vertices = 8) out;
 layout (triangle_strip, max_vertices = 8) out;
 
 #include "liblib-albedo:include/lines.glsl"
 #include "liblib-albedo:include/pixels.glsl"
 
-float bevelAngle = 45. / 180. * 3.14159;
-float bevelLimit = length(corner_offset(vec2(-1, 0), vec2(cos(bevelAngle), sin(bevelAngle))));
+float bevelCoefficient = 1.5;
 
 in GeometryData
 {
@@ -24,15 +24,6 @@ void emit(vec4 pos, vec4 color) {
     gl_Position = pos;
     gs_out.color = color;
     EmitVertex();
-}
-
-// returns t, intersection point is `b + db * t`
-float intersect(vec2 a, vec2 da, vec2 b, vec2 db) {
-    vec2 norm = vec2(-da.y, da.x);
-    if(dot(db, norm) == 0.) {
-        return 1.;
-    }
-    return dot((a - b), norm) / dot(db, norm);
 }
 
 // https://stackoverflow.com/a/2932601/1541907
@@ -83,7 +74,7 @@ vec2 ccw(vec2 v) {
  * [length] is the length of the line segment
  */
 vec4 bevel_test(vec2 corner, float offset, vec2 edge, vec2 direction, float length) {
-    float bevelDistance = offset * 1.5;
+    float bevelDistance = offset * bevelCoefficient;
     vec2 cornerIntersections = intersect2(edge, direction, vec2(0), corner);
     cornerIntersections.x = max(-length, cornerIntersections.x);
 
@@ -122,22 +113,6 @@ void main() {
     vec2 px2 = to_pixels(pos2.xy);
     vec2 px3 = to_pixels(pos3.xy);
 
-    //                             |    |     |
-    //         x-------------------x    |     |
-    //        / 2                4  \   |     |
-    //       /                       \  |     |
-    //      x 1                       \ |     *
-    //     / \                         \|    /
-    //    /   #-  -  -  -  -  -  -  -  -#   /
-    //   /    |\                         \ /
-    //  *     | \                       6 x
-    //  |     |  \                       /
-    //  |     |   \ 3                 5 /
-    //  |     |    x-------------------x
-    //  |     |    |
-    //  |     |    |
-
-
     vec2 center = (px1 + px2) / 2;
     float length = length(px2 - px1);
     vec2 direction = (px2 - px1) / length;
@@ -147,50 +122,40 @@ void main() {
         vec2 inset = normal * gs_in[1].insetWidth;
         vec2 outset = normal * gs_in[1].outsetWidth;
 
-        vec2 corner = normalize(cw(px1 - px0)) + normal;
-
-        if (corner == vec2(0, 0)) {
-            emit(vec4(from_pixels(px1 + inset), pos1.z, 1.), vec4(1, 0, 1, 1));
-            emit(vec4(from_pixels(px1 + outset), pos1.z, 1.), vec4(0, 1, 1, 1));
+        if (dot(px1 - px2, px1 - px0) == 0.0) { // about 1 degree
+            emit(vec4(from_pixels(px1 + inset), pos1.z, 1.), gs_in[1].color);
+            emit(vec4(from_pixels(px1 + outset), pos1.z, 1.), gs_in[1].color);
         } else {
-            corner = normalize(corner);
+            vec2 corner = normalize(normalize(cw(px1 - px0)) + normal);
 
             vec4 outsetBevel = bevel_test(corner, gs_in[1].outsetWidth, outset, -direction, length);
             vec4 insetBevel = bevel_test(corner, gs_in[1].insetWidth, inset, -direction, length);
 
-            emit(vec4(from_pixels(px1 + insetBevel.zw), pos1.z, 1.), vec4(1, 0, 0, 1));
-            emit(vec4(from_pixels(px1 + outsetBevel.zw), pos1.z, 1.), vec4(0, 1, 0, 1));
-            emit(vec4(from_pixels(px1 + insetBevel.xy), pos1.z, 1.), vec4(1, 0, 1, 1));
-            emit(vec4(from_pixels(px1 + outsetBevel.xy), pos1.z, 1.), vec4(0, 1, 1, 1));
-//            float outsetBevelHit = intersect(outset, -direction, outsetBevelPoint, bevelPlane);
-//            if(outsetBevelHit > 0) {
-//                emit(vec4(from_pixels(px1), pos1.z, 1.), vec4(1, 0, 0, 1));
-//                emit(vec4(from_pixels(px1 + outsetBevelPoint), pos1.z, 1.), vec4(0, 1, 0, 1));
-//                outset = outsetBevelPoint + bevelPlane * outsetBevelHit;
-//            } else {
-//                outset = corner * intersect(outset, -direction, vec2(0), corner);
-//            }
+            emit(vec4(from_pixels(px1 + insetBevel.zw), pos1.z, 1.), gs_in[1].color);
+            emit(vec4(from_pixels(px1 + outsetBevel.zw), pos1.z, 1.), gs_in[1].color);
+            emit(vec4(from_pixels(px1 + insetBevel.xy), pos1.z, 1.), gs_in[1].color);
+            emit(vec4(from_pixels(px1 + outsetBevel.xy), pos1.z, 1.), gs_in[1].color);
         }
-
-        // gs_in[1].color
     }
 
     {
         vec2 inset = normal * gs_in[2].insetWidth;
         vec2 outset = normal * gs_in[2].outsetWidth;
 
-        vec2 corner = normalize(px3 - px2).yx * vec2(1, -1) + normal;
-        if (corner == vec2(0, 0)) {
-            corner = normal;
+        if (dot(px2 - px1, px2 - px3) == 0.0) { // about 1 degree
+            emit(vec4(from_pixels(px2 + inset), pos2.z, 1.), gs_in[2].color);
+            emit(vec4(from_pixels(px2 + outset), pos2.z, 1.), gs_in[2].color);
         } else {
-            corner = normalize(corner);
-            inset = corner * intersect(px2 + inset, direction, px2, corner);
-            outset = corner * intersect(px2 + outset, direction, px2, corner);
-        }
+            vec2 corner = normalize(normalize(ccw(px2 - px3)) + normal);
 
-        emit(vec4(from_pixels(px2 + inset), pos2.z, 1.), vec4(0, 0, 0, 1));
-        emit(vec4(from_pixels(px2 + outset), pos2.z, 1.), vec4(0, 0, 0, 1));
-//        emit(vec4(from_pixels(px2 + outset), pos2.z, 1.), gs_in[2].color);
+            vec4 outsetBevel = bevel_test(corner, gs_in[2].outsetWidth, outset, direction, length);
+            vec4 insetBevel = bevel_test(corner, gs_in[2].insetWidth, inset, direction, length);
+
+            emit(vec4(from_pixels(px2 + insetBevel.xy), pos2.z, 1.), gs_in[2].color);
+            emit(vec4(from_pixels(px2 + outsetBevel.xy), pos2.z, 1.), gs_in[2].color);
+            emit(vec4(from_pixels(px2 + insetBevel.zw), pos2.z, 1.), gs_in[2].color);
+            emit(vec4(from_pixels(px2 + outsetBevel.zw), pos2.z, 1.), gs_in[2].color);
+        }
     }
 
     EndPrimitive();

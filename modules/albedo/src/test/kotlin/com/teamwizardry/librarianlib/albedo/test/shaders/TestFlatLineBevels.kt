@@ -9,32 +9,35 @@ import com.teamwizardry.librarianlib.albedo.test.ShaderTest
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.math.*
+import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.util.math.Vec3d
 import java.awt.Color
-import kotlin.math.PI
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlin.math.*
 
-internal object TestFlatLineBevels : ShaderTest(150, 150) {
+internal object TestFlatLineBevels : ShaderTest(220, 220) {
     override fun doDraw(stack: MatrixStack, matrix: Matrix4d, mousePos: Vec2d) {
         val center = vec(width / 2, height / 2, 0)
-        val direction = (vec(mousePos.x, mousePos.y, 0) - center).normalize()
-        val inset = -15f
-        val outset = 30f
-        val length = width / 2
+//        val direction = (vec(mousePos.x, mousePos.y, 0) - center).normalize()
+        val directionAngle = Client.time.seconds * 2 * PI / 5
+        val direction = vec(sin(directionAngle), cos(directionAngle), 0)
+        val inset = -30f
+        val outset = -5f
+        val length = 65
+        val radius = 110
 
         val startDelta = vec(-length, 0, 0)
         val startNormal = vec(0, 1, 0) / Client.scaleFactor
         val endDelta = direction * length
         val endNormal = vec(-direction.y, direction.x, 0) / Client.scaleFactor
+        val tipDelta = vec(-length / 2, 0, 0)
+        val tipNormal = vec(0, -1, 0) / Client.scaleFactor
 
         run {
             val rb = FlatColorRenderBuffer.SHARED
 
             rb.pos(stack, center).color(0.2f, 0.2f, 0.2f, 1f).endVertex()
 
-            val radius = length + 20
             val steps = 50
             val stepSize = 2 * PI / steps
             for (i in 0..steps) {
@@ -48,30 +51,39 @@ internal object TestFlatLineBevels : ShaderTest(150, 150) {
         run {
             val rb = FlatLinesRenderBuffer.SHARED
 
-            var color = Color(0.78f, 0.33f, 0.07f, 0.5f)
-//            rb.pos(stack, center + startDelta * 1.1).inset(inset).outset(outset).color(color).endVertex()
-//
-//            rb.pos(stack, center + startDelta).inset(inset).outset(outset).color(color).endVertex()
-//            rb.pos(stack, center).inset(inset).outset(outset).color(color).endVertex()
-//
-//            rb.pos(stack, center + endDelta * 1.1).inset(inset).outset(outset).color(color).endVertex()
-//
-//            rb.draw(Primitive.LINE_STRIP_ADJACENCY)
+            var color = Color(0.78f, 0.33f, 0.07f, 1f)
+            rb.pos(stack, center + startDelta).inset(inset).outset(outset).color(color).endVertex()
 
-            RenderSystem.disableCull()
-            color = Color(0.23f, 0.57f, 0.04f, 0.5f)
+            rb.pos(stack, center + startDelta).inset(inset).outset(outset).color(color).endVertex()
+            rb.pos(stack, center).inset(inset).outset(outset).color(color).endVertex()
+
+            rb.pos(stack, center + endDelta).inset(inset).outset(outset).color(color).endVertex()
+
+            rb.draw(Primitive.LINE_STRIP_ADJACENCY)
+
+            color = Color(0.23f, 0.57f, 0.04f, 1f)
             rb.pos(stack, center + startDelta).inset(inset).outset(outset).color(color).endVertex()
 
             rb.pos(stack, center).inset(inset).outset(outset).color(color).endVertex()
             rb.pos(stack, center + endDelta).inset(inset).outset(outset).color(color).endVertex()
 
-            rb.pos(stack, center + endDelta * 1.1).inset(inset).outset(outset).color(color).endVertex()
+            rb.pos(stack, center + endDelta + tipDelta).inset(inset).outset(outset).color(color).endVertex()
 
             rb.draw(Primitive.LINE_STRIP_ADJACENCY)
-            RenderSystem.enableCull()
+
+            color = Color(0.05f, 0.51f, 0.67f, 1f)
+
+            rb.pos(stack, center).inset(inset).outset(outset).color(color).endVertex()
+
+            rb.pos(stack, center + endDelta).inset(inset).outset(outset).color(color).endVertex()
+            rb.pos(stack, center + endDelta + tipDelta).inset(inset).outset(outset).color(color).endVertex()
+
+            rb.pos(stack, center + endDelta + tipDelta).inset(inset).outset(outset).color(color).endVertex()
+
+            rb.draw(Primitive.LINE_STRIP_ADJACENCY)
         }
 
-        run {
+        if(!Screen.hasShiftDown())  {
             val rb = FlatColorRenderBuffer.SHARED
 
             rb.pos(stack, center + startDelta).color(0f, 0f, 0f, 1f).endVertex()
@@ -80,34 +92,67 @@ internal object TestFlatLineBevels : ShaderTest(150, 150) {
             rb.pos(stack, center).color(0f, 0f, 0f, 1f).endVertex()
             rb.pos(stack, center + endDelta).color(0f, 0f, 0f, 1f).endVertex()
 
-            val br = 1f
-            val bg = 0.75f
-            rb.pos(stack, center + startDelta + startNormal * outset).color(br, 0f, 0f, 1f).endVertex()
-            rb.pos(stack, center - startDelta + startNormal * outset).color(br, 0f, 0f, 1f).endVertex()
-            rb.pos(stack, center + startDelta + startNormal * inset).color(br, 0f, 0f, 1f).endVertex()
-            rb.pos(stack, center - startDelta + startNormal * inset).color(br, 0f, 0f, 1f).endVertex()
-            rb.pos(stack, center + startDelta + startNormal * outset).color(br, 0f, 0f, 1f).endVertex()
-            rb.pos(stack, center + startDelta + startNormal * inset).color(br, 0f, 0f, 1f).endVertex()
+            rb.pos(stack, center + endDelta).color(0f, 0f, 0f, 1f).endVertex()
+            rb.pos(stack, center + endDelta + tipDelta).color(0f, 0f, 0f, 1f).endVertex()
 
-            rb.pos(stack, center + endDelta + endNormal * outset).color(br, 0f, 0f, 1f).endVertex()
-            rb.pos(stack, center - endDelta + endNormal * outset).color(br, 0f, 0f, 1f).endVertex()
-            rb.pos(stack, center + endDelta + endNormal * inset).color(br, 0f, 0f, 1f).endVertex()
-            rb.pos(stack, center - endDelta + endNormal * inset).color(br, 0f, 0f, 1f).endVertex()
-            rb.pos(stack, center + endDelta + endNormal * outset).color(br, 0f, 0f, 1f).endVertex()
-            rb.pos(stack, center + endDelta + endNormal * inset).color(br, 0f, 0f, 1f).endVertex()
+            fun line(offset: Vec3d, color: Color) {
+                val intercept = vec(offset.y, -offset.x, offset.z).normalize() * (sqrt(1 - offset.lengthSquared() / (radius * radius)) * radius)
+                rb.pos(stack, center + offset + intercept).color(color).endVertex()
+                rb.pos(stack, center + offset - intercept).color(color).endVertex()
+            }
 
-            val insetBevel = inset * 1.5 / Client.scaleFactor
-            val outsetBevel = outset * 1.5 / Client.scaleFactor
-            val cornerNormal = (vec(startDelta.y, -startDelta.x, startDelta.z).normalize() + vec(-endDelta.y, endDelta.x, endDelta.z).normalize()).normalize()
-            val cornerPerpendicular = vec(cornerNormal.y, -cornerNormal.x, cornerNormal.z)
-            rb.pos(stack, center + cornerNormal * insetBevel).color(0f, bg, 0f, 1f).endVertex()
-            rb.pos(stack, center + cornerNormal * (outsetBevel + 15)).color(0f, bg, 0f, 1f).endVertex()
+            val red = Color(1f, 0f, 0f, 0.5f)
+            val green = Color(0f, 0.75f, 0f, 0.5f)
+            line(startNormal * outset, red)
+            line(startNormal * inset, red)
 
-            rb.pos(stack, center + cornerNormal * insetBevel - cornerPerpendicular * 50.0).color(0f, bg, 0f, 1f).endVertex()
-            rb.pos(stack, center + cornerNormal * insetBevel + cornerPerpendicular * 50.0).color(0f, bg, 0f, 1f).endVertex()
+            line(endNormal * outset, red)
+            line(endNormal * inset, red)
 
-            rb.pos(stack, center + cornerNormal * outsetBevel - cornerPerpendicular * 50.0).color(0f, bg, 0f, 1f).endVertex()
-            rb.pos(stack, center + cornerNormal * outsetBevel + cornerPerpendicular * 50.0).color(0f, bg, 0f, 1f).endVertex()
+            line(vec(0, endDelta.y, 0) + tipNormal * outset, red)
+            line(vec(0, endDelta.y, 0) + tipNormal * inset, red)
+
+            val bevelCoefficient = 1.5
+            run {
+                val insetBevel = inset * bevelCoefficient / Client.scaleFactor
+                val outsetBevel = outset * bevelCoefficient / Client.scaleFactor
+
+                val cornerNormal = (vec(startDelta.y, -startDelta.x, startDelta.z).normalize() +
+                        vec(-endDelta.y, endDelta.x, endDelta.z).normalize()).normalize()
+                val cornerPerpendicular = vec(cornerNormal.y, -cornerNormal.x, cornerNormal.z)
+                rb.pos(stack, center + cornerNormal * insetBevel).color(green).endVertex()
+                rb.pos(stack, center + cornerNormal * outsetBevel).color(green).endVertex()
+
+                rb.pos(stack, center + cornerNormal * insetBevel - cornerPerpendicular * inset).color(green)
+                    .endVertex()
+                rb.pos(stack, center + cornerNormal * insetBevel + cornerPerpendicular * inset).color(green)
+                    .endVertex()
+
+                rb.pos(stack, center + cornerNormal * outsetBevel - cornerPerpendicular * outset).color(green)
+                    .endVertex()
+                rb.pos(stack, center + cornerNormal * outsetBevel + cornerPerpendicular * outset).color(green)
+                    .endVertex()
+            }
+
+            run {
+                val insetBevel = inset * bevelCoefficient / Client.scaleFactor
+                val outsetBevel = outset * bevelCoefficient / Client.scaleFactor
+                val cornerNormal = (vec(-tipDelta.y, tipDelta.x, tipDelta.z).normalize() +
+                        vec(-endDelta.y, endDelta.x, endDelta.z).normalize()).normalize()
+                val cornerPerpendicular = vec(cornerNormal.y, -cornerNormal.x, cornerNormal.z)
+                rb.pos(stack, center + endDelta + cornerNormal * insetBevel).color(green).endVertex()
+                rb.pos(stack, center + endDelta + cornerNormal * outsetBevel).color(green).endVertex()
+
+                rb.pos(stack, center + endDelta + cornerNormal * insetBevel - cornerPerpendicular * inset).color(green)
+                    .endVertex()
+                rb.pos(stack, center + endDelta + cornerNormal * insetBevel + cornerPerpendicular * inset).color(green)
+                    .endVertex()
+
+                rb.pos(stack, center + endDelta + cornerNormal * outsetBevel - cornerPerpendicular * outset).color(green)
+                    .endVertex()
+                rb.pos(stack, center + endDelta + cornerNormal * outsetBevel + cornerPerpendicular * outset).color(green)
+                    .endVertex()
+            }
 
             rb.draw(Primitive.LINES)
         }
