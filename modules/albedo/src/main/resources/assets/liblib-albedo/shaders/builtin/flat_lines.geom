@@ -35,6 +35,66 @@ float intersect(vec2 a, vec2 da, vec2 b, vec2 db) {
     return dot((a - b), norm) / dot(db, norm);
 }
 
+// https://stackoverflow.com/a/2932601/1541907
+// params: A start, A direction, B start, B direction
+// returns: vec2(tA, tB)
+vec2 intersect2(vec2 as, vec2 ad, vec2 bs, vec2 bd) {
+    vec2 dd = bs - as;
+//    float det = dot(vec2(bd.x, -bd.y), ad.yx);
+    float det = bd.x * ad.y - bd.y * ad.x;
+    return vec2(
+    (dd.y * bd.x - dd.x * bd.y) / det,
+    (dd.y * ad.x - dd.x * ad.y) / det
+    );
+}
+// params: A start, A direction, B start, B direction
+// returns: tA
+float intersect1(vec2 as, vec2 ad, vec2 bs, vec2 bd) {
+    vec2 dd = bs - as;
+    float det = bd.x * ad.y - bd.y * ad.x;
+    return (dd.y * bd.x - dd.x * bd.y) / det;
+}
+
+// the perpendicular vector 90 degrees clockwise
+vec2 cw(vec2 v) {
+    return vec2(v.y, -v.x);
+}
+// the perpendicular vector 90 degrees counter-clockwise
+vec2 ccw(vec2 v) {
+    return vec2(-v.y, v.x);
+}
+
+/**
+ * all coordinates have the vertex at 0,0
+ *
+ * [corner] - the normalized midline between the two line segments
+ * [bevelDistance] - The distance along the [corner] to bevel at
+ * [edge] - the size and direction of the edge, expressed as an offset from the vertex
+ *
+ *    x
+ *     \___._________
+ *    / \  |
+ *   /   \ |
+ *  /     \|
+ * /       *---------
+ *        /
+ *       /
+ *
+ * [corner] is the normalized vector from '*' to 'x'
+ * [bevelDistance] is the distance between '*' and 'x' (may be negative)
+ * [edge] is the vector from '*' to '.'
+ */
+vec4 bevel_test(vec2 corner, float bevelDistance, vec2 edge, vec2 direction) {
+    vec2 cornerIntersections = intersect2(edge, direction, vec2(0), corner);
+    vec2 bevelDirection = cw(corner);
+    float bevelIntersection = intersect1(edge, direction, corner * bevelDistance, bevelDirection);
+
+    return vec4(
+    edge + direction * min(bevelIntersection, cornerIntersections.x),
+    corner * min(bevelDistance, cornerIntersections.y)
+    );
+}
+
 void main() {
     vec4 screenScale = vec4(DisplaySize, 1, 1);
 
@@ -70,23 +130,39 @@ void main() {
 
     vec2 center = (px1 + px2) / 2;
     vec2 direction = normalize(px2 - px1);
-    vec2 normal = vec2(direction.y, -direction.x);
+    vec2 normal = cw(direction);
 
     {
         vec2 inset = normal * -gs_in[1].insetWidth;
         vec2 outset = normal * gs_in[1].outsetWidth;
 
-        vec2 corner = normalize(px1 - px0).yx * vec2(1, -1) + normal;
+        vec2 corner = normalize(cw(px1 - px0)) + normal;
+
         if (corner == vec2(0, 0)) {
-            corner = normal;
+            emit(vec4(from_pixels(px1 + inset), pos1.z, 1.), vec4(1, 0, 1, 1));
+            emit(vec4(from_pixels(px1 + outset), pos1.z, 1.), vec4(0, 1, 1, 1));
         } else {
             corner = normalize(corner);
-            inset = corner * intersect(px1 + inset, direction, px1, corner);
-            outset = corner * intersect(px1 + outset, direction, px1, corner);
+
+            float z = sign(dot(-direction, corner));
+            vec4 outsetBevel = bevel_test(corner, gs_in[1].outsetWidth * 1.5, outset, -direction);
+            vec4 insetBevel = bevel_test(corner, -gs_in[1].insetWidth * 1.5, inset, -direction);
+
+            emit(vec4(from_pixels(px1 + insetBevel.zw), pos1.z, 1.), vec4(1, 0, 0, 1));
+            emit(vec4(from_pixels(px1 + outsetBevel.zw), pos1.z, 1.), vec4(0, 1, 0, 1));
+            emit(vec4(from_pixels(px1 + insetBevel.xy), pos1.z, 1.), vec4(1, 0, 1, 1));
+            emit(vec4(from_pixels(px1 + outsetBevel.xy), pos1.z, 1.), vec4(0, 1, 1, 1));
+//            float outsetBevelHit = intersect(outset, -direction, outsetBevelPoint, bevelPlane);
+//            if(outsetBevelHit > 0) {
+//                emit(vec4(from_pixels(px1), pos1.z, 1.), vec4(1, 0, 0, 1));
+//                emit(vec4(from_pixels(px1 + outsetBevelPoint), pos1.z, 1.), vec4(0, 1, 0, 1));
+//                outset = outsetBevelPoint + bevelPlane * outsetBevelHit;
+//            } else {
+//                outset = corner * intersect(outset, -direction, vec2(0), corner);
+//            }
         }
 
-        emit(vec4(from_pixels(px1 + inset), pos1.z, 1.), gs_in[1].color);
-        emit(vec4(from_pixels(px1 + outset), pos1.z, 1.), gs_in[1].color);
+        // gs_in[1].color
     }
 
     {
@@ -102,8 +178,9 @@ void main() {
             outset = corner * intersect(px2 + outset, direction, px2, corner);
         }
 
-        emit(vec4(from_pixels(px2 + inset), pos2.z, 1.), gs_in[2].color);
-        emit(vec4(from_pixels(px2 + outset), pos2.z, 1.), gs_in[2].color);
+        emit(vec4(from_pixels(px2 + inset), pos2.z, 1.), vec4(0, 0, 0, 1));
+        emit(vec4(from_pixels(px2 + outset), pos2.z, 1.), vec4(0, 0, 0, 1));
+//        emit(vec4(from_pixels(px2 + outset), pos2.z, 1.), gs_in[2].color);
     }
 
     EndPrimitive();
