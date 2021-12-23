@@ -67,12 +67,8 @@ vec2 ccw(vec2 v) {
 /**
  * all coordinates have the vertex at 0,0
  *
- * [corner] - the normalized midline between the two line segments
- * [bevelDistance] - The distance along the [corner] to bevel at
- * [edge] - the size and direction of the edge, expressed as an offset from the vertex
- *
  *    x
- *     \___._________
+ *     \___._________,
  *    / \  |
  *   /   \ |
  *  /     \|
@@ -81,17 +77,31 @@ vec2 ccw(vec2 v) {
  *       /
  *
  * [corner] is the normalized vector from '*' to 'x'
- * [bevelDistance] is the distance between '*' and 'x' (may be negative)
+ * [offset] is the offset distance from '*' to '.' (may be negative)
  * [edge] is the vector from '*' to '.'
+ * [direction] is the vector from ',' to '.' (normalization not needed)
+ * [length] is the length of the line segment
  */
-vec4 bevel_test(vec2 corner, float bevelDistance, vec2 edge, vec2 direction) {
+vec4 bevel_test(vec2 corner, float offset, vec2 edge, vec2 direction, float length) {
+    float bevelDistance = offset * 1.5;
     vec2 cornerIntersections = intersect2(edge, direction, vec2(0), corner);
+    cornerIntersections.x = max(-length, cornerIntersections.x);
+
+    // dot is positive if the angle is > 90 degrees - https://stackoverflow.com/a/49535408/1541907
+    // if the offset is negative and the vectors are the same direction, we're an inner corner, so no bevel
+    // if the offset is positive and the vectors are opposite directions, we're an inner corner, so no bevel
+    if(sign(offset) != sign(dot(corner, direction))) {
+        vec2 point = edge + direction * cornerIntersections.x;
+        return vec4(point, point);
+    }
+
     vec2 bevelDirection = cw(corner);
     float bevelIntersection = intersect1(edge, direction, corner * bevelDistance, bevelDirection);
 
+    vec2 intersectionPoint = edge + direction * max(0.0, min(bevelIntersection, cornerIntersections.x));
     return vec4(
-    edge + direction * min(bevelIntersection, cornerIntersections.x),
-    corner * min(bevelDistance, cornerIntersections.y)
+        intersectionPoint,
+        abs(bevelDistance) < abs(cornerIntersections.y) ? corner * bevelDistance : intersectionPoint
     );
 }
 
@@ -129,11 +139,12 @@ void main() {
 
 
     vec2 center = (px1 + px2) / 2;
-    vec2 direction = normalize(px2 - px1);
+    float length = length(px2 - px1);
+    vec2 direction = (px2 - px1) / length;
     vec2 normal = cw(direction);
 
     {
-        vec2 inset = normal * -gs_in[1].insetWidth;
+        vec2 inset = normal * gs_in[1].insetWidth;
         vec2 outset = normal * gs_in[1].outsetWidth;
 
         vec2 corner = normalize(cw(px1 - px0)) + normal;
@@ -144,9 +155,8 @@ void main() {
         } else {
             corner = normalize(corner);
 
-            float z = sign(dot(-direction, corner));
-            vec4 outsetBevel = bevel_test(corner, gs_in[1].outsetWidth * 1.5, outset, -direction);
-            vec4 insetBevel = bevel_test(corner, -gs_in[1].insetWidth * 1.5, inset, -direction);
+            vec4 outsetBevel = bevel_test(corner, gs_in[1].outsetWidth, outset, -direction, length);
+            vec4 insetBevel = bevel_test(corner, gs_in[1].insetWidth, inset, -direction, length);
 
             emit(vec4(from_pixels(px1 + insetBevel.zw), pos1.z, 1.), vec4(1, 0, 0, 1));
             emit(vec4(from_pixels(px1 + outsetBevel.zw), pos1.z, 1.), vec4(0, 1, 0, 1));
@@ -166,7 +176,7 @@ void main() {
     }
 
     {
-        vec2 inset = normal * -gs_in[2].insetWidth;
+        vec2 inset = normal * gs_in[2].insetWidth;
         vec2 outset = normal * gs_in[2].outsetWidth;
 
         vec2 corner = normalize(px3 - px2).yx * vec2(1, -1) + normal;

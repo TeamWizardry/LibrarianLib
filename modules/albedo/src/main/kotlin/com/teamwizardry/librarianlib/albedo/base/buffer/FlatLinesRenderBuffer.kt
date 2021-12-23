@@ -54,7 +54,7 @@ public class FlatLinesRenderBuffer(vbo: VertexBuffer) :
      */
     public fun width(width: Float): FlatLinesRenderBuffer {
         start(insetWidth)
-        putFloat(width / 2)
+        putFloat(-width / 2)
         start(outsetWidth)
         putFloat(width / 2)
         return this

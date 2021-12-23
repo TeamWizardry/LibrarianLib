@@ -12,15 +12,15 @@ internal object TestFlatLinesRenderBuffer : ShaderTest() {
     override fun doDraw(stack: MatrixStack, matrix: Matrix4d, mousePos: Vec2d) {
         run {
             val rb = FlatLinesRenderBuffer.SHARED
-            rb.pos(matrix, maxX, minY, 0).inset(-5f).outset(15f).color(0f, 1f, 0f, 1f).endVertex()
+            rb.pos(matrix, maxX, minY, 0).inset(5f).outset(15f).color(0f, 1f, 0f, 1f).endVertex()
 
-            rb.pos(matrix, minX, minY, 0).inset(-5f).outset(15f).color(1f, 0f, 0f, 1f).endVertex()
-            rb.pos(matrix, minX, maxY, 0).inset(-5f).outset(15f).color(1f, 1f, 0f, 1f).endVertex()
-            rb.pos(matrix, maxX, maxY, 0).inset(-5f).outset(15f).color(1f, 1f, 1f, 1f).endVertex()
-            rb.pos(matrix, maxX, minY, 0).inset(-5f).outset(15f).color(0f, 1f, 0f, 1f).endVertex()
-            rb.pos(matrix, minX, minY, 0).inset(-5f).outset(15f).color(1f, 0f, 0f, 1f).endVertex()
+            rb.pos(matrix, minX, minY, 0).inset(5f).outset(15f).color(1f, 0f, 0f, 1f).endVertex()
+            rb.pos(matrix, minX, maxY, 0).inset(5f).outset(15f).color(1f, 1f, 0f, 1f).endVertex()
+            rb.pos(matrix, maxX, maxY, 0).inset(5f).outset(15f).color(1f, 1f, 1f, 1f).endVertex()
+            rb.pos(matrix, maxX, minY, 0).inset(5f).outset(15f).color(0f, 1f, 0f, 1f).endVertex()
+            rb.pos(matrix, minX, minY, 0).inset(5f).outset(15f).color(1f, 0f, 0f, 1f).endVertex()
 
-            rb.pos(matrix, minX, maxY, 0).inset(-5f).outset(15f).color(1f, 1f, 0f, 1f).endVertex()
+            rb.pos(matrix, minX, maxY, 0).inset(5f).outset(15f).color(1f, 1f, 0f, 1f).endVertex()
 
             rb.draw(Primitive.LINE_STRIP_ADJACENCY)
         }
