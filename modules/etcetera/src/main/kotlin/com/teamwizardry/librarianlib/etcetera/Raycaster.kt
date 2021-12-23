@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.etcetera
 
 import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.etcetera.mixin.WorldEntityLookupMixin
+import net.minecraft.block.ShapeContext
 import net.minecraft.entity.Entity
 import net.minecraft.util.TypeFilter
 import net.minecraft.util.math.Box
@@ -138,6 +139,9 @@ public class Raycaster {
      * The result of the raycast is made available as properties of this raycaster. It is ***vitally*** important that
      * you call [reset] once you're done with the result to prepare for the next raycast.
      *
+     * @param shapeContext The context to use when getting block shapes. Generally [ShapeContext.of(entity)][ShapeContext.of].
+     *  Defaults to [ShapeContext.absent] if null
+     *
      * @see hitType
      * @see blockX
      * @see blockY
@@ -155,10 +159,11 @@ public class Raycaster {
     public fun cast(
         world: World,
         blockMode: BlockMode,
+        shapeContext: ShapeContext?,
         startX: Double, startY: Double, startZ: Double,
         endX: Double, endY: Double, endZ: Double
     ) {
-        cast(world, blockMode, FluidMode.NONE, null, null, startX, startY, startZ, endX, endY, endZ)
+        cast(world, blockMode, FluidMode.NONE, shapeContext, null, null, startX, startY, startZ, endX, endY, endZ)
     }
 
     /**
@@ -171,6 +176,8 @@ public class Raycaster {
      *
      * @param blockMode The type of collisions to make with solid blocks
      * @param fluidMode The type of collisions to make with fluids
+     * @param shapeContext The context to use when getting block shapes. Generally [ShapeContext.of(entity)][ShapeContext.of].
+     *  Defaults to [ShapeContext.absent] if null
      * @param entityFilter If non-null, a filter dictating which entity types to collide against. Using this will result
      *  in better performance than using an equivalent [entityPredicate]
      * @param entityPredicate If non-null, a predicate dictating which entities to collide against.
@@ -193,6 +200,7 @@ public class Raycaster {
         world: World,
         blockMode: BlockMode,
         fluidMode: FluidMode,
+        shapeContext: ShapeContext?,
         entityFilter: TypeFilter<Entity, Entity>?,
         entityPredicate: Predicate<Entity>?,
         startX: Double, startY: Double, startZ: Double,
@@ -212,7 +220,7 @@ public class Raycaster {
         invVelZ = 1.0 / (endZ - startZ)
 
         if (blockMode != BlockMode.NONE || fluidMode != FluidMode.NONE) {
-            castBlocks(world, blockMode, fluidMode)
+            castBlocks(world, blockMode, fluidMode, shapeContext ?: ShapeContext.absent())
         }
         if (entityFilter != null || entityPredicate != null) {
             castEntities(world, entityFilter, entityPredicate)
@@ -320,14 +328,14 @@ public class Raycaster {
     /**
      * The implementation of block raycasting.
      */
-    private fun castBlocks(world: World, blockMode: BlockMode, fluidMode: FluidMode) {
+    private fun castBlocks(world: World, blockMode: BlockMode, fluidMode: FluidMode, shapeContext: ShapeContext) {
         // Only blocks the ray directly passes through are checked.
         intersectingIterator.reset(
             startX, startY, startZ,
             endX, endY, endZ
         )
         for (block in intersectingIterator) {
-            if (castBlock(world, blockMode, fluidMode, block.x, block.y, block.z))
+            if (castBlock(world, blockMode, fluidMode, shapeContext, block.x, block.y, block.z))
                 break // short-circuit at the first hit since we iterate near to far
         }
     }
@@ -336,7 +344,15 @@ public class Raycaster {
      * Cast the ray through the passed block.
      * @return true if the block was hit
      */
-    private fun castBlock(world: World, blockMode: BlockMode, fluidMode: FluidMode, blockX: Int, blockY: Int, blockZ: Int): Boolean {
+    private fun castBlock(
+        world: World,
+        blockMode: BlockMode,
+        fluidMode: FluidMode,
+        shapeContext: ShapeContext,
+        blockX: Int,
+        blockY: Int,
+        blockZ: Int
+    ): Boolean {
         mutablePos.set(blockX, blockY, blockZ)
         val hitBlock = when (blockMode) {
             BlockMode.NONE -> {
@@ -344,11 +360,11 @@ public class Raycaster {
             }
             BlockMode.COLLISION -> {
                 val state = world.getBlockState(mutablePos)
-                castShape(blockX, blockY, blockZ, state.getCollisionShape(world, mutablePos))
+                castShape(blockX, blockY, blockZ, state.getCollisionShape(world, mutablePos, shapeContext))
             }
             BlockMode.VISUAL -> {
                 val state = world.getBlockState(mutablePos)
-                castShape(blockX, blockY, blockZ, state.getRaycastShape(world, mutablePos))
+                castShape(blockX, blockY, blockZ, state.getOutlineShape(world, mutablePos, shapeContext))
             }
         }
         if (hitBlock) {
@@ -467,7 +483,7 @@ public class Raycaster {
                 lookup.forEachIntersects(
                     entityFilter,
                     Box(
-                        segment.minX, segment.minX, segment.minZ,
+                        segment.minX, segment.minY, segment.minZ,
                         segment.maxX, segment.maxY, segment.maxZ
                     )
                 ) {

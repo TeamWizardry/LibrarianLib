@@ -10,6 +10,7 @@ import com.teamwizardry.librarianlib.testcore.content.configure
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.api.ModInitializer
+import net.minecraft.block.ShapeContext
 import net.minecraft.entity.Entity
 import net.minecraft.particle.BlockStateParticleEffect
 import net.minecraft.particle.ParticleEffect
@@ -72,6 +73,7 @@ internal object LibLibEtceteraTest {
                             player.world,
                             Raycaster.BlockMode.COLLISION,
                             Raycaster.FluidMode.ANY,
+                            ShapeContext.of(this.player),
                             null, Predicate { true },
                             eyePos.x, eyePos.y, eyePos.z,
                             eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
@@ -130,7 +132,7 @@ internal object LibLibEtceteraTest {
                         val eyePos = target.getCameraPosVec(0f)
                         val look = target.rotationVector * 100
                         clientRaycaster.cast(
-                            world, blockMode, fluidMode, entityFilter, entityPredicate,
+                            world, blockMode, fluidMode, null, entityFilter, entityPredicate,
                             eyePos.x, eyePos.y, eyePos.z,
                             eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                         )
@@ -150,7 +152,7 @@ internal object LibLibEtceteraTest {
                         val eyePos = target.getCameraPosVec(0f)
                         val look = target.rotationVector * 100
                         serverRaycaster.cast(
-                            world, blockMode, fluidMode, entityFilter, entityPredicate,
+                            world, blockMode, fluidMode, null, entityFilter, entityPredicate,
                             eyePos.x, eyePos.y, eyePos.z,
                             eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                         )
@@ -181,7 +183,7 @@ internal object LibLibEtceteraTest {
                             val eyePos = player.getCameraPosVec(0f)
                             val look = player.rotationVector * 20
                             serverRaycaster.cast(
-                                player.world, blockMode, fluidMode, entityFilter, entityPredicate,
+                                player.world, blockMode, fluidMode, ShapeContext.of(player), entityFilter, entityPredicate,
                                 eyePos.x, eyePos.y, eyePos.z,
                                 eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                             )
@@ -201,7 +203,7 @@ internal object LibLibEtceteraTest {
                         val eyePos = player.getCameraPosVec(0f)
                         val look = player.rotationVector * 20
                         clientRaycaster.cast(
-                            player.world, blockMode, fluidMode, entityFilter, entityPredicate,
+                            player.world, blockMode, fluidMode, ShapeContext.of(player), entityFilter, entityPredicate,
                             eyePos.x, eyePos.y, eyePos.z,
                             eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                         )
