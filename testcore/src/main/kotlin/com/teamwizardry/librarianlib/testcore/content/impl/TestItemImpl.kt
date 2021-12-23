@@ -25,8 +25,9 @@ public open class TestItemImpl(public val config: TestItem): Item(config.propert
         context: TooltipContext
     ) {
         super.appendTooltip(stack, world, tooltip, context)
-        if (config.description != null) {
-            val description = TranslatableText(this.registryId.makeTranslationKey("item", "tooltip"))
+        val descriptionLines = config.description?.lines()?.size ?: 0
+        for(i in 0 until descriptionLines) {
+            val description = TranslatableText(this.registryId.makeTranslationKey("item", "tooltip.$i"))
             description.style.withFormatting(Formatting.GRAY)
             tooltip.add(description)
         }

@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_16",
   "refmap": "ll/etcetera/etcetera-refmap.json",
   "mixins": [
+    "WorldEntityLookupMixin"
   ],
   "client": [
   ],

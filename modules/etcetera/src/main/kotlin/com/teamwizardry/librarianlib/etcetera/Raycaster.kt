@@ -1,12 +1,11 @@
 package com.teamwizardry.librarianlib.etcetera
 
-import com.teamwizardry.librarianlib.core.util.QUILT_TODO
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import it.unimi.dsi.fastutil.longs.LongSet
+import com.teamwizardry.librarianlib.core.util.mixinCast
+import com.teamwizardry.librarianlib.etcetera.mixin.WorldEntityLookupMixin
 import net.minecraft.entity.Entity
+import net.minecraft.util.TypeFilter
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.ChunkPos
 import net.minecraft.util.shape.VoxelShape
 import net.minecraft.util.shape.VoxelShapes
 import net.minecraft.world.World
@@ -51,6 +50,13 @@ public class Raycaster {
      * The fraction along the raycast that an impact occurred, or 1.0 if no impact occurred
      */
     public var fraction: Double = 0.0
+        private set
+
+    /**
+     * The depth of the hit. This is the distance from the entrance to the exit point, expressed as a multiple of the
+     * ray's length, or zero if no impact occurred.
+     */
+    public var depth: Double = 0.0
         private set
 
     /**
@@ -138,6 +144,7 @@ public class Raycaster {
      * @see blockZ
      * @see entity
      * @see fraction
+     * @see depth
      * @see hitX
      * @see hitY
      * @see hitZ
@@ -148,21 +155,25 @@ public class Raycaster {
     public fun cast(
         world: World,
         blockMode: BlockMode,
-        startX: Double, startY: Double, startZ: Double, endX: Double, endY: Double, endZ: Double
+        startX: Double, startY: Double, startZ: Double,
+        endX: Double, endY: Double, endZ: Double
     ) {
-        cast(world, blockMode, FluidMode.NONE, null, startX, startY, startZ, endX, endY, endZ)
+        cast(world, blockMode, FluidMode.NONE, null, null, startX, startY, startZ, endX, endY, endZ)
     }
 
     /**
      * Cast the ray through the passed world, colliding with blocks and fluids using the specified modes, and colliding
-     * with entities according to the specified filter, if present. An [entityFilter] of `null` will ignore entities.
+     * with entities according to the specified filter, if present. Passing null for both [entityFilter] and
+     * [entityPredicate] will ignore entities.
      *
      * The result of the raycast is made available as properties of this raycaster. It is ***vitally*** important that
      * you call [reset] once you're done with the result to prepare for the next raycast and avoid leaking [entity].
      *
      * @param blockMode The type of collisions to make with solid blocks
      * @param fluidMode The type of collisions to make with fluids
-     * @param entityFilter If non-null, a predicate dictating which entities to collide against.
+     * @param entityFilter If non-null, a filter dictating which entity types to collide against. Using this will result
+     *  in better performance than using an equivalent [entityPredicate]
+     * @param entityPredicate If non-null, a predicate dictating which entities to collide against.
      *
      * @see hitType
      * @see blockX
@@ -170,6 +181,7 @@ public class Raycaster {
      * @see blockZ
      * @see entity
      * @see fraction
+     * @see depth
      * @see hitX
      * @see hitY
      * @see hitZ
@@ -181,8 +193,10 @@ public class Raycaster {
         world: World,
         blockMode: BlockMode,
         fluidMode: FluidMode,
-        entityFilter: Predicate<Entity>?,
-        startX: Double, startY: Double, startZ: Double, endX: Double, endY: Double, endZ: Double
+        entityFilter: TypeFilter<Entity, Entity>?,
+        entityPredicate: Predicate<Entity>?,
+        startX: Double, startY: Double, startZ: Double,
+        endX: Double, endY: Double, endZ: Double
     ) {
         reset()
         this.startX = startX
@@ -200,8 +214,8 @@ public class Raycaster {
         if (blockMode != BlockMode.NONE || fluidMode != FluidMode.NONE) {
             castBlocks(world, blockMode, fluidMode)
         }
-        if (entityFilter != null) {
-            castEntities(world, entityFilter)
+        if (entityFilter != null || entityPredicate != null) {
+            castEntities(world, entityFilter, entityPredicate)
         }
     }
 
@@ -211,6 +225,7 @@ public class Raycaster {
     public fun reset() {
         hitType = HitType.NONE
         fraction = 1.0
+        depth = 0.0
         normalX = 0.0
         normalY = 0.0
         normalZ = 0.0
@@ -293,6 +308,7 @@ public class Raycaster {
 
     private val intersectingIterator = IntersectingBlocksIterator()
     private val raycaster = DirectRaycaster()
+    private val boundingBoxSegmenter = RayBoundingBoxSegmenter()
 
     // v-------------------------------- Blocks -------------------------------v
     private val mutablePos = BlockPos.Mutable()
@@ -399,6 +415,7 @@ public class Raycaster {
                 invVelX, invVelY, invVelZ
             )) {
             fraction = raycaster.distance
+            depth = raycaster.depth
             normalX = raycaster.normalX
             normalY = raycaster.normalY
             normalZ = raycaster.normalZ
@@ -425,64 +442,38 @@ public class Raycaster {
 
     // v------------------------------- Entities ------------------------------v
 
-    private val entityList = ArrayList<Entity>()
-
-    /**
-     * The chunks we've already tested against. [castEntityChunks] runs four times with slightly different chunks, so
-     * this allows us to skip chunks we've already checked.
-     */
-    private val visitedEntityChunks: LongSet = LongOpenHashSet()
-
     /**
      * The implementation of entity raycasting. This checks against entities on a per-chunk basis
      */
-    private fun castEntities(world: World, entityFilter: Predicate<Entity>) {
-        val fullBoundingBox = Box(startX, startY, startZ, endX, endY, endZ)
-        val radius = 2.0 // Vanilla hard-codes 2.0, forge had a custom patch that would allow mods to increase this.
-        visitedEntityChunks.clear()
-        // iterate the chunks four times, skipping any duplicates. This should eliminate cases where an entity's
-        // bounding box extends outside its chunk
-        castEntityChunks(world, fullBoundingBox, 0.0, radius, entityFilter)
-        castEntityChunks(world, fullBoundingBox, radius, 0.0, entityFilter)
-        castEntityChunks(world, fullBoundingBox, 0.0, -radius, entityFilter)
-        castEntityChunks(world, fullBoundingBox, -radius, 0.0, entityFilter)
-    }
+    private fun castEntities(world: World, entityFilter: TypeFilter<Entity, Entity>?, entityPredicate: Predicate<Entity>?) {
+        boundingBoxSegmenter.reset(startX, startY, startZ, endX, endY, endZ, 32.0)
 
-    /**
-     * Cast against the entities in the chunks the ray passes through. For purposes of iterating chunks, the ray is
-     * offset by [offsetX] and [offsetZ]. This method is called with several different offsets, ensuring that entities
-     * that slightly overlap their chunk boundaries are still caught and tested against. Any chunks that have already
-     * been tested (according to [visitedEntityChunks]) will be skipped.
-     *
-     * As an additional optimization, the chunk iteration will short-circuit two chunks after the chunk itself is
-     * farther than the current hit fraction. It short-circuits two chunks later because if the ray is passing near the
-     * corner of three chunks, then either the adjacent chunk (the first one where distance > fraction) or the diagonal
-     * chunk (the one after that) may contain entities that dwarf the current hit. After that point however, no
-     * entities will ever be any closer.
-     *
-     * Granted, iterator distances may be slightly off due to the passed offset, but in every case that an iterator
-     * being slightly early makes a chunk worth of difference, the hit is necessarily going to be on the leading edge
-     * of the chunk, so nothing will be able to dwarf it from more than two chunks away.
-     */
-    private fun castEntityChunks(world: World, boundingBox: Box, offsetX: Double, offsetZ: Double, entityFilter: Predicate<Entity>) {
-        intersectingIterator.reset(
-            (startX + offsetX) / 16, 0.0, (startZ + offsetZ) / 16,
-            (endX + offsetX) / 16, 0.0, (endZ + offsetZ) / 16
-        )
-
-        var shortCircuitCountdown = -1
-        for (chunkPos in intersectingIterator) {
-            if (shortCircuitCountdown < 0 && chunkPos.entryFraction > fraction)
-                shortCircuitCountdown = 2
-            if (shortCircuitCountdown-- == 0)
-                break
-
-            if (visitedEntityChunks.add(ChunkPos.toLong(chunkPos.x, chunkPos.z))) {
-                val chunk = world.chunkManager.getWorldChunk(chunkPos.x, chunkPos.z, false) ?: continue
-                entityList.clear()
-                chunk.QUILT_TODO("collectEntities(null, boundingBox, entityList, entityFilter)")
-                for (i in entityList.indices) {
-                    castEntity(entityList[i])
+        val lookup = mixinCast<WorldEntityLookupMixin>(world).callGetEntityLookup()
+        if(entityFilter == null) {
+            for(segment in boundingBoxSegmenter) {
+                lookup.forEachIntersects(
+                    Box(
+                        segment.minX, segment.minY, segment.minZ,
+                        segment.maxX, segment.maxY, segment.maxZ
+                    )
+                ) {
+                    if(entityPredicate == null || entityPredicate.test(it)) {
+                        castEntity(it)
+                    }
+                }
+            }
+        } else {
+            for(segment in boundingBoxSegmenter) {
+                lookup.forEachIntersects(
+                    entityFilter,
+                    Box(
+                        segment.minX, segment.minX, segment.minZ,
+                        segment.maxX, segment.maxY, segment.maxZ
+                    )
+                ) {
+                    if(entityPredicate == null || entityPredicate.test(it)) {
+                        castEntity(it)
+                    }
                 }
             }
         }
@@ -501,6 +492,7 @@ public class Raycaster {
                 invVelX, invVelY, invVelZ
             )) {
             fraction = raycaster.distance
+            depth = raycaster.depth
             normalX = raycaster.normalX
             normalY = raycaster.normalY
             normalZ = raycaster.normalZ

@@ -159,8 +159,8 @@ public class TestItem(manager: TestModContentManager, id: Identifier): TestConfi
     override fun registerCommon(resources: TestModResourceManager) {
         Registry.register(Registry.ITEM, id, instance)
         resources.lang.item(id, name)
-        description?.also {
-            resources.lang.item(id.append(".tooltip"), it)
+        description?.lines()?.forEachIndexed { i, line ->
+            resources.lang.item(id.append(".tooltip.$i"), line)
         }
     }
 

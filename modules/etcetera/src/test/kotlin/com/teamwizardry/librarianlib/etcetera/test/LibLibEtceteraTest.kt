@@ -15,6 +15,7 @@ import net.minecraft.particle.BlockStateParticleEffect
 import net.minecraft.particle.ParticleEffect
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.util.TypeFilter
 import net.minecraft.util.math.BlockPos
 import java.util.function.Predicate
 
@@ -31,30 +32,30 @@ internal object LibLibEtceteraTest {
             raycaster(
                 "raycast_collision", "Collision",
                 "Block mode: COLLISION\nFluid mode: NONE\nEntity filter: null",
-                Raycaster.BlockMode.COLLISION, Raycaster.FluidMode.NONE, null
+                Raycaster.BlockMode.COLLISION, Raycaster.FluidMode.NONE, null, null
             )
             raycaster(
                 "raycast_visual", "Visual",
                 "Block mode: VISUAL\nFluid mode: NONE\nEntity filter: null",
-                Raycaster.BlockMode.VISUAL, Raycaster.FluidMode.NONE, null
+                Raycaster.BlockMode.VISUAL, Raycaster.FluidMode.NONE, null, null
             )
             raycaster(
                 "raycast_fluids", "Fluids",
                 "Block mode: NONE\nFluid mode: ANY\nEntity filter: null",
-                Raycaster.BlockMode.NONE, Raycaster.FluidMode.ANY, null
+                Raycaster.BlockMode.NONE, Raycaster.FluidMode.ANY, null, null
             )
             raycaster(
                 "raycast_source", "Fluid Source",
                 "Block mode: NONE\nFluid mode: ANY\nEntity filter: null",
-                Raycaster.BlockMode.NONE, Raycaster.FluidMode.SOURCE, null
+                Raycaster.BlockMode.NONE, Raycaster.FluidMode.SOURCE, null, null
             )
             raycaster("raycast_entities", "Entities",
                 "Block mode: NONE\nFluid mode: NONE\nEntity filter: { true }",
-                Raycaster.BlockMode.NONE, Raycaster.FluidMode.NONE, Predicate { true }
+                Raycaster.BlockMode.NONE, Raycaster.FluidMode.NONE, null, Predicate { true }
             )
             raycaster("raycast_all", "All",
                 "Block mode: COLLISION\nFluid mode: ANY\nEntity filter: { true }",
-                Raycaster.BlockMode.COLLISION, Raycaster.FluidMode.ANY, Predicate { true }
+                Raycaster.BlockMode.COLLISION, Raycaster.FluidMode.ANY, null, Predicate { true }
             )
 
 
@@ -68,7 +69,10 @@ internal object LibLibEtceteraTest {
                         val eyePos = player.getCameraPosVec(0f)
                         val look = player.rotationVector * 100
                         serverRaycaster.cast(
-                            player.world, Raycaster.BlockMode.COLLISION, Raycaster.FluidMode.ANY, Predicate { true },
+                            player.world,
+                            Raycaster.BlockMode.COLLISION,
+                            Raycaster.FluidMode.ANY,
+                            null, Predicate { true },
                             eyePos.x, eyePos.y, eyePos.z,
                             eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                         )
@@ -112,8 +116,9 @@ internal object LibLibEtceteraTest {
         }
 
         private fun raycaster(
-            id: String, name: String, desc: String, blockMode: Raycaster.BlockMode,
-            fluidMode: Raycaster.FluidMode, entityFilter: Predicate<Entity>?
+            id: String, name: String, desc: String,
+            blockMode: Raycaster.BlockMode, fluidMode: Raycaster.FluidMode,
+            entityFilter: TypeFilter<Entity, Entity>?, entityPredicate: Predicate<Entity>?
         ) {
             manager.create<TestEntity>(id) {
                 description = desc
@@ -125,7 +130,7 @@ internal object LibLibEtceteraTest {
                         val eyePos = target.getCameraPosVec(0f)
                         val look = target.rotationVector * 100
                         clientRaycaster.cast(
-                            world, blockMode, fluidMode, entityFilter,
+                            world, blockMode, fluidMode, entityFilter, entityPredicate,
                             eyePos.x, eyePos.y, eyePos.z,
                             eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                         )
@@ -145,7 +150,7 @@ internal object LibLibEtceteraTest {
                         val eyePos = target.getCameraPosVec(0f)
                         val look = target.rotationVector * 100
                         serverRaycaster.cast(
-                            world, blockMode, fluidMode, entityFilter,
+                            world, blockMode, fluidMode, entityFilter, entityPredicate,
                             eyePos.x, eyePos.y, eyePos.z,
                             eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                         )
@@ -176,7 +181,7 @@ internal object LibLibEtceteraTest {
                             val eyePos = player.getCameraPosVec(0f)
                             val look = player.rotationVector * 20
                             serverRaycaster.cast(
-                                player.world, blockMode, fluidMode, entityFilter,
+                                player.world, blockMode, fluidMode, entityFilter, entityPredicate,
                                 eyePos.x, eyePos.y, eyePos.z,
                                 eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                             )
@@ -196,7 +201,7 @@ internal object LibLibEtceteraTest {
                         val eyePos = player.getCameraPosVec(0f)
                         val look = player.rotationVector * 20
                         clientRaycaster.cast(
-                            player.world, blockMode, fluidMode, entityFilter,
+                            player.world, blockMode, fluidMode, entityFilter, entityPredicate,
                             eyePos.x, eyePos.y, eyePos.z,
                             eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                         )

@@ -1,10 +1,9 @@
 package com.teamwizardry.librarianlib.etcetera
 
+import com.teamwizardry.librarianlib.math.ceilInt
 import com.teamwizardry.librarianlib.math.floorInt
-import kotlin.math.abs
-import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
+import net.minecraft.util.math.Box
+import kotlin.math.*
 
 /**
  * Loops through the blocks a line segment passes through without making any allocations. This object is an iterator
@@ -263,5 +262,91 @@ public class DirectRaycaster {
             reset()
         }
         return false
+    }
+}
+
+/**
+ * Breaks a line segment's AABB into many smaller bounding boxes. This object is an iterator that repeatedly returns
+ * itself after modifying the [minX]/[maxX], [minY]/[maxY], and [minZ]/[maxZ] properties. Call [reset] to begin a new
+ * segment.
+ */
+public class RayBoundingBoxSegmenter : Iterator<RayBoundingBoxSegmenter> {
+    public var minX: Double = 0.0
+        private set
+    public var minY: Double = 0.0
+        private set
+    public var minZ: Double = 0.0
+        private set
+    public var maxX: Double = 0.0
+        private set
+    public var maxY: Double = 0.0
+        private set
+    public var maxZ: Double = 0.0
+        private set
+
+    /**
+     * The number of segments the bounding box has been split into
+     */
+    public var segmentCount: Int = 0
+        private set
+
+    /**
+     * The index of the current segment. Set to -1 before iteration begins.
+     */
+    public var segmentIndex: Int = 0
+        private set
+
+    /**
+     * The distance to shift the bounding box on each iteration.
+     */
+    private var shiftX: Double = 0.0
+    private var shiftY: Double = 0.0
+    private var shiftZ: Double = 0.0
+
+    /**
+     * @param limit The maximum edge length. The bounding box will be segmented such that none of its dimensions
+     * exceed this value.
+     */
+    public fun reset(
+        x0: Double, y0: Double, z0: Double,
+        x1: Double, y1: Double, z1: Double,
+        limit: Double,
+    ) {
+        val dX = x1 - x0
+        val dY = y1 - y0
+        val dZ = z1 - z0
+        val subdivisions = ceil(max(abs(dX), max(abs(dY), abs(dZ))) / limit)
+
+        shiftX = dX / subdivisions
+        shiftY = dY / subdivisions
+        shiftZ = dZ / subdivisions
+        minX = min(x0, x0 + shiftX)
+        minY = min(y0, y0 + shiftY)
+        minZ = min(z0, z0 + shiftZ)
+        maxX = minX + abs(shiftX)
+        maxY = minY + abs(shiftY)
+        maxZ = minZ + abs(shiftZ)
+
+        segmentIndex = -1
+        segmentCount = subdivisions.toInt()
+    }
+
+    override fun hasNext(): Boolean {
+        return segmentIndex < segmentCount - 1
+    }
+
+    override fun next(): RayBoundingBoxSegmenter {
+        if(segmentIndex++ == -1) {
+            // we initialize with the first iteration's value,
+            // so during the first iteration we don't offset
+            return this
+        }
+        minX += shiftX
+        minY += shiftY
+        minZ += shiftZ
+        maxX += shiftX
+        maxY += shiftY
+        maxZ += shiftZ
+        return this
     }
 }
