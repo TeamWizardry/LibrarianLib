@@ -103,58 +103,65 @@ void main() {
     vec4 pos1 = gl_in[1].gl_Position;
     vec4 pos2 = gl_in[2].gl_Position;
     vec4 pos3 = gl_in[3].gl_Position;
-    pos0 /= pos0.w;
-    pos1 /= pos1.w;
-    pos2 /= pos2.w;
-    pos3 /= pos3.w;
+
+    float w0 = pos0.w;
+    float w1 = pos1.w;
+    float w2 = pos2.w;
+    float w3 = pos3.w;
+
+    pos0 /= w0;
+    pos1 /= w1;
+    pos2 /= w2;
+    pos3 /= w3;
 
     vec2 px0 = to_pixels(pos0.xy);
     vec2 px1 = to_pixels(pos1.xy);
     vec2 px2 = to_pixels(pos2.xy);
     vec2 px3 = to_pixels(pos3.xy);
 
-    vec2 center = (px1 + px2) / 2;
     float length = length(px2 - px1);
     vec2 direction = (px2 - px1) / length;
-    vec2 normal = cw(direction);
+    vec2 normal = cw(direction) * sign(w1 * w2);
 
     {
+        vec4 color = w1 < 0 ? vec4(1, 0, 0, 1) : gs_in[1].color;
         vec2 inset = normal * gs_in[1].insetWidth;
         vec2 outset = normal * gs_in[1].outsetWidth;
 
-        if (dot(px1 - px2, px1 - px0) == 0.0) { // about 1 degree
-            emit(vec4(from_pixels(px1 + inset), pos1.z, 1.), gs_in[1].color);
-            emit(vec4(from_pixels(px1 + outset), pos1.z, 1.), gs_in[1].color);
+        if (w1 < 0. || dot(px1 - px2, px1 - px0) == 0.0) {
+            emit(vec4(from_pixels(px1 + inset), pos1.z, 1.) * w1, color);
+            emit(vec4(from_pixels(px1 + outset), pos1.z, 1.) * w1, color);
         } else {
-            vec2 corner = normalize(normalize(cw(px1 - px0)) + normal);
+            vec2 corner = normalize(normalize(cw(px1 - px0) * sign(w0)) + normal);
 
             vec4 outsetBevel = bevel_test(corner, gs_in[1].outsetWidth, outset, -direction, length);
             vec4 insetBevel = bevel_test(corner, gs_in[1].insetWidth, inset, -direction, length);
 
-            emit(vec4(from_pixels(px1 + insetBevel.zw), pos1.z, 1.), gs_in[1].color);
-            emit(vec4(from_pixels(px1 + outsetBevel.zw), pos1.z, 1.), gs_in[1].color);
-            emit(vec4(from_pixels(px1 + insetBevel.xy), pos1.z, 1.), gs_in[1].color);
-            emit(vec4(from_pixels(px1 + outsetBevel.xy), pos1.z, 1.), gs_in[1].color);
+            emit(vec4(from_pixels(px1 + insetBevel.zw), pos1.z, 1.) * w1, color);
+            emit(vec4(from_pixels(px1 + outsetBevel.zw), pos1.z, 1.) * w1, color);
+            emit(vec4(from_pixels(px1 + insetBevel.xy), pos1.z, 1.) * w1, color);
+            emit(vec4(from_pixels(px1 + outsetBevel.xy), pos1.z, 1.) * w1, color);
         }
     }
 
     {
+        vec4 color = w2 < 0 ? vec4(1, 0, 0, 1) : gs_in[2].color;
         vec2 inset = normal * gs_in[2].insetWidth;
         vec2 outset = normal * gs_in[2].outsetWidth;
 
-        if (dot(px2 - px1, px2 - px3) == 0.0) { // about 1 degree
-            emit(vec4(from_pixels(px2 + inset), pos2.z, 1.), gs_in[2].color);
-            emit(vec4(from_pixels(px2 + outset), pos2.z, 1.), gs_in[2].color);
+        if (w2 < 0. || dot(px2 - px1, px2 - px3) == 0.0) {
+            emit(vec4(from_pixels(px2 + inset), pos2.z, 1.) * w2, color);
+            emit(vec4(from_pixels(px2 + outset), pos2.z, 1.) * w2, color);
         } else {
-            vec2 corner = normalize(normalize(ccw(px2 - px3)) + normal);
+            vec2 corner = normalize(normalize(ccw(px2 - px3) * sign(w3)) + normal);
 
             vec4 outsetBevel = bevel_test(corner, gs_in[2].outsetWidth, outset, direction, length);
             vec4 insetBevel = bevel_test(corner, gs_in[2].insetWidth, inset, direction, length);
 
-            emit(vec4(from_pixels(px2 + insetBevel.xy), pos2.z, 1.), gs_in[2].color);
-            emit(vec4(from_pixels(px2 + outsetBevel.xy), pos2.z, 1.), gs_in[2].color);
-            emit(vec4(from_pixels(px2 + insetBevel.zw), pos2.z, 1.), gs_in[2].color);
-            emit(vec4(from_pixels(px2 + outsetBevel.zw), pos2.z, 1.), gs_in[2].color);
+            emit(vec4(from_pixels(px2 + insetBevel.xy), pos2.z, 1.) * w2, color);
+            emit(vec4(from_pixels(px2 + outsetBevel.xy), pos2.z, 1.) * w2, color);
+            emit(vec4(from_pixels(px2 + insetBevel.zw), pos2.z, 1.) * w2, color);
+            emit(vec4(from_pixels(px2 + outsetBevel.zw), pos2.z, 1.) * w2, color);
         }
     }
 
