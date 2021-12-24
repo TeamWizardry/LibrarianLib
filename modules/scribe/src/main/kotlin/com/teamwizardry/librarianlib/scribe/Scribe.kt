@@ -26,6 +26,7 @@ public object Scribe {
             // java types
             ArraySerializerFactory(prism),
             ListSerializerFactory(prism),
+            MapSerializerFactory(prism),
             ObjectSerializerFactory(prism),
             EnumSerializerFactory(prism),
 

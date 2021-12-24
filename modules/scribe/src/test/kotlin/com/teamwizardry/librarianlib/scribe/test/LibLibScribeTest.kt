@@ -44,6 +44,9 @@ internal object LibLibScribeTest {
                 add<ArrayFactoryTests>()
                 add<ListFactoryTests>()
             }
+            suite("nbt_maps") {
+                add<MapFactoryTests>()
+            }
             suite("nbt_objects") { // todo
                 add<ObjectFactoryTests>()
             }
@@ -64,6 +67,7 @@ internal object LibLibScribeTest {
                 add<EnumFactoryTests>()
                 add<ArrayFactoryTests>()
                 add<ListFactoryTests>()
+                add<MapFactoryTests>()
                 add<ObjectFactoryTests>()
                 add<RegistryEntryTests>()
                 add<MinecraftSimpleTests>()

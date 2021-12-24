@@ -31,19 +31,6 @@ internal class ListFactoryTests: NbtPrismTest() {
     }
 
     @Test
-    fun `reading an ArrayList with no existing value should create a new list`() {
-        val targetList = arrayListOf("value")
-
-        val theTag = NbtBuilder.list {
-            +compound { "V" *= string("value") }
-        }
-        val deserialized = prism[Mirror.reflect<ArrayList<String?>>()].value.read(theTag)
-
-        assertEquals(ArrayList::class.java, deserialized.javaClass)
-        assertEquals(targetList, deserialized)
-    }
-
-    @Test
     fun `reading an ArrayList with the wrong NBT type should throw`() {
         assertThrows<DeserializationException> {
             prism[Mirror.reflect<ArrayList<String?>>()].value.read(NbtBuilder.string("oops!"))
