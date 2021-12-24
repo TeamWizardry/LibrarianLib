@@ -23,15 +23,14 @@ public annotation class SimpleSerializationMarker
 
 public interface SimpleSerializer<T: Any> {
     /**
+     * Writes the fields marked with any of the passed [markers] types to the given tag, then returns the tag.
+     */
+    public fun writeTag(tag: NbtCompound, instance: T, vararg markers: Class<out Annotation>): NbtCompound
+
+    /**
      * Create a tag containing the fields marked with any of the passed [markers] types.
      */
     public fun createTag(instance: T, vararg markers: Class<out Annotation>): NbtCompound
-
-    /**
-     * Create a tag containing the fields with marker annotations that succeed in the passed filter. If possible, prefer
-     * using the version of [createTag] that accepts marker classes, since it can be more optimized.
-     */
-    public fun createTag(instance: T, predicate: Predicate<Collection<Annotation>>): NbtCompound
 
     /**
      * Applies a tag containing the fields marked with any of the passed [markers] types.
@@ -143,8 +142,7 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
         val field: FieldMirror, val nbtSerializer: NbtSerializer<*>
     )
 
-    private inline fun createTagImpl(instance: T, test: (Property) -> Boolean): NbtCompound {
-        val tag = NbtCompound()
+    private inline fun writeTagImpl(tag: NbtCompound, instance: T, test: (Property) -> Boolean): NbtCompound {
         properties.forEach { property ->
             try {
                 if (test(property)) {
@@ -160,12 +158,12 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
         return tag
     }
 
-    override fun createTag(instance: T, vararg markers: Class<out Annotation>): NbtCompound {
-        return createTagImpl(instance) { property -> markers.any { it in property.markerClasses } }
+    override fun writeTag(tag: NbtCompound, instance: T, vararg markers: Class<out Annotation>): NbtCompound {
+        return writeTagImpl(tag, instance) { property -> markers.any { it in property.markerClasses } }
     }
 
-    override fun createTag(instance: T, predicate: Predicate<Collection<Annotation>>): NbtCompound {
-        return createTagImpl(instance) { property -> predicate.test(property.markers) }
+    override fun createTag(instance: T, vararg markers: Class<out Annotation>): NbtCompound {
+        return writeTag(NbtCompound(), instance, *markers)
     }
 
     private inline fun applyTagImpl(tag: NbtCompound, instance: T, test: (Property) -> Boolean) {
