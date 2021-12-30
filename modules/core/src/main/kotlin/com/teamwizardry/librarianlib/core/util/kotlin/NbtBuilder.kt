@@ -12,9 +12,9 @@ internal annotation class NbtBuilderDslMarker
  * A Kotlin DSL for creating NbtElement tags.
  *
  * ```kotlin
- * TagBuilder.compound {
- *     "key" *= string("value")
- *     "key" *= list {
+ * NbtBuilder.compound {
+ *     "key" %= string("value")
+ *     "key" %= list {
  *         +int(3)
  *         +int(4)
  *     }
@@ -23,11 +23,14 @@ internal annotation class NbtBuilderDslMarker
  */
 @NbtBuilderDslMarker
 public object NbtBuilder {
-    public inline fun compound(block: CompoundTagBuilder.() -> Unit): NbtCompound =
-        CompoundTagBuilder(NbtCompound()).also { it.block() }.tag
+    public inline fun use(tag: NbtCompound, block: NbtCompoundBuilder.() -> Unit): NbtCompound =
+        NbtCompoundBuilder(tag).also(block).tag
+
+    public inline fun compound(block: NbtCompoundBuilder.() -> Unit): NbtCompound =
+        NbtCompoundBuilder(NbtCompound()).also(block).tag
 
     public inline fun list(block: NbtListBuilder.() -> Unit): NbtList =
-        NbtListBuilder(NbtList()).also { it.block() }.tag
+        NbtListBuilder(NbtList()).also(block).tag
 
     public inline fun list(vararg elements: NbtElement, block: NbtListBuilder.() -> Unit): NbtList =
         NbtListBuilder(NbtList()).also {
@@ -36,6 +39,7 @@ public object NbtBuilder {
         }.tag
 
     public inline fun list(vararg elements: NbtElement): NbtList = NbtList().also { it.addAll(elements) }
+    public inline fun list(elements: Collection<NbtElement>): NbtList = NbtList().also { it.addAll(elements) }
 
     public inline fun double(value: Number): NbtDouble = NbtDouble.of(value.toDouble())
     public inline fun float(value: Number): NbtFloat = NbtFloat.of(value.toFloat())
@@ -57,17 +61,17 @@ public object NbtBuilder {
 
 @JvmInline
 @NbtBuilderDslMarker
-public value class CompoundTagBuilder(public val tag: NbtCompound) {
+public value class NbtCompoundBuilder(public val tag: NbtCompound) {
     // configuring this tag
 
-    public operator fun String.timesAssign(nbt: NbtElement) {
+    public operator fun String.remAssign(nbt: NbtElement) {
         tag.put(this, nbt)
     }
 
     // creating new tags
 
-    public inline fun compound(block: CompoundTagBuilder.() -> Unit): NbtCompound =
-        CompoundTagBuilder(NbtCompound()).also { it.block() }.tag
+    public inline fun compound(block: NbtCompoundBuilder.() -> Unit): NbtCompound =
+        NbtCompoundBuilder(NbtCompound()).also { it.block() }.tag
 
     public inline fun list(block: NbtListBuilder.() -> Unit): NbtList =
         NbtListBuilder(NbtList()).also { it.block() }.tag
@@ -79,6 +83,7 @@ public value class CompoundTagBuilder(public val tag: NbtCompound) {
         }.tag
 
     public inline fun list(vararg elements: NbtElement): NbtList = NbtList().also { it.addAll(elements) }
+    public inline fun list(elements: Collection<NbtElement>): NbtList = NbtList().also { it.addAll(elements) }
 
     public inline fun double(value: Number): NbtDouble = NbtDouble.of(value.toDouble())
     public inline fun float(value: Number): NbtFloat = NbtFloat.of(value.toFloat())
@@ -135,8 +140,8 @@ public value class NbtListBuilder(public val tag: NbtList) {
 
     // creating new tags
 
-    public inline fun compound(block: CompoundTagBuilder.() -> Unit): NbtCompound =
-        CompoundTagBuilder(NbtCompound()).also { it.block() }.tag
+    public inline fun compound(block: NbtCompoundBuilder.() -> Unit): NbtCompound =
+        NbtCompoundBuilder(NbtCompound()).also { it.block() }.tag
 
     public inline fun list(block: NbtListBuilder.() -> Unit): NbtList =
         NbtListBuilder(NbtList()).also { it.block() }.tag
@@ -148,6 +153,7 @@ public value class NbtListBuilder(public val tag: NbtList) {
         }.tag
 
     public inline fun list(vararg elements: NbtElement): NbtList = NbtList().also { it.addAll(elements) }
+    public inline fun list(elements: Collection<NbtElement>): NbtList = NbtList().also { it.addAll(elements) }
 
     public inline fun double(value: Number): NbtDouble = NbtDouble.of(value.toDouble())
     public inline fun float(value: Number): NbtFloat = NbtFloat.of(value.toFloat())

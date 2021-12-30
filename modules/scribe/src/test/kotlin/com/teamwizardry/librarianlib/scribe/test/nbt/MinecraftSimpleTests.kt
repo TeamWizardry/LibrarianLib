@@ -37,60 +37,60 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
     @Test
     fun `read+write for Vec3d should be symmetrical`() {
         simple<Vec3d, Vec3dSerializer>(Vec3d(1.0, 2.0, 3.0), NbtBuilder.compound {
-            "X" *= double(1.0)
-            "Y" *= double(2.0)
-            "Z" *= double(3.0)
+            "X" %= double(1.0)
+            "Y" %= double(2.0)
+            "Z" %= double(3.0)
         })
     }
 
     @Test
     fun `read+write for Vec2f should be symmetrical`() {
         simple<Vec2f, Vec2fSerializer>(Vec2f(1f, 2f), NbtBuilder.compound {
-            "X" *= float(1f)
-            "Y" *= float(2f)
+            "X" %= float(1f)
+            "Y" %= float(2f)
         }, { a, b -> a.x == b.x && a.y == b.y })
     }
 
     @Test
     fun `read+write for BlockPos should be symmetrical`() {
         simple<BlockPos, BlockPosSerializer>(BlockPos(1, 2, 3), NbtBuilder.compound {
-            "X" *= int(1)
-            "Y" *= int(2)
-            "Z" *= int(3)
+            "X" %= int(1)
+            "Y" %= int(2)
+            "Z" %= int(3)
         })
     }
 
     @Test
     fun `read+write for ChunkPos should be symmetrical`() {
         simple<ChunkPos, ChunkPosSerializer>(ChunkPos(1, 2), NbtBuilder.compound {
-            "X" *= int(1)
-            "Z" *= int(2)
+            "X" %= int(1)
+            "Z" %= int(2)
         })
     }
 
     @Test
     fun `read+write for ColumnPos should be symmetrical`() {
         simple<ColumnPos, ColumnPosSerializer>(ColumnPos(1, 2), NbtBuilder.compound {
-            "X" *= int(1)
-            "Z" *= int(2)
+            "X" %= int(1)
+            "Z" %= int(2)
         })
     }
 
     @Test
     fun `read+write for SectionPos should be symmetrical`() {
         simple<ChunkSectionPos, ChunkSectionPosSerializer>(ChunkSectionPos.from(ChunkPos(1, 3), 2), NbtBuilder.compound {
-            "X" *= int(1)
-            "Y" *= int(2)
-            "Z" *= int(3)
+            "X" %= int(1)
+            "Y" %= int(2)
+            "Z" %= int(3)
         })
     }
 
     @Test
     fun `read+write for EulerAngle should be symmetrical`() {
         simple<EulerAngle, EulerAngleSerializer>(EulerAngle(1f, 2f, 3f), NbtBuilder.compound {
-            "Pitch" *= float(1)
-            "Yaw" *= float(2)
-            "Roll" *= float(3)
+            "Pitch" %= float(1)
+            "Yaw" %= float(2)
+            "Roll" %= float(3)
         })
     }
 
@@ -99,12 +99,12 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
         simple<Box, BoxSerializer>(Box(
             -1.0, -2.0, -3.0, 1.0, 2.0, 3.0
         ), NbtBuilder.compound {
-            "MinX" *= double(-1)
-            "MinY" *= double(-2)
-            "MinZ" *= double(-3)
-            "MaxX" *= double(1)
-            "MaxY" *= double(2)
-            "MaxZ" *= double(3)
+            "MinX" %= double(-1)
+            "MinY" %= double(-2)
+            "MinZ" %= double(-3)
+            "MaxX" %= double(1)
+            "MaxY" %= double(2)
+            "MaxZ" %= double(3)
         })
     }
 
@@ -113,12 +113,12 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
         simpleRead<Box, BoxSerializer>(Box(
             -1.0, -2.0, -3.0, 1.0, 2.0, 3.0
         ), NbtBuilder.compound {
-            "MinX" *= double(1)
-            "MinY" *= double(2)
-            "MinZ" *= double(3)
-            "MaxX" *= double(-1)
-            "MaxY" *= double(-2)
-            "MaxZ" *= double(-3)
+            "MinX" %= double(1)
+            "MinY" %= double(2)
+            "MinZ" %= double(3)
+            "MaxX" %= double(-1)
+            "MaxY" %= double(-2)
+            "MaxZ" %= double(-3)
         })
     }
 
@@ -127,12 +127,12 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
         simple<BlockBox, BlockBoxSerializer>(BlockBox(
             -1, -2, -3, 1, 2, 3
         ), NbtBuilder.compound {
-            "MinX" *= int(-1)
-            "MinY" *= int(-2)
-            "MinZ" *= int(-3)
-            "MaxX" *= int(1)
-            "MaxY" *= int(2)
-            "MaxZ" *= int(3)
+            "MinX" %= int(-1)
+            "MinY" %= int(-2)
+            "MinZ" %= int(-3)
+            "MaxX" %= int(1)
+            "MaxY" %= int(2)
+            "MaxZ" %= int(3)
         }, { a, b ->
             a.minX == b.minX && a.minY == b.minY && a.minZ == b.minZ &&
                 a.maxX == b.maxX && a.maxY == b.maxY && a.maxZ == b.maxZ
@@ -142,15 +142,15 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
     @Test
     fun `read+write for MCPair should be symmetrical`() {
         simple<MCPair<String, Int>, MCPairSerializerFactory.MCPairSerializer>(MCPair("test", 10), NbtBuilder.compound {
-            "A" *= string("test")
-            "B" *= int(10)
+            "A" %= string("test")
+            "B" %= int(10)
         }, { a, b -> a.left == b.left && a.right == b.right })
     }
 
     @Test
     fun `read+write for MCPair with a null value should exclude that key`() {
         simple<MCPair<String, Int?>, MCPairSerializerFactory.MCPairSerializer>(MCPair<String, Int?>("test", null), NbtBuilder.compound {
-            "A" *= string("test")
+            "A" %= string("test")
         }, { a, b -> a.left == b.left && a.right == b.right })
     }
 
@@ -175,7 +175,7 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
 
     @Test
     fun `read+write for NbtCompound should return a copy of the tag`()
-        = nbtPassthroughTest(NbtBuilder.compound { "Foo" *= string("bar") }, true)
+        = nbtPassthroughTest(NbtBuilder.compound { "Foo" %= string("bar") }, true)
     @Test
     fun `read+write for NbtList should return a copy of the tag`()
         = nbtPassthroughTest(NbtBuilder.list { +string("foo") }, true)
@@ -236,11 +236,11 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
         simple<GameProfile, GameProfileSerializer>(
             GameProfile(uuid, "Notch"),
             NbtBuilder.compound {
-                "Id" *= intArray(
+                "Id" %= intArray(
                     (most shr 32).toInt(), most.toInt(),
                     (least shr 32).toInt(), least.toInt()
                 )
-                "Name" *= string("Notch")
+                "Name" %= string("Notch")
             }
         )
     }
@@ -250,9 +250,9 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
         simple<BlockState, BlockStateSerializer>(
             Blocks.BONE_BLOCK.stateManager.states[0],
             NbtBuilder.compound {
-                "Name" *= string("minecraft:bone_block")
-                "Properties" *= compound {
-                    "axis" *= string("x")
+                "Name" %= string("minecraft:bone_block")
+                "Properties" %= compound {
+                    "axis" %= string("x")
                 }
             }
         )
@@ -264,8 +264,8 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
         simple<ItemStack, ItemStackSerializer>(
             stack,
             NbtBuilder.compound {
-                "id" *= string("minecraft:diamond")
-                "Count" *= byte(16)
+                "id" %= string("minecraft:diamond")
+                "Count" %= byte(16)
             },
             { a, b -> ItemStack.areEqual(a, b) && ItemStack.areEqual(a, b) }
         )
@@ -275,15 +275,15 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
     fun `read+write for ItemStack with Tag should be symmetrical`() {
         val stack = ItemStack(Items.DIAMOND, 16)
         stack.nbt = NbtBuilder.compound {
-            "Custom" *= string("value")
+            "Custom" %= string("value")
         }
         simple<ItemStack, ItemStackSerializer>(
             stack,
             NbtBuilder.compound {
-                "id" *= string("minecraft:diamond")
-                "Count" *= byte(16)
-                "tag" *= compound {
-                    "Custom" *= string("value")
+                "id" %= string("minecraft:diamond")
+                "Count" %= byte(16)
+                "tag" %= compound {
+                    "Custom" %= string("value")
                 }
             },
             { a, b -> ItemStack.areEqual(a, b) && ItemStack.areEqual(a, b) }
@@ -297,12 +297,12 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
         simple<StatusEffectInstance, StatusEffectInstanceSerializer>(
             stack,
             NbtBuilder.compound {
-                "Id" *= byte(8)
-                "Amplifier" *= byte(2)
-                "Duration" *= int(20)
-                "Ambient" *= byte(0)
-                "ShowParticles" *= byte(1)
-                "ShowIcon" *= byte(1)
+                "Id" %= byte(8)
+                "Amplifier" %= byte(2)
+                "Duration" %= int(20)
+                "Ambient" %= byte(0)
+                "ShowParticles" %= byte(1)
+                "ShowIcon" %= byte(1)
             }
         )
     }
@@ -314,8 +314,8 @@ internal class MinecraftSimpleTests: NbtPrismTest() {
         simple<EnchantmentLevelEntry, EnchantmentLevelEntrySerializer>(
             data,
             NbtBuilder.compound {
-                "Enchantment" *= string("minecraft:sharpness")
-                "Level" *= int(3)
+                "Enchantment" %= string("minecraft:sharpness")
+                "Level" %= int(3)
             },
             { a, b -> a.enchantment == b.enchantment && a.level == b.level }
         )

@@ -24,10 +24,10 @@ internal class ArrayFactoryTests: NbtPrismTest() {
         simple<Array<String?>, ArraySerializerFactory.ArraySerializer>(
             arrayOf("first", "second", null, "fourth"),
             NbtBuilder.list {
-                +compound { "V" *= string("first") }
-                +compound { "V" *= string("second") }
+                +compound { "V" %= string("first") }
+                +compound { "V" %= string("second") }
                 +compound {}
-                +compound { "V" *= string("fourth") }
+                +compound { "V" %= string("fourth") }
             }
         )
     }
@@ -37,7 +37,7 @@ internal class ArrayFactoryTests: NbtPrismTest() {
         val targetArray = arrayOf("value")
 
         val theNode = NbtBuilder.list {
-            +compound { "V" *= string("value") }
+            +compound { "V" %= string("value") }
         }
         val deserialized = prism[Mirror.reflect<Array<String?>>()].value.read(theNode)
 

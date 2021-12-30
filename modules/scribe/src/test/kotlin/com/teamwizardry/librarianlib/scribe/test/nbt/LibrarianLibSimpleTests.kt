@@ -26,26 +26,26 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
     @Test
     fun `read+write for Vec2d should be symmetrical`() {
         simple<Vec2d, Vec2dSerializer>(Vec2d(1.0, 2.0), NbtBuilder.compound {
-            "X" *= double(1.0)
-            "Y" *= double(2.0)
+            "X" %= double(1.0)
+            "Y" %= double(2.0)
         })
     }
 
     @Test
     fun `read+write for Vec2i should be symmetrical`() {
         simple<Vec2i, Vec2iSerializer>(Vec2i(1, 2), NbtBuilder.compound {
-            "X" *= int(1)
-            "Y" *= int(2)
+            "X" %= int(1)
+            "Y" %= int(2)
         })
     }
 
     @Test
     fun `read+write for Rect2d should be symmetrical`() {
         simple<Rect2d, Rect2dSerializer>(Rect2d(1.0, 2.0, 3.0, 4.0), NbtBuilder.compound {
-            "X" *= double(1.0)
-            "Y" *= double(2.0)
-            "Width" *= double(3.0)
-            "Height" *= double(4.0)
+            "X" %= double(1.0)
+            "Y" %= double(2.0)
+            "Width" %= double(3.0)
+            "Height" %= double(4.0)
         })
     }
 
@@ -146,10 +146,10 @@ internal class LibrarianLibSimpleTests: NbtPrismTest() {
     @Test
     fun `read+write for Quaternion should be symmetrical`() {
         simple<Quaternion, QuaternionSerializer>(Quaternion(1.0, 2.0, 3.0, 4.0), NbtBuilder.compound {
-            "X" *= double(1.0)
-            "Y" *= double(2.0)
-            "Z" *= double(3.0)
-            "W" *= double(4.0)
+            "X" %= double(1.0)
+            "Y" %= double(2.0)
+            "Z" %= double(3.0)
+            "W" %= double(4.0)
         })
     }
 }

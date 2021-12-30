@@ -22,10 +22,10 @@ internal class ListFactoryTests: NbtPrismTest() {
         simple<ArrayList<String?>, ListSerializerFactory.ListSerializer>(
             arrayListOf("first", "second", null, "fourth"),
             NbtBuilder.list {
-                +compound { "V" *= string("first") }
-                +compound { "V" *= string("second") }
+                +compound { "V" %= string("first") }
+                +compound { "V" %= string("second") }
                 +compound {}
-                +compound { "V" *= string("fourth") }
+                +compound { "V" %= string("fourth") }
             }
         )
     }
@@ -61,16 +61,16 @@ internal class ListFactoryTests: NbtPrismTest() {
 
         val targetTag = NbtBuilder.list {
             +compound {
-                "V" *= list {
-                    +compound { "V" *= list {} }
-                    +compound { "V" *= list {} }
+                "V" %= list {
+                    +compound { "V" %= list {} }
+                    +compound { "V" %= list {} }
                 }
             }
             +compound {
-                "V" *= list {
-                    +compound { "V" *= list {} }
-                    +compound { "V" *= list {} }
-                    +compound { "V" *= list {} }
+                "V" %= list {
+                    +compound { "V" %= list {} }
+                    +compound { "V" %= list {} }
+                    +compound { "V" %= list {} }
                 }
             }
         }

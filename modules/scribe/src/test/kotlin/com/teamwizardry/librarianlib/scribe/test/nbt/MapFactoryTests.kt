@@ -28,10 +28,10 @@ internal class MapFactoryTests: NbtPrismTest() {
                 "third" to null,
             ),
             NbtBuilder.list {
-                +compound { "V" *= int(0) }
-                +compound { "K" *= string("first"); "V" *= int(1) }
-                +compound { "K" *= string("second"); "V" *= int(2) }
-                +compound { "K" *= string("third") }
+                +compound { "V" %= int(0) }
+                +compound { "K" %= string("first"); "V" %= int(1) }
+                +compound { "K" %= string("second"); "V" %= int(2) }
+                +compound { "K" %= string("third") }
             }
         )
     }
@@ -60,18 +60,18 @@ internal class MapFactoryTests: NbtPrismTest() {
 
         val targetTag = NbtBuilder.list {
             +compound {
-                "K" *= string("first")
-                "V" *= list {
-                    +compound { "K" *= string("a"); "V" *= list {} }
-                    +compound { "K" *= string("b"); "V" *= list {} }
+                "K" %= string("first")
+                "V" %= list {
+                    +compound { "K" %= string("a"); "V" %= list {} }
+                    +compound { "K" %= string("b"); "V" %= list {} }
                 }
             }
             +compound {
-                "K" *= string("second")
-                "V" *= list {
-                    +compound { "K" *= string("a"); "V" *= list {} }
-                    +compound { "K" *= string("b"); "V" *= list {} }
-                    +compound { "K" *= string("c"); "V" *= list {} }
+                "K" %= string("second")
+                "V" %= list {
+                    +compound { "K" %= string("a"); "V" %= list {} }
+                    +compound { "K" %= string("b"); "V" %= list {} }
+                    +compound { "K" %= string("c"); "V" %= list {} }
                 }
             }
         }

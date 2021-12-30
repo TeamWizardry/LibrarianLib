@@ -17,32 +17,32 @@ internal class SimpleTests: NbtPrismTest() {
     @Test
     fun `read+write for Pair should be symmetrical`() {
         simple<Pair<String, Int>, PairSerializerFactory.PairSerializer>(Pair("value", 10), NbtBuilder.compound {
-            "First" *= string("value")
-            "Second" *= int(10)
+            "First" %= string("value")
+            "Second" %= int(10)
         })
     }
 
     @Test
     fun `read+write for Pair with null should not include key`() {
         simple<Pair<String, Int?>, PairSerializerFactory.PairSerializer>(Pair("value", null), NbtBuilder.compound {
-            "First" *= string("value")
+            "First" %= string("value")
         })
     }
 
     @Test
     fun `read+write for Triple should be symmetrical`() {
         simple<Triple<String, Int, Double>, TripleSerializerFactory.TripleSerializer>(Triple("value", 10, 3.14), NbtBuilder.compound {
-            "First" *= string("value")
-            "Second" *= int(10)
-            "Third" *= double(3.14)
+            "First" %= string("value")
+            "Second" %= int(10)
+            "Third" %= double(3.14)
         })
     }
 
     @Test
     fun `read+write for Triple with null should not include key`() {
         simple<Triple<String, Int?, Double>, TripleSerializerFactory.TripleSerializer>(Triple("value", null, 3.14), NbtBuilder.compound {
-            "First" *= string("value")
-            "Third" *= double(3.14)
+            "First" %= string("value")
+            "Third" %= double(3.14)
         })
     }
 
@@ -57,10 +57,10 @@ internal class SimpleTests: NbtPrismTest() {
     @Test
     fun `read+write for BigDecimal should be symmetrical`() {
         simple<BigDecimal, BigDecimalSerializer>(BigDecimal.valueOf(1234567890123456789, 5), NbtBuilder.compound {
-            "Value" *= byteArray(
+            "Value" %= byteArray(
                 0b00010001, 0b00100010, 0b00010000, 0b11110100, 0b01111101, 0b11101001, 0b10000001, 0b00010101
             )
-            "Scale" *= int(5)
+            "Scale" %= int(5)
         })
     }
 
