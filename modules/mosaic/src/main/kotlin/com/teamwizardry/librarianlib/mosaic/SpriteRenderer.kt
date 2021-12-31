@@ -15,14 +15,12 @@ import java.awt.Color
 internal object SpriteRenderer {
 
     fun draw(sprite: Sprite, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
-        RenderState.normal.apply()
         if(sprite.pinTop && sprite.pinBottom && sprite.pinLeft && sprite.pinRight &&
             sprite.minUCap == 0f && sprite.minVCap == 0f && sprite.maxUCap == 0f && sprite.maxVCap == 0f) {
             drawSimple(sprite, matrix, x, y, width, height, animFrames, tint)
         } else {
             drawComplex(sprite, matrix, x, y, width, height, animFrames, tint)
         }
-        RenderState.normal.cleanup()
     }
 
     private fun drawSimple(sprite: Sprite, matrix: Matrix4d, x: Float, y: Float, width: Float, height: Float, animFrames: Int, tint: Color) {
