@@ -48,7 +48,8 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer, vararg support
     public fun dupVertex() {
         if(count == 0)
             throw IllegalStateException("Can't duplicate last vertex of empty buffer")
-        byteBuffer.put(count * stride, byteBuffer, count * stride - 1, stride)
+        byteBuffer.put(count * stride, byteBuffer, (count - 1) * stride, stride)
+        endVertex()
     }
 
     public fun clear() {
