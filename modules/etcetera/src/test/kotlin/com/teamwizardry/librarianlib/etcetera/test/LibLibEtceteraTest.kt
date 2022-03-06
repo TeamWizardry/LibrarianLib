@@ -10,14 +10,14 @@ import com.teamwizardry.librarianlib.testcore.content.configure
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.api.ModInitializer
-import net.minecraft.block.ShapeContext
-import net.minecraft.entity.Entity
+import net.minecraft.block.Blocks
+import net.minecraft.fluid.Fluids
 import net.minecraft.particle.BlockStateParticleEffect
 import net.minecraft.particle.ParticleEffect
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.server.world.ServerWorld
-import net.minecraft.util.TypeFilter
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.shape.VoxelShapes
 import java.util.function.Predicate
 
 internal object LibLibEtceteraTest {
@@ -32,33 +32,63 @@ internal object LibLibEtceteraTest {
 
             raycaster(
                 "raycast_collision", "Collision",
-                "Block mode: COLLISION\nFluid mode: NONE\nEntity filter: null",
-                Raycaster.BlockMode.COLLISION, Raycaster.FluidMode.NONE, null, null
-            )
+                "Block mode: COLLISION",
+            ) {
+                it.withBlockMode(Raycaster.BlockMode.COLLISION)
+            }
             raycaster(
                 "raycast_visual", "Visual",
-                "Block mode: VISUAL\nFluid mode: NONE\nEntity filter: null",
-                Raycaster.BlockMode.VISUAL, Raycaster.FluidMode.NONE, null, null
-            )
+                "Block mode: VISUAL",
+            ) {
+                it.withBlockMode(Raycaster.BlockMode.VISUAL)
+            }
             raycaster(
                 "raycast_fluids", "Fluids",
-                "Block mode: NONE\nFluid mode: ANY\nEntity filter: null",
-                Raycaster.BlockMode.NONE, Raycaster.FluidMode.ANY, null, null
-            )
+                "Fluid mode: ANY",
+            ) {
+                it.withFluidMode(Raycaster.FluidMode.ANY)
+            }
             raycaster(
                 "raycast_source", "Fluid Source",
-                "Block mode: NONE\nFluid mode: ANY\nEntity filter: null",
-                Raycaster.BlockMode.NONE, Raycaster.FluidMode.SOURCE, null, null
-            )
+                "Fluid mode: SOURCE",
+            ) {
+                it.withFluidMode(Raycaster.FluidMode.SOURCE)
+            }
             raycaster("raycast_entities", "Entities",
-                "Block mode: NONE\nFluid mode: NONE\nEntity filter: { true }",
-                Raycaster.BlockMode.NONE, Raycaster.FluidMode.NONE, null, Predicate { true }
-            )
+                "Entities: <all>",
+            ) {
+                it.withEntities(null, null)
+            }
             raycaster("raycast_all", "All",
-                "Block mode: COLLISION\nFluid mode: ANY\nEntity filter: { true }",
-                Raycaster.BlockMode.COLLISION, Raycaster.FluidMode.ANY, null, Predicate { true }
-            )
-
+                "Block mode: COLLISION\nFluid mode: ANY\nEntities: <all>",
+            ) {
+                it.withBlockMode(Raycaster.BlockMode.COLLISION)
+                    .withFluidMode(Raycaster.FluidMode.ANY)
+                    .withEntities(null, null)
+            }
+            raycaster("raycast_scaffolding", "Collision + Scaffolding",
+                "Block mode: COLLISION\nBlock override: scaffolding=full block",
+            ) {
+                it.withBlockMode(Raycaster.BlockMode.COLLISION)
+                    .withBlockOverride { state, _, _ ->
+                        when(state.block) {
+                            Blocks.SCAFFOLDING -> VoxelShapes.fullCube()
+                            else -> null
+                        }
+                    }
+            }
+            raycaster("raycast_fluid_no_lava", "Fluid + No Lava",
+                "Fluid mode: ANY\nFluid override: lava=empty, flowing_lava=empty",
+            ) {
+                it.withFluidMode(Raycaster.FluidMode.ANY)
+                    .withFluidOverride { state, _, _ ->
+                        when(state.fluid) {
+                            Fluids.LAVA -> VoxelShapes.empty()
+                            Fluids.FLOWING_LAVA -> VoxelShapes.empty()
+                            else -> null
+                        }
+                    }
+            }
 
             manager.create<TestItem>("raycast_types") {
                 name = "Raycaster: Hit Types"
@@ -70,13 +100,15 @@ internal object LibLibEtceteraTest {
                         val eyePos = player.getCameraPosVec(0f)
                         val look = player.rotationVector * 100
                         serverRaycaster.cast(
-                            player.world,
-                            Raycaster.BlockMode.COLLISION,
-                            Raycaster.FluidMode.ANY,
-                            ShapeContext.of(this.player),
-                            null, Predicate { true },
-                            eyePos.x, eyePos.y, eyePos.z,
-                            eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
+                            Raycaster.RaycastRequest(
+                                player.world,
+                                eyePos.x, eyePos.y, eyePos.z,
+                                eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
+                            )
+                                .withEntityContext(this.player)
+                                .withBlockMode(Raycaster.BlockMode.COLLISION)
+                                .withFluidMode(Raycaster.FluidMode.ANY)
+                                .withEntities(null, null)
                         )
                         var count = 1
                         val particleData: ParticleEffect = when (serverRaycaster.hitType) {
@@ -119,8 +151,7 @@ internal object LibLibEtceteraTest {
 
         private fun raycaster(
             id: String, name: String, desc: String,
-            blockMode: Raycaster.BlockMode, fluidMode: Raycaster.FluidMode,
-            entityFilter: TypeFilter<Entity, Entity>?, entityPredicate: Predicate<Entity>?
+            configure: (Raycaster.RaycastRequest) -> Unit
         ) {
             manager.create<TestEntity>(id) {
                 description = desc
@@ -131,11 +162,13 @@ internal object LibLibEtceteraTest {
                     tick {
                         val eyePos = target.getCameraPosVec(0f)
                         val look = target.rotationVector * 100
-                        clientRaycaster.cast(
-                            world, blockMode, fluidMode, null, entityFilter, entityPredicate,
+                        val request = Raycaster.RaycastRequest(
+                            world,
                             eyePos.x, eyePos.y, eyePos.z,
                             eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                         )
+                        configure(request)
+                        clientRaycaster.cast(request)
                         world.addParticle(
                             Particles.TARGET_BLUE, true,
                             eyePos.x + look.x * clientRaycaster.fraction,
@@ -151,11 +184,13 @@ internal object LibLibEtceteraTest {
                     tick {
                         val eyePos = target.getCameraPosVec(0f)
                         val look = target.rotationVector * 100
-                        serverRaycaster.cast(
-                            world, blockMode, fluidMode, null, entityFilter, entityPredicate,
+                        val request = Raycaster.RaycastRequest(
+                            world,
                             eyePos.x, eyePos.y, eyePos.z,
                             eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                         )
+                        configure(request)
+                        serverRaycaster.cast(request)
                         (world as ServerWorld).spawnParticles(
                             Particles.TARGET_RED,
                             eyePos.x + look.x * serverRaycaster.fraction,
@@ -182,11 +217,14 @@ internal object LibLibEtceteraTest {
                         notSneaking {
                             val eyePos = player.getCameraPosVec(0f)
                             val look = player.rotationVector * 20
-                            serverRaycaster.cast(
-                                player.world, blockMode, fluidMode, ShapeContext.of(player), entityFilter, entityPredicate,
+                            val request = Raycaster.RaycastRequest(
+                                player.world,
                                 eyePos.x, eyePos.y, eyePos.z,
                                 eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                             )
+                                .withEntityContext(player)
+                            configure(request)
+                            serverRaycaster.cast(request)
                             (player.world as ServerWorld).spawnParticles(
                                 Particles.TARGET_RED,
                                 eyePos.x + look.x * serverRaycaster.fraction,
@@ -202,11 +240,14 @@ internal object LibLibEtceteraTest {
                     rightClickHold.client {
                         val eyePos = player.getCameraPosVec(0f)
                         val look = player.rotationVector * 20
-                        clientRaycaster.cast(
-                            player.world, blockMode, fluidMode, ShapeContext.of(player), entityFilter, entityPredicate,
+                        val request = Raycaster.RaycastRequest(
+                            player.world,
                             eyePos.x, eyePos.y, eyePos.z,
                             eyePos.x + look.x, eyePos.y + look.y, eyePos.z + look.z
                         )
+                            .withEntityContext(player)
+                        configure(request)
+                        clientRaycaster.cast(request)
                         player.world.addParticle(
                             Particles.TARGET_BLUE, true,
                             eyePos.x + look.x * clientRaycaster.fraction,
@@ -220,7 +261,6 @@ internal object LibLibEtceteraTest {
             }
         }
     }
-
 
     internal object ClientInitializer : ClientModInitializer {
         private val logger = logManager.makeLogger<ClientInitializer>()

@@ -2,14 +2,17 @@ package com.teamwizardry.librarianlib.etcetera
 
 import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.etcetera.mixin.WorldEntityLookupMixin
+import net.minecraft.block.BlockState
 import net.minecraft.block.ShapeContext
 import net.minecraft.entity.Entity
+import net.minecraft.fluid.FluidState
 import net.minecraft.util.TypeFilter
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.shape.VoxelShape
 import net.minecraft.util.shape.VoxelShapes
 import net.minecraft.world.World
+import java.util.function.Function
 import java.util.function.Predicate
 
 /**
@@ -163,7 +166,12 @@ public class Raycaster {
         startX: Double, startY: Double, startZ: Double,
         endX: Double, endY: Double, endZ: Double
     ) {
-        cast(world, blockMode, FluidMode.NONE, shapeContext, null, null, startX, startY, startZ, endX, endY, endZ)
+        val request = RaycastRequest(world, startX, startY, startZ, endX, endY, endZ)
+            .withBlockMode(blockMode)
+        if (shapeContext != null) {
+            request.withShapeContext(shapeContext)
+        }
+        cast(request)
     }
 
     /**
@@ -206,24 +214,65 @@ public class Raycaster {
         startX: Double, startY: Double, startZ: Double,
         endX: Double, endY: Double, endZ: Double
     ) {
-        reset()
-        this.startX = startX
-        this.startY = startY
-        this.startZ = startZ
+        val request = RaycastRequest(world, startX, startY, startZ, endX, endY, endZ)
+            .withBlockMode(blockMode)
+            .withFluidMode(fluidMode)
+        if (shapeContext != null) {
+            request.withShapeContext(shapeContext)
+        }
+        if (entityFilter != null || entityPredicate != null) {
+            request.withEntities(entityFilter, entityPredicate)
+        }
+        return cast(request)
+    }
 
-        this.endX = endX
-        this.endY = endY
-        this.endZ = endZ
+    /**
+     * Cast the ray through the configured world, colliding with blocks and fluids using the configured modes, and
+     * colliding with entities according to the specified filter, if enabled.
+     *
+     * The result of the raycast is made available as properties of this raycaster. It is ***vitally*** important that
+     * you call [reset] once you're done with the result to prepare for the next raycast and avoid leaking [entity].
+     *
+     * @see hitType
+     * @see blockX
+     * @see blockY
+     * @see blockZ
+     * @see entity
+     * @see fraction
+     * @see depth
+     * @see hitX
+     * @see hitY
+     * @see hitZ
+     * @see normalX
+     * @see normalY
+     * @see normalZ
+     */
+    public fun cast(request: RaycastRequest) {
+        reset()
+        this.startX = request.startX
+        this.startY = request.startY
+        this.startZ = request.startZ
+
+        this.endX = request.endX
+        this.endY = request.endY
+        this.endZ = request.endZ
 
         invVelX = 1.0 / (endX - startX)
         invVelY = 1.0 / (endY - startY)
         invVelZ = 1.0 / (endZ - startZ)
 
-        if (blockMode != BlockMode.NONE || fluidMode != FluidMode.NONE) {
-            castBlocks(world, blockMode, fluidMode, shapeContext ?: ShapeContext.absent())
+        if (request.blockMode != BlockMode.NONE || request.fluidMode != FluidMode.NONE) {
+            castBlocks(
+                request.world,
+                request.shapeContext,
+                request.blockMode,
+                request.fluidMode,
+                request.blockOverride,
+                request.fluidOverride
+            )
         }
-        if (entityFilter != null || entityPredicate != null) {
-            castEntities(world, entityFilter, entityPredicate)
+        if (request.castEntities) {
+            castEntities(request.world, request.entityFilter, request.entityPredicate)
         }
     }
 
@@ -252,6 +301,99 @@ public class Raycaster {
         invVelY = 0.0
         invVelZ = 0.0
         raycaster.reset()
+    }
+
+    public class RaycastRequest(
+        public val world: World,
+        public val startX: Double, public val startY: Double, public val startZ: Double,
+        public val endX: Double, public val endY: Double, public val endZ: Double
+    ) {
+        public var shapeContext: ShapeContext = ShapeContext.absent()
+
+        public var blockMode: BlockMode = BlockMode.NONE
+        public var fluidMode: FluidMode = FluidMode.NONE
+        public var castEntities: Boolean = false
+        public var entityFilter: TypeFilter<Entity, Entity>? = null
+        public var entityPredicate: Predicate<Entity>? = null
+
+        public var blockOverride: ShapeOverride<BlockState>? = null
+        public var fluidOverride: ShapeOverride<FluidState>? = null
+
+        /**
+         * Sets the shape context. Generally [ShapeContext.of(entity)][ShapeContext.of].
+         *
+         * The default shape context is [ShapeContext.absent]
+         */
+        public fun withShapeContext(context: ShapeContext): RaycastRequest = apply { this.shapeContext = context }
+
+        /**
+         * Sets the shape context using [ShapeContext.of(entity)][ShapeContext.of].
+         */
+        public fun withEntityContext(entity: Entity): RaycastRequest = withShapeContext(ShapeContext.of(entity))
+
+        /**
+         * Sets the type of collisions to make with blocks.
+         *
+         * The default block mode is [BlockMode.NONE]
+         */
+        public fun withBlockMode(mode: BlockMode): RaycastRequest = apply { this.blockMode = mode }
+
+        /**
+         * Sets the block shape override callback. This will take effect even when [blockMode] is [BlockMode.NONE].
+         *
+         * The function receives a BlockState parameter and returns a nullable [VoxelShape]. A null return value falls
+         * back to the default behavior according to the [blockMode]. To ignore a block return
+         * [VoxelShapes.empty()][VoxelShapes.empty].
+         */
+        public fun withBlockOverride(blockOverride: ShapeOverride<BlockState>): RaycastRequest = apply {
+            this.blockOverride = blockOverride
+        }
+
+        /**
+         * Sets the type of collisions to make with fluids.
+         *
+         * The default fluid mode is [FluidMode.NONE]
+         */
+        public fun withFluidMode(mode: FluidMode): RaycastRequest = apply { this.fluidMode = mode }
+
+        /**
+         * Sets the fluid shape override callback. This will take effect even when [fluidMode] is [FluidMode.NONE].
+         *
+         * The function receives a FluidState parameter and returns a nullable [VoxelShape]. A null return value falls
+         * back to the default behavior according to the [fluidMode]. To ignore a fluid return
+         * [VoxelShapes.empty()][VoxelShapes.empty].
+         */
+        public fun withFluidOverride(fluidOverride: ShapeOverride<FluidState>): RaycastRequest = apply {
+            this.fluidOverride = fluidOverride
+        }
+
+        /**
+         * Enables entity raycasting and sets the entity filter/predicate. Setting both the filter and the predicate to
+         * null will cast against all entities.
+         *
+         * @param entityFilter If non-null, a filter dictating which entity types to collide against. Using this will
+         *  result in better performance than using an equivalent [entityPredicate]
+         * @param entityPredicate If non-null, a predicate dictating which entities to collide against.
+         */
+        public fun withEntities(
+            entityFilter: TypeFilter<Entity, Entity>?,
+            entityPredicate: Predicate<Entity>?
+        ): RaycastRequest = apply {
+            this.castEntities = true
+            this.entityFilter = entityFilter
+            this.entityPredicate = entityPredicate
+        }
+    }
+
+    public fun interface ShapeOverride<T> {
+        /**
+         * Returns the shape for the given state or returns null to fall back to the default behavior. To ignore a block
+         * return [VoxelShapes.empty].
+         *
+         * If you modify [pos] (which you should if you need a [BlockPos], to minimize object allocations), you *must*
+         * return it to its original value before returning from this function.
+         */
+        public fun getShape(state: T, world: World, pos: BlockPos.Mutable): VoxelShape?
     }
 
     public enum class BlockMode {
@@ -328,15 +470,29 @@ public class Raycaster {
     /**
      * The implementation of block raycasting.
      */
-    private fun castBlocks(world: World, blockMode: BlockMode, fluidMode: FluidMode, shapeContext: ShapeContext) {
+    private fun castBlocks(
+        world: World,
+        shapeContext: ShapeContext,
+        blockMode: BlockMode,
+        fluidMode: FluidMode,
+        blockOverride: ShapeOverride<BlockState>?,
+        fluidOverride: ShapeOverride<FluidState>?
+    ) {
         // Only blocks the ray directly passes through are checked.
         intersectingIterator.reset(
             startX, startY, startZ,
             endX, endY, endZ
         )
         for (block in intersectingIterator) {
-            if (castBlock(world, blockMode, fluidMode, shapeContext, block.x, block.y, block.z))
+            if (
+                castBlock(
+                    world, shapeContext, blockMode,
+                    fluidMode, blockOverride, fluidOverride,
+                    block.x, block.y, block.z
+                )
+            ) {
                 break // short-circuit at the first hit since we iterate near to far
+            }
         }
     }
 
@@ -346,26 +502,36 @@ public class Raycaster {
      */
     private fun castBlock(
         world: World,
+        shapeContext: ShapeContext,
         blockMode: BlockMode,
         fluidMode: FluidMode,
-        shapeContext: ShapeContext,
+        blockOverride: ShapeOverride<BlockState>?,
+        fluidOverride: ShapeOverride<FluidState>?,
         blockX: Int,
         blockY: Int,
         blockZ: Int
     ): Boolean {
         mutablePos.set(blockX, blockY, blockZ)
-        val hitBlock = when (blockMode) {
+        val blockShape = when (blockMode) {
             BlockMode.NONE -> {
-                false
+                // if `blockOverride` is null `world.getBlockState()` is never executed
+                blockOverride?.getShape(world.getBlockState(mutablePos), world, mutablePos)
             }
             BlockMode.COLLISION -> {
                 val state = world.getBlockState(mutablePos)
-                castShape(blockX, blockY, blockZ, state.getCollisionShape(world, mutablePos, shapeContext))
+                blockOverride?.getShape(state, world, mutablePos)
+                    ?: state.getCollisionShape(world, mutablePos, shapeContext)
             }
             BlockMode.VISUAL -> {
                 val state = world.getBlockState(mutablePos)
-                castShape(blockX, blockY, blockZ, state.getOutlineShape(world, mutablePos, shapeContext))
+                blockOverride?.getShape(state, world, mutablePos)
+                    ?: state.getOutlineShape(world, mutablePos, shapeContext)
             }
+        }
+        val hitBlock = if(blockShape != null) {
+            castShape(blockX, blockY, blockZ, blockShape)
+        } else {
+            false
         }
         if (hitBlock) {
             entity = null
@@ -375,21 +541,25 @@ public class Raycaster {
             hitType = HitType.BLOCK
         }
 
-        val hitFluid = when (fluidMode) {
+        val fluidShape = when (fluidMode) {
             FluidMode.NONE -> {
-                false
+                fluidOverride?.getShape(world.getFluidState(mutablePos), world, mutablePos)
             }
             FluidMode.SOURCE -> {
                 val state = world.getFluidState(mutablePos)
-                if (state.isStill)
-                    castShape(blockX, blockY, blockZ, state.getShape(world, mutablePos))
-                else
-                    false
+                fluidOverride?.getShape(state, world, mutablePos)
+                    ?: (if (state.isStill) state.getShape(world, mutablePos) else null)
             }
             FluidMode.ANY -> {
                 val state = world.getFluidState(mutablePos)
-                castShape(blockX, blockY, blockZ, state.getShape(world, mutablePos))
+                fluidOverride?.getShape(state, world, mutablePos)
+                    ?: state.getShape(world, mutablePos)
             }
+        }
+        val hitFluid = if(fluidShape != null) {
+            castShape(blockX, blockY, blockZ, fluidShape)
+        } else {
+            false
         }
         if (hitFluid) {
             entity = null
@@ -429,7 +599,8 @@ public class Raycaster {
                 maxX, maxY, maxZ,
                 relativeStartX, relativeStartY, relativeStartZ,
                 invVelX, invVelY, invVelZ
-            )) {
+            )
+        ) {
             fraction = raycaster.distance
             depth = raycaster.depth
             normalX = raycaster.normalX
@@ -461,25 +632,29 @@ public class Raycaster {
     /**
      * The implementation of entity raycasting. This checks against entities on a per-chunk basis
      */
-    private fun castEntities(world: World, entityFilter: TypeFilter<Entity, Entity>?, entityPredicate: Predicate<Entity>?) {
+    private fun castEntities(
+        world: World,
+        entityFilter: TypeFilter<Entity, Entity>?,
+        entityPredicate: Predicate<Entity>?
+    ) {
         boundingBoxSegmenter.reset(startX, startY, startZ, endX, endY, endZ, 32.0)
 
         val lookup = mixinCast<WorldEntityLookupMixin>(world).callGetEntityLookup()
-        if(entityFilter == null) {
-            for(segment in boundingBoxSegmenter) {
+        if (entityFilter == null) {
+            for (segment in boundingBoxSegmenter) {
                 lookup.forEachIntersects(
                     Box(
                         segment.minX, segment.minY, segment.minZ,
                         segment.maxX, segment.maxY, segment.maxZ
                     )
                 ) {
-                    if(entityPredicate == null || entityPredicate.test(it)) {
+                    if (entityPredicate == null || entityPredicate.test(it)) {
                         castEntity(it)
                     }
                 }
             }
         } else {
-            for(segment in boundingBoxSegmenter) {
+            for (segment in boundingBoxSegmenter) {
                 lookup.forEachIntersects(
                     entityFilter,
                     Box(
@@ -487,7 +662,7 @@ public class Raycaster {
                         segment.maxX, segment.maxY, segment.maxZ
                     )
                 ) {
-                    if(entityPredicate == null || entityPredicate.test(it)) {
+                    if (entityPredicate == null || entityPredicate.test(it)) {
                         castEntity(it)
                     }
                 }
@@ -506,7 +681,8 @@ public class Raycaster {
                 box.maxX, box.maxY, box.maxZ,
                 startX, startY, startZ,
                 invVelX, invVelY, invVelZ
-            )) {
+            )
+        ) {
             fraction = raycaster.distance
             depth = raycaster.depth
             normalX = raycaster.normalX
