@@ -10,8 +10,8 @@ buildscript {
             name = "Fabric"
             url = uri("https://maven.fabricmc.net/")
         }
-        jcenter()
         mavenCentral()
+        jcenter()
         gradlePluginPortal()
     }
     dependencies {
@@ -30,8 +30,8 @@ apply<CommonConfigPlugin>()
 allprojects {
     repositories {
         mavenLocal()
-        jcenter()
         mavenCentral()
+        jcenter()
         // OSSRH, just in case a version hasn't synced to central yet
         maven("https://s01.oss.sonatype.org/content/repositories/releases/")
 
