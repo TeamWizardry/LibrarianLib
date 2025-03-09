@@ -9,7 +9,6 @@ repositories {
         name = "Fabric"
         url = uri("https://maven.fabricmc.net/")
     }
-    jcenter()
     mavenCentral()
     gradlePluginPortal()
 }

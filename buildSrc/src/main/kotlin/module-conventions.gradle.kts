@@ -94,8 +94,7 @@ configurations {
 dependencies {
     testImplementation(project(":testcore"))
 
-    "devRuntime"(configurations["include"])
-    "devRuntime"(configurations["shade"])
+    configurations["devRuntime"].extendsFrom(configurations["include"], configurations["shade"])
     "devRuntime"(sourceSets.main.get().output)
     "devRuntime"(sourceSets.test.get().output)
 }
