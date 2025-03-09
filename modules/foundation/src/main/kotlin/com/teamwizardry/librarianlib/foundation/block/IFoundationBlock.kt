@@ -50,12 +50,10 @@ public interface IFoundationBlock: IForgeBlock {
             gen.setLootTable(block, gen.createSingleItemDrop(block, false)) // TODO: configure explosion immunity?
     }
 
-    @JvmDefault
     override fun getFlammability(state: BlockState?, world: IBlockReader?, pos: BlockPos?, face: Direction?): Int {
         return properties.getFlammabilityImpl(state, world, pos, face)
     }
 
-    @JvmDefault
     override fun getFireSpreadSpeed(state: BlockState?, world: IBlockReader?, pos: BlockPos?, face: Direction?): Int {
         return properties.getFireSpreadSpeedImpl(state, world, pos, face)
     }

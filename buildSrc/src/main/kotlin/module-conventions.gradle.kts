@@ -43,11 +43,13 @@ configurations {
         description = "Dependencies to put on the development runtime classpath"
 
         canBe(consumed = true, resolved = false)
+        attributes.attribute(LibLibAttributes.RuntimeUsage.attribute, LibLibAttributes.RuntimeUsage.devRuntime)
     }
     create("devMod") {
         description = "Mods to put on the development runtime classpath"
 
         canBe(consumed = true, resolved = false)
+        attributes.attribute(LibLibAttributes.RuntimeUsage.attribute, LibLibAttributes.RuntimeUsage.devMod)
     }
 
     // ----- Consumers -----
@@ -227,8 +229,8 @@ val remapSourcesJar = tasks.named<RemapSourcesJarTask>("remapSourcesJar") {
 
 // the default layout shits itself when you use anything other than a descendent of this project
 object ModuleLayout : DokkaMultiModuleFileLayout {
-    override fun targetChildOutputDirectory(parent: DokkaMultiModuleTask, child: AbstractDokkaTask): File {
-        return parent.outputDirectory.get().resolve("modules/${child.project.name}")
+    override fun targetChildOutputDirectory(parent: DokkaMultiModuleTask, child: AbstractDokkaTask): Provider<Directory> {
+        return parent.outputDirectory.map { it.dir("modules/${child.project.name}") }
     }
 }
 

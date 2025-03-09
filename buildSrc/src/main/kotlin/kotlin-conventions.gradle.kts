@@ -12,15 +12,16 @@ configure<KotlinProjectExtension> {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         // because for some unknown reason, unless instructed otherwise, IDEA decides the API should be Kotlin 1.4
-        languageVersion = "1.5"
-        apiVersion = "1.5"
+        languageVersion = "2.1"
+        apiVersion = "2.1"
 
-        jvmTarget = "1.8"
+        jvmTarget = "17"
         javaParameters = true
         freeCompilerArgs = freeCompilerArgs + listOf(
             "-Xjvm-default=all",
             "-Xopt-in=kotlin.ExperimentalStdlibApi,kotlin.ExperimentalUnsignedTypes,kotlin.contracts.ExperimentalContracts",
-            "-Xinline-classes"
+            "-Xinline-classes",
+            "-Xjvm-default=all"
         )
     }
 }

@@ -66,13 +66,11 @@ public interface CoordinateSpace2D {
     /**
      * Converts an offset in this coordinate space into the equivalent offset in the [other] coordinate space
      */
-    @JvmDefault
     public fun convertOffsetTo(offset: Vec2d, other: CoordinateSpace2D): Vec2d = conversionMatrixTo(other).transformDelta(offset)
 
     /**
      * Converts an offset in the [other] coordinate space into the equivalent offset in this coordinate space
      */
-    @JvmDefault
     public fun convertOffsetFrom(offset: Vec2d, other: CoordinateSpace2D): Vec2d = other.convertOffsetTo(offset, this)
 
     /**

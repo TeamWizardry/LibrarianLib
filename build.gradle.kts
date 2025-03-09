@@ -20,7 +20,6 @@ buildscript {
 }
 
 plugins {
-    `attribute-conventions`
     `minecraft-conventions`
 }
 

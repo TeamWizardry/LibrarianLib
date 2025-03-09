@@ -1,7 +1,6 @@
 @file:Suppress("PublicApiImplicitType", "UnstableApiUsage")
 
 plugins {
-    `attribute-conventions`
     `minecraft-conventions`
 }
 

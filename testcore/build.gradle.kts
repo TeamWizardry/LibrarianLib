@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-    `attribute-conventions`
     `minecraft-conventions`
     `kotlin-conventions`
     `testmod-conventions`

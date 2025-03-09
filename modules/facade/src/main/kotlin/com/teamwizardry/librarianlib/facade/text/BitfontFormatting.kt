@@ -47,7 +47,7 @@ public object BitfontFormatting {
 
         split.forEach { element ->
             if (element.startsWith("§") && element.length == 2) {
-                val code = element[1].toLowerCase()
+                val code = element[1].lowercaseChar()
                 when (code) {
                     '§' -> i++
                     'r' -> {

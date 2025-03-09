@@ -137,7 +137,7 @@ private class SimpleSerializerImpl<T: Any>(val clazz: Class<T>): SimpleSerialize
         }
     }
 
-    private data class Property(val name: String,
+    data class Property(val name: String,
         val markers: List<Annotation>, val markerClasses: Set<Class<out Annotation>>,
         val field: FieldMirror, val nbtSerializer: NbtSerializer<*>
     )

@@ -31,7 +31,7 @@ open class RestyleDokka : DefaultTask() {
 
     @get:InputDirectory
     internal val inputDirectory: File
-        get() = dokkaTask.get().outputDirectory.get()
+        get() = dokkaTask.get().outputDirectory.get().asFile
 
     init {
         @Suppress("LeakingThis")

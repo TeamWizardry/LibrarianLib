@@ -8,7 +8,13 @@ object LibLibAttributes {
 
         const val public: String = "public"
         const val internal: String = "internal"
+    }
 
+    object RuntimeUsage {
+        val attribute: Attribute<String> = Attribute.of("com.teamwizardry.librarianlib.runtimeusage", String::class.java)
+
+        const val devRuntime: String = "devRuntime"
+        const val devMod: String = "devMod"
     }
 
     object Rules {

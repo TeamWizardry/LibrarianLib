@@ -1,7 +1,6 @@
 import java.net.URI
 
 plugins {
-    id("attribute-conventions")
     `java-library`
     `maven-publish`
     signing
