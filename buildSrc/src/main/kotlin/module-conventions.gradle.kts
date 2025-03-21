@@ -288,13 +288,13 @@ val dokkaJar = tasks.register<Jar>("dokkaJar") {
 
 artifacts {
     add("publishedApi", remapJar) {
-        builtBy(remapJar, rootProject.tasks["remapAllJars"])
+        builtBy(remapJar)
     }
     add("publishedRuntime", remapJar) {
-        builtBy(remapJar, rootProject.tasks["remapAllJars"])
+        builtBy(remapJar)
     }
     add("publishedSources", sourcesJar) {
-        builtBy(sourcesJar, rootProject.tasks["remapAllSources"])
+        builtBy(sourcesJar)
     }
     add("publishedJavadoc", dokkaJar)
 }

@@ -15,7 +15,7 @@ buildscript {
     }
     dependencies {
         // update this to match version in buildSrc
-        classpath("net.fabricmc:fabric-loom:0.10.64")
+        classpath("net.fabricmc:fabric-loom:1.9.2")
     }
 }
 
@@ -65,11 +65,6 @@ loom {
     runConfigs.configureEach {
         isIdeConfigGenerated = false
     }
-}
-
-tasks.configureEach {
-    if(name == "remapAllJars")
-        dependsOn(":remapJar")
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

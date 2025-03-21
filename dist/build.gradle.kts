@@ -6,7 +6,7 @@ import com.matthewprenger.cursegradle.Options
 import com.modrinth.minotaur.TaskModrinthUpload
 import com.modrinth.minotaur.request.Dependency.DependencyType
 import com.modrinth.minotaur.request.VersionType
-import net.fabricmc.loom.configuration.JarManifestConfiguration
+//import net.fabricmc.loom.configuration.JarManifestConfiguration
 import java.util.jar.Manifest
 
 plugins {
@@ -72,7 +72,7 @@ val jar = tasks.named<Jar>("jar") {
 
     manifest {
         val manifest = Manifest()
-        JarManifestConfiguration(rootProject).configure(manifest)
+//        JarManifestConfiguration(rootProject).configure(manifest)
         // loom hard-codes `toM = "intermediary"` in the RemapJarTask
         manifest.mainAttributes.putValue("Fabric-Mapping-Namespace", "intermediary")
         attributes(manifest.mainAttributes.mapKeys { (key, _) -> "$key" })

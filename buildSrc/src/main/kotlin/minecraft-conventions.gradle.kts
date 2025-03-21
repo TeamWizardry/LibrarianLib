@@ -1,11 +1,5 @@
-import net.fabricmc.loom.api.LoomGradleExtensionAPI
-
 plugins {
     id("fabric-loom")
-}
-
-configure<LoomGradleExtensionAPI> {
-    shareCaches()
 }
 
 dependencies {
@@ -21,10 +15,8 @@ dependencies {
     "modImplementation"("net.fabricmc:fabric-loader:$loader_version")
 }
 
-// The genSources task demands that loom be on the buildscript classpath. However, applying the plugin through buildSrc
-// doesn't seem to do that. We manually add it to the classpath of the root project, so we only enable genSources for
-// that project.
+// genSources throws dependency errors if it's defined in subprojects, since they all try to output the same file
 tasks.configureEach {
-    if(name.startsWith("genSources") || name.startsWith("unpickJar"))
+    if(name.startsWith("genSources"))
         enabled = project == project.rootProject
 }
