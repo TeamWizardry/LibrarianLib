@@ -67,6 +67,21 @@ loom {
     }
 }
 
+// genSources fails when multiple projects are present, since they all try to write to the same cache file.
+// this nonsense will make the tasks chain after each other, and ideally the ones later in the chain will just pass
+// through, since the root has already generated sources
+var previousPath = ""
+for (proj in subprojects) {
+    if (proj.name == "dist") continue
+    val taskPath = previousPath
+    previousPath = proj.path
+    proj.tasks.configureEach {
+        if (name.startsWith("genSources")) {
+            mustRunAfter(taskPath + ":" + name)
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Utilities
 

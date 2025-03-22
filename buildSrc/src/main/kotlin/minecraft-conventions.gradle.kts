@@ -14,9 +14,3 @@ dependencies {
     "modApi"("net.fabricmc:fabric-language-kotlin:$fabric_kotlin_version")
     "modImplementation"("net.fabricmc:fabric-loader:$loader_version")
 }
-
-// genSources throws dependency errors if it's defined in subprojects, since they all try to output the same file
-tasks.configureEach {
-    if(name.startsWith("genSources"))
-        enabled = project == project.rootProject
-}
