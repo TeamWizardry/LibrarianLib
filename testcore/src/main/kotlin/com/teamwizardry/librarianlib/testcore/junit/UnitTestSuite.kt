@@ -2,8 +2,9 @@ package com.teamwizardry.librarianlib.testcore.junit
 
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder
+import net.minecraft.registry.Registry
+import net.minecraft.registry.RegistryKey
 import net.minecraft.util.Identifier
-import net.minecraft.util.registry.Registry
 
 public class UnitTestSuite {
     private val _tests = mutableListOf<Class<*>>()
@@ -33,11 +34,11 @@ public class UnitTestSuite {
 
     public companion object {
         @JvmField
-        public val REGISTRY_ID: Identifier = Identifier("testcore:unit_tests")
+        public val REGISTRY_KEY: RegistryKey<Registry<UnitTestSuite>> =
+            RegistryKey.ofRegistry(Identifier.of("testcore:unit_tests"))
 
         @JvmField
-        public val REGISTRY: Registry<UnitTestSuite> = FabricRegistryBuilder
-            .createSimple(UnitTestSuite::class.java, REGISTRY_ID)
-            .buildAndRegister()
+        public val REGISTRY: Registry<UnitTestSuite> =
+            FabricRegistryBuilder.createSimple(REGISTRY_KEY).buildAndRegister()
     }
 }

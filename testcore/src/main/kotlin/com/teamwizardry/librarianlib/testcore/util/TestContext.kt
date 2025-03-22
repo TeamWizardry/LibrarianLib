@@ -2,7 +2,7 @@ package com.teamwizardry.librarianlib.testcore.util
 
 import com.teamwizardry.librarianlib.testcore.objects.TestObjectDslMarker
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.text.LiteralText
+import net.minecraft.text.Text
 
 @TestObjectDslMarker
 public abstract class TestContext {
@@ -28,10 +28,10 @@ public abstract class PlayerTestContext(player: PlayerEntity): TestContext() {
     }
 
     public fun chat(text: String) {
-        _player.sendMessage(LiteralText(text), false)
+        _player.sendMessage(Text.literal(text), false)
     }
 
     public fun status(text: String) {
-        _player.sendMessage(LiteralText(text), true)
+        _player.sendMessage(Text.literal(text), true)
     }
 }

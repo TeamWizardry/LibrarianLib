@@ -1,12 +1,10 @@
 package com.teamwizardry.librarianlib.math
 
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
-import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.util.math.Matrix4f
 import net.minecraft.util.math.Vec3d
+import org.joml.Matrix4f
 import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.abs
@@ -60,27 +58,14 @@ public open class Matrix4d(
         m20.toDouble(), m21.toDouble(), m22.toDouble(), m23.toDouble(),
         m30.toDouble(), m31.toDouble(), m32.toDouble(), m33.toDouble())
 
-    @Suppress("CAST_NEVER_SUCCEEDS")
     public constructor(m: Matrix4f): this(
-        (m as IMatrix4f).m00,
-        (m as IMatrix4f).m01,
-        (m as IMatrix4f).m02,
-        (m as IMatrix4f).m03,
-        (m as IMatrix4f).m10,
-        (m as IMatrix4f).m11,
-        (m as IMatrix4f).m12,
-        (m as IMatrix4f).m13,
-        (m as IMatrix4f).m20,
-        (m as IMatrix4f).m21,
-        (m as IMatrix4f).m22,
-        (m as IMatrix4f).m23,
-        (m as IMatrix4f).m30,
-        (m as IMatrix4f).m31,
-        (m as IMatrix4f).m32,
-        (m as IMatrix4f).m33
+        m.m00(), m.m01(), m.m02(), m.m03(),
+        m.m10(), m.m11(), m.m12(), m.m13(),
+        m.m20(), m.m21(), m.m22(), m.m23(),
+        m.m30(), m.m31(), m.m32(), m.m33()
     )
 
-    public constructor(stack: MatrixStack): this(stack.peek().model)
+    public constructor(stack: MatrixStack): this(stack.peek().positionMatrix)
 
     public operator fun get(row: Int, col: Int): Double {
         when (row) {
@@ -446,23 +431,22 @@ public open class Matrix4d(
      * Copies the contents of this LibrarianLib matrix into the provided Minecraft matrix
      */
     public fun copyToMatrix4f(matrix: Matrix4f) {
-        val m: IMatrix4f = mixinCast(matrix)
-        m.m00 = m00.toFloat()
-        m.m01 = m01.toFloat()
-        m.m02 = m02.toFloat()
-        m.m03 = m03.toFloat()
-        m.m10 = m10.toFloat()
-        m.m11 = m11.toFloat()
-        m.m12 = m12.toFloat()
-        m.m13 = m13.toFloat()
-        m.m20 = m20.toFloat()
-        m.m21 = m21.toFloat()
-        m.m22 = m22.toFloat()
-        m.m23 = m23.toFloat()
-        m.m30 = m30.toFloat()
-        m.m31 = m31.toFloat()
-        m.m32 = m32.toFloat()
-        m.m33 = m33.toFloat()
+        matrix.m00(m00.toFloat())
+        matrix.m01(m01.toFloat())
+        matrix.m02(m02.toFloat())
+        matrix.m03(m03.toFloat())
+        matrix.m10(m10.toFloat())
+        matrix.m11(m11.toFloat())
+        matrix.m12(m12.toFloat())
+        matrix.m13(m13.toFloat())
+        matrix.m20(m20.toFloat())
+        matrix.m21(m21.toFloat())
+        matrix.m22(m22.toFloat())
+        matrix.m23(m23.toFloat())
+        matrix.m30(m30.toFloat())
+        matrix.m31(m31.toFloat())
+        matrix.m32(m32.toFloat())
+        matrix.m33(m33.toFloat())
     }
 
     override fun toString(): String {

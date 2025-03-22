@@ -1,17 +1,12 @@
 package com.teamwizardry.librarianlib.testcore.content.impl
 
-import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import com.teamwizardry.librarianlib.testcore.content.TestEntity
 import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityDimensions
 import net.minecraft.entity.EntityPose
 import net.minecraft.entity.EntityType
+import net.minecraft.entity.data.DataTracker
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.network.Packet
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
 import net.minecraft.util.math.Box
@@ -19,11 +14,6 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 
 public open class TestEntityImpl(public val config: TestEntity, type: EntityType<TestEntityImpl>, world: World): Entity(type, world) {
-
-    override fun collides(): Boolean {
-        return true
-    }
-
     override fun handleAttack(attacker: Entity): Boolean {
         val context = TestEntity.HitContext(this, attacker, attacker is PlayerEntity)
 
@@ -73,21 +63,13 @@ public open class TestEntityImpl(public val config: TestEntity, type: EntityType
 
     // miscellaneous boilerplate =======================================================================================
 
-    override fun createSpawnPacket(): Packet<*> {
-        return EntitySpawnS2CPacket(this)
-    }
-
     override fun readCustomDataFromNbt(tag: NbtCompound?) {
     }
 
     override fun writeCustomDataToNbt(tag: NbtCompound?) {
     }
 
-    override fun initDataTracker() {
-    }
-
-    override fun getEyeHeight(pose: EntityPose?, dimensions: EntityDimensions?): Float {
-        return 0f
+    override fun initDataTracker(builder: DataTracker.Builder) {
     }
 
     public val relativeBoundingBox: Box

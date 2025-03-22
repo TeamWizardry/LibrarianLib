@@ -32,8 +32,12 @@ dependencies {
     "devRuntime"("org.junit.jupiter:junit-jupiter-api:5.6.2")
     "devRuntime"("org.junit.jupiter:junit-jupiter-engine:5.6.2")
     "devRuntime"("org.junit.platform:junit-platform-launcher:1.6.2")
-    "devMod"("net.devtech:arrp:0.4.2")
-    modImplementation("net.devtech:arrp:0.4.2")
+    "devMod"("pers.solid:brrp-fabric:1.0.4-1.21.1") {
+        isTransitive = false
+    }
+    modImplementation("pers.solid:brrp-fabric:1.0.4-1.21.1") {
+        isTransitive = false
+    }
 
     "devRuntime"(sourceSets.main.get().output)
     "devRuntime"(sourceSets.test.get().output)

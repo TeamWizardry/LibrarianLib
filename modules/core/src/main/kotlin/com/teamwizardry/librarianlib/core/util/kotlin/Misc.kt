@@ -12,8 +12,6 @@ import kotlin.contracts.contract
 public fun Identifier.makeTranslationKey(type: String, suffix: String? = null): String
     = "$type.$namespace.$path${suffix?.let { ".$it" } ?: ""}"
 
-public fun<T> Optional<T>.getOrNull(): T? = this.orElse(null)
-
 /**
  * Runs a block and then returns `this`.
  *

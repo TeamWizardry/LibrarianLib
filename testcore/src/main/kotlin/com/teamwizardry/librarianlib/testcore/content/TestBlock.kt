@@ -1,6 +1,5 @@
 package com.teamwizardry.librarianlib.testcore.content
 
-import com.teamwizardry.librarianlib.core.util.append
 import com.teamwizardry.librarianlib.testcore.TestModContentManager
 import com.teamwizardry.librarianlib.testcore.TestModResourceManager
 import com.teamwizardry.librarianlib.testcore.content.impl.TestBlockImpl
@@ -9,32 +8,34 @@ import com.teamwizardry.librarianlib.testcore.content.impl.TestBlockWithEntityIm
 import com.teamwizardry.librarianlib.testcore.objects.TestObjectDslMarker
 import com.teamwizardry.librarianlib.testcore.util.PlayerTestContext
 import com.teamwizardry.librarianlib.testcore.util.SidedAction
-import net.devtech.arrp.json.blockstate.JBlockModel
-import net.devtech.arrp.json.blockstate.JState
-import net.devtech.arrp.json.blockstate.JVariant
-import net.devtech.arrp.json.models.JModel
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents
+import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
 import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.block.piston.PistonBehavior
+import net.minecraft.data.client.*
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.registry.Registries
+import net.minecraft.registry.Registry
+import net.minecraft.registry.RegistryKey
+import net.minecraft.state.property.Properties
 import net.minecraft.util.Hand
 import net.minecraft.util.Identifier
 import net.minecraft.util.hit.BlockHitResult
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.registry.Registry
+import net.minecraft.util.math.Direction
 import net.minecraft.world.World
-import java.lang.IllegalStateException
+import pers.solid.brrp.v1.model.ModelJsonBuilder
 
 @TestObjectDslMarker
 public class TestBlock(manager: TestModContentManager, id: Identifier): TestConfig(manager, id) {
-    public val properties: AbstractBlock.Settings = AbstractBlock.Settings.of(testMaterial)
-
-    init {
-        properties.nonOpaque()
-    }
+    public val properties: AbstractBlock.Settings = AbstractBlock.Settings.create()
+        .mapColor(MapColor.PINK)
+        .pistonBehavior(PistonBehavior.NORMAL)
+        .nonOpaque()
 
     /**
      * Whether the model should be transparent
@@ -74,59 +75,75 @@ public class TestBlock(manager: TestModContentManager, id: Identifier): TestConf
             TestBlockImpl(this)
     }
     internal val itemInstance: TestBlockItem by lazy {
-        TestBlockItem(blockInstance, Item.Settings().group(manager.itemGroup))
+        TestBlockItem(blockInstance, Item.Settings())
     }
     internal val blockEntityType: BlockEntityType<BlockEntity>? by lazy {
         blockEntityFactory?.let { factory ->
-            BlockEntityType.Builder.create({ pos, state -> factory(this.blockEntityType!!, pos, state) }, blockInstance).build(null)
+            FabricBlockEntityTypeBuilder.create(
+                { pos, state -> factory(this.blockEntityType!!, pos, state) },
+                blockInstance
+            ).build()
         }
     }
 
     override fun registerCommon(resources: TestModResourceManager) {
         blockEntityType?.also {
-            Registry.register(Registry.BLOCK_ENTITY_TYPE, id, blockEntityType)
+            Registry.register(Registries.BLOCK_ENTITY_TYPE, id, blockEntityType)
         }
-        Registry.register(Registry.BLOCK, id, blockInstance)
-        Registry.register(Registry.ITEM, id, itemInstance)
+        Registry.register(Registries.BLOCK, id, blockInstance)
+        Registry.register(Registries.ITEM, id, itemInstance)
+        ItemGroupEvents.modifyEntriesEvent(manager.itemGroupKey).register { it.add(itemInstance) }
 
-        resources.lang.block(id, name)
+        resources.lang.add(blockInstance, name)
         description?.also {
-            resources.lang.block(id.append(".tooltip"), it)
+            resources.lang.add(id.toTranslationKey("block", "tooltip"), it)
         }
     }
 
     override fun registerClient(resources: TestModResourceManager) {
-        val model = Identifier("liblib-testcore:block/test_block/${blockInstance.modelName}")
-        val state = JState.state()
+        val model = Identifier.of("liblib-testcore:block/test_block/${blockInstance.modelName}")
+
+
+        val state = VariantsBlockStateSupplier.create(blockInstance, BlockStateVariant.create().put(VariantSettings.MODEL, model))
         if(directional) {
-            state.add(
-                JVariant()
-                    .put("facing", "up", JBlockModel(model))
-                    .put("facing", "down", JBlockModel(model).x(180))
-                    .put("facing", "east", JBlockModel(model).y(90).x(90))
-                    .put("facing", "south", JBlockModel(model).y(180).x(90))
-                    .put("facing", "west", JBlockModel(model).y(270).x(90))
-                    .put("facing", "north", JBlockModel(model).y(0).x(90))
-            )
-        } else {
-            state.add(
-                JVariant()
-                    .put("", JBlockModel(model))
+            state.coordinate(
+                BlockStateVariantMap.create(Properties.FACING)
+                    .register(Direction.DOWN, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R180))
+                    .register(Direction.UP, BlockStateVariant.create())
+                    .register(Direction.NORTH, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R90))
+                    .register(
+                        Direction.SOUTH,
+                        BlockStateVariant.create()
+                            .put(VariantSettings.X, VariantSettings.Rotation.R90)
+                            .put(VariantSettings.Y, VariantSettings.Rotation.R180)
+                    )
+                    .register(
+                        Direction.WEST,
+                        BlockStateVariant.create()
+                            .put(VariantSettings.X, VariantSettings.Rotation.R90)
+                            .put(VariantSettings.Y, VariantSettings.Rotation.R270)
+                    )
+                    .register(
+                        Direction.EAST,
+                        BlockStateVariant.create()
+                            .put(VariantSettings.X, VariantSettings.Rotation.R90)
+                            .put(VariantSettings.Y, VariantSettings.Rotation.R90)
+                    )
             )
         }
-        resources.arrp.addBlockState(state, Identifier(id.namespace, "blockstates/${id.path}"))
+        resources.runtimeResourcePack.addBlockState(Identifier.of(id.namespace, "blockstates/${id.path}"), state)
 
-        resources.arrp.addModel(
-            JModel.model().parent("$model"),
-            Identifier(id.namespace, "item/${id.path}")
+        resources.runtimeResourcePack.addModel(
+            Identifier.of(id.namespace, "item/${id.path}"),
+            ModelJsonBuilder.create("$model")
         )
     }
 
     public data class RightClickContext(
         val state: BlockState, val world: World, val pos: BlockPos,
-        val player: PlayerEntity, val hand: Hand, val hit: BlockHitResult
+        val player: PlayerEntity, val hand: Hand, val hit: BlockHitResult,
+        val stack: ItemStack?
     ): PlayerTestContext(player) {
-        val stack: ItemStack = player.getStackInHand(hand)
     }
 
     public data class LeftClickContext(
@@ -145,18 +162,5 @@ public class TestBlock(manager: TestModContentManager, id: Identifier): TestConf
         val state: BlockState, val world: World, val pos: BlockPos,
         val player: PlayerEntity, val stack: ItemStack
     ): PlayerTestContext(player) {
-    }
-
-    private companion object {
-        val testMaterial: Material = Material(
-            MapColor.PINK, // materialMapColorIn
-            false, // liquid
-            false, // solid
-            true, // doesBlockMovement
-            false, // opaque
-            false, // canBurnIn
-            false, // replaceableIn
-            PistonBehavior.NORMAL // mobilityFlag
-        )
     }
 }

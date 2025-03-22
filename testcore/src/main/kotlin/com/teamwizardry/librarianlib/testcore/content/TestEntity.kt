@@ -8,34 +8,34 @@ import com.teamwizardry.librarianlib.testcore.content.impl.TestEntityRenderer
 import com.teamwizardry.librarianlib.testcore.util.PlayerTestContext
 import com.teamwizardry.librarianlib.testcore.util.SidedAction
 import com.teamwizardry.librarianlib.testcore.util.TestContext
-import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricEntityTypeBuilder
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry
 import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityDimensions
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.SpawnGroup
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
+import net.minecraft.registry.Registries
+import net.minecraft.registry.Registry
+import net.minecraft.registry.RegistryKey
 import net.minecraft.util.Hand
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 
 public class TestEntity(manager: TestModContentManager, id: Identifier) : TestConfig(manager, id) {
 
     public val type: EntityType<TestEntityImpl> by lazy {
-        FabricEntityTypeBuilder.create<TestEntityImpl>(SpawnGroup.MISC)
-            .entityFactory<TestEntityImpl> { type, world ->
-                TestEntityImpl(this, type, world)
-            }
-            .dimensions(EntityDimensions.fixed(0.5f, 0.5f))
-            .build()
+        EntityType.Builder.create(
+            { type, world -> TestEntityImpl(this, type, world) },
+            SpawnGroup.MISC
+        ).dimensions(0.5f, 0.5f).eyeHeight(0f)
+            .build(this.id.toString())
     }
 
 
     public val spawnerItem: TestItem = manager.create(id.path + "_spawner") {
+        name = this@TestEntity.name
         rightClick.server {
             spawn(player)
         }
@@ -121,17 +121,16 @@ public class TestEntity(manager: TestModContentManager, id: Identifier) : TestCo
     }
 
     override fun registerCommon(resources: TestModResourceManager) {
-        Registry.register(Registry.ENTITY_TYPE, this.id, this.type)
+        Registry.register(Registries.ENTITY_TYPE, this.id, this.type)
         TestCoreEntityTypes.types.add(this.type)
     }
 
     override fun registerClient(resources: TestModResourceManager) {
-        EntityRendererRegistry.INSTANCE.register(this.type) { dispatcher ->
+        EntityRendererRegistry.register(this.type) { dispatcher ->
             TestEntityRenderer(dispatcher)
         }
 
         resources.lang
-            .entity(id, name)
-            .item(spawnerItem.id, name)
+            .add(this.type, name)
     }
 }

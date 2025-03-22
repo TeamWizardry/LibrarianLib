@@ -1,18 +1,16 @@
 package com.teamwizardry.librarianlib.testcore.content.impl
 
 import com.teamwizardry.librarianlib.core.util.kotlin.makeTranslationKey
-import com.teamwizardry.librarianlib.core.util.registryId
 import com.teamwizardry.librarianlib.testcore.content.TestItem
 import net.minecraft.block.BlockState
-import net.minecraft.client.item.TooltipContext
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.item.ItemUsageContext
+import net.minecraft.item.tooltip.TooltipType
 import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
 import net.minecraft.util.*
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
@@ -20,14 +18,14 @@ import net.minecraft.world.World
 public open class TestItemImpl(public val config: TestItem): Item(config.properties) {
     override fun appendTooltip(
         stack: ItemStack,
-        world: World?,
+        context: TooltipContext,
         tooltip: MutableList<Text>,
-        context: TooltipContext
+        type: TooltipType
     ) {
-        super.appendTooltip(stack, world, tooltip, context)
+        super.appendTooltip(stack, context, tooltip, type)
         val descriptionLines = config.description?.lines()?.size ?: 0
         for(i in 0 until descriptionLines) {
-            val description = TranslatableText(this.registryId.makeTranslationKey("item", "tooltip.$i"))
+            val description = Text.translatable(this.config.id.makeTranslationKey("item", "tooltip.$i"))
             description.style.withFormatting(Formatting.GRAY)
             tooltip.add(description)
         }
@@ -55,9 +53,7 @@ public open class TestItemImpl(public val config: TestItem): Item(config.propert
     }
 
     override fun useOnBlock(context: ItemUsageContext): ActionResult {
-        var result = ActionResult.PASS
-
-        if (context.player == null) return result
+        if (context.player == null) return ActionResult.PASS
 
         val clickContext = TestItem.RightClickContext(context.world, context.player!!, context.hand)
         val clickBlockContext = TestItem.RightClickBlockContext(context)
@@ -65,11 +61,11 @@ public open class TestItemImpl(public val config: TestItem): Item(config.propert
         config.rightClick.run(context.world.isClient, clickContext)
         config.rightClickBlock.run(context.world.isClient, clickBlockContext)
         if (config.rightClick.exists || config.rightClickBlock.exists)
-            result = ActionResult.SUCCESS
-        return result
+            return ActionResult.SUCCESS
+        return ActionResult.PASS
     }
 
-    override fun getMaxUseTime(stack: ItemStack?): Int {
+    override fun getMaxUseTime(stack: ItemStack?, user: LivingEntity?): Int {
         return config.rightClickHoldDuration
     }
 
@@ -95,51 +91,6 @@ public open class TestItemImpl(public val config: TestItem): Item(config.propert
 
         config.rightClickRelease.run(world.isClient, context)
     }
-
-    override fun finishUsing(stack: ItemStack?, world: World?, user: LivingEntity?): ItemStack {
-        return super.finishUsing(stack, world, user)
-    }
-
-    override fun postHit(stack: ItemStack?, target: LivingEntity?, attacker: LivingEntity?): Boolean {
-        return super.postHit(stack, target, attacker)
-    }
-
-    override fun postMine(
-        stack: ItemStack?,
-        world: World?,
-        state: BlockState?,
-        pos: BlockPos?,
-        miner: LivingEntity?
-    ): Boolean {
-        return super.postMine(stack, world, state, pos, miner)
-    }
-
-    override fun useOnEntity(stack: ItemStack?, user: PlayerEntity?, entity: LivingEntity?, hand: Hand?): ActionResult {
-        return super.useOnEntity(stack, user, entity, hand)
-    }
-
-//    override fun onBlockStartBreak(itemstack: ItemStack, pos: BlockPos, player: PlayerEntity): Boolean {
-//        val context = TestItem.LeftClickBlockContext(itemstack, pos, player)
-//        config.leftClickBlock.run(player.world.isRemote, context)
-//
-//        return super<Item>.onBlockStartBreak(itemstack, pos, player)
-//    }
-//
-//    override fun onLeftClickEntity(stack: ItemStack, player: PlayerEntity, entity: Entity): Boolean {
-//        val context = TestItem.LeftClickEntityContext(stack, player, entity)
-//        config.leftClickEntity.run(player.world.isRemote, context)
-//        return config.leftClickEntity.exists
-//    }
-//
-//    override fun itemInteractionForEntity(stack: ItemStack, playerIn: PlayerEntity, target: LivingEntity, hand: Hand): ActionResultType {
-//        val context = TestItem.RightClickEntityContext(stack, playerIn, target, hand)
-//        val clickContext = TestItem.RightClickContext(playerIn.world, playerIn, hand)
-//
-//        config.rightClickEntity.run(playerIn.world.isRemote, context)
-//        config.rightClick.run(playerIn.world.isRemote, clickContext)
-//
-//        return if(config.rightClickEntity.exists) ActionResultType.SUCCESS else ActionResultType.PASS
-//    }
 
     override fun inventoryTick(stack: ItemStack, worldIn: World, entityIn: Entity, itemSlot: Int, isSelected: Boolean) {
         if (entityIn !is PlayerEntity) return

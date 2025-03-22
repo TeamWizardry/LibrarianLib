@@ -37,8 +37,7 @@ allprojects {
             content { includeGroup("curse.maven") }
         }
         maven("https://repo.spongepowered.org/repository/maven-public/")
-        maven("https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/") // for AARP
-        // maven("https://ueaj.dev/maven") // for ARRP
+        maven("https://raw.githubusercontent.com/SolidBlock-cn/mvn-repo/main") // for BRRP
         maven("https://maven.terraformersmc.com/releases") // for ModMenu
     }
 }

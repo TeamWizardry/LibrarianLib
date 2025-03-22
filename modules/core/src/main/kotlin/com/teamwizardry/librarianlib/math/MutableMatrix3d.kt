@@ -1,9 +1,8 @@
 package com.teamwizardry.librarianlib.math
 
-import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
-import net.minecraft.util.math.Matrix3f
 import net.minecraft.util.math.Vec3d
+import org.joml.Matrix3f
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -71,17 +70,10 @@ public open class MutableMatrix3d(
         m20.toDouble(), m21.toDouble(), m22.toDouble()
     )
 
-    @Suppress("CAST_NEVER_SUCCEEDS")
     public constructor(m: Matrix3f): this(
-        (m as IMatrix3f).m00,
-        (m as IMatrix3f).m01,
-        (m as IMatrix3f).m02,
-        (m as IMatrix3f).m10,
-        (m as IMatrix3f).m11,
-        (m as IMatrix3f).m12,
-        (m as IMatrix3f).m20,
-        (m as IMatrix3f).m21,
-        (m as IMatrix3f).m22
+        m.m00(), m.m01(), m.m02(),
+        m.m10(), m.m11(), m.m12(),
+        m.m20(), m.m21(), m.m22()
     )
 
     public operator fun set(row: Int, col: Int, value: Double) {
@@ -139,16 +131,15 @@ public open class MutableMatrix3d(
     }
 
     public fun set(m: Matrix3f): MutableMatrix3d {
-        @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix3f
-        this.m00 = imatrix.m00.toDouble()
-        this.m01 = imatrix.m01.toDouble()
-        this.m02 = imatrix.m02.toDouble()
-        this.m10 = imatrix.m10.toDouble()
-        this.m11 = imatrix.m11.toDouble()
-        this.m12 = imatrix.m12.toDouble()
-        this.m20 = imatrix.m20.toDouble()
-        this.m21 = imatrix.m21.toDouble()
-        this.m22 = imatrix.m22.toDouble()
+        this.m00 = m.m00().toDouble()
+        this.m01 = m.m01().toDouble()
+        this.m02 = m.m02().toDouble()
+        this.m10 = m.m10().toDouble()
+        this.m11 = m.m11().toDouble()
+        this.m12 = m.m12().toDouble()
+        this.m20 = m.m20().toDouble()
+        this.m21 = m.m21().toDouble()
+        this.m22 = m.m22().toDouble()
         return this
     }
 

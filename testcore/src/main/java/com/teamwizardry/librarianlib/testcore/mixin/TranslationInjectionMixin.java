@@ -12,8 +12,8 @@ import java.util.Objects;
 @Mixin(value = {TranslationStorage.class})
 public class TranslationInjectionMixin {
     @Inject(method = "get", at = @At("RETURN"), cancellable = true)
-    private void translateKeyPrivateHook(String key, CallbackInfoReturnable<String> cir) {
-        if (Objects.equals(key, cir.getReturnValue())) {
+    private void translateKeyPrivateHook(String key, String fallback, CallbackInfoReturnable<String> cir) {
+        if (Objects.equals(fallback, cir.getReturnValue())) {
             String injectedName = InjectedTranslations.INSTANCE.getTranslations().get(key);
             if (injectedName != null)
                 cir.setReturnValue(injectedName);

@@ -2,25 +2,26 @@ package com.teamwizardry.librarianlib.testcore.content.utils
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.vec
+import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.item.ItemStack
-import net.minecraft.text.LiteralText
 import net.minecraft.text.Style
+import net.minecraft.text.Text
 
-public open class TestScreen(public val config: TestScreenConfig): Screen(LiteralText(config.title)) {
+public open class TestScreen(public val config: TestScreenConfig): Screen(Text.literal(config.title)) {
     public constructor(configure: TestScreenConfig.() -> Unit) : this(TestScreenConfig(configure))
 
     override fun shouldCloseOnEsc(): Boolean = config.closeOnEsc
-    override fun isPauseScreen(): Boolean = config.pausesGame
+    override fun shouldPause(): Boolean = config.pausesGame
 
     private val screenContext = TestScreenConfig.ScreenContext(this)
     private var left = 0.0
     private var top = 0.0
 
-    override fun onClose() {
+    override fun close() {
         config.onClose.run(screenContext)
-        super.onClose()
+        super.close()
     }
 
     override fun init() {
@@ -35,15 +36,16 @@ public open class TestScreen(public val config: TestScreenConfig): Screen(Litera
         super.tick()
     }
 
-    override fun render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        matrixStack.push()
-        matrixStack.translate(left, top, 0.0)
-        matrixStack.scale(config.scale.toFloat(), config.scale.toFloat(), 1f)
+    override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
+        super.render(context, mouseX, mouseY, delta)
 
-        config.draw.run(TestScreenConfig.DrawContext(this, matrixStack, vec(mouseX - left, mouseY - top) / config.scale, partialTicks))
+        context.matrices.push()
+        context.matrices.translate(left, top, 0.0)
+        context.matrices.scale(config.scale.toFloat(), config.scale.toFloat(), 1f)
 
-        matrixStack.pop()
-        super.render(matrixStack, mouseX, mouseY, partialTicks)
+        config.draw.run(TestScreenConfig.RenderContext(this, context, vec(mouseX - left, mouseY - top) / config.scale, delta))
+
+        context.matrices.pop()
     }
 
     override fun charTyped(character: Char, modifiers: Int): Boolean {
@@ -71,9 +73,21 @@ public open class TestScreen(public val config: TestScreenConfig): Screen(Litera
         return super.mouseReleased(x, y, button)
     }
 
-    override fun mouseScrolled(x: Double, y: Double, amount: Double): Boolean {
-        config.mouseScrolled.run(TestScreenConfig.MouseScrollContext(this, vec(x - left, y - top) / config.scale, amount))
-        return super.mouseScrolled(x, y, amount)
+    override fun mouseScrolled(
+        mouseX: Double,
+        mouseY: Double,
+        horizontalAmount: Double,
+        verticalAmount: Double
+    ): Boolean {
+        config.mouseScrolled.run(
+            TestScreenConfig.MouseScrollContext(
+                this,
+                vec(mouseX - left, mouseX - top) / config.scale,
+                verticalAmount,
+                horizontalAmount
+            )
+        )
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
     }
 
     override fun mouseMoved(x: Double, y: Double) {
@@ -84,35 +98,5 @@ public open class TestScreen(public val config: TestScreenConfig): Screen(Litera
     override fun mouseDragged(startX: Double, startY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
         config.mouseDragged.run(TestScreenConfig.MouseDraggedContext(this, vec(startX - left, startY - top) / config.scale, vec(deltaX, deltaY) / config.scale, button))
         return super.mouseDragged(startX, startY, button, deltaX, deltaY)
-    }
-
-    // make these rendering helpers public
-
-    public override fun drawHorizontalLine(matrices: MatrixStack, x1: Int, x2: Int, y: Int, color: Int) {
-        super.drawHorizontalLine(matrices, x1, x2, y, color)
-    }
-
-    public override fun drawVerticalLine(matrices: MatrixStack, x: Int, y1: Int, y2: Int, color: Int) {
-        super.drawVerticalLine(matrices, x, y1, y2, color)
-    }
-
-    public override fun fillGradient(
-        matrices: MatrixStack,
-        xStart: Int,
-        yStart: Int,
-        xEnd: Int,
-        yEnd: Int,
-        colorStart: Int,
-        colorEnd: Int
-    ) {
-        super.fillGradient(matrices, xStart, yStart, xEnd, yEnd, colorStart, colorEnd)
-    }
-
-    public override fun renderTooltip(matrices: MatrixStack, stack: ItemStack, x: Int, y: Int) {
-        super.renderTooltip(matrices, stack, x, y)
-    }
-
-    public override fun renderTextHoverEffect(matrices: MatrixStack, style: Style?, x: Int, y: Int) {
-        super.renderTextHoverEffect(matrices, style, x, y)
     }
 }

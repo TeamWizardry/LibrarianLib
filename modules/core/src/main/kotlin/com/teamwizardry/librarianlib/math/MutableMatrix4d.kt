@@ -1,8 +1,7 @@
 package com.teamwizardry.librarianlib.math
 
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
-import net.minecraft.util.math.Matrix4f
 import net.minecraft.util.math.Vec3d
+import org.joml.Matrix4f
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -92,24 +91,11 @@ public open class MutableMatrix4d(
         m20.toDouble(), m21.toDouble(), m22.toDouble(), m23.toDouble(),
         m30.toDouble(), m31.toDouble(), m32.toDouble(), m33.toDouble())
 
-    @Suppress("CAST_NEVER_SUCCEEDS")
     public constructor(m: Matrix4f): this(
-        (m as IMatrix4f).m00,
-        (m as IMatrix4f).m01,
-        (m as IMatrix4f).m02,
-        (m as IMatrix4f).m03,
-        (m as IMatrix4f).m10,
-        (m as IMatrix4f).m11,
-        (m as IMatrix4f).m12,
-        (m as IMatrix4f).m13,
-        (m as IMatrix4f).m20,
-        (m as IMatrix4f).m21,
-        (m as IMatrix4f).m22,
-        (m as IMatrix4f).m23,
-        (m as IMatrix4f).m30,
-        (m as IMatrix4f).m31,
-        (m as IMatrix4f).m32,
-        (m as IMatrix4f).m33
+        m.m00(), m.m01(), m.m02(), m.m03(),
+        m.m10(), m.m11(), m.m12(), m.m13(),
+        m.m20(), m.m21(), m.m22(), m.m23(),
+        m.m30(), m.m31(), m.m32(), m.m33()
     )
 
     public operator fun set(row: Int, col: Int, value: Double) {
@@ -209,23 +195,22 @@ public open class MutableMatrix4d(
      * Set the contents of this matrix to the contents of the other matrix
      */
     public fun set(m: Matrix4f): MutableMatrix4d {
-        @Suppress("CAST_NEVER_SUCCEEDS") val imatrix = m as IMatrix4f
-        this.m00 = imatrix.m00.toDouble()
-        this.m01 = imatrix.m01.toDouble()
-        this.m02 = imatrix.m02.toDouble()
-        this.m03 = imatrix.m03.toDouble()
-        this.m10 = imatrix.m10.toDouble()
-        this.m11 = imatrix.m11.toDouble()
-        this.m12 = imatrix.m12.toDouble()
-        this.m13 = imatrix.m13.toDouble()
-        this.m20 = imatrix.m20.toDouble()
-        this.m21 = imatrix.m21.toDouble()
-        this.m22 = imatrix.m22.toDouble()
-        this.m23 = imatrix.m23.toDouble()
-        this.m30 = imatrix.m30.toDouble()
-        this.m31 = imatrix.m31.toDouble()
-        this.m32 = imatrix.m32.toDouble()
-        this.m33 = imatrix.m33.toDouble()
+        this.m00 = m.m00().toDouble()
+        this.m01 = m.m01().toDouble()
+        this.m02 = m.m02().toDouble()
+        this.m03 = m.m03().toDouble()
+        this.m10 = m.m10().toDouble()
+        this.m11 = m.m11().toDouble()
+        this.m12 = m.m12().toDouble()
+        this.m13 = m.m13().toDouble()
+        this.m20 = m.m20().toDouble()
+        this.m21 = m.m21().toDouble()
+        this.m22 = m.m22().toDouble()
+        this.m23 = m.m23().toDouble()
+        this.m30 = m.m30().toDouble()
+        this.m31 = m.m31().toDouble()
+        this.m32 = m.m32().toDouble()
+        this.m33 = m.m33().toDouble()
         return this
     }
 

@@ -8,7 +8,7 @@ import com.teamwizardry.librarianlib.testcore.junit.UnitTestSuite
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.api.ModInitializer
-import net.minecraft.util.registry.Registry
+import net.minecraft.registry.Registry
 
 internal object LibLibCoreTest {
     val logManager: ModLogManager = ModLogManager("liblib-core-test", "LibrarianLib Core Test")

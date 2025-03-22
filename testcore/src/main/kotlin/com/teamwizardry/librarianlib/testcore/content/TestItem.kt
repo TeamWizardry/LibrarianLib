@@ -8,19 +8,19 @@ import com.teamwizardry.librarianlib.testcore.content.impl.TestItemImpl
 import com.teamwizardry.librarianlib.testcore.content.impl.TestItemModel
 import com.teamwizardry.librarianlib.testcore.objects.TestObjectDslMarker
 import com.teamwizardry.librarianlib.testcore.util.SidedAction
-import net.devtech.arrp.json.models.JModel
-import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry
-import net.minecraft.client.color.item.ItemColorProvider
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.*
+import net.minecraft.registry.Registries
+import net.minecraft.registry.Registry
+import net.minecraft.registry.RegistryKey
 import net.minecraft.util.Hand
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 
 /**
@@ -56,7 +56,6 @@ public class TestItem(manager: TestModContentManager, id: Identifier): TestConfi
      * constructor.
      */
     public val properties: Item.Settings = Item.Settings()
-        .group(manager.itemGroup)
         .maxCount(maxCount)
 
     /**
@@ -157,20 +156,22 @@ public class TestItem(manager: TestModContentManager, id: Identifier): TestConfi
     public data class InventoryTickContext(val stack: ItemStack, val world: World, val player: PlayerEntity, val itemSlot: Int, val isSelected: Boolean): PlayerTestContext(player)
 
     override fun registerCommon(resources: TestModResourceManager) {
-        Registry.register(Registry.ITEM, id, instance)
-        resources.lang.item(id, name)
+        Registry.register(Registries.ITEM, id, instance)
+        ItemGroupEvents.modifyEntriesEvent(manager.itemGroupKey).register { it.add(instance) }
+
+        resources.lang.add(instance, name)
         description?.lines()?.forEachIndexed { i, line ->
-            resources.lang.item(id.append(".tooltip.$i"), line)
+            resources.lang.add(id.toTranslationKey("item", "tooltip.$i"), line)
         }
     }
 
     override fun registerClient(resources: TestModResourceManager) {
         val testModel = TestItemModel(id)
-        resources.arrp.addModel(
-            testModel.model,
-            Identifier(id.namespace, "item/${id.path}")
+        resources.runtimeResourcePack.addModel(
+            Identifier.of(id.namespace, "item/${id.path}"),
+            testModel.model
         )
-        ColorProviderRegistry.ITEM.register(testModel.colorProvider, instance)
+//        ColorProviderRegistry.ITEM.register(testModel.colorProvider, instance)
     }
 
 

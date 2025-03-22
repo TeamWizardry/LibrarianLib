@@ -1,16 +1,14 @@
 package com.teamwizardry.librarianlib.testcore.content.impl
 
 import com.teamwizardry.librarianlib.core.util.kotlin.makeTranslationKey
-import com.teamwizardry.librarianlib.core.util.registryId
 import com.teamwizardry.librarianlib.testcore.content.TestBlock
-import com.teamwizardry.librarianlib.testcore.content.impl.TestBlockImpl
 import net.minecraft.block.BlockState
-import net.minecraft.client.item.TooltipContext
 import net.minecraft.item.BlockItem
 import net.minecraft.item.ItemPlacementContext
 import net.minecraft.item.ItemStack
+import net.minecraft.item.tooltip.TooltipType
+import net.minecraft.registry.Registries
 import net.minecraft.text.Text
-import net.minecraft.text.TranslatableText
 import net.minecraft.util.Formatting
 import net.minecraft.world.World
 
@@ -31,14 +29,14 @@ public open class TestBlockItem(block: TestBlockImpl, builder: Settings): BlockI
 
     override fun appendTooltip(
         stack: ItemStack,
-        world: World?,
+        context: TooltipContext,
         tooltip: MutableList<Text>,
-        context: TooltipContext
+        type: TooltipType
     ) {
-        super.appendTooltip(stack, world, tooltip, context)
+        super.appendTooltip(stack, context, tooltip, type)
 
         if (block.config.description != null) {
-            val description = TranslatableText(block.registryId.makeTranslationKey("block", "tooltip"))
+            val description = Text.translatable(block.config.id.makeTranslationKey("block", "tooltip"))
             description.style.withFormatting(Formatting.GRAY)
             tooltip.add(description)
         }

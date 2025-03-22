@@ -1,11 +1,10 @@
 package com.teamwizardry.librarianlib.math
 
-import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.core.util.vec
-import net.minecraft.util.math.Matrix3f
 import net.minecraft.util.math.Vec3d
+import org.joml.Matrix3f
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.pow
@@ -47,11 +46,10 @@ public open class Matrix3d(
         0.0, 0.0, 1.0
     )
 
-    @Suppress("CAST_NEVER_SUCCEEDS")
     public constructor(m: Matrix3f): this(
-        (m as IMatrix3f).m00, (m as IMatrix3f).m01, (m as IMatrix3f).m02,
-        (m as IMatrix3f).m10, (m as IMatrix3f).m11, (m as IMatrix3f).m12,
-        (m as IMatrix3f).m20, (m as IMatrix3f).m21, (m as IMatrix3f).m22
+        m.m00(), m.m01(), m.m02(),
+        m.m10(), m.m11(), m.m12(),
+        m.m20(), m.m21(), m.m22()
     )
 
     public operator fun get(row: Int, col: Int): Double {
@@ -464,16 +462,15 @@ public open class Matrix3d(
      * Copies the contents of this LibrarianLib matrix into the provided Minecraft matrix
      */
     public fun copyToMatrix3f(matrix: Matrix3f) {
-        val m: IMatrix3f = mixinCast(matrix)
-        m.m00 = m00.toFloat()
-        m.m01 = m01.toFloat()
-        m.m02 = m02.toFloat()
-        m.m10 = m10.toFloat()
-        m.m11 = m11.toFloat()
-        m.m12 = m12.toFloat()
-        m.m20 = m20.toFloat()
-        m.m21 = m21.toFloat()
-        m.m22 = m22.toFloat()
+        matrix.m00(m00.toFloat())
+        matrix.m01(m01.toFloat())
+        matrix.m02(m02.toFloat())
+        matrix.m10(m10.toFloat())
+        matrix.m11(m11.toFloat())
+        matrix.m12(m12.toFloat())
+        matrix.m20(m20.toFloat())
+        matrix.m21(m21.toFloat())
+        matrix.m22(m22.toFloat())
     }
 
     public companion object {

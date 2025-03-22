@@ -5,7 +5,6 @@ import com.teamwizardry.librarianlib.testcore.TestModResourceManager
 import com.teamwizardry.librarianlib.testcore.util.ClientActionScope
 import com.teamwizardry.librarianlib.testcore.util.CommonActionScope
 import com.teamwizardry.librarianlib.testcore.util.ServerActionScope
-import net.devtech.arrp.api.RuntimeResourcePack
 import net.minecraft.util.Identifier
 
 public sealed class TestConfig(public val manager: TestModContentManager, public val id: Identifier) {

@@ -70,7 +70,7 @@ public abstract class TestMod() {
     public fun TestScreenConfig(id: String, name: String, block: TestScreenConfig.() -> Unit): TestScreenConfig = TestScreenConfig(id, name, itemGroup, block)
     public fun TestScreenConfig(id: String, name: String): TestScreenConfig = TestScreenConfig(id, name, itemGroup)
     public fun UnitTestSuite(id: String, block: UnitTestSuite.() -> Unit): UnitTestSuite = UnitTestSuite(id).also { it.block() }
-    public fun UnitTestSuite(id: String): UnitTestSuite = UnitTestSuite().also { it.registryName = Identifier(modid, id) }
+    public fun UnitTestSuite(id: String): UnitTestSuite = UnitTestSuite().also { it.registryName = Identifier.of(modid, id) }
 
     public operator fun <T: Item> T.unaryPlus(): T {
         _items.add(this)
@@ -84,7 +84,7 @@ public abstract class TestMod() {
             TestBlockItem(this, properties.maxStackSize(1))
         else
             BlockItem(this, properties)
-        item.registryName = Identifier(this.registryName!!.namespace, this.registryName!!.path + "_block")
+        item.registryName = Identifier.of(this.registryName!!.namespace, this.registryName!!.path + "_block")
         _blocks.add(this)
         _items.add(item)
         return this
@@ -204,7 +204,7 @@ public abstract class TestMod() {
             if (item is TestBlockItem) {
                 val name = item.registryName!!
                 Mirage.clientResources.add(
-                    Identifier(name.namespace, "models/item/${name.path}.json"),
+                    Identifier.of(name.namespace, "models/item/${name.path}.json"),
                     """
                         {
                             "parent": "testcore:block/test_block/${item.block.modelName}"
@@ -214,7 +214,7 @@ public abstract class TestMod() {
             } else if (item is ITestItem) {
                 val name = item.registryName!!
                 Mirage.clientResources.add(
-                    Identifier(name.namespace, "models/item/${name.path}.json"),
+                    Identifier.of(name.namespace, "models/item/${name.path}.json"),
                     """
                         {
                             "parent": "testcore:item/test_tool"
@@ -230,7 +230,7 @@ public abstract class TestMod() {
             val name = block.registryName!!
             val model = "block/test_block/${block.modelName}"
             Mirage.clientResources.add(
-                Identifier(name.namespace, "blockstates/${name.path}.json"),
+                Identifier.of(name.namespace, "blockstates/${name.path}.json"),
                 if (block.config.directional) {
                     """
                         {

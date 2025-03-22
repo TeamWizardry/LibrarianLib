@@ -33,7 +33,7 @@ public object LibrarianLibTestBaseModule {
     }
 
     public val testTool: Item = Item(Item.Properties().maxStackSize(1)).also {
-        it.registryName = Identifier("testcore", "test_tool")
+        it.registryName = Identifier.of("testcore", "test_tool")
     }
 
     private val mods = mutableListOf<TestMod>().synchronized()
@@ -54,7 +54,7 @@ public object LibrarianLibTestBaseModule {
     @SubscribeEvent
     internal fun createRegistries(e: RegistryEvent.NewRegistry) {
         RegistryBuilder<UnitTestSuite>()
-            .setName(Identifier("testcore:unit_tests"))
+            .setName(Identifier.of("testcore:unit_tests"))
             .setType(UnitTestSuite::class.java)
             .disableSaving()
             .create()

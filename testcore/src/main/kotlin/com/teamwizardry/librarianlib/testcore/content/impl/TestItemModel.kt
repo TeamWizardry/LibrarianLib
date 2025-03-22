@@ -1,45 +1,42 @@
 package com.teamwizardry.librarianlib.testcore.content.impl
 
-import net.devtech.arrp.json.models.JModel
-import net.devtech.arrp.json.models.JTextures
-import net.minecraft.client.color.item.ItemColorProvider
 import net.minecraft.item.ItemStack
 import net.minecraft.util.Identifier
-import net.minecraft.util.registry.Registry
+import pers.solid.brrp.v1.model.ModelJsonBuilder
 import kotlin.random.Random
 
 internal class TestItemModel(val id: Identifier) {
-    val colorProvider: ItemColorProvider
-    val model: JModel
+//    val colorProvider: ItemColorProvider
+    val model: ModelJsonBuilder
 
     init {
         val rng = Random(id.hashCode())
 
         val color1 = colors.random(rng)
         val color2 = colors.random(rng)
-        colorProvider = ItemColorProvider { _, tintIndex ->
-            when(tintIndex) {
-                2 -> color1
-                3 -> color2
-                else -> 0xffffff
-            }
-        }
+
+//        see:
+//          assets/minecraft/models/item/template_spawn_egg.json
+//          assets/minecraft/items/allay_spawn_egg.json
+//        colorProvider = ItemColorProvider { _, tintIndex ->
+//            when(tintIndex) {
+//                2 -> color1
+//                3 -> color2
+//                else -> 0xffffff
+//            }
+//        }
 
         val head = heads.random(rng)
         val handle = handles.random(rng)
         val tail = tails.random(rng)
 
         val prefix = "liblib-testcore:item/test_tool/"
-        model = JModel.model()
-            .parent("item/generated")
-            .textures(
-                JTextures()
-                    .layer0(prefix + head.texture)
-                    .layer1(prefix + handle.background)
-                    .layer2(prefix + handle.color1)
-                    .layer3(prefix + handle.color2)
-                    .layer4(prefix + tail.texture)
-            )
+        model = ModelJsonBuilder.create("item/generated")
+            .addTexture("layer0", prefix + head.texture)
+            .addTexture("layer1", prefix + handle.background)
+            .addTexture("layer2", prefix + handle.color1)
+            .addTexture("layer3", prefix + handle.color2)
+            .addTexture("layer4", prefix + tail.texture)
     }
 
     companion object {

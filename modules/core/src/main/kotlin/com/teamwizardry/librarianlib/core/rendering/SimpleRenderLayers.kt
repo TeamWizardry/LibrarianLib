@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.core.rendering
 
-import com.teamwizardry.librarianlib.core.bridge.IMutableRenderLayerPhaseParameters
-import com.teamwizardry.librarianlib.core.util.mixinCast
 import net.minecraft.client.render.RenderPhase
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexFormats

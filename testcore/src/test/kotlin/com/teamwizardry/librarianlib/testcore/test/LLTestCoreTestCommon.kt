@@ -1,11 +1,12 @@
 package com.teamwizardry.librarianlib.testcore.test
 
 import com.teamwizardry.librarianlib.testcore.TestModContentManager
+import com.teamwizardry.librarianlib.testcore.content.TestBlock
 import com.teamwizardry.librarianlib.testcore.content.TestEntity
 import com.teamwizardry.librarianlib.testcore.content.TestItem
 import com.teamwizardry.librarianlib.testcore.junit.UnitTestSuite
 import net.fabricmc.api.ModInitializer
-import net.minecraft.util.registry.Registry
+import net.minecraft.registry.Registry
 
 internal object LLTestCoreTestCommon : ModInitializer {
     val manager: TestModContentManager = TestModContentManager("liblib-testcore-test", "Test Core", LLTestCoreTest.logManager)
@@ -64,6 +65,7 @@ internal object LLTestCoreTestCommon : ModInitializer {
 
         manager.create<TestItem>("inventory_tick_item") {
             name = "Inventory Tick"
+            description = "Logs to chat when sneaking"
             common {
                 inventoryTick { sneaking { chat("[Common] inventoryTick") } }
                 tickInHand { sneaking { chat("[Common] tickInHand") } }
@@ -102,6 +104,40 @@ internal object LLTestCoreTestCommon : ModInitializer {
         manager.create<TestItem>("sized_screen") {
             name = "Sized Screen"
             description = "The (20, 20) size means (10, 10) should be located at the center of the screen"
+        }
+
+        manager.create<TestBlock>("simple_block") {
+            name = "Simple Block"
+        }
+        manager.create<TestBlock>("transparent_block") {
+            name = "Transparent Block"
+            transparent = true
+        }
+        manager.create<TestBlock>("facing_block") {
+            name = "Facing Block"
+        }
+        manager.create<TestBlock>("events_block") {
+            name = "Events Block"
+            common {
+                rightClick { chat("[Common] rightClick") }
+                leftClick { chat("[Common] leftClick") }
+                place { chat("[Common] place") }
+                destroy { chat("[Common] destroy") }
+            }
+
+            server {
+                rightClick { chat("[Server] rightClick") }
+                leftClick { chat("[Server] leftClick") }
+                place { chat("[Server] place") }
+                destroy { chat("[Server] destroy") }
+            }
+
+            client {
+                rightClick { chat("[Client] rightClick") }
+                leftClick { chat("[Client] leftClick") }
+                place { chat("[Client] place") }
+                destroy { chat("[Client] destroy") } // not emitted clientside
+            }
         }
 
         manager.registerCommon()

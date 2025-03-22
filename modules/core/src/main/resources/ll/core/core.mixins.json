@@ -2,13 +2,10 @@
   "minVersion": "0.8.2",
   "required": true,
   "package": "com.teamwizardry.librarianlib.core.mixin",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_21",
   "refmap": "ll/core/core-refmap.json",
   "mixins": [
-    "IMatrix3fMixin",
-    "IMatrix4fMixin",
-    "MinecraftClientMixin",
-    "RenderTickCounterMixin",
+    "MinecraftClientMixin"
   ],
   "client": [
   ],

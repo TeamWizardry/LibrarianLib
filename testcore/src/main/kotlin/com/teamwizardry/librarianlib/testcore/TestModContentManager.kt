@@ -2,15 +2,19 @@ package com.teamwizardry.librarianlib.testcore
 
 import com.teamwizardry.librarianlib.core.util.ModLogManager
 import com.teamwizardry.librarianlib.testcore.content.TestConfig
-import net.devtech.arrp.api.RRPCallback
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
+import net.minecraft.registry.Registries
+import net.minecraft.registry.Registry
+import net.minecraft.registry.RegistryKey
+import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import java.lang.IllegalStateException
+import pers.solid.brrp.v1.fabric.api.RRPCallback
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
+
 
 /**
  * A DSL for creating test objects. Loosely based on gradle's Kotlin DSL.
@@ -19,15 +23,21 @@ public class TestModContentManager(public val modid: String, itemGroupName: Stri
     private val logger = logManager.makeLogger("TestModContentManager")
     private val objects = mutableMapOf<String, TestConfig>()
 
-    public var itemGroupIcon: ItemStack = ItemStack(Items.STICK)
-    public val itemGroup: ItemGroup = FabricItemGroupBuilder.build(Identifier(modid, "item_group")) { itemGroupIcon }
+
+    public val itemGroupKey: RegistryKey<ItemGroup> =
+        RegistryKey.of(Registries.ITEM_GROUP.key, Identifier.of(modid, "item_group"))
+    public val itemGroup: ItemGroup = FabricItemGroup.builder()
+        .icon { ItemStack(Items.STICK) }
+        .displayName(Text.translatable("itemGroup.${modid}.item_group"))
+        .build()
 
     private val resources: TestModResourceManager = TestModResourceManager(modid, logManager)
     init {
-        resources.lang.itemGroup(Identifier(modid, "item_group"), itemGroupName)
+        resources.lang.add(itemGroup, itemGroupName)
     }
 
     public fun registerCommon() {
+        Registry.register(Registries.ITEM_GROUP, itemGroupKey, itemGroup)
         logger.info("Performing common registration")
         for(config in objects.values) {
             logger.info("Registering ${config.id}")
@@ -42,9 +52,8 @@ public class TestModContentManager(public val modid: String, itemGroupName: Stri
             config.registerClient(resources)
         }
         resources.writeLang()
-        resources.arrp.dump()
-        RRPCallback.EVENT.register {
-            it.add(resources.arrp)
+        RRPCallback.BEFORE_VANILLA.register {
+            it.add(resources.runtimeResourcePack)
         }
     }
 
@@ -55,13 +64,12 @@ public class TestModContentManager(public val modid: String, itemGroupName: Stri
             config.registerServer(resources)
         }
         resources.writeLang()
-        resources.arrp.dump()
-        RRPCallback.EVENT.register {
-            it.add(resources.arrp)
+        RRPCallback.BEFORE_VANILLA.register {
+            it.add(resources.runtimeResourcePack)
         }
     }
 
-    public fun id(name: String): Identifier = Identifier(modid, name)
+    public fun id(name: String): Identifier = Identifier.of(modid, name)
 
     public fun hasObject(name: String): Boolean {
         return objects.contains(name)
@@ -73,7 +81,7 @@ public class TestModContentManager(public val modid: String, itemGroupName: Stri
                 "An object named $name already exists (existing object is ${it.javaClass.canonicalName})"
             )
         }
-        val value = type.primaryConstructor!!.call(this, Identifier(modid, name))
+        val value = type.primaryConstructor!!.call(this, Identifier.of(modid, name))
         objects[name] = value
         return value
     }
