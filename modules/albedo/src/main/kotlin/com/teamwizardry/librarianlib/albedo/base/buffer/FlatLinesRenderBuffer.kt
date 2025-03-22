@@ -67,9 +67,9 @@ public class FlatLinesRenderBuffer(vbo: VertexBuffer) :
 
     public companion object {
         private val defaultShader: Shader = Shader.build("flat_lines")
-            .vertex(Identifier("liblib-albedo:builtin/flat_lines.vert"))
-            .geometry(Identifier("liblib-albedo:builtin/flat_lines.geom"))
-            .fragment(Identifier("liblib-albedo:builtin/flat_lines.frag"))
+            .vertex(Identifier.of("liblib-albedo:builtin/flat_lines.vert"))
+            .geometry(Identifier.of("liblib-albedo:builtin/flat_lines.geom"))
+            .fragment(Identifier.of("liblib-albedo:builtin/flat_lines.frag"))
             .build()
 
         @JvmStatic

@@ -24,7 +24,7 @@ public object BaseRenderStates {
         private val dstAlpha: Factor,
         private val rgbEquation: Equation,
         private val alphaEquation: Equation,
-    ) : RenderState.State(Identifier("liblib-albedo:blend")) {
+    ) : RenderState.State(Identifier.of("liblib-albedo:blend")) {
         public constructor(
             enabled: Boolean,
             srcFactor: Factor,
@@ -88,7 +88,7 @@ public object BaseRenderStates {
 
     public data class Cull(
         private val enabled: Boolean,
-    ) : RenderState.State(Identifier("liblib-albedo:cull")) {
+    ) : RenderState.State(Identifier.of("liblib-albedo:cull")) {
         override fun apply() {
             if (enabled) {
                 RenderSystem.enableCull()
@@ -105,7 +105,7 @@ public object BaseRenderStates {
     public data class DepthTest(
         private val enabled: Boolean,
         private val func: Func
-    ) : RenderState.State(Identifier("liblib-albedo:depth_test")) {
+    ) : RenderState.State(Identifier.of("liblib-albedo:depth_test")) {
         public constructor(enabled: Boolean) : this(enabled, Func.LEQUAL)
 
         override fun apply() {
@@ -140,7 +140,7 @@ public object BaseRenderStates {
         private val green: Boolean,
         private val blue: Boolean,
         private val alpha: Boolean,
-    ) : RenderState.State(Identifier("liblib-albedo:write_mask")) {
+    ) : RenderState.State(Identifier.of("liblib-albedo:write_mask")) {
         public constructor(depth: Boolean, color: Boolean) : this(depth, color, color, color, color)
 
         override fun apply() {

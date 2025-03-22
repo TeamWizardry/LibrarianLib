@@ -8,12 +8,9 @@ import com.teamwizardry.librarianlib.albedo.shader.StandardUniforms
 import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
 import com.teamwizardry.librarianlib.albedo.shader.uniform.Mat4x4Uniform
 import com.teamwizardry.librarianlib.albedo.shader.uniform.Uniform
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
-import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.util.math.Matrix4f
-import net.minecraft.util.math.Vec3d
+import org.joml.Matrix4f
 
 /**
  * The base class for most render buffers. It provides the basic vertex position functions and standard transform

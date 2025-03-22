@@ -6,8 +6,8 @@ import com.teamwizardry.librarianlib.albedo.buffer.VertexBuffer
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.util.math.Matrix3f
-import net.minecraft.util.math.Matrix4f
+import org.joml.Matrix3f
+import org.joml.Matrix4f
 
 /**
  * Position + color + texture + normal + lightmap + fog

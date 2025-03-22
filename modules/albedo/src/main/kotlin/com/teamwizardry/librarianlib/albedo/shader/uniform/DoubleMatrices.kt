@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.albedo.shader.uniform
 
-import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
-import net.minecraft.util.math.Matrix3f
-import net.minecraft.util.math.Matrix4f
+import org.joml.Matrix2d
+import org.joml.Matrix2f
+import org.joml.Matrix3f
+import org.joml.Matrix4f
 import org.lwjgl.opengl.GL40
 
 /**
@@ -78,6 +78,20 @@ public class DoubleMat2x2Uniform(name: String) : DoubleMatrixUniform(name, GL40.
         this[1, 0] = m10; this[1, 1] = m11
     }
 
+    public fun set(matrix: Matrix2d) {
+        this.set(
+            matrix.m00(), matrix.m10(),
+            matrix.m01(), matrix.m11(),
+        )
+    }
+
+    public fun set(matrix: Matrix2f) {
+        this.set(
+            matrix.m00().toDouble(), matrix.m10().toDouble(),
+            matrix.m01().toDouble(), matrix.m11().toDouble(),
+        )
+    }
+
     override fun push() {
         GL40.glUniformMatrix2dv(location, true, values)
     }
@@ -98,6 +112,22 @@ public class DoubleMat2x2ArrayUniform(name: String, length: Int) : DoubleMatrixA
     ) {
         this[index, 0, 0] = m00; this[index, 0, 1] = m01
         this[index, 1, 0] = m10; this[index, 1, 1] = m11
+    }
+
+    public fun set(index: Int, matrix: Matrix2d) {
+        this.set(
+            index,
+            matrix.m00(), matrix.m10(),
+            matrix.m01(), matrix.m11(),
+        )
+    }
+
+    public fun set(index: Int, matrix: Matrix2f) {
+        this.set(
+            index,
+            matrix.m00().toDouble(), matrix.m10().toDouble(),
+            matrix.m01().toDouble(), matrix.m11().toDouble(),
+        )
     }
 
     override fun push() {
@@ -132,12 +162,19 @@ public class DoubleMat3x3Uniform(name: String) : DoubleMatrixUniform(name, GL40.
         )
     }
 
-    public fun set(matrix: Matrix3f) {
-        val imatrix = mixinCast<IMatrix3f>(matrix)
+    public fun set(matrix: org.joml.Matrix3d) {
         this.set(
-            imatrix.m00.toDouble(), imatrix.m01.toDouble(), imatrix.m02.toDouble(),
-            imatrix.m10.toDouble(), imatrix.m11.toDouble(), imatrix.m12.toDouble(),
-            imatrix.m20.toDouble(), imatrix.m21.toDouble(), imatrix.m22.toDouble(),
+            matrix.m00(), matrix.m10(), matrix.m20(),
+            matrix.m01(), matrix.m11(), matrix.m21(),
+            matrix.m02(), matrix.m12(), matrix.m22(),
+        )
+    }
+
+    public fun set(matrix: Matrix3f) {
+        this.set(
+            matrix.m00().toDouble(), matrix.m10().toDouble(), matrix.m20().toDouble(),
+            matrix.m01().toDouble(), matrix.m11().toDouble(), matrix.m21().toDouble(),
+            matrix.m02().toDouble(), matrix.m12().toDouble(), matrix.m22().toDouble(),
         )
     }
 
@@ -175,14 +212,21 @@ public class DoubleMat3x3ArrayUniform(name: String, length: Int) : DoubleMatrixA
         )
     }
 
-    public fun set(index: Int, matrix: Matrix3f) {
-        @Suppress("CAST_NEVER_SUCCEEDS")
-        val imatrix = matrix as IMatrix3f
+    public fun set(index: Int, matrix: org.joml.Matrix3d) {
         this.set(
             index,
-            imatrix.m00.toDouble(), imatrix.m01.toDouble(), imatrix.m02.toDouble(),
-            imatrix.m10.toDouble(), imatrix.m11.toDouble(), imatrix.m12.toDouble(),
-            imatrix.m20.toDouble(), imatrix.m21.toDouble(), imatrix.m22.toDouble(),
+            matrix.m00(), matrix.m10(), matrix.m20(),
+            matrix.m01(), matrix.m11(), matrix.m21(),
+            matrix.m02(), matrix.m12(), matrix.m22(),
+        )
+    }
+
+    public fun set(index: Int, matrix: Matrix3f) {
+        this.set(
+            index,
+            matrix.m00().toDouble(), matrix.m10().toDouble(), matrix.m20().toDouble(),
+            matrix.m01().toDouble(), matrix.m11().toDouble(), matrix.m21().toDouble(),
+            matrix.m02().toDouble(), matrix.m12().toDouble(), matrix.m22().toDouble(),
         )
     }
 
@@ -222,14 +266,21 @@ public class DoubleMat4x4Uniform(name: String) : DoubleMatrixUniform(name, GL40.
         )
     }
 
-    public fun set(matrix: Matrix4f) {
-        @Suppress("CAST_NEVER_SUCCEEDS")
-        val imatrix = matrix as IMatrix4f
+    public fun set(matrix: org.joml.Matrix4d) {
         this.set(
-            imatrix.m00.toDouble(), imatrix.m01.toDouble(), imatrix.m02.toDouble(), imatrix.m03.toDouble(),
-            imatrix.m10.toDouble(), imatrix.m11.toDouble(), imatrix.m12.toDouble(), imatrix.m13.toDouble(),
-            imatrix.m20.toDouble(), imatrix.m21.toDouble(), imatrix.m22.toDouble(), imatrix.m23.toDouble(),
-            imatrix.m30.toDouble(), imatrix.m31.toDouble(), imatrix.m32.toDouble(), imatrix.m33.toDouble(),
+            matrix.m00(), matrix.m10(), matrix.m20(), matrix.m30(),
+            matrix.m01(), matrix.m11(), matrix.m21(), matrix.m31(),
+            matrix.m02(), matrix.m12(), matrix.m22(), matrix.m32(),
+            matrix.m03(), matrix.m13(), matrix.m23(), matrix.m33(),
+        )
+    }
+
+    public fun set(matrix: Matrix4f) {
+        this.set(
+            matrix.m00().toDouble(), matrix.m10().toDouble(), matrix.m20().toDouble(), matrix.m30().toDouble(),
+            matrix.m01().toDouble(), matrix.m11().toDouble(), matrix.m21().toDouble(), matrix.m31().toDouble(),
+            matrix.m02().toDouble(), matrix.m12().toDouble(), matrix.m22().toDouble(), matrix.m32().toDouble(),
+            matrix.m03().toDouble(), matrix.m13().toDouble(), matrix.m23().toDouble(), matrix.m33().toDouble(),
         )
     }
 
@@ -271,14 +322,23 @@ public class DoubleMat4x4ArrayUniform(name: String, length: Int) : DoubleMatrixA
         )
     }
 
-    public fun set(index: Int, matrix: Matrix4f) {
-        val imatrix = mixinCast<IMatrix4f>(matrix)
+    public fun set(index: Int, matrix: org.joml.Matrix4d) {
         this.set(
             index,
-            imatrix.m00.toDouble(), imatrix.m01.toDouble(), imatrix.m02.toDouble(), imatrix.m03.toDouble(),
-            imatrix.m10.toDouble(), imatrix.m11.toDouble(), imatrix.m12.toDouble(), imatrix.m13.toDouble(),
-            imatrix.m20.toDouble(), imatrix.m21.toDouble(), imatrix.m22.toDouble(), imatrix.m23.toDouble(),
-            imatrix.m30.toDouble(), imatrix.m31.toDouble(), imatrix.m32.toDouble(), imatrix.m33.toDouble(),
+            matrix.m00(), matrix.m10(), matrix.m20(), matrix.m30(),
+            matrix.m01(), matrix.m11(), matrix.m21(), matrix.m31(),
+            matrix.m02(), matrix.m12(), matrix.m22(), matrix.m32(),
+            matrix.m03(), matrix.m13(), matrix.m23(), matrix.m33(),
+        )
+    }
+
+    public fun set(index: Int, matrix: Matrix4f) {
+        this.set(
+            index,
+            matrix.m00().toDouble(), matrix.m10().toDouble(), matrix.m20().toDouble(), matrix.m30().toDouble(),
+            matrix.m01().toDouble(), matrix.m11().toDouble(), matrix.m21().toDouble(), matrix.m31().toDouble(),
+            matrix.m02().toDouble(), matrix.m12().toDouble(), matrix.m22().toDouble(), matrix.m32().toDouble(),
+            matrix.m03().toDouble(), matrix.m13().toDouble(), matrix.m23().toDouble(), matrix.m33().toDouble(),
         )
     }
 

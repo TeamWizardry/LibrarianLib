@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.AlbedoTypeConversion
 import com.teamwizardry.librarianlib.albedo.base.buffer.BasicBufferImpl
+import com.teamwizardry.librarianlib.albedo.mixin.ShapeIndexBufferMixin
 import com.teamwizardry.librarianlib.albedo.shader.StandardUniforms
 import com.teamwizardry.librarianlib.albedo.shader.Shader
 import com.teamwizardry.librarianlib.albedo.shader.attribute.VertexLayoutElement
@@ -12,6 +13,7 @@ import com.teamwizardry.librarianlib.albedo.shader.uniform.SamplerArrayUniform
 import com.teamwizardry.librarianlib.albedo.shader.uniform.SamplerUniform
 import com.teamwizardry.librarianlib.albedo.shader.uniform.Uniform
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
+import com.teamwizardry.librarianlib.core.util.mixinCast
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import net.minecraft.client.render.BufferRenderer
 import net.minecraft.util.profiler.Profiler
@@ -65,7 +67,7 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer, vararg support
                         "[${supportedPrimitives.joinToString()}]"
             )
         }
-        BufferRenderer.unbindAll() // Tell Mojang to wrap up their rendering
+        BufferRenderer.reset() // Tell Mojang to wrap up their rendering
         if(this.shader == null)
             throw IllegalStateException("RenderBuffer not bound to a shader")
         profiler?.push("RenderBuffer.draw")
@@ -198,8 +200,6 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer, vararg support
         glUseProgram(shader.glProgram)
     }
 
-    private var currentElementBuffer: Int = -1
-
     private fun uploadUniforms() {
         var nextUnit = 0
         boundTextureUnits.clear()
@@ -247,14 +247,11 @@ public abstract class RenderBuffer(private val vbo: VertexBuffer, vararg support
         byteBuffer.limit(byteBuffer.capacity())
         profiler?.swap("glDraw*")
         glBindVertexArray(vao)
-        val indexBuffer = primitive.indexBuffer(primitive.elementCount(count))
+        val indexBuffer = primitive.indexBuffer
         if (indexBuffer != null) {
-            if (currentElementBuffer != indexBuffer.id) {
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer.id)
-                currentElementBuffer = indexBuffer.id
-            }
-            val indexType = indexBuffer.elementFormat.count // this is actually a gl enum. the mappings are bad.
-            glDrawElements(primitive.resultType, primitive.elementCount(count), indexType, 0L)
+            indexBuffer.bindAndGrow(primitive.elementCount(count))
+            val indexType = mixinCast<ShapeIndexBufferMixin>(indexBuffer).indexType
+            glDrawElements(primitive.resultType, primitive.elementCount(count), indexType.glType, 0L)
         } else {
             glDrawArrays(primitive.resultType, 0, count)
         }

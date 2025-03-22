@@ -57,8 +57,8 @@ public class FlatTextureRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatT
 
     public companion object {
         private val defaultShader: Shader = Shader.build("flat_texture")
-            .vertex(Identifier("liblib-albedo:builtin/flat_texture.vert"))
-            .fragment(Identifier("liblib-albedo:builtin/flat_texture.frag"))
+            .vertex(Identifier.of("liblib-albedo:builtin/flat_texture.vert"))
+            .fragment(Identifier.of("liblib-albedo:builtin/flat_texture.frag"))
             .build()
 
         @JvmStatic

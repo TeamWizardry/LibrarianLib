@@ -1,9 +1,7 @@
 package com.teamwizardry.librarianlib.albedo.mixin;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.util.math.Vec3f;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -24,7 +22,7 @@ public class GlStateManagerMixin {
      * right before calling OpenGL.
      * </p>
      */
-    @Inject(method = "_bindTexture", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glBindTexture(II)V"), cancellable = true)
+    @Inject(method = "_bindTexture", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glBindTexture(II)V"), cancellable = true, remap = false)
     private static void abortClearTexture(int texture, CallbackInfo ci) {
         if(texture == -1) {
             ci.cancel();

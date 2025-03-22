@@ -13,7 +13,6 @@ import net.minecraft.util.Identifier
 internal object TestFlatTextureRenderBuffer : ShaderTest() {
     override fun doDraw(stack: MatrixStack, matrix: Matrix4d, mousePos: Vec2d) {
         RenderSystem.enableBlend()
-        RenderSystem.disableTexture()
         RenderSystem.defaultBlendFunc()
 
         val rb = FlatTextureRenderBuffer.SHARED
@@ -23,8 +22,7 @@ internal object TestFlatTextureRenderBuffer : ShaderTest() {
         rb.pos(matrix, maxX, maxY, 0).color(1f, 1f, 1f, 1f).tex(1f, 1f).endVertex()
         rb.pos(matrix, maxX, minY, 0).color(0f, 1f, 0f, 1f).tex(1f, 0f).endVertex()
 
-        rb.texture.set(Client.textureManager.getTexture(Identifier("minecraft:textures/block/grass_block_side.png")).glId)
+        rb.texture.set(Client.textureManager.getTexture(Identifier.of("minecraft:textures/block/grass_block_side.png")).glId)
         rb.draw(Primitive.QUADS)
-        RenderSystem.enableTexture()
     }
 }

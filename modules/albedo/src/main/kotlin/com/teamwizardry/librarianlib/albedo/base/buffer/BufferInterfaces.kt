@@ -1,15 +1,13 @@
 package com.teamwizardry.librarianlib.albedo.base.buffer
 
 import com.teamwizardry.librarianlib.albedo.shader.uniform.SamplerUniform
-import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.util.math.Matrix3f
-import net.minecraft.util.math.Matrix4f
 import net.minecraft.util.math.Vec3d
+import org.joml.Matrix3f
+import org.joml.Matrix4f
 import java.awt.Color
 
 public interface PositionBuffer<T> {
@@ -23,17 +21,27 @@ public interface PositionBuffer<T> {
         )
     }
 
-    public fun pos(matrix: Matrix4f, x: Float, y: Float, z: Float): T {
-        val iMatrix = mixinCast<IMatrix4f>(matrix)
+    public fun pos(matrix: org.joml.Matrix4d, x: Double, y: Double, z: Double): T {
         return this.pos(
-            iMatrix.transformX(x, y, z).toDouble(),
-            iMatrix.transformY(x, y, z).toDouble(),
-            iMatrix.transformZ(x, y, z).toDouble()
+            matrix.m00() * x + matrix.m10() * y + matrix.m20() * z + matrix.m30() * 1,
+            matrix.m01() * x + matrix.m11() * y + matrix.m21() * z + matrix.m31() * 1,
+            matrix.m02() * x + matrix.m12() * y + matrix.m22() * z + matrix.m32() * 1
+        )
+    }
+
+    public fun pos(matrix: Matrix4f, x: Float, y: Float, z: Float): T {
+        val xd = x.toDouble()
+        val yd = y.toDouble()
+        val zd = z.toDouble()
+        return this.pos(
+            matrix.m00() * xd + matrix.m10() * yd + matrix.m20() * zd + matrix.m30() * 1,
+            matrix.m01() * xd + matrix.m11() * yd + matrix.m21() * zd + matrix.m31() * 1,
+            matrix.m02() * xd + matrix.m12() * yd + matrix.m22() * zd + matrix.m32() * 1
         )
     }
 
     public fun pos(stack: MatrixStack, x: Float, y: Float, z: Float): T {
-        return this.pos(stack.peek().model, x, y, z)
+        return this.pos(stack.peek().positionMatrix, x, y, z)
     }
 
     public fun pos(pos: Vec3d): T = this.pos(pos.x, pos.y, pos.z)
@@ -78,17 +86,27 @@ public interface NormalBuffer<T> {
         )
     }
 
-    public fun normal(matrix: Matrix3f, x: Float, y: Float, z: Float): T {
-        val iMatrix = mixinCast<IMatrix3f>(matrix)
+    public fun normal(matrix: org.joml.Matrix3d, x: Double, y: Double, z: Double): T {
         return this.normal(
-            iMatrix.transformX(x, y, z).toDouble(),
-            iMatrix.transformY(x, y, z).toDouble(),
-            iMatrix.transformZ(x, y, z).toDouble()
+            matrix.m00() * x + matrix.m10() * y + matrix.m20() * z,
+            matrix.m01() * x + matrix.m11() * y + matrix.m21() * z,
+            matrix.m02() * x + matrix.m12() * y + matrix.m22() * z
+        )
+    }
+
+    public fun normal(matrix: Matrix3f, x: Float, y: Float, z: Float): T {
+        val xd = x.toDouble()
+        val yd = y.toDouble()
+        val zd = z.toDouble()
+        return this.normal(
+            matrix.m00() * xd + matrix.m10() * yd + matrix.m20() * zd,
+            matrix.m01() * xd + matrix.m11() * yd + matrix.m21() * zd,
+            matrix.m02() * xd + matrix.m12() * yd + matrix.m22() * zd
         )
     }
 
     public fun normal(stack: MatrixStack, x: Float, y: Float, z: Float): T {
-        return this.normal(stack.peek().normal, x, y, z)
+        return this.normal(stack.peek().normalMatrix, x, y, z)
     }
 
 

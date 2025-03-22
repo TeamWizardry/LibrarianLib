@@ -7,8 +7,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Quaternion
-import net.minecraft.util.math.Vec3f
+import net.minecraft.util.math.RotationAxis
 
 object AlbedoTestRenderManager : WorldRenderEvents.Last {
     val worldRenderers = mutableMapOf<Identifier, AlbedoTestRenderer>()
@@ -21,7 +20,7 @@ object AlbedoTestRenderManager : WorldRenderEvents.Last {
         val matrices = MatrixStack()
         val viewPos = Client.minecraft.gameRenderer.camera.pos
         matrices.translate(-viewPos.x, -viewPos.y, -viewPos.z)
-        matrices.peek().normal.load(context.matrixStack().peek().normal)
+        matrices.peek().normalMatrix.set(context.matrixStack()!!.peek().normalMatrix)
 
         val world = Client.minecraft.world ?: return
         world.entities.asSequence()
@@ -33,16 +32,9 @@ object AlbedoTestRenderManager : WorldRenderEvents.Last {
                     Client.worldTime.interp(entity.prevY, entity.y),
                     Client.worldTime.interp(entity.prevZ, entity.z)
                 )
-                matrices.multiply(
-                    Vec3f.NEGATIVE_Y.getDegreesQuaternion(
-                        MathHelper.lerp(context.tickDelta(), entity.prevYaw, entity.yaw) + 90.0f
-                    )
-                )
-                matrices.multiply(
-                    Vec3f.NEGATIVE_Z.getDegreesQuaternion(
-                        MathHelper.lerp(context.tickDelta(), entity.prevPitch, entity.pitch)
-                    )
-                )
+
+                matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(entity.yaw + 90.0f))
+                matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(entity.pitch))
                 matrices.translate(3.0/5.0, 0.0, 0.0)
 
                 val renderer = worldRenderers[entity.config.id]

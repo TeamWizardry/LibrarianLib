@@ -2,13 +2,11 @@ package com.teamwizardry.librarianlib.albedo.shader
 
 import com.teamwizardry.librarianlib.albedo.LibLibAlbedo
 import com.teamwizardry.librarianlib.albedo.ShaderCompilationException
-import com.teamwizardry.librarianlib.core.util.extension
-import com.teamwizardry.librarianlib.core.util.resolve
-import com.teamwizardry.librarianlib.core.util.resolveSibling
 import net.minecraft.resource.ResourceManager
 import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL20.*
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * A preprocessor that provides `#include` support. Include paths without a mod ID will be resolved in the current
@@ -46,7 +44,7 @@ public object ShaderCompiler {
     @JvmStatic
     public fun preprocessShader(location: Identifier, defines: List<String>, resourceManager: ResourceManager): PreprocessorResult {
         return preprocessShader(location, defines) {
-            resourceManager.getResource(it).inputStream.bufferedReader().readText()
+            resourceManager.openAsReader(it).readText()
         }
     }
 
@@ -110,9 +108,9 @@ public object ShaderCompiler {
             if (includeMatch != null) {
                 val includeName = includeMatch.groups["relative"]?.value!!
                 val includeLocation = if (':' !in includeName) {
-                    Identifier(file.namespace, "shaders/$includeName")
+                    Identifier.of(file.namespace, "shaders/$includeName")
                 } else {
-                    Identifier(includeName.substringBefore(":"), "shaders/" + includeName.substringAfter(":"))
+                    Identifier.of(includeName.substringBefore(":"), "shaders/" + includeName.substringAfter(":"))
                 }
 
                 out += readShader(result, reader, includeLocation, stack)

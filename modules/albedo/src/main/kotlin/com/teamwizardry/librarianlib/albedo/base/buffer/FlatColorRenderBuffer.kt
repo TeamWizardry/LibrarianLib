@@ -26,8 +26,8 @@ public class FlatColorRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatCol
 
     public companion object {
         private val defaultShader: Shader = Shader.build("flat_color")
-            .vertex(Identifier("liblib-albedo:builtin/flat_color.vert"))
-            .fragment(Identifier("liblib-albedo:builtin/flat_color.frag"))
+            .vertex(Identifier.of("liblib-albedo:builtin/flat_color.vert"))
+            .fragment(Identifier.of("liblib-albedo:builtin/flat_color.frag"))
             .build()
 
         @JvmStatic

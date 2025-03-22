@@ -1,12 +1,12 @@
 package com.teamwizardry.librarianlib.albedo.shader.uniform
 
-import com.teamwizardry.librarianlib.core.bridge.IMatrix3f
-import com.teamwizardry.librarianlib.core.bridge.IMatrix4f
 import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix4d
-import net.minecraft.util.math.Matrix3f
-import net.minecraft.util.math.Matrix4f
+import org.joml.Matrix2d
+import org.joml.Matrix2f
+import org.joml.Matrix3f
+import org.joml.Matrix4f
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL21
 
@@ -79,6 +79,20 @@ public class Mat2x2Uniform(name: String) : MatrixUniform(name, GL20.GL_FLOAT_MAT
         this[1, 0] = m10; this[1, 1] = m11
     }
 
+    public fun set(matrix: Matrix2d) {
+        this.set(
+            matrix.m00().toFloat(), matrix.m10().toFloat(),
+            matrix.m01().toFloat(), matrix.m11().toFloat(),
+        )
+    }
+
+    public fun set(matrix: Matrix2f) {
+        this.set(
+            matrix.m00(), matrix.m10(),
+            matrix.m01(), matrix.m11(),
+        )
+    }
+
     override fun push() {
         GL20.glUniformMatrix2fv(location, false, values)
     }
@@ -99,6 +113,22 @@ public class Mat2x2ArrayUniform(name: String, length: Int) : MatrixArrayUniform(
     ) {
         this[index, 0, 0] = m00; this[index, 0, 1] = m01
         this[index, 1, 0] = m10; this[index, 1, 1] = m11
+    }
+
+    public fun set(index: Int, matrix: Matrix2d) {
+        this.set(
+            index,
+            matrix.m00().toFloat(), matrix.m10().toFloat(),
+            matrix.m01().toFloat(), matrix.m11().toFloat(),
+        )
+    }
+
+    public fun set(index: Int, matrix: Matrix2f) {
+        this.set(
+            index,
+            matrix.m00(), matrix.m10(),
+            matrix.m01(), matrix.m11(),
+        )
     }
 
     override fun push() {
@@ -133,12 +163,19 @@ public class Mat3x3Uniform(name: String) : MatrixUniform(name, GL20.GL_FLOAT_MAT
         )
     }
 
-    public fun set(matrix: Matrix3f) {
-        val imatrix = mixinCast<IMatrix3f>(matrix)
+    public fun set(matrix: org.joml.Matrix3d) {
         this.set(
-            imatrix.m00, imatrix.m01, imatrix.m02,
-            imatrix.m10, imatrix.m11, imatrix.m12,
-            imatrix.m20, imatrix.m21, imatrix.m22,
+            matrix.m00().toFloat(), matrix.m10().toFloat(), matrix.m20().toFloat(),
+            matrix.m01().toFloat(), matrix.m11().toFloat(), matrix.m21().toFloat(),
+            matrix.m02().toFloat(), matrix.m12().toFloat(), matrix.m22().toFloat(),
+        )
+    }
+
+    public fun set(matrix: Matrix3f) {
+        this.set(
+            matrix.m00(), matrix.m10(), matrix.m20(),
+            matrix.m01(), matrix.m11(), matrix.m21(),
+            matrix.m02(), matrix.m12(), matrix.m22(),
         )
     }
 
@@ -176,14 +213,21 @@ public class Mat3x3ArrayUniform(name: String, length: Int) : MatrixArrayUniform(
         )
     }
 
-    public fun set(index: Int, matrix: Matrix3f) {
-        @Suppress("CAST_NEVER_SUCCEEDS")
-        val imatrix = matrix as IMatrix3f
+    public fun set(index: Int, matrix: org.joml.Matrix3d) {
         this.set(
             index,
-            imatrix.m00, imatrix.m01, imatrix.m02,
-            imatrix.m10, imatrix.m11, imatrix.m12,
-            imatrix.m20, imatrix.m21, imatrix.m22,
+            matrix.m00().toFloat(), matrix.m10().toFloat(), matrix.m20().toFloat(),
+            matrix.m01().toFloat(), matrix.m11().toFloat(), matrix.m21().toFloat(),
+            matrix.m02().toFloat(), matrix.m12().toFloat(), matrix.m22().toFloat(),
+        )
+    }
+
+    public fun set(index: Int, matrix: Matrix3f) {
+        this.set(
+            index,
+            matrix.m00(), matrix.m10(), matrix.m20(),
+            matrix.m01(), matrix.m11(), matrix.m21(),
+            matrix.m02(), matrix.m12(), matrix.m22(),
         )
     }
 
@@ -223,14 +267,21 @@ public class Mat4x4Uniform(name: String) : MatrixUniform(name, GL20.GL_FLOAT_MAT
         )
     }
 
-    public fun set(matrix: Matrix4f) {
-        @Suppress("CAST_NEVER_SUCCEEDS")
-        val imatrix = matrix as IMatrix4f
+    public fun set(matrix: org.joml.Matrix4d) {
         this.set(
-            imatrix.m00, imatrix.m01, imatrix.m02, imatrix.m03,
-            imatrix.m10, imatrix.m11, imatrix.m12, imatrix.m13,
-            imatrix.m20, imatrix.m21, imatrix.m22, imatrix.m23,
-            imatrix.m30, imatrix.m31, imatrix.m32, imatrix.m33,
+            matrix.m00().toFloat(), matrix.m10().toFloat(), matrix.m20().toFloat(), matrix.m30().toFloat(),
+            matrix.m01().toFloat(), matrix.m11().toFloat(), matrix.m21().toFloat(), matrix.m31().toFloat(),
+            matrix.m02().toFloat(), matrix.m12().toFloat(), matrix.m22().toFloat(), matrix.m32().toFloat(),
+            matrix.m03().toFloat(), matrix.m13().toFloat(), matrix.m23().toFloat(), matrix.m33().toFloat(),
+        )
+    }
+
+    public fun set(matrix: Matrix4f) {
+        this.set(
+            matrix.m00(), matrix.m10(), matrix.m20(), matrix.m30(),
+            matrix.m01(), matrix.m11(), matrix.m21(), matrix.m31(),
+            matrix.m02(), matrix.m12(), matrix.m22(), matrix.m32(),
+            matrix.m03(), matrix.m13(), matrix.m23(), matrix.m33(),
         )
     }
 
@@ -272,14 +323,23 @@ public class Mat4x4ArrayUniform(name: String, length: Int) : MatrixArrayUniform(
         )
     }
 
-    public fun set(index: Int, matrix: Matrix4f) {
-        val imatrix = mixinCast<IMatrix4f>(matrix)
+    public fun set(index: Int, matrix: org.joml.Matrix4d) {
         this.set(
             index,
-            imatrix.m00, imatrix.m01, imatrix.m02, imatrix.m03,
-            imatrix.m10, imatrix.m11, imatrix.m12, imatrix.m13,
-            imatrix.m20, imatrix.m21, imatrix.m22, imatrix.m23,
-            imatrix.m30, imatrix.m31, imatrix.m32, imatrix.m33,
+            matrix.m00().toFloat(), matrix.m10().toFloat(), matrix.m20().toFloat(), matrix.m30().toFloat(),
+            matrix.m01().toFloat(), matrix.m11().toFloat(), matrix.m21().toFloat(), matrix.m31().toFloat(),
+            matrix.m02().toFloat(), matrix.m12().toFloat(), matrix.m22().toFloat(), matrix.m32().toFloat(),
+            matrix.m03().toFloat(), matrix.m13().toFloat(), matrix.m23().toFloat(), matrix.m33().toFloat(),
+        )
+    }
+
+    public fun set(index: Int, matrix: Matrix4f) {
+        this.set(
+            index,
+            matrix.m00(), matrix.m10(), matrix.m20(), matrix.m30(),
+            matrix.m01(), matrix.m11(), matrix.m21(), matrix.m31(),
+            matrix.m02(), matrix.m12(), matrix.m22(), matrix.m32(),
+            matrix.m03(), matrix.m13(), matrix.m23(), matrix.m33(),
         )
     }
 

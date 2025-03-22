@@ -21,12 +21,11 @@ public enum class Primitive(
     TRIANGLES_ADJACENCY(GL_TRIANGLES_ADJACENCY),
     ;
 
-    public fun indexBuffer(vertexCount: Int): RenderSystem.IndexBuffer? {
-        return when(this) {
-            QUADS -> RenderSystem.getSequentialBuffer(VertexFormat.DrawMode.QUADS, vertexCount)
+    public val indexBuffer: RenderSystem.ShapeIndexBuffer?
+        get() = when (this) {
+            QUADS -> RenderSystem.getSequentialBuffer(VertexFormat.DrawMode.QUADS)
             else -> null
         }
-    }
 
     public fun elementCount(vertexCount: Int): Int {
         return if(this == QUADS)

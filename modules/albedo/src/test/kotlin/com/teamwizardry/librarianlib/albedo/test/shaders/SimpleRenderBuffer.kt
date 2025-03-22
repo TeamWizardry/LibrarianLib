@@ -16,8 +16,8 @@ import net.minecraft.util.Identifier
 internal object SimpleRenderBuffer : ShaderTest() {
     val shader by lazy {
         Shader.build("flat_color")
-            .vertex(Identifier("liblib-albedo-test:flat_color.vert"))
-            .fragment(Identifier("liblib-albedo-test:flat_color.frag"))
+            .vertex(Identifier.of("liblib-albedo-test:flat_color.vert"))
+            .fragment(Identifier.of("liblib-albedo-test:flat_color.frag"))
             .build()
     }
     var renderBuffer: TestRenderBuffer? = null

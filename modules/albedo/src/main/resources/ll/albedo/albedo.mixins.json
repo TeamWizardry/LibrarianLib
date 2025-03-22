@@ -2,12 +2,13 @@
   "minVersion": "0.8.2",
   "required": true,
   "package": "com.teamwizardry.librarianlib.albedo.mixin",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_21",
   "refmap": "ll/albedo/albedo-refmap.json",
   "mixins": [
     "GlStateManagerMixin",
     "LightmapTextureManagerMixin",
-    "RenderSystemMixin"
+    "RenderSystemMixin",
+    "ShapeIndexBufferMixin"
   ],
   "client": [
   ],

@@ -284,7 +284,7 @@ public class Shader private constructor(
         private val stages = mutableMapOf<Stage, ShaderFile>()
 
         public fun add(stage: Stage, shader: Identifier, vararg defines: String): Builder {
-            stages[stage] = ShaderFile(Identifier(shader.namespace, "shaders/${shader.path}"), defines.toList())
+            stages[stage] = ShaderFile(Identifier.of(shader.namespace, "shaders/${shader.path}"), defines.toList())
             return this
         }
 
@@ -309,7 +309,7 @@ public class Shader private constructor(
         }
 
         override fun getFabricId(): Identifier {
-            return Identifier("liblib-albedo:shaders")
+            return Identifier.of("liblib-albedo:shaders")
         }
 
         override fun load(
