@@ -271,10 +271,10 @@ public sealed class Uniform(name: String, public val glConstant: Int): AbstractU
         public val dvec2: SimpleUniformType<DoubleVec2Uniform, DoubleVec2ArrayUniform> = simple()
 
         @JvmField
-        public val devec3: SimpleUniformType<DoubleVec3Uniform, DoubleVec3ArrayUniform> = simple()
+        public val dvec3: SimpleUniformType<DoubleVec3Uniform, DoubleVec3ArrayUniform> = simple()
 
         @JvmField
-        public val devec4: SimpleUniformType<DoubleVec4Uniform, DoubleVec4ArrayUniform> = simple()
+        public val dvec4: SimpleUniformType<DoubleVec4Uniform, DoubleVec4ArrayUniform> = simple()
 
         @JvmField
         public val dmat2: SimpleUniformType<DoubleMat2x2Uniform, DoubleMat2x2ArrayUniform> = simple()

@@ -1,13 +1,16 @@
+in vec2 uv;
+out vec4 fragColor;
+
 vec4 borderColor = vec4(0, 0, 0, 1);
 vec4 successColor = vec4(0, 102, 0, 255) / 255.0;
 vec4 failColor = vec4(153, 0, 0, 255) / 255.0;
 vec4 naColor = vec4(64, 64, 64, 255) / 255.0;
 
-#define TEST_BORDER gl_FragColor = borderColor; return
-#define TEST_SUCCESS gl_FragColor = successColor; return
-#define TEST_FAIL gl_FragColor = failColor; return
+#define TEST_BORDER fragColor = borderColor; return
+#define TEST_SUCCESS fragColor = successColor; return
+#define TEST_FAIL fragColor = failColor; return
 #define TEST_BOOL(x) if(x) { TEST_SUCCESS; } else { TEST_FAIL; }
-#define TEST_NA gl_FragColor = naColor; return
+#define TEST_NA fragColor = naColor; return
 
 // defines `ivec2 abs, rel` (cell is absolute, rel is relative to area)
 #define AREA_SETUP(dimensions) ivec2 abs = cell(dimensions), rel
@@ -20,7 +23,7 @@ vec4 naColor = vec4(64, 64, 64, 255) / 255.0;
 #define TEST_ARRAY(name, name_expected) TEST_BOOL(name[rel.x] == name_expected[rel.x])
 
 vec2 absolute(ivec2 dimensions) {
-    return gl_TexCoord[0].xy * vec2(dimensions);
+    return uv * vec2(dimensions);
 }
 
 ivec2 cell(ivec2 dimensions) {
