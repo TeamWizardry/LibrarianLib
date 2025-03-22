@@ -6,17 +6,18 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes
 import net.minecraft.client.particle.*
 import net.minecraft.client.world.ClientWorld
-import net.minecraft.particle.DefaultParticleType
+import net.minecraft.particle.SimpleParticleType
+import net.minecraft.registry.Registries
 import net.minecraft.util.Identifier
-import net.minecraft.util.registry.Registry
+import net.minecraft.registry.Registry
 
 object Particles {
-    val TARGET_RED: DefaultParticleType = FabricParticleTypes.simple(true)
-    val TARGET_BLUE: DefaultParticleType = FabricParticleTypes.simple(true)
+    val TARGET_RED: SimpleParticleType = FabricParticleTypes.simple(true)
+    val TARGET_BLUE: SimpleParticleType = FabricParticleTypes.simple(true)
 
     fun register() {
-        Registry.register(Registry.PARTICLE_TYPE, Identifier("liblib-etcetera-test:target_red"), TARGET_RED)
-        Registry.register(Registry.PARTICLE_TYPE, Identifier("liblib-etcetera-test:target_blue"), TARGET_BLUE)
+        Registry.register(Registries.PARTICLE_TYPE, Identifier.of("liblib-etcetera-test:target_red"), TARGET_RED)
+        Registry.register(Registries.PARTICLE_TYPE, Identifier.of("liblib-etcetera-test:target_blue"), TARGET_BLUE)
     }
 
     fun registerClient() {
@@ -50,9 +51,9 @@ class HitParticle(world: ClientWorld, x: Double, y: Double, z: Double, vx: Doubl
         return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE
     }
 
-    class Factory(private val spriteSet: SpriteProvider) : ParticleFactory<DefaultParticleType> {
+    class Factory(private val spriteSet: SpriteProvider) : ParticleFactory<SimpleParticleType> {
         override fun createParticle(
-            typeIn: DefaultParticleType,
+            typeIn: SimpleParticleType,
             worldIn: ClientWorld,
             x: Double,
             y: Double,

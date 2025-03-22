@@ -7,6 +7,7 @@ import net.minecraft.block.ShapeContext
 import net.minecraft.entity.Entity
 import net.minecraft.fluid.FluidState
 import net.minecraft.util.TypeFilter
+import net.minecraft.util.function.LazyIterationConsumer
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.shape.VoxelShape
@@ -660,12 +661,13 @@ public class Raycaster {
                     Box(
                         segment.minX, segment.minY, segment.minZ,
                         segment.maxX, segment.maxY, segment.maxZ
-                    )
-                ) {
-                    if (entityPredicate == null || entityPredicate.test(it)) {
-                        castEntity(it)
+                    ),
+                    LazyIterationConsumer.forConsumer {
+                        if (entityPredicate == null || entityPredicate.test(it)) {
+                            castEntity(it)
+                        }
                     }
-                }
+                )
             }
         }
     }
