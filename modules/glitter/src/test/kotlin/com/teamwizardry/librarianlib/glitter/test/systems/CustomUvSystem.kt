@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object CustomUvSystem : TestSystem(Identifier("liblib-glitter-test:custom_uv")) {
+object CustomUvSystem : TestSystem(Identifier.of("liblib-glitter-test:custom_uv")) {
     override fun configure() {
         val pos = bind(3)
         val color = bind(4)
@@ -13,7 +13,7 @@ object CustomUvSystem : TestSystem(Identifier("liblib-glitter-test:custom_uv")) 
 
         renderModules.add(
             SpriteRenderModule.build(
-                Identifier("minecraft", "textures/block/orange_glazed_terracotta.png"),
+                Identifier.of("minecraft", "textures/block/orange_glazed_terracotta.png"),
                 pos,
             )
                 .color(color)

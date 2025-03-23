@@ -4,14 +4,14 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object StaticSystem : TestSystem(Identifier("liblib-glitter-test:static")) {
+object StaticSystem : TestSystem(Identifier.of("liblib-glitter-test:static")) {
     override fun configure() {
         val pos = bind(3)
         val color = bind(4)
 
         renderModules.add(
             SpriteRenderModule.build(
-                Identifier("minecraft", "textures/item/clay_ball.png"),
+                Identifier.of("minecraft", "textures/item/clay_ball.png"),
                 pos,
             )
                 .color(color)

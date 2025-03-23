@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object IgnoreParticleSettingSystem : TestSystem(Identifier("liblib-glitter-test:ignore_particle_setting")) {
+object IgnoreParticleSettingSystem : TestSystem(Identifier.of("liblib-glitter-test:ignore_particle_setting")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)
@@ -28,7 +28,7 @@ object IgnoreParticleSettingSystem : TestSystem(Identifier("liblib-glitter-test:
 
         renderModules.add(
             SpriteRenderModule.build(
-                Identifier("minecraft", "textures/item/clay_ball.png"),
+                Identifier.of("minecraft", "textures/item/clay_ball.png"),
                 position,
             )
                 .previousPosition(previousPosition)

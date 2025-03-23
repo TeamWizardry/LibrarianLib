@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class QuickstartSystem extends ParticleSystem {
     public QuickstartSystem() {
-        super(new Identifier("example:quickstart"));
+        super(Identifier.of("example:quickstart"));
     }
 
     @Override
@@ -26,7 +26,7 @@ public class QuickstartSystem extends ParticleSystem {
 
         getRenderModules().add(
                 SpriteRenderModule.build(
-                        new Identifier("modid", "textures/particle/sprite.png"),
+                        Identifier.of("modid", "textures/particle/sprite.png"),
                         position
                 )
                         .previousPosition(previousPosition)

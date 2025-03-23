@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.glitter.test.modules.VelocityRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object UpFacingVectorSystem : TestSystem(Identifier("liblib-glitter-test:up_facing_vector")) {
+object UpFacingVectorSystem : TestSystem(Identifier.of("liblib-glitter-test:up_facing_vector")) {
     override fun configure() {
         val pos = bind(3)
         val color = bind(4)
@@ -16,7 +16,7 @@ object UpFacingVectorSystem : TestSystem(Identifier("liblib-glitter-test:up_faci
 
         renderModules.add(
             SpriteRenderModule.build(
-                SpriteRenderOptions.build(Identifier("ll-glitter-test:textures/glitter/arrow.png"))
+                SpriteRenderOptions.build(Identifier.of("ll-glitter-test:textures/glitter/arrow.png"))
                     .diffuseLight(true)
                     .cull(false)
                     .build(),

@@ -4,14 +4,16 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
 import com.teamwizardry.librarianlib.etcetera.DirectRaycaster
 import com.teamwizardry.librarianlib.etcetera.IntersectingBlocksIterator
+import com.teamwizardry.librarianlib.glitter.GlitterWorldCollider.airCacheManager
+import com.teamwizardry.librarianlib.glitter.GlitterWorldCollider.blockCacheManager
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.minecraft.block.Blocks
-import net.minecraft.util.math.Box
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Box
+import net.minecraft.util.math.ChunkSectionPos
 import net.minecraft.util.shape.VoxelShape
-import net.minecraft.world.chunk.ChunkSection
 import net.minecraft.world.chunk.ChunkStatus
 import kotlin.math.floor
 import kotlin.math.max
@@ -168,58 +170,57 @@ public object GlitterWorldCollider {
         }
     }
 
-    private val sectionPos = BlockPos.Mutable()
     private val mutablePos = BlockPos.Mutable()
 
-    @Suppress("ReplacePutWithAssignment")
     private fun getBoundingBoxes(x: Int, y: Int, z: Int): List<Box> {
         val world = Client.minecraft.world ?: return emptyList()
 
         // blocks outside the world never have collision
-        if (y < 0 || y > world.height)
+        if (world.isOutOfHeightLimit(y))
             return emptyList()
+
+        val sectionX = ChunkSectionPos.getSectionCoord(x)
+        val sectionY = ChunkSectionPos.getSectionCoord(y)
+        val sectionZ = ChunkSectionPos.getSectionCoord(z)
+        val sectionKey = ChunkSectionPos.asLong(sectionX, sectionY, sectionZ)
+        val blockKey = BlockPos.asLong(x, y, z)
 
         // check if the sub-chunk is known to be empty
-        sectionPos.set(x shr 4, y shr 4, z shr 4)
-        if (airCache.contains(sectionPos.asLong()))
+        if (airCache.contains(sectionKey))
             return emptyList()
 
-        mutablePos.set(x, y, z)
-        val toLong = mutablePos.asLong()
-        // we can't use getOrPut because it uses the boxed Long
-        blockCache.get(toLong)?.let { return it }
+        blockCache.get(blockKey)?.let { return it }
 
         // get the chunk without trying to load or generate it
-        val chunk = world.getChunk(x shr 4, z shr 4, ChunkStatus.EMPTY, false)
+        val chunk = world.getChunk(sectionX, sectionY, ChunkStatus.EMPTY, false)
         if (chunk == null) {
             // the entire chunk is unloaded. Mark all its sub-chunks as empty
-            for (i in 0 until 16) {
-                sectionPos.set(x shr 4, i, z shr 4)
-                airCache.add(sectionPos.asLong())
+            for (i in world.bottomSectionCoord until world.topSectionCoord) {
+                airCache.add(ChunkSectionPos.asLong(sectionX, i, sectionZ))
             }
             return emptyList()
         }
 
-        val section = chunk.sectionArray[y shr 4]
-        if (ChunkSection.isEmpty(section)) {
+        val section = chunk.getSection(chunk.sectionCoordToIndex(sectionY))
+        if (section.isEmpty) {
             // if the section is empty, make note of that for future calls
-            airCache.add(sectionPos.asLong())
+            airCache.add(sectionKey)
             return emptyList()
         }
 
         val state = section.getBlockState(x and 15, y and 15, z and 15)
 
-        val boxes = if (state == Blocks.AIR.defaultState || state.isAir
-            || state.material.let { !it.blocksMovement() || it.isLiquid }) {
-            // ignore air, non-solid, and liquid blocks
+        val boxes = if (state.isAir || state.isLiquid) {
+            // ignore air and liquid blocks
             emptyList()
         } else {
+            mutablePos.set(x, y, z)
             val shape = state.getCollisionShape(world, mutablePos)
             shapeCache.getOrPut(shape) { shape.boundingBoxes }
         }
 
         // we survived the gauntlet, now cache the resulting list for next time
-        blockCache.put(toLong, boxes)
+        blockCache.put(blockKey, boxes)
         return boxes
     }
 

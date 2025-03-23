@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object PhysicsSystem : TestSystem(Identifier("liblib-glitter-test:physics")) {
+object PhysicsSystem : TestSystem(Identifier.of("liblib-glitter-test:physics")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)
@@ -28,7 +28,7 @@ object PhysicsSystem : TestSystem(Identifier("liblib-glitter-test:physics")) {
 
         renderModules.add(
             SpriteRenderModule.build(
-                Identifier("minecraft", "textures/item/clay_ball.png"),
+                Identifier.of("minecraft", "textures/item/clay_ball.png"),
                 position,
             )
                 .previousPosition(previousPosition)

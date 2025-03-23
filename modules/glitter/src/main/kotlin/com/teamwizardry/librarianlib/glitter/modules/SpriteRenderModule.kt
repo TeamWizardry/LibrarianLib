@@ -16,7 +16,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
-import net.minecraft.util.math.Vec3f
+import org.joml.Vector3f
 import java.awt.Color
 
 /**
@@ -85,7 +85,6 @@ public class SpriteRenderModule private constructor(
     public val uvOffset: ReadParticleBinding?,
 ) : ParticleRenderModule {
 
-    @Suppress("LocalVariableName")
     override fun renderDirect(
         context: WorldRenderContext,
         particles: List<DoubleArray>,
@@ -99,8 +98,8 @@ public class SpriteRenderModule private constructor(
         val viewPos = Client.minecraft.gameRenderer.camera.pos
         stack.translate(-viewPos.x, -viewPos.y, -viewPos.z)
 
-        val modelViewMatrix = stack.peek().model
-        val normalMatrix = context.matrixStack().peek().normal
+        val modelViewMatrix = stack.peek().positionMatrix
+        val normalMatrix = context.matrixStack()!!.peek().normalMatrix
 
         val camera = Client.minecraft.gameRenderer.camera
 
@@ -108,9 +107,9 @@ public class SpriteRenderModule private constructor(
         val cameraY = camera.pos.y
         val cameraZ = camera.pos.z
 
-        val lookRightVec = Vec3f(-1f, 0f, 0f)
-        val lookUpVec = Vec3f(0f, 1f, 0f)
-        val lookVec = Vec3f(0f, 0f, -1f)
+        val lookRightVec = Vector3f(-1f, 0f, 0f)
+        val lookUpVec = Vector3f(0f, 1f, 0f)
+        val lookVec = Vector3f(0f, 0f, 1f)
 
         lookRightVec.rotate(camera.rotation)
         lookUpVec.rotate(camera.rotation)
@@ -126,7 +125,7 @@ public class SpriteRenderModule private constructor(
 
         val spriteSize = 1f / spriteSheetSize
         val spriteIndexMask = spriteSheetSize - 1
-        val spriteSheetBits = MathHelper.log2(spriteSheetSize)
+        val spriteSheetBits = MathHelper.ceilLog2(spriteSheetSize)
 
         val widthSizeIndex: Int = if (this.size.contents.size == 2) 1 else 0
 

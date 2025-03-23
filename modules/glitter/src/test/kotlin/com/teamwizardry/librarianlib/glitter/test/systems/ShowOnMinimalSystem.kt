@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object ShowOnMinimalSystem : TestSystem(Identifier("liblib-glitter-test:show_on_minimal")) {
+object ShowOnMinimalSystem : TestSystem(Identifier.of("liblib-glitter-test:show_on_minimal")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)
@@ -28,7 +28,7 @@ object ShowOnMinimalSystem : TestSystem(Identifier("liblib-glitter-test:show_on_
 
         renderModules.add(
             SpriteRenderModule.build(
-                Identifier("minecraft", "textures/item/clay_ball.png"),
+                Identifier.of("minecraft", "textures/item/clay_ball.png"),
                 position,
             )
                 .previousPosition(previousPosition)

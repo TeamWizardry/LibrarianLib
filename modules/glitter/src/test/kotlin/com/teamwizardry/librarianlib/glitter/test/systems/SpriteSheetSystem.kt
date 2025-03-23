@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object SpriteSheetSystem : TestSystem(Identifier("liblib-glitter-test:sprite_sheet")) {
+object SpriteSheetSystem : TestSystem(Identifier.of("liblib-glitter-test:sprite_sheet")) {
     override fun configure() {
         val pos = bind(3)
         val color = bind(4)
@@ -12,7 +12,7 @@ object SpriteSheetSystem : TestSystem(Identifier("liblib-glitter-test:sprite_she
 
         renderModules.add(
             SpriteRenderModule.build(
-                Identifier("ll-glitter-test:textures/glitter/spritesheet.png"),
+                Identifier.of("ll-glitter-test:textures/glitter/spritesheet.png"),
                 pos
             )
                 .previousPosition(pos)

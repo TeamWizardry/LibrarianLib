@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object SizeAxesSystem: TestSystem(Identifier("liblib-glitter-test:size_axes")) {
+object SizeAxesSystem: TestSystem(Identifier.of("liblib-glitter-test:size_axes")) {
     override fun configure() {
         val pos = bind(3)
         val color = bind(4)
@@ -12,7 +12,7 @@ object SizeAxesSystem: TestSystem(Identifier("liblib-glitter-test:size_axes")) {
 
         renderModules.add(
             SpriteRenderModule.build(
-                Identifier("minecraft", "textures/item/clay_ball.png"),
+                Identifier.of("minecraft", "textures/item/clay_ball.png"),
                 pos,
             )
                 .color(color)

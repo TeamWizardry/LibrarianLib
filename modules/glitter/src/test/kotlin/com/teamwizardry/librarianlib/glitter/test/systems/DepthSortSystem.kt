@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.math.times
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object DepthSortSystem : TestSystem(Identifier("liblib-glitter-test:depth_sort")) {
+object DepthSortSystem : TestSystem(Identifier.of("liblib-glitter-test:depth_sort")) {
     override fun configure() {
         val pos = bind(3)
         val color = bind(4)
@@ -15,7 +15,7 @@ object DepthSortSystem : TestSystem(Identifier("liblib-glitter-test:depth_sort")
 
         globalUpdateModules.add(DepthSortModule(pos, depth))
         renderModules.add(
-            SpriteRenderModule.build(Identifier("ll-glitter-test:textures/glitter/depthsort.png"), pos)
+            SpriteRenderModule.build(Identifier.of("ll-glitter-test:textures/glitter/depthsort.png"), pos)
                 .previousPosition(pos)
                 .color(color)
                 .size(1.0)

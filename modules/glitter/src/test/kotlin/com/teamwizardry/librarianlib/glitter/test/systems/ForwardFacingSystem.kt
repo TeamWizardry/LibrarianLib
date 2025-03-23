@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object ForwardFacingSystem : TestSystem(Identifier("liblib-glitter-test:forward_facing")) {
+object ForwardFacingSystem : TestSystem(Identifier.of("liblib-glitter-test:forward_facing")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)
@@ -28,7 +28,7 @@ object ForwardFacingSystem : TestSystem(Identifier("liblib-glitter-test:forward_
 
         renderModules.add(
             SpriteRenderModule.build(
-                Identifier("minecraft", "textures/item/clay_ball.png"),
+                Identifier.of("minecraft", "textures/item/clay_ball.png"),
                 position
             )
                 .previousPosition(previousPosition)

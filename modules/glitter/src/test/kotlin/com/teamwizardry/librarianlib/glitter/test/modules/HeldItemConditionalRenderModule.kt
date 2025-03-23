@@ -4,8 +4,9 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.glitter.ParticleRenderModule
 import com.teamwizardry.librarianlib.glitter.ParticleUpdateModule
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
+import net.minecraft.registry.Registries
 import net.minecraft.util.Identifier
-import net.minecraft.util.registry.Registry
+import net.minecraft.registry.Registry
 
 /**
  * Only runs the passed render module when the player is holding a specific item
@@ -27,8 +28,10 @@ class HeldItemConditionalRenderModule(
         particles: List<DoubleArray>,
         prepModules: List<ParticleUpdateModule>
     ) {
-        val isHoldingItem = Client.player!!.let {
-            Registry.ITEM.getId(it.mainHandStack.item) == filter || Registry.ITEM.getId(it.offHandStack.item) == filter
+        val isHoldingItem = Client.player!!.let { player ->
+            player.isHolding {
+                Registries.ITEM.getId(it.item) == filter
+            }
         }
         if(isHoldingItem)
             wrapped.render(context, particles, prepModules)

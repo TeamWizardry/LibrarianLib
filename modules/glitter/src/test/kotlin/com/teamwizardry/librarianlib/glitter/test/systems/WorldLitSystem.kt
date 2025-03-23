@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderOptions
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object WorldLitSystem : TestSystem(Identifier("liblib-glitter-test:world_lit")) {
+object WorldLitSystem : TestSystem(Identifier.of("liblib-glitter-test:world_lit")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)
@@ -28,7 +28,7 @@ object WorldLitSystem : TestSystem(Identifier("liblib-glitter-test:world_lit")) 
 
         renderModules.add(
             SpriteRenderModule.build(
-                SpriteRenderOptions.build(Identifier("minecraft", "textures/item/snowball.png"))
+                SpriteRenderOptions.build(Identifier.of("minecraft", "textures/item/snowball.png"))
                     .worldLight(true)
                     .build(),
                 position,

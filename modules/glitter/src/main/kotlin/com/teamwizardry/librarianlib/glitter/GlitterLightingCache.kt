@@ -37,27 +37,27 @@ public object GlitterLightingCache {
 
     @Suppress("ReplacePutWithAssignment")
     public fun getCombinedLight(x: Int, y: Int, z: Int): Int {
-        mutablePos.set(x, y, z)
-        val toLong = mutablePos.asLong()
-        if(lightCache.containsKey(toLong))
-            return lightCache.get(toLong)
+        val blockKey = BlockPos.asLong(x, y, z)
+        if(lightCache.containsKey(blockKey))
+            return lightCache.get(blockKey)
 
-        val light = computeLightmapCoordinates(mutablePos)
-        lightCache.put(toLong, light)
+        val light = computeLightmapCoordinates(x, y, z)
+        lightCache.put(blockKey, light)
 
         return light
     }
 
-    private fun computeLightmapCoordinates(pos: BlockPos): Int {
+    private fun computeLightmapCoordinates(x: Int, y: Int, z: Int): Int {
         val world = Client.minecraft.world ?: return 0
 
-        if (pos.y < 0 || pos.y > world.height)
+        if (world.isOutOfHeightLimit(y))
             return 0
 
-        if (!world.isChunkLoaded(pos))
+        if (!world.isPosLoaded(x, z))
             return 0
 
-        return WorldRenderer.getLightmapCoordinates(world, pos)
+        mutablePos.set(x, y, z)
+        return WorldRenderer.getLightmapCoordinates(world, mutablePos)
     }
 
     public fun tickCache() {

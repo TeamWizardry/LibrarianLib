@@ -18,7 +18,7 @@ import java.util.concurrent.Executor
  */
 public object ParticleSystemManager: SimpleResourceReloadListener<Unit>, WorldRenderEvents.Last {
 
-    override fun getFabricId(): Identifier = Identifier("liblib-glitter:particle_system_manager")
+    override fun getFabricId(): Identifier = Identifier.of("liblib-glitter:particle_system_manager")
 
     private val _systems: MutableList<ParticleSystem> = mutableListOf()
     public val systems: List<ParticleSystem> = _systems.unmodifiableView()
@@ -76,9 +76,9 @@ public object ParticleSystemManager: SimpleResourceReloadListener<Unit>, WorldRe
 
         profiler.push("liblib_glitter")
 
-        context.matrixStack().push()
+        context.matrixStack()!!.push()
         val viewPos = Client.minecraft.gameRenderer.camera.pos
-        context.matrixStack().translate(-viewPos.x, -viewPos.y, -viewPos.z)
+        context.matrixStack()!!.translate(-viewPos.x, -viewPos.y, -viewPos.z)
 
 //        val entity = Minecraft.getInstance().renderViewEntity
 //        RenderSystem.disableLighting()
@@ -93,7 +93,7 @@ public object ParticleSystemManager: SimpleResourceReloadListener<Unit>, WorldRe
             e.printStackTrace()
         }
 //        }
-        context.matrixStack().pop()
+        context.matrixStack()!!.pop()
 
         profiler.pop()
     }

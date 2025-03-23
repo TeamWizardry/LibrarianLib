@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SpriteRenderExampleSystem extends ParticleSystem {
     public SpriteRenderExampleSystem() {
-        super(new Identifier("example:sprite"));
+        super(Identifier.of("example:sprite"));
     }
 
     @Override
@@ -19,7 +19,7 @@ public class SpriteRenderExampleSystem extends ParticleSystem {
 
         getRenderModules().add(
                 SpriteRenderModule.build(
-                        new Identifier("modid", "textures/particle/sprite.png"),
+                        Identifier.of("modid", "textures/particle/sprite.png"),
                         position
                 )
                         .previousPosition(previousPosition)

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BindingExampleSystem extends ParticleSystem {
     public BindingExampleSystem() {
-        super(new Identifier("example:bindings"));
+        super(Identifier.of("example:bindings"));
     }
 
     @Override

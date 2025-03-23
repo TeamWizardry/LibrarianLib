@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
 
-object PhysicsOnlySystem : TestSystem(Identifier("liblib-glitter-test:physics_only")) {
+object PhysicsOnlySystem : TestSystem(Identifier.of("liblib-glitter-test:physics_only")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)
@@ -32,9 +32,9 @@ object PhysicsOnlySystem : TestSystem(Identifier("liblib-glitter-test:physics_on
 
         renderModules.add(
             HeldItemConditionalRenderModule(
-                Identifier("ll-glitter-test:physics_only_entity"),
+                Identifier.of("ll-glitter-test:physics_only_entity"),
                 SpriteRenderModule.build(
-                    renderOptions = SpriteRenderOptions.build(Identifier("ll-glitter-test:textures/glitter/glow.png"))
+                    renderOptions = SpriteRenderOptions.build(Identifier.of("ll-glitter-test:textures/glitter/glow.png"))
                         .additiveBlending()
                         .writeDepth(false)
                         .blur(true)

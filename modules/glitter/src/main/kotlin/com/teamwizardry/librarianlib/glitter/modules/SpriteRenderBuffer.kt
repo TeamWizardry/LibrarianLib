@@ -47,9 +47,9 @@ public class SpriteRenderBuffer(vbo: VertexBuffer) : RenderBuffer(vbo) {
         val features = arrayOf<String>()
         this.bind(
             Shader.build("glitter_sprite")
-                .vertex(Identifier("liblib-glitter:sprite.vert"), *features)
-                .geometry(Identifier("liblib-glitter:sprite.geom"), *features)
-                .fragment(Identifier("liblib-glitter:sprite.frag"), *features)
+                .vertex(Identifier.of("liblib-glitter:sprite.vert"), *features)
+                .geometry(Identifier.of("liblib-glitter:sprite.geom"), *features)
+                .fragment(Identifier.of("liblib-glitter:sprite.frag"), *features)
                 .build()
         )
     }

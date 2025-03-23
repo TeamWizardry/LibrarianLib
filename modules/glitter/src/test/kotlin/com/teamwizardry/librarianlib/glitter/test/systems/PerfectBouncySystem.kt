@@ -7,7 +7,7 @@ import com.teamwizardry.librarianlib.glitter.test.modules.VelocityRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object PerfectBouncySystem : TestSystem(Identifier("liblib-glitter-test:perfect_bouncy")) {
+object PerfectBouncySystem : TestSystem(Identifier.of("liblib-glitter-test:perfect_bouncy")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)
@@ -29,7 +29,7 @@ object PerfectBouncySystem : TestSystem(Identifier("liblib-glitter-test:perfect_
 
         renderModules.add(
             SpriteRenderModule.build(
-                Identifier("minecraft", "textures/item/clay_ball.png"),
+                Identifier.of("minecraft", "textures/item/clay_ball.png"),
                 position,
             )
                 .previousPosition(previousPosition)

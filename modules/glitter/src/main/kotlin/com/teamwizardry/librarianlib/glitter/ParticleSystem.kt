@@ -289,7 +289,7 @@ public abstract class ParticleSystem(public val name: Identifier) {
         }
         shouldQueue.set(false)
         @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-        currentSpawnChance = when (Client.minecraft.options.particles) {
+        currentSpawnChance = when (Client.minecraft.options.particles.value) {
             ParticlesMode.ALL -> 1.0
             ParticlesMode.DECREASED -> decreasedSpawnChance
             ParticlesMode.MINIMAL -> minimalSpawnChance
