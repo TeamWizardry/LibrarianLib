@@ -47,9 +47,9 @@ public open class Matrix3d(
     )
 
     public constructor(m: Matrix3f): this(
-        m.m00(), m.m01(), m.m02(),
-        m.m10(), m.m11(), m.m12(),
-        m.m20(), m.m21(), m.m22()
+        m.m00(), m.m10(), m.m20(),
+        m.m01(), m.m11(), m.m21(),
+        m.m02(), m.m12(), m.m22()
     )
 
     public operator fun get(row: Int, col: Int): Double {
@@ -463,13 +463,13 @@ public open class Matrix3d(
      */
     public fun copyToMatrix3f(matrix: Matrix3f) {
         matrix.m00(m00.toFloat())
-        matrix.m01(m01.toFloat())
-        matrix.m02(m02.toFloat())
-        matrix.m10(m10.toFloat())
+        matrix.m01(m10.toFloat())
+        matrix.m02(m20.toFloat())
+        matrix.m10(m01.toFloat())
         matrix.m11(m11.toFloat())
-        matrix.m12(m12.toFloat())
-        matrix.m20(m20.toFloat())
-        matrix.m21(m21.toFloat())
+        matrix.m12(m21.toFloat())
+        matrix.m20(m02.toFloat())
+        matrix.m21(m12.toFloat())
         matrix.m22(m22.toFloat())
     }
 

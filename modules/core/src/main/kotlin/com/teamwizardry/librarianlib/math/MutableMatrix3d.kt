@@ -71,9 +71,9 @@ public open class MutableMatrix3d(
     )
 
     public constructor(m: Matrix3f): this(
-        m.m00(), m.m01(), m.m02(),
-        m.m10(), m.m11(), m.m12(),
-        m.m20(), m.m21(), m.m22()
+        m.m00(), m.m10(), m.m20(),
+        m.m01(), m.m11(), m.m21(),
+        m.m02(), m.m12(), m.m22()
     )
 
     public operator fun set(row: Int, col: Int, value: Double) {
@@ -132,13 +132,13 @@ public open class MutableMatrix3d(
 
     public fun set(m: Matrix3f): MutableMatrix3d {
         this.m00 = m.m00().toDouble()
-        this.m01 = m.m01().toDouble()
-        this.m02 = m.m02().toDouble()
-        this.m10 = m.m10().toDouble()
+        this.m01 = m.m10().toDouble()
+        this.m02 = m.m20().toDouble()
+        this.m10 = m.m01().toDouble()
         this.m11 = m.m11().toDouble()
-        this.m12 = m.m12().toDouble()
-        this.m20 = m.m20().toDouble()
-        this.m21 = m.m21().toDouble()
+        this.m12 = m.m21().toDouble()
+        this.m20 = m.m02().toDouble()
+        this.m21 = m.m12().toDouble()
         this.m22 = m.m22().toDouble()
         return this
     }

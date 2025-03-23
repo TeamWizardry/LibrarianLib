@@ -59,10 +59,10 @@ public open class Matrix4d(
         m30.toDouble(), m31.toDouble(), m32.toDouble(), m33.toDouble())
 
     public constructor(m: Matrix4f): this(
-        m.m00(), m.m01(), m.m02(), m.m03(),
-        m.m10(), m.m11(), m.m12(), m.m13(),
-        m.m20(), m.m21(), m.m22(), m.m23(),
-        m.m30(), m.m31(), m.m32(), m.m33()
+        m.m00(), m.m10(), m.m20(), m.m30(),
+        m.m01(), m.m11(), m.m21(), m.m31(),
+        m.m02(), m.m12(), m.m22(), m.m32(),
+        m.m03(), m.m13(), m.m23(), m.m33()
     )
 
     public constructor(stack: MatrixStack): this(stack.peek().positionMatrix)
@@ -432,20 +432,20 @@ public open class Matrix4d(
      */
     public fun copyToMatrix4f(matrix: Matrix4f) {
         matrix.m00(m00.toFloat())
-        matrix.m01(m01.toFloat())
-        matrix.m02(m02.toFloat())
-        matrix.m03(m03.toFloat())
-        matrix.m10(m10.toFloat())
+        matrix.m01(m10.toFloat())
+        matrix.m02(m20.toFloat())
+        matrix.m03(m30.toFloat())
+        matrix.m10(m01.toFloat())
         matrix.m11(m11.toFloat())
-        matrix.m12(m12.toFloat())
-        matrix.m13(m13.toFloat())
-        matrix.m20(m20.toFloat())
-        matrix.m21(m21.toFloat())
+        matrix.m12(m21.toFloat())
+        matrix.m13(m31.toFloat())
+        matrix.m20(m02.toFloat())
+        matrix.m21(m12.toFloat())
         matrix.m22(m22.toFloat())
-        matrix.m23(m23.toFloat())
-        matrix.m30(m30.toFloat())
-        matrix.m31(m31.toFloat())
-        matrix.m32(m32.toFloat())
+        matrix.m23(m32.toFloat())
+        matrix.m30(m03.toFloat())
+        matrix.m31(m13.toFloat())
+        matrix.m32(m23.toFloat())
         matrix.m33(m33.toFloat())
     }
 

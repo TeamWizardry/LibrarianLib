@@ -92,10 +92,10 @@ public open class MutableMatrix4d(
         m30.toDouble(), m31.toDouble(), m32.toDouble(), m33.toDouble())
 
     public constructor(m: Matrix4f): this(
-        m.m00(), m.m01(), m.m02(), m.m03(),
-        m.m10(), m.m11(), m.m12(), m.m13(),
-        m.m20(), m.m21(), m.m22(), m.m23(),
-        m.m30(), m.m31(), m.m32(), m.m33()
+        m.m00(), m.m10(), m.m20(), m.m30(),
+        m.m01(), m.m11(), m.m21(), m.m31(),
+        m.m02(), m.m12(), m.m22(), m.m32(),
+        m.m03(), m.m13(), m.m23(), m.m33()
     )
 
     public operator fun set(row: Int, col: Int, value: Double) {
@@ -196,20 +196,20 @@ public open class MutableMatrix4d(
      */
     public fun set(m: Matrix4f): MutableMatrix4d {
         this.m00 = m.m00().toDouble()
-        this.m01 = m.m01().toDouble()
-        this.m02 = m.m02().toDouble()
-        this.m03 = m.m03().toDouble()
-        this.m10 = m.m10().toDouble()
+        this.m01 = m.m10().toDouble()
+        this.m02 = m.m20().toDouble()
+        this.m03 = m.m30().toDouble()
+        this.m10 = m.m01().toDouble()
         this.m11 = m.m11().toDouble()
-        this.m12 = m.m12().toDouble()
-        this.m13 = m.m13().toDouble()
-        this.m20 = m.m20().toDouble()
-        this.m21 = m.m21().toDouble()
+        this.m12 = m.m21().toDouble()
+        this.m13 = m.m31().toDouble()
+        this.m20 = m.m02().toDouble()
+        this.m21 = m.m12().toDouble()
         this.m22 = m.m22().toDouble()
-        this.m23 = m.m23().toDouble()
-        this.m30 = m.m30().toDouble()
-        this.m31 = m.m31().toDouble()
-        this.m32 = m.m32().toDouble()
+        this.m23 = m.m32().toDouble()
+        this.m30 = m.m03().toDouble()
+        this.m31 = m.m13().toDouble()
+        this.m32 = m.m23().toDouble()
         this.m33 = m.m33().toDouble()
         return this
     }
