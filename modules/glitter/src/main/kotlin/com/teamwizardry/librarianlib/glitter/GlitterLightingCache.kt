@@ -30,12 +30,11 @@ public object GlitterLightingCache {
      * severely impact performance.
      */
     public fun clearCache() {
-        lightCache.clear()
+        lightCacheManager.clear()
     }
 
     private val mutablePos = BlockPos.Mutable()
 
-    @Suppress("ReplacePutWithAssignment")
     public fun getCombinedLight(x: Int, y: Int, z: Int): Int {
         val blockKey = BlockPos.asLong(x, y, z)
         if(lightCache.containsKey(blockKey))

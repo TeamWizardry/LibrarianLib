@@ -60,9 +60,9 @@ public object GlitterWorldCollider {
      * severely impact performance.
      */
     public fun clearCaches() {
-        blockCache.clear()
-        shapeCache.clear()
-        airCache.clear()
+        blockCacheManager.clear()
+        shapeCacheManager.clear()
+        airCacheManager.clear()
     }
 
     /**
