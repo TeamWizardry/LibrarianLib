@@ -14,6 +14,10 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 
 public open class TestEntityImpl(public val config: TestEntity, type: EntityType<TestEntityImpl>, world: World): Entity(type, world) {
+    override fun canHit(): Boolean {
+        return true
+    }
+
     override fun handleAttack(attacker: Entity): Boolean {
         val context = TestEntity.HitContext(this, attacker, attacker is PlayerEntity)
 

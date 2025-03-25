@@ -114,7 +114,7 @@ public class TestEntity(manager: TestModContentManager, id: Identifier) : TestCo
     public fun spawn(player: PlayerEntity) {
         val eye = player.getCameraPosVec(0f)
         val entity = TestEntityImpl(this, type, player.world)
-        entity.setPos(eye.x, eye.y - entity.eyeY, eye.z)
+        entity.setPosition(eye.x, eye.y - entity.eyeY, eye.z)
         entity.pitch = player.pitch
         entity.yaw = player.yaw
         player.world.spawnEntity(entity)
