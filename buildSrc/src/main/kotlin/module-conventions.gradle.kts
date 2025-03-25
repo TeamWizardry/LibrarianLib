@@ -16,7 +16,7 @@ plugins {
     id("minecraft-conventions")
     id("publish-conventions")
     id("testmod-conventions")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
     id("org.jetbrains.dokka")
 }
 

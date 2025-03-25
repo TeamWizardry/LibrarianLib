@@ -2,7 +2,6 @@
 
 package com.teamwizardry.gradle.task
 
-import com.github.jengelman.gradle.plugins.shadow.ShadowStats
 import com.github.jengelman.gradle.plugins.shadow.relocation.RelocatePathContext
 import com.github.jengelman.gradle.plugins.shadow.relocation.Relocator
 import com.teamwizardry.gradle.util.DslContext
@@ -65,8 +64,6 @@ open class ShadowSources : Copy() {
         )
     }
 
-    private val shadowStats = ShadowStats()
-
     init {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
@@ -85,12 +82,17 @@ open class ShadowSources : Copy() {
         }
         relocators.get().forEach { relocator ->
             if(relocator.canRelocatePath(copyDetails.sourcePath)) {
-                copyDetails.path = relocator.relocatePath(RelocatePathContext(copyDetails.sourcePath, shadowStats))
+                copyDetails.path = relocator.relocatePath(RelocatePathContext(copyDetails.sourcePath))
             }
 
             copyDetails.filter { line ->
-                relocator.applyToSourceContent(line)
+                relocator.applyToSourceContent(line.replace(kotlinPackageRegex, "$0;"))
             }
         }
+    }
+
+    companion object {
+        // shadow doesn't properly remap kotlin package declarations
+        val kotlinPackageRegex = """^package [a-zA-Z.]+$""".toRegex()
     }
 }
