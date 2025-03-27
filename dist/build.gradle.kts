@@ -30,7 +30,8 @@ configurations {
 
 dependencies {
     commonConfig.modules.forEach {
-        "include"(it.project)
+        if (it.name != "testcore")
+            "include"(it.project)
     }
 }
 

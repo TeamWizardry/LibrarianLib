@@ -18,12 +18,10 @@ loom {
     log4jConfigs.setFrom(file("log4j.xml"))
 }
 
-val allModules = commonConfig.modules.map { it.path } + listOf(":testcore")
-
 dependencies {
-    allModules.forEach {
-        runtimeOnly(project(it, configuration = "devRuntime"))
-        modRuntimeOnly(project(it, configuration = "devMod"))
+    commonConfig.modules.forEach {
+        runtimeOnly(project(it.path, configuration = "devRuntime"))
+        modRuntimeOnly(project(it.path, configuration = "devMod"))
     }
     modRuntimeOnly("com.terraformersmc:modmenu:11.0.3")
 }
@@ -39,15 +37,15 @@ val copyMixinAgent = tasks.register<Sync>("copyMixinAgent") {
 
 tasks.named("processResources") {
     dependsOn(copyMixinAgent)
-    allModules.forEach {
-        dependsOn("$it:processResources")
-        dependsOn("$it:processTestResources")
+    commonConfig.modules.forEach {
+        dependsOn("${it.path}:processResources")
+        dependsOn("${it.path}:processTestResources")
     }
 }
 tasks.named("classes") {
-    allModules.forEach {
-        dependsOn("$it:classes")
-        dependsOn("$it:testClasses")
+    commonConfig.modules.forEach {
+        dependsOn("${it.path}:classes")
+        dependsOn("${it.path}:testClasses")
     }
 }
 

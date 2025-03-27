@@ -54,7 +54,7 @@ commonConfig {
 
     modules {
         subprojects.forEach {
-            if(it.name !in setOf("testcore", "runtime", "dist"))
+            if(it.name !in setOf("runtime", "dist"))
                 create(it.name)
         }
     }

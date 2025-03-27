@@ -14,7 +14,7 @@ includeModule("facade")
 includeModule("glitter")
 includeModule("mosaic")
 includeModule("scribe")
+includeModule("testcore")
 
-include("testcore")
 include("runtime")
 include("dist")

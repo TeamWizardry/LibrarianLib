@@ -15,7 +15,6 @@ plugins {
     id("kotlin-conventions")
     id("minecraft-conventions")
     id("publish-conventions")
-    id("testmod-conventions")
     id("com.gradleup.shadow")
     id("org.jetbrains.dokka")
 }
