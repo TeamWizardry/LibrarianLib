@@ -18,8 +18,6 @@ import org.gradle.kotlin.dsl.the
 open class ModuleExtension(private val ctx: DslContext) {
     private val commonConfig = ctx.project.rootProject.the<CommonConfigExtension>()
 
-    private val _shadowRules = mutableListOf<ShadowRule>()
-
     val name: String = ctx.project.name
     val moduleInfo: ModuleInfo = commonConfig.modules[name]
     val component: AdhocComponentWithVariants
@@ -28,15 +26,11 @@ open class ModuleExtension(private val ctx: DslContext) {
     var displayName: String = ""
     var description: String = ""
 
-    val shadowRules: List<ShadowRule> = _shadowRules
-
     /**
      * Adds a shadow rule. The passed package will be relocated under the `ll` package.
      */
     fun shadow(pkg: String) {
-        val rule = ShadowRule(pkg, "ll.$pkg")
-        _shadowRules.add(rule)
-        commonConfig.addShadowRule(rule)
+        commonConfig.addShadowRule(pkg)
     }
 
     init {

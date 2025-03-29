@@ -42,13 +42,16 @@ configurations {
         description = "Dependencies to put on the development runtime classpath"
 
         canBe(consumed = true, resolved = false)
-        attributes.attribute(LibLibAttributes.RuntimeUsage.attribute, LibLibAttributes.RuntimeUsage.devRuntime)
     }
     create("devMod") {
         description = "Mods to put on the development runtime classpath"
 
         canBe(consumed = true, resolved = false)
-        attributes.attribute(LibLibAttributes.RuntimeUsage.attribute, LibLibAttributes.RuntimeUsage.devMod)
+    }
+    create("testMod") {
+        description = "The test mod to be bundled in for testing outside the dev environment"
+
+        canBe(consumed = true, resolved = false)
     }
 
     // ----- Consumers -----
@@ -57,45 +60,49 @@ configurations {
         description = "Dependencies to shade into the mod jar."
 
         canBe(consumed = false, resolved = true)
-        api.get().extendsFrom(this)
     }
-
-    val include = named("include")
-    val publishedApi = named("publishedApi")
-    val publishedRuntime = named("publishedRuntime")
 
     val liblib = named("liblib") { // `named` because liblib is already created by the module plugin
         description = "Inter-module dependencies"
 
         canBe(consumed = false, resolved = false)
-        api.get().extendsFrom(this)
-        publishedApi.get().extendsFrom(this)
     }
 
-    create("includeApi") {
+    val includeApi = create("includeApi") {
         description = "Jar-in-jar 'api' dependencies"
 
         canBe(consumed = false, resolved = false)
-        include.get().extendsFrom(this)
-        api.get().extendsFrom(this)
-        publishedApi.get().extendsFrom(this)
-        publishedRuntime.get().extendsFrom(this)
     }
 
-    create("includeImplementation") {
+    val includeImplementation = create("includeImplementation") {
         description = "Jar-in-jar 'implementation' dependencies"
 
         canBe(consumed = false, resolved = false)
-        include.get().extendsFrom(this)
-        implementation.get().extendsFrom(this)
-        publishedRuntime.get().extendsFrom(this)
+    }
+
+    named("api") {
+        extendsFrom(liblib.get(), includeApi, shade)
+    }
+    named("publishedApi") {
+        extendsFrom(liblib.get(), includeApi)
+    }
+    named("publishedRuntime") {
+        extendsFrom(includeApi, includeImplementation)
+    }
+    named("include") {
+        extendsFrom(includeApi, includeImplementation)
+    }
+    named("implementation") {
+        extendsFrom(includeImplementation)
+    }
+    named("devRuntime") {
+        extendsFrom(include.get(), shade)
     }
 }
 
 dependencies {
     testImplementation(project(":testcore"))
 
-    configurations["devRuntime"].extendsFrom(configurations["include"], configurations["shade"])
     "devRuntime"(sourceSets.main.get().output)
     "devRuntime"(sourceSets.test.get().output)
 }
@@ -131,6 +138,7 @@ configureFabricModJson {
     icon.set("ll/icon.png")
     iconFile.set(rootDir.resolve("logo/icon.png"))
 
+    depends("fabric-api", project.property("mod.dependencies.fabricapi") as String)
     depends("fabricloader", project.property("mod.dependencies.fabricloader") as String)
     depends("minecraft", project.property("mod.dependencies.minecraft") as String)
     depends("fabric-language-kotlin", project.property("mod.dependencies.flk") as String)
@@ -162,6 +170,7 @@ val generateFabricTestMod = tasks.register<GenerateFabricModJson>("generateFabri
     icon.set("ll/test_icon.png")
     iconFile.set(rootDir.resolve("logo/test_icon.png"))
 
+    depends("fabric-api", project.property("mod.dependencies.fabricapi") as String)
     depends("fabricloader", project.property("mod.dependencies.fabricloader") as String)
     depends("minecraft", project.property("mod.dependencies.minecraft") as String)
     depends("fabric-language-kotlin", project.property("mod.dependencies.flk") as String)
@@ -189,6 +198,7 @@ tasks.named<Jar>("jar") {
 
 val shadowJar = tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(project.configurations.getByName("shade"))
+    destinationDirectory.set(file("$buildDir/shadow"))
     archiveClassifier.set("shadow")
     includeEmptyDirs = false
 
@@ -198,7 +208,7 @@ val shadowJar = tasks.named<ShadowJar>("shadowJar") {
 }
 
 val remapJar = tasks.named<RemapJarTask>("remapJar") {
-    input.set(shadowJar.map { it.archiveFile.get() })
+    inputFile.set(shadowJar.map { it.archiveFile.get() })
 }
 
 val shadowSources = tasks.register<ShadowSources>("shadowSources") {
@@ -216,8 +226,26 @@ val sourcesJar = tasks.register<Jar>("sourcesJar") {
     from(shadowSources.map { it.outputs })
 }
 
-val remapSourcesJar = tasks.named<RemapSourcesJarTask>("remapSourcesJar") {
-    dependsOn(sourcesJar)
+val shadowTestJar = tasks.register<ShadowJar>("shadowTestJar") {
+    configurations = listOf()
+    destinationDirectory.set(file("$buildDir/shadow"))
+    archiveClassifier.set("shadow-test")
+    includeEmptyDirs = false
+    from(sourceSets.test.get().output)
+    commonConfig.shadowRules {
+        relocate(it.from, it.to)
+    }
+}
+
+val remapTestJar = tasks.register<RemapJarTask>("remapTestJar") {
+    archiveClassifier.set("tests")
+    inputFile.set(shadowTestJar.map { it.archiveFile.get() })
+    addNestedDependencies = false
+    dependsOn(shadowTestJar)
+}
+
+tasks.named("assemble") {
+    dependsOn(remapTestJar)
 }
 
 //endregion // Build configuration
@@ -296,6 +324,9 @@ artifacts {
         builtBy(sourcesJar)
     }
     add("publishedJavadoc", dokkaJar)
+    add("testMod", remapTestJar) {
+        builtBy(remapTestJar)
+    }
 }
 
 publishing.publications.named<MavenPublication>("maven") {

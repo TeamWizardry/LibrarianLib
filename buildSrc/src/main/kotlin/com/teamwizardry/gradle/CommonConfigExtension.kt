@@ -22,7 +22,8 @@ open class CommonConfigExtension(private val ctx: DslContext) {
         shadowRuleListeners.add(forEach)
     }
 
-    fun addShadowRule(rule: ShadowRule) {
+    fun addShadowRule(pkg: String) {
+        val rule = ShadowRule(pkg, "ll.$pkg")
         _shadowRules.add(rule)
         shadowRuleListeners.forEach { it(rule) }
     }

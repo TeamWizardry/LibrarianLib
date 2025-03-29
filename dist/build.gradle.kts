@@ -20,27 +20,52 @@ configurations {
     create("include") {
         canBe(consumed = false, resolved = true)
         isTransitive = false
-
-        attributes.attribute(
-            LibLibAttributes.Target.attribute,
-            LibLibAttributes.Target.public
-        )
     }
-}
-
-dependencies {
-    commonConfig.modules.forEach {
-        if (it.name != "testcore")
-            "include"(it.project)
+    create("includeTest") {
+        canBe(consumed = false, resolved = true)
+        isTransitive = false
     }
-}
-
-val generated: File = file("$buildDir/generated/resources")
-val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod") {
-    outputRoot.set(generated)
 }
 
 version = commonConfig.version
+
+dependencies {
+    commonConfig.modules.forEach {
+        if (it.name == "testcore") {
+            "includeTest"(project(it.path, configuration = "publishedApi"))
+        } else {
+            "include"(project(it.path, configuration = "publishedApi"))
+        }
+        "includeTest"(project(it.path, configuration = "testMod"))
+    }
+}
+
+val generated: File = file("$buildDir/generated/main")
+val generatedTest: File = file("$buildDir/generated/test")
+
+sourceSets {
+    main {
+        java.srcDir(generated.resolve("java"))
+        resources.srcDir(generated.resolve("resources"))
+    }
+    test {
+        java.srcDir(generatedTest.resolve("java"))
+        resources.srcDir(generatedTest.resolve("resources"))
+    }
+}
+
+val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod") {
+    outputRoot.set(generated.resolve("resources"))
+}
+val generateFabricTestMod = tasks.register<GenerateFabricModJson>("generateFabricTestMod") {
+    outputRoot.set(generatedTest.resolve("resources"))
+}
+tasks.named<ProcessResources>("processResources") {
+    dependsOn(generateFabricMod)
+}
+tasks.named<ProcessResources>("processTestResources") {
+    dependsOn(generateFabricTestMod)
+}
 
 configureFabricModJson {
     id.set("librarianlib")
@@ -51,6 +76,7 @@ configureFabricModJson {
     icon.set("ll/icon.png")
     iconFile.set(rootDir.resolve("logo/icon.png"))
 
+    depends("fabric-api", project.property("mod.dependencies.fabricapi") as String)
     depends("fabricloader", project.property("mod.dependencies.fabricloader") as String)
     depends("minecraft", project.property("mod.dependencies.minecraft") as String)
     depends("fabric-language-kotlin", project.property("mod.dependencies.flk") as String)
@@ -60,23 +86,30 @@ configureFabricModJson {
     jars.set(project.provider { configurations["include"].resolve().map { it.name } })
 }
 
-tasks.named<ProcessResources>("processResources") {
-    dependsOn(generateFabricMod)
+configureFabricTestModJson {
+    id.set("librarianlib-test")
+    version.set(commonConfig.version)
+
+    name.set("LibrarianLib Tests")
+    description.set("LibrarianLib's test mods")
+    icon.set("ll/icon.png")
+    iconFile.set(rootDir.resolve("logo/icon.png"))
+
+    depends("fabric-api", project.property("mod.dependencies.fabricapi") as String)
+    depends("fabricloader", project.property("mod.dependencies.fabricloader") as String)
+    depends("minecraft", project.property("mod.dependencies.minecraft") as String)
+    depends("fabric-language-kotlin", project.property("mod.dependencies.flk") as String)
+
+    modMenu.hidden.set(false)
+
+    jars.set(project.provider { configurations["includeTest"].resolve().map { it.name } })
 }
 
 val jar = tasks.named<Jar>("jar") {
     archiveBaseName.set("librarianlib")
-    from(generated)
+    from(sourceSets.main.get().output)
     from(configurations["include"]) {
         into("META-INF/jars")
-    }
-
-    manifest {
-        val manifest = Manifest()
-//        JarManifestConfiguration(rootProject).configure(manifest)
-        // loom hard-codes `toM = "intermediary"` in the RemapJarTask
-        manifest.mainAttributes.putValue("Fabric-Mapping-Namespace", "intermediary")
-        attributes(manifest.mainAttributes.mapKeys { (key, _) -> "$key" })
     }
 }
 
@@ -90,6 +123,18 @@ val javadocJar = tasks.register<Jar>("javadocJar") {
     archiveBaseName.set("librarianlib")
     archiveClassifier.set("javadoc")
     from(file("no_javadoc.txt"))
+}
+
+val testJar = tasks.register<Jar>("testJar") {
+    archiveBaseName.set("librarianlib-test")
+    from(sourceSets.test.get().output)
+    from(configurations["includeTest"]) {
+        into("META-INF/jars")
+    }
+}
+
+tasks.named("assemble") {
+    dependsOn(testJar)
 }
 
 artifacts {
