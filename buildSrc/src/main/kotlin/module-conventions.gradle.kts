@@ -96,7 +96,10 @@ configurations {
         extendsFrom(includeImplementation)
     }
     named("devRuntime") {
-        extendsFrom(include.get(), shade)
+        extendsFrom(shade)
+    }
+    named("devMod") {
+        extendsFrom(include.get())
     }
 }
 

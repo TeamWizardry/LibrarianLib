@@ -34,9 +34,6 @@ dependencies {
     include("pers.solid:brrp-fabric:${project.property("brrp_version")}") {
         isTransitive = false
     }
-    "devMod"("pers.solid:brrp-fabric:${project.property("brrp_version")}") {
-        isTransitive = false
-    }
     modImplementation("pers.solid:brrp-fabric:${project.property("brrp_version")}") {
         isTransitive = false
     }
