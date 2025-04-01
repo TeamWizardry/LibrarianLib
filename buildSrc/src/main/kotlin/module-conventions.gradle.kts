@@ -62,11 +62,7 @@ configurations {
         canBe(consumed = false, resolved = true)
     }
 
-    val liblib = named("liblib") { // `named` because liblib is already created by the module plugin
-        description = "Inter-module dependencies"
-
-        canBe(consumed = false, resolved = false)
-    }
+    val liblib = named("liblib") // liblib is already created by the module plugin
 
     val includeApi = create("includeApi") {
         description = "Jar-in-jar 'api' dependencies"
@@ -104,7 +100,7 @@ configurations {
 }
 
 dependencies {
-    testImplementation(project(":testcore"))
+    testImplementation(project(":testcore", configuration = "namedElements"))
 
     "devRuntime"(sourceSets.main.get().output)
     "devRuntime"(sourceSets.test.get().output)
@@ -212,6 +208,7 @@ val shadowJar = tasks.named<ShadowJar>("shadowJar") {
 
 val remapJar = tasks.named<RemapJarTask>("remapJar") {
     inputFile.set(shadowJar.map { it.archiveFile.get() })
+    dependsOn(shadowJar)
 }
 
 val shadowSources = tasks.register<ShadowSources>("shadowSources") {
@@ -317,6 +314,9 @@ val dokkaJar = tasks.register<Jar>("dokkaJar") {
 //region // Publishing
 
 artifacts {
+    configurations["namedElements"].artifacts.clear()
+    add("namedElements", shadowJar)
+
     add("publishedApi", remapJar) {
         builtBy(remapJar)
     }

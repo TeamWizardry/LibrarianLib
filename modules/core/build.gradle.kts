@@ -6,7 +6,7 @@ plugins {
 module {
     displayName = "Core"
     description = "Core classes used by the other LibrarianLib modules"
-    shadow("dev.thecodewarrior.mirror")
+    shadowPackages("dev.thecodewarrior.mirror")
 }
 
 configureFabricModJson {

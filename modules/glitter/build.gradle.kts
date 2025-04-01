@@ -5,7 +5,8 @@ plugins {
 module {
     displayName = "Glitter"
     description = "High-performance particle systems"
-    shadow("org.magicwerk.brownies")
+    shadowPackages("org.magicwerk.brownies")
+    moduleDependencies("core", "etcetera", "albedo")
 }
 
 configureFabricModJson {
@@ -22,8 +23,5 @@ configureFabricTestModJson {
 }
 
 dependencies {
-    liblib(project(":core"))
-    liblib(project(":etcetera"))
-    liblib(project(":albedo"))
     shade("org.magicwerk:brownies-collections:0.9.13")
 }

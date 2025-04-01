@@ -5,6 +5,7 @@ plugins {
 module {
     displayName = "${humanName}"
     description = "${description}"
+    moduleDependencies("core")
 }
 
 configureFabricModJson {
@@ -21,5 +22,4 @@ configureFabricTestModJson {
 }
 
 dependencies {
-    liblib(project(":core"))
 }

@@ -5,6 +5,7 @@ plugins {
 module {
     displayName = "Etcetera"
     description = "Minor utilities that don't warrant their own modules"
+    moduleDependencies("core")
 }
 
 configureFabricModJson {
@@ -21,5 +22,4 @@ configureFabricTestModJson {
 }
 
 dependencies {
-    liblib(project(":core"))
 }
