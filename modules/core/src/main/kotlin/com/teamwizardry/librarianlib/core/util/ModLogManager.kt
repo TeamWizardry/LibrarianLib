@@ -31,6 +31,11 @@ public class ModLogManager(private val modid: String, private val humanName: Str
             field = value
         }
 
+
+    init {
+        logger.info("Registered log manager: modid='{}' - debug {}", modid, if(debugEnabled) "enabled" else "disabled")
+    }
+
     /**
      * Loggers to update based on the debug flag.
      */
@@ -82,8 +87,17 @@ public class ModLogManager(private val modid: String, private val humanName: Str
 
         init {
             val rules = System.getProperty("librarianlib.logging.debug", "").split(",")
-            logger.info("Found ${rules.size} LibrarianLib debug logging rule${if(rules.size != 1) "s" else ""}: " +
-                    "[${rules.joinToString { "\"$it\"" }}]")
+                .filter { it.isNotBlank() }
+            if(rules.isEmpty()) {
+                logger.info(
+                    "Found no LibrarianLib debug logging rules. Add `-Dlibrarianlib.logging.debug=modid,anothermodid` " +
+                            "to enable debug logging")
+            } else {
+                logger.info(
+                    "Found ${rules.size} LibrarianLib debug logging rule${if (rules.size != 1) "s" else ""}: " +
+                            "[${rules.joinToString { "\"$it\"" }}]"
+                )
+            }
             debugPatterns = rules.map { glob ->
                 Regex.escape(glob.replace("*", "\uE000"))
                     .replace("\uE000", "\\E.*\\Q")
