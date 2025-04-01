@@ -241,6 +241,7 @@ val remapTestJar = tasks.register<RemapJarTask>("remapTestJar") {
     archiveClassifier.set("tests")
     inputFile.set(shadowTestJar.map { it.archiveFile.get() })
     addNestedDependencies = false
+    classpath.from(sourceSets.test.get().compileClasspath)
     dependsOn(shadowTestJar)
 }
 
