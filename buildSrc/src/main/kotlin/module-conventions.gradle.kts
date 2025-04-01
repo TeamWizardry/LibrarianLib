@@ -1,14 +1,7 @@
 @file:Suppress("PublicApiImplicitType", "UnstableApiUsage")
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import groovy.util.NodeList
 import net.fabricmc.loom.task.RemapJarTask
-import net.fabricmc.loom.task.RemapSourcesJarTask
-import org.jetbrains.dokka.DokkaVersion
-import org.jetbrains.dokka.gradle.DokkaMultiModuleFileLayout
-import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
-import org.jetbrains.dokka.gradle.AbstractDokkaTask
-import org.jetbrains.dokka.gradle.DokkaTaskPartial
 
 plugins {
     id("java-library")
@@ -16,7 +9,6 @@ plugins {
     id("minecraft-conventions")
     id("publish-conventions")
     id("com.gradleup.shadow")
-    id("org.jetbrains.dokka")
 }
 
 apply<LibLibModulePlugin>()
@@ -253,84 +245,16 @@ tasks.named("assemble") {
 // ---------------------------------------------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------------------------------------------
-//region // Documentation
-
-// the default layout shits itself when you use anything other than a descendent of this project
-object ModuleLayout : DokkaMultiModuleFileLayout {
-    override fun targetChildOutputDirectory(parent: DokkaMultiModuleTask, child: AbstractDokkaTask): Provider<Directory> {
-        return parent.outputDirectory.map { it.dir("modules/${child.project.name}") }
-    }
-}
-
-val dokkaPartialHtml = tasks.register<DokkaTaskPartial>("dokkaPartialHtml") {
-    group = "Documentation"
-    description = "Generates partial documentation to be merged by 'dokkaMergedHtml'"
-    outputDirectory.set(file("$buildDir/dokka/partial"))
-    dependsOn(tasks.named("compileJava"))
-    dependsOn(tasks.named("compileKotlin"))
-}
-
-val dokkaMergedHtml = tasks.register<DokkaMultiModuleTask>("dokkaMergedHtml") {
-    group = "Documentation"
-    description = "Merges the partial documentation from this module and all its dependencies"
-
-    dependencies {
-        "dokkaMergedHtmlPlugin"("org.jetbrains.dokka:all-modules-page-plugin:${DokkaVersion.version}")
-    }
-
-    fileLayout.set(ModuleLayout)
-    outputDirectory.set(file("$buildDir/dokka/merged"))
-
-    dependsOn("dokkaPartialHtml")
-    addChildTask("dokkaPartialHtml")
-    module.moduleInfo.allDependencies {
-        dependsOn("${it.path}:dokkaPartialHtml")
-        addChildTask("${it.path}:dokkaPartialHtml")
-    }
-
-}
-
-val styledDokkaDir = file("$buildDir/dokka/styled")
-val styledDokkaHtml = tasks.register<RestyleDokka>("styledDokkaHtml") {
-    group = "Documentation"
-    description = "Applies customizations and fixes Dokka's god-awful default styles"
-
-    dokkaTask.set(dokkaMergedHtml)
-    outputDir.set(styledDokkaDir)
-}
-
-val dokkaJar = tasks.register<Jar>("dokkaJar") {
-    group = "Documentation"
-    description = "Packages the styled Dokka HTML into a jar"
-    archiveClassifier.set("javadoc")
-
-    from(styledDokkaDir)
-    dependsOn(styledDokkaHtml)
-}
-
-//endregion // Documentation
-// ---------------------------------------------------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------------------------------------------------
 //region // Publishing
 
 artifacts {
     configurations["namedElements"].artifacts.clear()
     add("namedElements", shadowJar)
 
-    add("publishedApi", remapJar) {
-        builtBy(remapJar)
-    }
-    add("publishedRuntime", remapJar) {
-        builtBy(remapJar)
-    }
-    add("publishedSources", sourcesJar) {
-        builtBy(sourcesJar)
-    }
-    add("publishedJavadoc", dokkaJar)
-    add("testMod", remapTestJar) {
-        builtBy(remapTestJar)
-    }
+    add("publishedApi", remapJar)
+    add("publishedRuntime", remapJar)
+    add("publishedSources", sourcesJar)
+    add("testMod", remapTestJar)
 }
 
 publishing.publications.named<MavenPublication>("maven") {

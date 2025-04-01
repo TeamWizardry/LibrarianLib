@@ -19,7 +19,6 @@ typealias ModPublishingExtension = com.teamwizardry.gradle.publish.ModPublishing
 typealias GenerateFabricModJson = com.teamwizardry.gradle.task.GenerateFabricModJson
 typealias ShadowSources = com.teamwizardry.gradle.task.ShadowSources
 typealias CopyFreemarker = com.teamwizardry.gradle.task.CopyFreemarker
-typealias RestyleDokka = com.teamwizardry.gradle.task.RestyleDokka
 typealias ReplaceTextInPlace = com.teamwizardry.gradle.task.ReplaceTextInPlace
 
 
