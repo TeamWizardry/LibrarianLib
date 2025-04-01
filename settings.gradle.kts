@@ -7,13 +7,13 @@ fun includeModule(name: String) {
 
 includeModule("albedo")
 includeModule("core")
-includeModule("courier")
+//includeModule("courier")
 includeModule("etcetera")
-includeModule("facade")
-//includeModule("foundation")
+//includeModule("facade")
+////includeModule("foundation")
 includeModule("glitter")
-includeModule("mosaic")
-includeModule("scribe")
+//includeModule("mosaic")
+//includeModule("scribe")
 includeModule("testcore")
 
 include("runtime")
