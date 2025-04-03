@@ -1,7 +1,6 @@
 package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.math.Matrix4d
-import net.minecraft.client.render.RenderLayer
 import net.minecraft.util.Identifier
 import java.awt.Color
 

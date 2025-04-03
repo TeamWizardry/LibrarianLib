@@ -1,17 +1,11 @@
 package com.teamwizardry.librarianlib.mosaic
 
-import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
-import net.minecraft.client.render.RenderPhase
-import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.VertexFormats
 import net.minecraft.util.Identifier
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.image.BufferedImage
-import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
 /**

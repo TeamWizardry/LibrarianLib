@@ -1,15 +1,8 @@
 package com.teamwizardry.librarianlib.mosaic
 
 import com.teamwizardry.librarianlib.albedo.base.buffer.FlatTextureRenderBuffer
-import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
-import com.teamwizardry.librarianlib.albedo.state.RenderState
-import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.kotlin.color
-import com.teamwizardry.librarianlib.core.util.kotlin.texture
-import com.teamwizardry.librarianlib.core.util.kotlin.vertex2d
 import com.teamwizardry.librarianlib.math.Matrix4d
-import net.minecraft.client.render.VertexConsumer
 import java.awt.Color
 
 internal object SpriteRenderer {

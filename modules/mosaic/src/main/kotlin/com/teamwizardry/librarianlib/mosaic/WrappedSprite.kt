@@ -1,12 +1,7 @@
 package com.teamwizardry.librarianlib.mosaic
 
-import com.teamwizardry.librarianlib.core.rendering.DefaultRenderPhases
 import com.teamwizardry.librarianlib.math.Matrix4d
-import net.minecraft.client.render.RenderPhase
-import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.VertexFormats
 import net.minecraft.util.Identifier
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 public abstract class WrappedSprite: Sprite {
@@ -17,7 +12,7 @@ public abstract class WrappedSprite: Sprite {
     override fun maxU(animFrames: Int): Float = wrapped?.maxU(animFrames) ?: 1f
     override fun maxV(animFrames: Int): Float = wrapped?.maxV(animFrames) ?: 1f
 
-    override val texture: Identifier get() = wrapped?.texture ?: Identifier("missingno")
+    override val texture: Identifier get() = wrapped?.texture ?: Identifier.of("missingno")
     override val width: Int get() = wrapped?.width ?: 1
     override val height: Int get() = wrapped?.height ?: 1
     override val uSize: Float get() = wrapped?.uSize ?: 1f

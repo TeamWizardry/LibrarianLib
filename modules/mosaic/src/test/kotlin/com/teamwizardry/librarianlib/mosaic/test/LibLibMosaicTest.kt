@@ -56,7 +56,7 @@ internal object LibLibMosaicTest {
             manager.named<TestItem>("no_mcmeta") {
                 rightClick.client {
                     Client.minecraft.setScreen(TestScreen {
-                        val tex = Mosaic(Identifier("liblib-mosaic-test:textures/gui/no_mcmeta.png"), 32, 32)
+                        val tex = Mosaic(Identifier.of("liblib-mosaic-test:textures/gui/no_mcmeta.png"), 32, 32)
                         val sprite = tex.getSprite("")
 
                         size = vec(32, 32)
@@ -72,7 +72,7 @@ internal object LibLibMosaicTest {
             manager.named<TestItem>("two_sprites") {
                 rightClick.client {
                     Client.minecraft.setScreen(TestScreen {
-                        val tex = Mosaic(Identifier("liblib-mosaic-test:textures/gui/two_sprites.png"), 64, 64)
+                        val tex = Mosaic(Identifier.of("liblib-mosaic-test:textures/gui/two_sprites.png"), 64, 64)
                         val topLeftSprite = tex.getSprite("top_left")
                         val bottomRightSprite = tex.getSprite("bottom_right")
 
@@ -91,7 +91,7 @@ internal object LibLibMosaicTest {
             manager.named<TestItem>("sprite_pinning") {
                 rightClick.client {
                     Client.minecraft.setScreen(TestScreen {
-                        val tex = Mosaic(Identifier("liblib-mosaic-test:textures/gui/edge_pinning.png"), 128, 128)
+                        val tex = Mosaic(Identifier.of("liblib-mosaic-test:textures/gui/edge_pinning.png"), 128, 128)
                         val background = tex.getSprite("bg")
 
                         size = vec(background.width, background.height)
@@ -133,7 +133,7 @@ internal object LibLibMosaicTest {
             manager.named<TestItem>("sprite_caps") {
                 rightClick.client {
                     Client.minecraft.setScreen(TestScreen {
-                        val tex = Mosaic(Identifier("liblib-mosaic-test:textures/gui/sprite_caps.png"), 256, 128)
+                        val tex = Mosaic(Identifier.of("liblib-mosaic-test:textures/gui/sprite_caps.png"), 256, 128)
                         val background = tex.getSprite("background")
 
                         size = vec(background.width, background.height)
@@ -191,7 +191,7 @@ internal object LibLibMosaicTest {
             manager.named<TestItem>("sprite_animation") {
                 rightClick.client {
                     Client.minecraft.setScreen(TestScreen {
-                        val tex = Mosaic(Identifier("liblib-mosaic-test:textures/gui/sprite_animations.png"), 128, 256)
+                        val tex = Mosaic(Identifier.of("liblib-mosaic-test:textures/gui/sprite_animations.png"), 128, 256)
                         val background = tex.getSprite("background")
 
                         size = vec(background.width, background.height)

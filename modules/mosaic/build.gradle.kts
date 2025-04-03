@@ -5,6 +5,7 @@ plugins {
 module {
     displayName = "Mosaic"
     description = "Data-driven spritesheets, designed for Facade"
+    moduleDependencies("core", "albedo")
 }
 
 configureFabricModJson {
@@ -21,6 +22,4 @@ configureFabricTestModJson {
 }
 
 dependencies {
-    liblib(project(":core"))
-    liblib(project(":albedo"))
 }

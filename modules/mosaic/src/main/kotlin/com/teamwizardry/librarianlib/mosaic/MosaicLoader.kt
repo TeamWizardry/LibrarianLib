@@ -21,10 +21,11 @@ import java.io.IOException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import javax.imageio.ImageIO
+import kotlin.jvm.optionals.getOrNull
 
 internal object MosaicLoader : SimpleResourceReloadListener<Map<Identifier, MosaicDefinition?>> {
     private var definitions: MutableMap<Identifier, MosaicDefinition?> = mutableMapOf()
-    private var missingno = Identifier("liblib-mosaic:textures/missingno.png")
+    private var missingno = Identifier.of("liblib-mosaic:textures/missingno.png")
 
     val missingnoSheet: MosaicDefinition get() = getDefinition(missingno)
     val missingnoSprite: SpriteDefinition get() = getDefinition(missingno).sprites[0]
@@ -39,7 +40,7 @@ internal object MosaicLoader : SimpleResourceReloadListener<Map<Identifier, Mosa
         return def ?: getDefinition(missingno)
     }
 
-    override fun getFabricId(): Identifier = Identifier("liblib-mosaic:loader")
+    override fun getFabricId(): Identifier = Identifier.of("liblib-mosaic:loader")
 
     override fun load(
         manager: ResourceManager,
@@ -85,23 +86,15 @@ internal object MosaicLoader : SimpleResourceReloadListener<Map<Identifier, Mosa
 
     private fun load(manager: ResourceManager, location: Identifier): MosaicDefinition? {
         val resource = try {
-             manager.getResource(location)
+             manager.getResourceOrThrow(location)
         } catch (exception: IOException) {
             logger.error("Error loading sprite sheet '$location'", exception)
             return null
         }
 
-        val (json, image) = resource.use {
-            val image = ImageIO.read(resource.inputStream)
-            return@use Pair(
-                resource.getMetadata(MosaicMetadataReader),
-                image
-            )
-        }
-
-        if(json == null) {
-            return loadRaw(location, resource, image)
-        }
+        val image = resource.inputStream.use { ImageIO.read(it) }
+        val json = resource.getMetadata().decode(MosaicMetadataReader).getOrNull()
+            ?: return loadRaw(location, resource, image)
 
         val sheet = MosaicDefinition(location)
 
@@ -184,7 +177,7 @@ internal object MosaicLoader : SimpleResourceReloadListener<Map<Identifier, Mosa
         val sheet = MosaicDefinition(location)
         sheet.singleSprite = true
 
-        val animation = resource.getMetadata(AnimationResourceMetadata.READER)
+        val animation = resource.getMetadata().decode(AnimationResourceMetadata.READER).getOrNull()
 
         sheet.uvSize = ivec(image.width, image.height)
         sheet.image = image
@@ -202,7 +195,7 @@ internal object MosaicLoader : SimpleResourceReloadListener<Map<Identifier, Mosa
                 if(animation.shouldInterpolate()) {
                     logger.warn("Ignoring interpolation for raw animation of $location")
                 }
-                sprite.size = ivec(sheet.uvSize.x, sheet.uvSize.x * animation.getHeight(1) / animation.getWidth(1))
+                sprite.size = animation.getSize(image.width, image.height).let { ivec(it.width, it.height) }
                 val offset = ivec(0, sprite.size.y)
                 val frames = mutableListOf<Vec2i>()
                 animation.forEachFrame { index, frameTime ->

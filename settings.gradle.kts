@@ -12,7 +12,7 @@ includeModule("etcetera")
 //includeModule("facade")
 ////includeModule("foundation")
 includeModule("glitter")
-//includeModule("mosaic")
+includeModule("mosaic")
 //includeModule("scribe")
 includeModule("testcore")
 
