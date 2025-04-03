@@ -22,6 +22,8 @@ open class ModuleInfo(val name: String, private val ctx: DslContext) {
      */
     val allDependencies: LiveCollection<ModuleInfo> = LiveCollection(mutableSetOf())
 
+    val mavenName: String = name
+
     val modid: String = "liblib-$name"
 
     init {

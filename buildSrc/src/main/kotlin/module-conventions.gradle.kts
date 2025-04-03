@@ -2,12 +2,14 @@
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RemapJarTask
+import java.net.URI
 
 plugins {
     id("java-library")
+    id("maven-publish")
+    //id("signing")
     id("kotlin-conventions")
     id("minecraft-conventions")
-    id("publish-conventions")
     id("com.gradleup.shadow")
 }
 
@@ -16,15 +18,6 @@ val module = the<ModuleExtension>()
 
 group = "com.teamwizardry.librarianlib"
 version = commonConfig.version
-
-sourceSets {
-    main {
-        resources.srcDir("src/main/datagen")
-    }
-    test {
-        resources.srcDir("src/test/datagen")
-    }
-}
 
 configurations {
 
@@ -40,9 +33,23 @@ configurations {
 
         canBe(consumed = true, resolved = false)
     }
-    create("testMod") {
+    create("modJar") {
+        description = "The mod jar to be bundled into the final release jar"
+
+        canBe(consumed = true, resolved = false)
+    }
+    create("testModJar") {
         description = "The test mod to be bundled in for testing outside the dev environment"
 
+        canBe(consumed = true, resolved = false)
+    }
+    create("publishedApi") {
+        canBe(consumed = true, resolved = false)
+    }
+    create("publishedRuntime") {
+        canBe(consumed = true, resolved = false)
+    }
+    create("publishedSources") {
         canBe(consumed = true, resolved = false)
     }
 
@@ -70,12 +77,6 @@ configurations {
 
     named("api") {
         extendsFrom(liblib.get(), includeApi, shade)
-    }
-    named("publishedApi") {
-        extendsFrom(liblib.get(), includeApi)
-    }
-    named("publishedRuntime") {
-        extendsFrom(includeApi, includeImplementation)
     }
     named("include") {
         extendsFrom(includeApi, includeImplementation)
@@ -118,9 +119,7 @@ loom {
 
 val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod") {
     outputRoot.set(generated.resolve("resources"))
-}
 
-configureFabricModJson {
     id.set(module.moduleInfo.modid)
     version.set(commonConfig.version)
 
@@ -241,25 +240,145 @@ tasks.named("assemble") {
     dependsOn(remapTestJar)
 }
 
-//endregion // Build configuration
-// ---------------------------------------------------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------------------------------------------------
-//region // Publishing
-
 artifacts {
     configurations["namedElements"].artifacts.clear()
     add("namedElements", shadowJar)
-
-    add("publishedApi", remapJar)
-    add("publishedRuntime", remapJar)
-    add("publishedSources", sourcesJar)
-    add("testMod", remapTestJar)
+    add("modJar", remapJar)
+    add("testModJar", remapTestJar)
 }
 
-publishing.publications.named<MavenPublication>("maven") {
-    artifactId = module.name
-}
-
-//endregion // Publishing
+//endregion // Build configuration
 // ---------------------------------------------------------------------------------------------------------------------
+
+/* region == Publishing == */
+
+if (project.name != "testcore") {
+    artifacts {
+        add("publishedApi", remapJar)
+        add("publishedRuntime", remapJar)
+        add("publishedSources", sourcesJar)
+    }
+
+    module.component.addVariantsFromConfiguration(configurations["publishedApi"]) {
+        mapToMavenScope("compile")
+    }
+    module.component.addVariantsFromConfiguration(configurations["publishedRuntime"]) {
+        mapToMavenScope("runtime")
+    }
+    module.component.addVariantsFromConfiguration(configurations["publishedSources"]) {
+    }
+
+    publishing {
+        publications {
+            register<MavenPublication>("maven") {
+                groupId = commonConfig.mavenGroup
+                artifactId = module.name
+                version = commonConfig.version
+
+                from(module.component)
+
+                pom {
+                    name.set(project.property("maven_name") as String)
+                    description.set(project.property("maven_description") as String)
+                    url.set("https://github.com/TeamWizardry/LibrarianLib")
+
+                    licenses {
+                        license {
+                            name.set("LGPL-3.0")
+                            url.set("https://opensource.org/licenses/LGPL-3.0")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("thecodewarrior")
+                            name.set("Kate Corcoran")
+                            email.set("code@thecodewarrior.dev")
+                            url.set("https://thecodewarrior.dev")
+                        }
+
+                        developer {
+                            id.set("librarianlib-contributors")
+                            name.set("LibrarianLib Contributors")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:https://github.com/TeamWizardry/LibrarianLib.git")
+                        developerConnection.set("scm:git:ssh://github.com:TeamWizardry/LibrarianLib.git")
+                        url.set("https://github.com/TeamWizardry/LibrarianLib")
+                    }
+                    withXml {
+                        val depsNode = asNode().appendNode("dependencies")
+
+                        fun addDependencyNode(groupId: String, artifactId: String, version: String, scope: String) {
+                            val depNode = depsNode.appendNode("dependency")
+                            depNode.appendNode("groupId", groupId)
+                            depNode.appendNode("artifactId", artifactId)
+                            depNode.appendNode("version", version)
+                            depNode.appendNode("scope", scope)
+                        }
+
+                        for (dep in module.moduleInfo.dependencies) {
+                            addDependencyNode(commonConfig.mavenGroup, dep.mavenName, commonConfig.version, "compile")
+                        }
+
+                        addDependencyNode(
+                            "net.fabricmc.fabric-api",
+                            "fabric-api",
+                            "[${project.property("fabric_version")},)",
+                            "compile"
+                        )
+                        addDependencyNode(
+                            "net.fabricmc",
+                            "fabric-language-kotlin",
+                            "[${project.property("fabric_kotlin_version")},)",
+                            "compile"
+                        )
+                        addDependencyNode(
+                            "net.fabricmc",
+                            "fabric-loader",
+                            "[${project.property("loader_version")},)",
+                            "runtime"
+                        )
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "ossrh"
+
+                val stagingRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                val snapshotRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                url = URI(if (commonConfig.version.endsWith("SNAPSHOT")) snapshotRepo else stagingRepo)
+                credentials {
+                    username =
+                        project.findProperty("ossrhUsername") as String? ?: System.getenv("OSSRH_USERNAME") ?: "N/A"
+                    password =
+                        project.findProperty("ossrhPassword") as String? ?: System.getenv("OSSRH_PASSWORD") ?: "N/A"
+                }
+            }
+        }
+    }
+
+//    signing {
+//        if (System.getenv("SIGNING_KEY") != null) {
+//            useInMemoryPgpKeys(
+//                System.getenv("SIGNING_KEY_ID"),
+//                System.getenv("SIGNING_KEY"),
+//                System.getenv("SIGNING_KEY_PASSWORD")
+//            )
+//        } else {
+//            useGpgCmd()
+//        }
+//
+//        sign(publishing.publications["maven"])
+//    }
+
+    // disable publishing gradle module metadata
+    tasks.withType<GenerateModuleMetadata> {
+        enabled = false
+    }
+}
+
+/* endregion == Publishing == */

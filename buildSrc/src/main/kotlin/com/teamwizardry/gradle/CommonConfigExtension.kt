@@ -6,6 +6,7 @@ import com.teamwizardry.gradle.module.ShadowRule
 import org.gradle.api.provider.Property
 
 open class CommonConfigExtension(private val ctx: DslContext) {
+    val mavenGroup = "com.teamwizardry.librarianlib"
     var version: String = "?"
     val modules: NamedDomainObjectContainer<ModuleInfo> = ctx.domainObjectContainer { ModuleInfo(it, ctx) }
 

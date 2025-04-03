@@ -11,7 +11,6 @@ import java.util.jar.Manifest
 
 plugins {
     `java-library`
-    `publish-conventions`
     id("com.modrinth.minotaur") version "1.2.1"
     id("com.matthewprenger.cursegradle") version "1.4.0"
 }
@@ -32,11 +31,11 @@ version = commonConfig.version
 dependencies {
     commonConfig.modules.forEach {
         if (it.name == "testcore") {
-            "includeTest"(project(it.path, configuration = "publishedApi"))
+            "includeTest"(project(it.path, configuration = "modJar"))
         } else {
-            "include"(project(it.path, configuration = "publishedApi"))
+            "include"(project(it.path, configuration = "modJar"))
         }
-        "includeTest"(project(it.path, configuration = "testMod"))
+        "includeTest"(project(it.path, configuration = "testModJar"))
     }
 }
 
@@ -113,18 +112,6 @@ val jar = tasks.named<Jar>("jar") {
     }
 }
 
-val sourcesJar = tasks.register<Jar>("sourcesJar") {
-    archiveBaseName.set("librarianlib")
-    archiveClassifier.set("sources")
-    from(file("no_sources.txt"))
-}
-
-val javadocJar = tasks.register<Jar>("javadocJar") {
-    archiveBaseName.set("librarianlib")
-    archiveClassifier.set("javadoc")
-    from(file("no_javadoc.txt"))
-}
-
 val testJar = tasks.register<Jar>("testJar") {
     archiveBaseName.set("librarianlib-test")
     from(sourceSets.test.get().output)
@@ -135,17 +122,6 @@ val testJar = tasks.register<Jar>("testJar") {
 
 tasks.named("assemble") {
     dependsOn(testJar)
-}
-
-artifacts {
-    add("publishedApi", jar)
-    add("publishedRuntime", jar)
-    add("publishedSources", sourcesJar)
-    add("publishedJavadoc", javadocJar)
-}
-
-publishing.publications.named<MavenPublication>("maven") {
-    artifactId = "librarianlib"
 }
 
 curseforge {
