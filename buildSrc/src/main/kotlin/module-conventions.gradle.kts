@@ -43,13 +43,9 @@ configurations {
 
         canBe(consumed = true, resolved = false)
     }
-    create("publishedApi") {
-        canBe(consumed = true, resolved = false)
-    }
-    create("publishedRuntime") {
-        canBe(consumed = true, resolved = false)
-    }
-    create("publishedSources") {
+    create("sourcesJar") {
+        description = "The remapped and shadowed sources of the main mod"
+
         canBe(consumed = true, resolved = false)
     }
 
@@ -60,8 +56,6 @@ configurations {
 
         canBe(consumed = false, resolved = true)
     }
-
-    val liblib = named("liblib") // liblib is already created by the module plugin
 
     val includeApi = create("includeApi") {
         description = "Jar-in-jar 'api' dependencies"
@@ -76,7 +70,7 @@ configurations {
     }
 
     named("api") {
-        extendsFrom(liblib.get(), includeApi, shade)
+        extendsFrom(includeApi, shade)
     }
     named("include") {
         extendsFrom(includeApi, includeImplementation)
@@ -245,6 +239,7 @@ artifacts {
     add("namedElements", shadowJar)
     add("modJar", remapJar)
     add("testModJar", remapTestJar)
+    add("sourcesJar", sourcesJar)
 }
 
 //endregion // Build configuration
@@ -253,19 +248,13 @@ artifacts {
 /* region == Publishing == */
 
 if (project.name != "testcore") {
-    artifacts {
-        add("publishedApi", remapJar)
-        add("publishedRuntime", remapJar)
-        add("publishedSources", sourcesJar)
-    }
-
-    module.component.addVariantsFromConfiguration(configurations["publishedApi"]) {
+    module.component.addVariantsFromConfiguration(configurations["modJar"]) {
         mapToMavenScope("compile")
     }
-    module.component.addVariantsFromConfiguration(configurations["publishedRuntime"]) {
+    module.component.addVariantsFromConfiguration(configurations["modJar"]) {
         mapToMavenScope("runtime")
     }
-    module.component.addVariantsFromConfiguration(configurations["publishedSources"]) {
+    module.component.addVariantsFromConfiguration(configurations["sourcesJar"]) {
     }
 
     publishing {

@@ -40,20 +40,11 @@ open class ModuleExtension(private val ctx: DslContext) {
     fun moduleDependencies(vararg modules: String) {
         ctx.project.dependencies {
             for (module in modules) {
-                "liblib"(project(":${module}", configuration = "namedElements"))
+                "api"(project(":${module}", configuration = "namedElements"))
             }
         }
         for (module in modules) {
             moduleInfo.dependencies.add(commonConfig.modules[module])
-        }
-    }
-
-    init {
-        ctx.project.configurations.register("liblib") {
-            description = "Inter-module dependencies"
-
-            isCanBeConsumed = false
-            isCanBeResolved = false
         }
     }
 }
