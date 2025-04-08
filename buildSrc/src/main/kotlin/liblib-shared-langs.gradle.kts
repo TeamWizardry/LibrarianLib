@@ -1,12 +1,11 @@
-import gradle.kotlin.dsl.accessors._3ad33576735bd3c2f3bc8765e93a6b18.main
-import gradle.kotlin.dsl.accessors._3ad33576735bd3c2f3bc8765e93a6b18.sourceSets
-import gradle.kotlin.dsl.accessors._3ad33576735bd3c2f3bc8765e93a6b18.test
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("java")
-    id("kotlin")
+    kotlin("jvm")
 }
 
 java {
@@ -28,21 +27,22 @@ configure<KotlinProjectExtension> {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        // because for some unknown reason, unless instructed otherwise, IDEA decides the API should be Kotlin 1.4
-        languageVersion = "2.1"
-        apiVersion = "2.1"
+    compilerOptions {
+        languageVersion.set(KotlinVersion.KOTLIN_2_0)
+        apiVersion.set(KotlinVersion.KOTLIN_2_0)
 
-        jvmTarget = "21"
+        jvmTarget.set(JvmTarget.JVM_21)
         javaParameters = true
-        freeCompilerArgs = freeCompilerArgs + listOf(
-            "-Xjvm-default=all",
-            "-Xopt-in=kotlin.ExperimentalStdlibApi,kotlin.ExperimentalUnsignedTypes,kotlin.contracts.ExperimentalContracts",
-            "-Xinline-classes"
+        optIn.addAll(
+            "kotlin.ExperimentalStdlibApi",
+            "kotlin.ExperimentalUnsignedTypes",
+            "kotlin.contracts.ExperimentalContracts",
+        )
+        freeCompilerArgs.addAll(
+            "-Xjvm-default=all"
         )
     }
 }
-
 
 sourceSets {
     main {

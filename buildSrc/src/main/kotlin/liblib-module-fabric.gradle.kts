@@ -1,6 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import gradle.kotlin.dsl.accessors._3ad33576735bd3c2f3bc8765e93a6b18.loom
-import gradle.kotlin.dsl.accessors._4de04f4b3632630c81118a4b7cd8ba4d.api
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.kotlin.dsl.named
 
@@ -33,10 +31,13 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.property("fabric_api_version")}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${rootProject.property("fabric_kotlin_version")}")
 
-    api(project(path = module.commonPath, configuration = "namedElements"))// { isTransitive = false }
+    api(project(path = module.commonPath, configuration = "namedElements"))
     module.dependencies {
         api(project(it.fabricPath, configuration = "namedElements"))
     }
+
+    modApi(project(path = module.path, configuration = "includeFabric"))
+    include(project(path = module.path, configuration = "includeFabric"))
 
     "shadowBundle"(project(path = module.commonPath, configuration = "transformProductionFabric"))
     "shadowBundle"(project(path = module.path, configuration = "shade"))

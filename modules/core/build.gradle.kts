@@ -1,4 +1,3 @@
-
 plugins {
     `liblib-module-root`
 }
