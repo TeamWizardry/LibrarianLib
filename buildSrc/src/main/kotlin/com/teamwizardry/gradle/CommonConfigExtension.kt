@@ -8,7 +8,8 @@ import org.gradle.api.provider.Property
 open class CommonConfigExtension(private val ctx: DslContext) {
     val mavenGroup = "com.teamwizardry.librarianlib"
     var version: String = "?"
-    val modules: NamedDomainObjectContainer<ModuleInfo> = ctx.domainObjectContainer { ModuleInfo(it, ctx) }
+    var platforms = listOf<String>()
+    val modules: NamedDomainObjectContainer<ModuleInfo> = ctx.domainObjectContainer { ModuleInfo(it) }
 
     private val shadowRuleListeners = mutableListOf<(ShadowRule) -> Unit>()
     private val _shadowRules = mutableListOf<ShadowRule>()

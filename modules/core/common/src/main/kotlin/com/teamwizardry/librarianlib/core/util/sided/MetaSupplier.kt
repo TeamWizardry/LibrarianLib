@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.core.util.sided
 
+/*
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 
@@ -26,3 +27,4 @@ public fun interface ServerMetaSupplier<T: ServerSideFunction> {
     @Environment(EnvType.SERVER)
     public fun getServerFunction(): T
 }
+*/

@@ -4,10 +4,7 @@ import com.teamwizardry.gradle.util.DslContext
 import com.teamwizardry.gradle.ModuleInfo
 import com.teamwizardry.gradle.CommonConfigExtension
 import org.gradle.api.component.AdhocComponentWithVariants
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.project
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.*
 
 /**
  * Currently, the module defines:
@@ -17,7 +14,7 @@ import org.gradle.kotlin.dsl.the
  *   as well as notify any existing listeners of the new rule)
  */
 open class ModuleExtension(private val ctx: DslContext) {
-    private val commonConfig = ctx.project.rootProject.the<CommonConfigExtension>()
+    private val commonConfig = ctx.project.rootProject.extensions.getByType<CommonConfigExtension>()
 
     val name: String = ctx.project.name
     val moduleInfo: ModuleInfo = commonConfig.modules[name]
@@ -26,6 +23,24 @@ open class ModuleExtension(private val ctx: DslContext) {
 
     var displayName: String = ""
     var description: String = ""
+
+    val path get() = moduleInfo.path
+    val commonPath get() = moduleInfo.commonPath
+    val fabricPath get() = moduleInfo.fabricPath
+    val testModPath get() = moduleInfo.testModPath
+
+    /**
+     * The direct dependencies of this module
+     */
+    val dependencies get() = moduleInfo.dependencies
+
+    /**
+     * The direct and transitive dependencies of this module
+     */
+    val allDependencies get() = moduleInfo.allDependencies
+
+    val modName: String
+        get() = "LibrarianLib: $displayName"
 
     /**
      * Adds a shadow rule. The passed package will be relocated under the `ll` package.
@@ -38,11 +53,6 @@ open class ModuleExtension(private val ctx: DslContext) {
      * Adds dependencies on the given liblib modules
      */
     fun moduleDependencies(vararg modules: String) {
-        ctx.project.dependencies {
-            for (module in modules) {
-                "api"(project(":${module}", configuration = "namedElements"))
-            }
-        }
         for (module in modules) {
             moduleInfo.dependencies.add(commonConfig.modules[module])
         }

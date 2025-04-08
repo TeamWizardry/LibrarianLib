@@ -2,25 +2,10 @@
 
 import java.util.*
 
-// loom expects the decompiler to be in the buildscript classpath. However, it seems that applying the plugin in
-// buildSrc scripts means loom isn't properly in the buildscript classpath.
-buildscript {
-    repositories {
-        maven {
-            name = "Fabric"
-            url = uri("https://maven.fabricmc.net/")
-        }
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    dependencies {
-        // update this to match version in buildSrc
-        classpath("net.fabricmc:fabric-loom:1.9.2")
-    }
-}
-
 plugins {
-    `minecraft-conventions`
+//    `minecraft-conventions`
+    `architectury-plugin`
+//    id("dev.architectury.loom") apply false
 }
 
 apply<CommonConfigPlugin>()
@@ -51,39 +36,43 @@ commonConfig {
     }
     val mod_version: String by project
     version = snapshotVersion ?: mod_version
+    platforms = listOf("fabric")
 
     modules {
-        subprojects.forEach {
-            if(it.name !in setOf("runtime", "dist"))
+        subprojects
+            .filter { it.path.lastIndexOf(':') == 0 } // only root level subprojects
+            .filter { it.name !in setOf("runtime", "dist") } // not runtime or dist
+            .forEach {
                 create(it.name)
-        }
+            }
     }
 }
 
-loom {
-    runConfigs.configureEach {
-        isIdeConfigGenerated = false
-    }
+architectury {
+    minecraft = project.property("minecraft_version") as String
+    compileOnly()
 }
 
 // genSources fails when multiple projects are present, since they all try to write to the same cache file.
 // this nonsense will make the tasks chain after each other, and ideally the ones later in the chain will just pass
 // through, since the root has already generated sources
-var previousPath = ""
-for (proj in subprojects) {
-    if (proj.name == "dist") continue
-    val taskPath = previousPath
-    previousPath = proj.path
-    proj.tasks.configureEach {
-        if (name.startsWith("genSources")) {
-            mustRunAfter(taskPath + ":" + name)
-        }
-    }
-}
+//var previousPath: String? = null
+//for (proj in allprojects) {
+//    if (proj.name in listOf("common", "fabric", "neoforge", "testmod")) continue
+//    val depPath = previousPath
+//    previousPath = proj.path
+//    if(depPath != null) {
+//        proj.tasks.configureEach {
+//            if (name.startsWith("genSources")) {
+//                mustRunAfter("$depPath:$name")
+//            }
+//        }
+//    }
+//}
 
 // ---------------------------------------------------------------------------------------------------------------------
 //region // Utilities
-
+/*
 open class CreateModule: CopyFreemarker() {
     @Option(option = "name", description = "The name of the module in Title Case. e.g. 'Cool Thing'. " +
             "The PascalCase and lowercase names will be inferred from this")
@@ -159,6 +148,6 @@ val updateReadmeVersions = tasks.register<ReplaceTextInPlace>("updateReadmeVersi
         }
     }
 }
-
+*/
 //endregion // Utilities
 // ---------------------------------------------------------------------------------------------------------------------

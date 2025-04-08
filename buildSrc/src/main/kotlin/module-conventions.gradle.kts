@@ -10,11 +10,11 @@ plugins {
     //id("signing")
     id("kotlin-conventions")
     id("minecraft-conventions")
-    id("com.gradleup.shadow")
+    id("com.github.johnrengelman.shadow")
 }
 
 apply<LibLibModulePlugin>()
-val module = the<ModuleExtension>()
+val module = extensions.getByType<ModuleExtension>()
 
 group = "com.teamwizardry.librarianlib"
 version = commonConfig.version
@@ -313,7 +313,7 @@ if (project.name != "testcore") {
                         addDependencyNode(
                             "net.fabricmc.fabric-api",
                             "fabric-api",
-                            "[${project.property("fabric_version")},)",
+                            "[${project.property("fabric_api_version")},)",
                             "compile"
                         )
                         addDependencyNode(

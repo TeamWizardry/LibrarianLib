@@ -8,6 +8,7 @@ import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.the
+import java.io.File
 
 typealias CommonConfigPlugin = com.teamwizardry.gradle.CommonConfigPlugin
 typealias CommonConfigExtension = com.teamwizardry.gradle.CommonConfigExtension
@@ -47,6 +48,8 @@ fun Project.configureFabricModJson(block: GenerateFabricModJson.() -> Unit) {
 fun Project.configureFabricTestModJson(block: GenerateFabricModJson.() -> Unit) {
     this.tasks.named("generateFabricTestMod", block)
 }
+
+val Project.generatedResourcesDir get() = this.layout.buildDirectory.dir("generated/main/resources")
 
 @Suppress("UNCHECKED_CAST")
 fun <T : ModuleDependency> T.excludeKotlin(): T =
