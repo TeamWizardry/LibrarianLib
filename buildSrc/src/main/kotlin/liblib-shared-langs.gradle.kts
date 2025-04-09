@@ -2,10 +2,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.google.devtools.ksp.KspExperimental
 
 plugins {
     id("java")
     kotlin("jvm")
+    id("com.google.devtools.ksp")
 }
 
 java {
@@ -48,4 +50,15 @@ sourceSets {
     main {
         resources.srcDir(generatedResourcesDir)
     }
+}
+
+ksp {
+    @OptIn(KspExperimental::class)
+    useKsp2.set(true)
+}
+
+dependencies {
+    "ksp"("dev.zacsweers.autoservice:auto-service-ksp:1.2.0")
+    implementation("com.google.auto.service:auto-service-annotations:1.1.0")
+    implementation(kotlin("reflect"))
 }

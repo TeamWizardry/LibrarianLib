@@ -1,4 +1,3 @@
-import gradle.kotlin.dsl.accessors._3ad33576735bd3c2f3bc8765e93a6b18.loom
 import org.gradle.kotlin.dsl.getByType
 
 plugins {

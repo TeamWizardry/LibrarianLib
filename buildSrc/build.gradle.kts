@@ -5,11 +5,11 @@ plugins {
 }
 
 repositories {
+    mavenCentral()
+    gradlePluginPortal()
     maven { url = uri("https://maven.fabricmc.net/") }
     maven { url = uri("https://maven.architectury.dev/") }
     maven { url = uri("https://files.minecraftforge.net/maven/") }
-    mavenCentral()
-    gradlePluginPortal()
 }
 
 val gradle_kotlin_version: String by project
@@ -21,8 +21,9 @@ dependencies {
     implementation("architectury-plugin:architectury-plugin.gradle.plugin:3.4.161")
 
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$gradle_kotlin_version")
-//    implementation("net.fabricmc:fabric-loom:1.9.2") // update root buildscript block when changing this
-//    implementation("com.gradleup.shadow:shadow-gradle-plugin:9.0.0-beta11")
+    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:2.0.21-1.0.28")
+    // only required so we can import `KspExperimental` for `@OptIn(KspExperimental::class)`
+    implementation("com.google.devtools.ksp:symbol-processing-api:2.0.21-1.0.28")
     implementation("gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0")
     implementation("org.freemarker:freemarker:2.3.31")
 }
