@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.kotlin.dsl.named
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 plugins {
     id("liblib-shared-langs")
@@ -9,6 +10,10 @@ plugins {
 }
 
 val module = parent!!.extensions.getByType<ModuleExtension>()
+
+configure<KotlinProjectExtension> {
+    explicitApi()
+}
 
 architectury {
     fabric()
@@ -41,6 +46,7 @@ dependencies {
 
     "shadowBundle"(project(path = module.commonPath, configuration = "transformProductionFabric"))
     "shadowBundle"(project(path = module.path, configuration = "shade"))
+    "shadowBundle"(project(path = module.path, configuration = "transitiveShade"))
 }
 
 val shadowJar = tasks.named<ShadowJar>("shadowJar") {

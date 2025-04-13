@@ -1,12 +1,8 @@
 package com.teamwizardry.librarianlib.testcore.content.utils
 
-import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.core.util.vec
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.item.ItemStack
-import net.minecraft.text.Style
 import net.minecraft.text.Text
 
 public open class TestScreen(public val config: TestScreenConfig): Screen(Text.literal(config.title)) {

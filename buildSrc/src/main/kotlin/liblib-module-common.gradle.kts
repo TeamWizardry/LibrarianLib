@@ -1,4 +1,5 @@
 import org.gradle.kotlin.dsl.getByType
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 plugins {
     id("liblib-shared-langs")
@@ -6,6 +7,10 @@ plugins {
 }
 
 val module = parent!!.extensions.getByType<ModuleExtension>()
+
+configure<KotlinProjectExtension> {
+    explicitApi()
+}
 
 architectury {
     common(commonConfig.platforms)
@@ -17,6 +22,7 @@ loom {
 
 dependencies {
     api(project(path = module.path, configuration = "shade"))
+    api(project(path = module.path, configuration = "transitiveShade"))
     module.dependencies {
         api(project(it.commonPath, configuration = "namedElements"))
     }

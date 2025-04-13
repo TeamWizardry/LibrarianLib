@@ -8,8 +8,14 @@ apply<LibLibModulePlugin>()
 val module = the<ModuleExtension>()
 
 configurations {
-    create("shade") {
+    val shade = create("shade") {
         description = "Dependencies to be shaded into the module"
+        isTransitive = false
+        canBe(consumed = true, resolved = false)
+    }
+    val transitiveShade = create("transitiveShade") {
+        description = "Dependencies to be shaded into the module"
+        isTransitive = true
         canBe(consumed = true, resolved = false)
     }
     create("includeFabric") {

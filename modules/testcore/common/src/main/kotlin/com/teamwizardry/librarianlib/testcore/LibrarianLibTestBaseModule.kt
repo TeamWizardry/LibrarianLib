@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.core.util.kotlin.synchronized
 //import com.teamwizardry.librarianlib.testbase.objects.TestEntityRenderer
 import com.teamwizardry.librarianlib.testcore.content.impl.TestItemImpl
 import com.teamwizardry.librarianlib.testcore.objects.UnitTestCommand
-import com.teamwizardry.librarianlib.testcore.junit.UnitTestSuite
+import com.teamwizardry.librarianlib.testcore.content.UnitTestSuite
 import net.minecraft.item.Item
 import net.minecraft.util.Identifier
 import net.minecraftforge.api.distmarker.Dist

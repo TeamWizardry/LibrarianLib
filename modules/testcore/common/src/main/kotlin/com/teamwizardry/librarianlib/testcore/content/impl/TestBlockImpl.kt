@@ -1,7 +1,7 @@
 package com.teamwizardry.librarianlib.testcore.content.impl
 
 import com.teamwizardry.librarianlib.core.util.kotlin.threadLocal
-import com.teamwizardry.librarianlib.testcore.content.TestBlock
+import com.teamwizardry.librarianlib.testcore.content.TestBlockConfig
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.FacingBlock
@@ -20,7 +20,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Direction
 import net.minecraft.world.*
 
-public open class TestBlockImpl(public val config: TestBlock): Block(config.also { configHolder = it }.properties) {
+public open class TestBlockImpl(public val config: TestBlockConfig): Block(config.also { configHolder = it }.properties) {
 
     init {
         if (config.directional) {
@@ -74,14 +74,14 @@ public open class TestBlockImpl(public val config: TestBlock): Block(config.also
         tool: ItemStack?
     ) {
         if (config.destroy.exists)
-            config.destroy.run(world.isClient, TestBlock.DestroyContext(state, world, pos, player))
+            config.destroy.run(world.isClient, TestBlockConfig.DestroyContext(state, world, pos, player))
         else
             super.afterBreak(world, player, pos, state, blockEntity, tool)
     }
 
     override fun onPlaced(worldIn: World, pos: BlockPos, state: BlockState, placer: LivingEntity?, stack: ItemStack) {
         if (placer is PlayerEntity)
-            config.place.run(worldIn.isClient, TestBlock.PlaceContext(state, worldIn, pos, placer, stack))
+            config.place.run(worldIn.isClient, TestBlockConfig.PlaceContext(state, worldIn, pos, placer, stack))
         else
             super.onPlaced(worldIn, pos, state, placer, stack)
     }
@@ -95,7 +95,7 @@ public open class TestBlockImpl(public val config: TestBlock): Block(config.also
         hand: Hand,
         hit: BlockHitResult
     ): ItemActionResult {
-        config.rightClick.run(world.isClient, TestBlock.RightClickContext(state, world, pos, player, hand, hit, stack))
+        config.rightClick.run(world.isClient, TestBlockConfig.RightClickContext(state, world, pos, player, hand, hit, stack))
         if (config.rightClick.exists)
             return ItemActionResult.CONSUME
         else
@@ -104,7 +104,7 @@ public open class TestBlockImpl(public val config: TestBlock): Block(config.also
 
     override fun onBlockBreakStart(state: BlockState, world: World, pos: BlockPos, player: PlayerEntity) {
         if (config.leftClick.exists)
-            config.leftClick.run(world.isClient, TestBlock.LeftClickContext(state, world, pos, player))
+            config.leftClick.run(world.isClient, TestBlockConfig.LeftClickContext(state, world, pos, player))
         else
             super.onBlockBreakStart(state, world, pos, player)
     }
@@ -117,6 +117,6 @@ public open class TestBlockImpl(public val config: TestBlock): Block(config.also
         public val FACING: EnumProperty<Direction> = Properties.FACING
 
         // needed because fillStateContainer is called before we can set the config property
-        private var configHolder: TestBlock? by threadLocal()
+        private var configHolder: TestBlockConfig? by threadLocal()
     }
 }

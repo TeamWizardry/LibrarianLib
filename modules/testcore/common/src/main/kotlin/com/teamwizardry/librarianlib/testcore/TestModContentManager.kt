@@ -1,110 +1,41 @@
 package com.teamwizardry.librarianlib.testcore
 
-import com.teamwizardry.librarianlib.core.util.ModLogManager
-import com.teamwizardry.librarianlib.testcore.content.TestConfig
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup
-import net.minecraft.item.ItemGroup
-import net.minecraft.item.ItemStack
-import net.minecraft.item.Items
-import net.minecraft.registry.Registries
-import net.minecraft.registry.Registry
-import net.minecraft.registry.RegistryKey
-import net.minecraft.text.Text
+import com.teamwizardry.librarianlib.testcore.content.*
+import com.teamwizardry.librarianlib.testcore.content.UnitTestSuite
 import net.minecraft.util.Identifier
-import pers.solid.brrp.v1.fabric.api.RRPCallback
-import kotlin.reflect.KClass
-import kotlin.reflect.full.primaryConstructor
 
+@PublishedApi
+internal object TestModContentManager {
+    val modules = mutableMapOf<String, TestModuleConfig>()
+    val itemGroups = mutableMapOf<Identifier, TestItemGroupConfig>()
+    val items = mutableMapOf<Identifier, TestItemConfig>()
+    val blocks = mutableMapOf<Identifier, TestBlockConfig>()
+    val entities = mutableMapOf<Identifier, TestEntityConfig>()
+    val unitTests = mutableMapOf<Identifier, UnitTestSuite>()
 
-/**
- * A DSL for creating test objects. Loosely based on gradle's Kotlin DSL.
- */
-public class TestModContentManager(public val modid: String, itemGroupName: String, logManager: ModLogManager) {
-    private val logger = logManager.makeLogger("TestModContentManager")
-    private val objects = mutableMapOf<String, TestConfig>()
+    var locked = false
 
+    fun getOrCreateModule(moduleId: String) =
+        getOrCreate(modules, moduleId) { TestModuleConfig(moduleId) }
 
-    public val itemGroupKey: RegistryKey<ItemGroup> =
-        RegistryKey.of(Registries.ITEM_GROUP.key, Identifier.of(modid, "item_group"))
-    public val itemGroup: ItemGroup = FabricItemGroup.builder()
-        .icon { ItemStack(Items.STICK) }
-        .displayName(Text.translatable("itemGroup.${modid}.item_group"))
-        .build()
+    fun getOrCreateItemGroup(module: TestModuleConfig, id: Identifier) =
+        getOrCreate(itemGroups, id) { TestItemGroupConfig(module, id) }
 
-    private val resources: TestModResourceManager = TestModResourceManager(modid, logManager)
-    init {
-        resources.lang.add(itemGroup, itemGroupName)
-    }
+    fun getOrCreateItem(module: TestModuleConfig, id: Identifier) =
+        getOrCreate(items, id) { TestItemConfig(module, id) }
 
-    public fun registerCommon() {
-        Registry.register(Registries.ITEM_GROUP, itemGroupKey, itemGroup)
-        logger.info("Performing common registration")
-        for(config in objects.values) {
-            logger.info("Registering ${config.id}")
-            config.registerCommon(resources)
-        }
-    }
+    fun getOrCreateBlock(module: TestModuleConfig, id: Identifier) =
+        getOrCreate(blocks, id) { TestBlockConfig(module, id) }
 
-    public fun registerClient() {
-        logger.info("Performing client registration")
-        for(config in objects.values) {
-            logger.info("Registering ${config.id}")
-            config.registerClient(resources)
-        }
-        resources.writeLang()
-        RRPCallback.BEFORE_VANILLA.register {
-            it.add(resources.runtimeResourcePack)
-        }
-    }
+    fun getOrCreateEntity(module: TestModuleConfig, id: Identifier) =
+        getOrCreate(entities, id) { TestEntityConfig(module, id) }
 
-    public fun registerServer() {
-        logger.info("Performing server registration")
-        for(config in objects.values) {
-            logger.info("Registering ${config.id}")
-            config.registerServer(resources)
-        }
-        resources.writeLang()
-        RRPCallback.BEFORE_VANILLA.register {
-            it.add(resources.runtimeResourcePack)
-        }
-    }
+    fun getOrCreateUnitTest(module: TestModuleConfig, id: Identifier): UnitTestSuite =
+        getOrCreate(unitTests, id) { UnitTestSuite(module, id) }
 
-    public fun id(name: String): Identifier = Identifier.of(modid, name)
-
-    public fun hasObject(name: String): Boolean {
-        return objects.contains(name)
-    }
-
-    public fun <T : TestConfig> create(type: KClass<T>, name: String): T {
-        objects[name]?.also {
-            throw IllegalArgumentException(
-                "An object named $name already exists (existing object is ${it.javaClass.canonicalName})"
-            )
-        }
-        val value = type.primaryConstructor!!.call(this, Identifier.of(modid, name))
-        objects[name] = value
-        return value
-    }
-
-    public inline fun <reified T : TestConfig> create(name: String): T {
-        return create(T::class, name)
-    }
-
-    public fun <T : TestConfig> create(type: KClass<T>, name: String, config: T.() -> Unit): T {
-        return create(type, name).apply(config)
-    }
-
-    public inline fun <reified T : TestConfig> create(name: String, config: T.() -> Unit): T {
-        return create(T::class, name).apply(config)
-    }
-
-    public fun <T : TestConfig> named(name: String): T {
-        val value = objects[name] ?: throw IllegalStateException("No objects named $name exist")
-        @Suppress("UNCHECKED_CAST")
-        return value as T
-    }
-
-    public inline fun <T : TestConfig> named(name: String, config: T.() -> Unit): T {
-        return named<T>(name).apply(config)
+    private fun <K : Any, V : Any> getOrCreate(map: MutableMap<K, V>, key: K, fn: () -> V): V {
+        if (locked && key !in map)
+            throw IllegalStateException("Items/blocks/etc. must be created in the common initializer")
+        return map.getOrPut(key, fn)
     }
 }

@@ -1,8 +1,7 @@
 package com.teamwizardry.librarianlib.testcore.content.impl
 
 import com.teamwizardry.librarianlib.core.util.kotlin.makeTranslationKey
-import com.teamwizardry.librarianlib.testcore.content.TestItem
-import net.minecraft.block.BlockState
+import com.teamwizardry.librarianlib.testcore.content.TestItemConfig
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
@@ -12,10 +11,9 @@ import net.minecraft.item.ItemUsageContext
 import net.minecraft.item.tooltip.TooltipType
 import net.minecraft.text.Text
 import net.minecraft.util.*
-import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
-public open class TestItemImpl(public val config: TestItem): Item(config.properties) {
+public open class TestItemImpl(public val config: TestItemConfig): Item(config.properties) {
     override fun appendTooltip(
         stack: ItemStack,
         context: TooltipContext,
@@ -23,9 +21,8 @@ public open class TestItemImpl(public val config: TestItem): Item(config.propert
         type: TooltipType
     ) {
         super.appendTooltip(stack, context, tooltip, type)
-        val descriptionLines = config.description?.lines()?.size ?: 0
-        for(i in 0 until descriptionLines) {
-            val description = Text.translatable(this.config.id.makeTranslationKey("item", "tooltip.$i"))
+        for(line in config.description?.lines() ?: emptyList()) {
+            val description = Text.literal(line)
             description.style.withFormatting(Formatting.GRAY)
             tooltip.add(description)
         }
@@ -38,7 +35,7 @@ public open class TestItemImpl(public val config: TestItem): Item(config.propert
             used = true
         }
 
-        val context = TestItem.RightClickContext(world, user, hand)
+        val context = TestItemConfig.RightClickContext(world, user, hand)
 
         config.rightClick.run(world.isClient, context)
         config.rightClickAir.run(world.isClient, context)
@@ -55,8 +52,8 @@ public open class TestItemImpl(public val config: TestItem): Item(config.propert
     override fun useOnBlock(context: ItemUsageContext): ActionResult {
         if (context.player == null) return ActionResult.PASS
 
-        val clickContext = TestItem.RightClickContext(context.world, context.player!!, context.hand)
-        val clickBlockContext = TestItem.RightClickBlockContext(context)
+        val clickContext = TestItemConfig.RightClickContext(context.world, context.player!!, context.hand)
+        val clickBlockContext = TestItemConfig.RightClickBlockContext(context)
 
         config.rightClick.run(context.world.isClient, clickContext)
         config.rightClickBlock.run(context.world.isClient, clickBlockContext)
@@ -79,7 +76,7 @@ public open class TestItemImpl(public val config: TestItem): Item(config.propert
     override fun usageTick(world: World, user: LivingEntity, stack: ItemStack, remainingUseTicks: Int) {
         if (user !is PlayerEntity) return
 
-        val context = TestItem.RightClickHoldContext(stack, user, remainingUseTicks)
+        val context = TestItemConfig.RightClickHoldContext(stack, user, remainingUseTicks)
 
         config.rightClickHold.run(user.world.isClient, context)
     }
@@ -87,7 +84,7 @@ public open class TestItemImpl(public val config: TestItem): Item(config.propert
     override fun onStoppedUsing(stack: ItemStack, world: World, user: LivingEntity, remainingUseTicks: Int) {
         if (user !is PlayerEntity) return
 
-        val context = TestItem.RightClickReleaseContext(stack, world, user, remainingUseTicks)
+        val context = TestItemConfig.RightClickReleaseContext(stack, user, world, remainingUseTicks)
 
         config.rightClickRelease.run(world.isClient, context)
     }
@@ -95,7 +92,7 @@ public open class TestItemImpl(public val config: TestItem): Item(config.propert
     override fun inventoryTick(stack: ItemStack, worldIn: World, entityIn: Entity, itemSlot: Int, isSelected: Boolean) {
         if (entityIn !is PlayerEntity) return
 
-        val context = TestItem.InventoryTickContext(stack, worldIn, entityIn, itemSlot, isSelected)
+        val context = TestItemConfig.InventoryTickContext(stack, entityIn, worldIn, itemSlot, isSelected)
         config.inventoryTick.run(worldIn.isClient, context)
 
         if (isSelected) {

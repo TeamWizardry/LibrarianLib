@@ -1,31 +1,23 @@
 package com.teamwizardry.librarianlib.testcore.content
 
-import com.teamwizardry.librarianlib.testcore.TestModContentManager
-import com.teamwizardry.librarianlib.testcore.TestModResourceManager
-import com.teamwizardry.librarianlib.testcore.bridge.TestCoreEntityTypes
 import com.teamwizardry.librarianlib.testcore.content.impl.TestEntityImpl
-import com.teamwizardry.librarianlib.testcore.content.impl.TestEntityRenderer
 import com.teamwizardry.librarianlib.testcore.util.PlayerTestContext
 import com.teamwizardry.librarianlib.testcore.util.SidedAction
 import com.teamwizardry.librarianlib.testcore.util.TestContext
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.SpawnGroup
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.registry.Registries
-import net.minecraft.registry.Registry
-import net.minecraft.registry.RegistryKey
 import net.minecraft.util.Hand
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 
-public class TestEntity(manager: TestModContentManager, id: Identifier) : TestConfig(manager, id) {
+public class TestEntityConfig(module: TestModuleConfig, id: Identifier) : TestConfig(module, id) {
 
-    public val type: EntityType<TestEntityImpl> by lazy {
+    public val entityTypeInstance: EntityType<TestEntityImpl> by lazy {
         EntityType.Builder.create(
             { type, world -> TestEntityImpl(this, type, world) },
             SpawnGroup.MISC
@@ -34,8 +26,8 @@ public class TestEntity(manager: TestModContentManager, id: Identifier) : TestCo
     }
 
 
-    public val spawnerItem: TestItem = manager.create(id.path + "_spawner") {
-        name = this@TestEntity.name
+    public val spawnerItem: TestItemConfig = module.item(Identifier.of("${id}_spawner")) {
+        name = this@TestEntityConfig.name
         rightClick.server {
             spawn(player)
         }
@@ -84,6 +76,19 @@ public class TestEntity(manager: TestModContentManager, id: Identifier) : TestCo
      */
     public val hit: SidedAction<HitContext> = SidedAction()
 
+    /**
+     * Spawns this entity with the same eye position and look vector as the passed player. Only call this on the logical
+     * server.
+     */
+    public fun spawn(player: PlayerEntity) {
+        val eye = player.getCameraPosVec(0f)
+        val entity = TestEntityImpl(this, entityTypeInstance, player.world)
+        entity.setPosition(eye.x, eye.y - entity.eyeY, eye.z)
+        entity.pitch = player.pitch
+        entity.yaw = player.yaw
+        player.world.spawnEntity(entity)
+    }
+
     public data class RightClickContext(
         val target: TestEntityImpl,
         val player: PlayerEntity,
@@ -105,32 +110,5 @@ public class TestEntity(manager: TestModContentManager, id: Identifier) : TestCo
     public data class AttackContext(val target: TestEntityImpl, val source: DamageSource, var amount: Float) :
         TestContext() {
         val world: World = target.world
-    }
-
-    /**
-     * Spawns this entity with the same eye position and look vector as the passed player. Only call this on the logical
-     * server.
-     */
-    public fun spawn(player: PlayerEntity) {
-        val eye = player.getCameraPosVec(0f)
-        val entity = TestEntityImpl(this, type, player.world)
-        entity.setPosition(eye.x, eye.y - entity.eyeY, eye.z)
-        entity.pitch = player.pitch
-        entity.yaw = player.yaw
-        player.world.spawnEntity(entity)
-    }
-
-    override fun registerCommon(resources: TestModResourceManager) {
-        Registry.register(Registries.ENTITY_TYPE, this.id, this.type)
-        TestCoreEntityTypes.types.add(this.type)
-    }
-
-    override fun registerClient(resources: TestModResourceManager) {
-        EntityRendererRegistry.register(this.type) { dispatcher ->
-            TestEntityRenderer(dispatcher)
-        }
-
-        resources.lang
-            .add(this.type, name)
     }
 }

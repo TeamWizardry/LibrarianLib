@@ -16,10 +16,11 @@ configurations {
 
 dependencies {
     commonConfig.modules.forEach {
-        runtimeOnly(project(it.commonPath, configuration = "namedElements")) { isTransitive = false }
-        runtimeOnly(project(it.fabricPath, configuration = "namedElements")) { isTransitive = false }
-        runtimeOnly(project(it.testModPath, configuration = "namedElements")) { isTransitive = false }
-        runtimeOnly(project(it.path, configuration = "shade")) { isTransitive = false }
+        runtimeOnly(project(it.commonPath, configuration = "namedElements"))
+        runtimeOnly(project(it.fabricPath, configuration = "namedElements"))
+        runtimeOnly(project(it.testModPath, configuration = "namedElements"))
+        runtimeOnly(project(it.path, configuration = "shade"))
+        runtimeOnly(project(it.path, configuration = "transitiveShade"))
         modRuntimeOnly(project(it.path, configuration = "includeFabric")) { isTransitive = false }
     }
     modRuntimeOnly("com.terraformersmc:modmenu:11.0.3")

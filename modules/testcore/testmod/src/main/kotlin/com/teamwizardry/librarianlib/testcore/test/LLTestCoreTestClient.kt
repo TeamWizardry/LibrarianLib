@@ -1,20 +1,19 @@
 package com.teamwizardry.librarianlib.testcore.test
 
+import com.google.auto.service.AutoService
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.testcore.TestModContentManager
-import com.teamwizardry.librarianlib.testcore.content.TestItem
+import com.teamwizardry.librarianlib.testcore.content.TestModuleConfig
 import com.teamwizardry.librarianlib.testcore.content.utils.TestScreen
-import net.fabricmc.api.ClientModInitializer
+import com.teamwizardry.librarianlib.testcore.module.TestModuleClient
 import net.minecraft.client.MinecraftClient
 
-internal object LLTestCoreTestClient : ClientModInitializer {
-    val manager: TestModContentManager = LLTestCoreTestCommon.manager
+@AutoService(TestModuleClient::class)
+internal class LLTestCoreTestClient : TestModuleClient {
+    override val moduleId: String = "testcore"
 
-    private val logger = LLTestCoreTest.logManager.makeLogger<LLTestCoreTestClient>()
-
-    override fun onInitializeClient() {
-        manager.named<TestItem>("sided_item") {
+    override fun initializeClient(config: TestModuleConfig) {
+        config.item("sided_item") {
             client {
                 rightClick {
                     val player = MinecraftClient.getInstance().player
@@ -23,14 +22,14 @@ internal object LLTestCoreTestClient : ClientModInitializer {
             }
         }
 
-        manager.named<TestItem>("empty_screen") {
+        config.item("empty_screen") {
             rightClick.client {
                 Client.minecraft.setScreen(TestScreen {
                 })
             }
         }
 
-        manager.named<TestItem>("simple_screen") {
+        config.item("simple_screen") {
             rightClick.client {
                 Client.minecraft.setScreen(TestScreen {
                     draw {
@@ -40,7 +39,7 @@ internal object LLTestCoreTestClient : ClientModInitializer {
             }
         }
 
-        manager.named<TestItem>("sized_screen") {
+        config.item("sized_screen") {
             rightClick.client {
                 Client.minecraft.setScreen(TestScreen {
                     size = vec(20, 20)
@@ -51,7 +50,5 @@ internal object LLTestCoreTestClient : ClientModInitializer {
                 })
             }
         }
-
-        manager.registerClient()
     }
 }

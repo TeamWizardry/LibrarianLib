@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.google.devtools.ksp.KspExperimental
@@ -22,10 +21,6 @@ java {
 
 tasks.withType<JavaCompile> {
     options.release = 21
-}
-
-configure<KotlinProjectExtension> {
-    explicitApi()
 }
 
 tasks.withType<KotlinCompile> {

@@ -1,0 +1,18 @@
+package com.teamwizardry.librarianlib.testcore.content
+
+import dev.architectury.registry.CreativeTabRegistry
+import net.minecraft.item.ItemGroup
+import net.minecraft.item.ItemStack
+import net.minecraft.item.Items
+import net.minecraft.text.Text
+import net.minecraft.util.Identifier
+
+@TestConfigDslMarker
+public class TestItemGroupConfig(module: TestModuleConfig, id: Identifier) : TestConfig(module, id) {
+    public val instance: ItemGroup =
+        CreativeTabRegistry.create(Text.translatable(id.toTranslationKey("itemGroup"))) { ItemStack(Items.STICK) }
+
+    override fun getTranslations(): List<Pair<String, String>> = listOf(
+        id.toTranslationKey("itemGroup") to name,
+    )
+}

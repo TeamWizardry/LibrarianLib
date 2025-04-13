@@ -30,17 +30,6 @@ fun Configuration.canBe(consumed: Boolean, resolved: Boolean) {
     isCanBeResolved = resolved
 }
 
-/**
- * Add a dependency to the `shade` configuration. This automatically disables transitive dependencies.
- */
-fun DependencyHandler.shade(dependencyNotation: Any): Dependency? {
-    val dep = add("shade", dependencyNotation)
-    if(dep is ModuleDependency) {
-        dep.isTransitive = false
-    }
-    return dep
-}
-
 fun Project.configureFabricModJson(block: GenerateFabricModJson.() -> Unit) {
     this.tasks.named("generateFabricMod", block)
 }

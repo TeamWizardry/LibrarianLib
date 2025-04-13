@@ -1,21 +1,12 @@
 package com.teamwizardry.librarianlib.testcore.content
 
-import com.teamwizardry.librarianlib.core.util.append
-import com.teamwizardry.librarianlib.testcore.TestModContentManager
-import com.teamwizardry.librarianlib.testcore.TestModResourceManager
 import com.teamwizardry.librarianlib.testcore.util.PlayerTestContext
 import com.teamwizardry.librarianlib.testcore.content.impl.TestItemImpl
-import com.teamwizardry.librarianlib.testcore.content.impl.TestItemModel
-import com.teamwizardry.librarianlib.testcore.objects.TestObjectDslMarker
 import com.teamwizardry.librarianlib.testcore.util.SidedAction
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents
 import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.*
-import net.minecraft.registry.Registries
-import net.minecraft.registry.Registry
-import net.minecraft.registry.RegistryKey
 import net.minecraft.util.Hand
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
@@ -26,8 +17,8 @@ import net.minecraft.world.World
 /**
  * The DSL for configuring an item
  */
-@TestObjectDslMarker
-public class TestItem(manager: TestModContentManager, id: Identifier): TestConfig(manager, id) {
+@TestConfigDslMarker
+public class TestItemConfig(module: TestModuleConfig, id: Identifier): TestConfig(module, id) {
     /**
      * The maximum stack size. Defaults to 1
      */
@@ -57,6 +48,7 @@ public class TestItem(manager: TestModContentManager, id: Identifier): TestConfi
      */
     public val properties: Item.Settings = Item.Settings()
         .maxCount(maxCount)
+        .`arch$tab`(module.itemGroup.instance)
 
     /**
      * Called when this item is right clicked.
@@ -129,9 +121,7 @@ public class TestItem(manager: TestModContentManager, id: Identifier): TestConfi
      */
     public var tickInHand: SidedAction<InventoryTickContext> = SidedAction()
 
-    public val instance: Item by lazy {
-        TestItemImpl(this)
-    }
+    public val instance: Item by lazy { TestItemImpl(this) }
 
     public data class RightClickContext(val world: World, val player: PlayerEntity, val hand: Hand): PlayerTestContext(player) {
         val stack: ItemStack = player.getStackInHand(hand)
@@ -149,30 +139,9 @@ public class TestItem(manager: TestModContentManager, id: Identifier): TestConfi
     }
 
     public data class RightClickHoldContext(val stack: ItemStack, val player: PlayerEntity, val timeLeft: Int): PlayerTestContext(player)
-    public data class RightClickReleaseContext(val stack: ItemStack, val world: World, val player: PlayerEntity, val timeLeft: Int): PlayerTestContext(player)
-    public data class LeftClickBlockContext(val stack: ItemStack, val pos: BlockPos, val player: PlayerEntity): PlayerTestContext(player)
+    public data class RightClickReleaseContext(val stack: ItemStack, val player: PlayerEntity, val world: World, val timeLeft: Int): PlayerTestContext(player)
+    public data class LeftClickBlockContext(val stack: ItemStack, val player: PlayerEntity, val pos: BlockPos): PlayerTestContext(player)
     public data class LeftClickEntityContext(val stack: ItemStack, val player: PlayerEntity, val entity: Entity): PlayerTestContext(player)
     public data class RightClickEntityContext(val stack: ItemStack, val player: PlayerEntity, val target: LivingEntity, val hand: Hand): PlayerTestContext(player)
-    public data class InventoryTickContext(val stack: ItemStack, val world: World, val player: PlayerEntity, val itemSlot: Int, val isSelected: Boolean): PlayerTestContext(player)
-
-    override fun registerCommon(resources: TestModResourceManager) {
-        Registry.register(Registries.ITEM, id, instance)
-        ItemGroupEvents.modifyEntriesEvent(manager.itemGroupKey).register { it.add(instance) }
-
-        resources.lang.add(instance, name)
-        description?.lines()?.forEachIndexed { i, line ->
-            resources.lang.add(id.toTranslationKey("item", "tooltip.$i"), line)
-        }
-    }
-
-    override fun registerClient(resources: TestModResourceManager) {
-        val testModel = TestItemModel(id)
-        resources.runtimeResourcePack.addModel(
-            Identifier.of(id.namespace, "item/${id.path}"),
-            testModel.model
-        )
-//        ColorProviderRegistry.ITEM.register(testModel.colorProvider, instance)
-    }
-
-
+    public data class InventoryTickContext(val stack: ItemStack, val player: PlayerEntity, val world: World, val itemSlot: Int, val isSelected: Boolean): PlayerTestContext(player)
 }

@@ -1,19 +1,17 @@
 package com.teamwizardry.librarianlib.testcore.content.impl
 
 import com.teamwizardry.librarianlib.core.util.kotlin.makeTranslationKey
-import com.teamwizardry.librarianlib.testcore.content.TestBlock
+import com.teamwizardry.librarianlib.testcore.content.TestBlockConfig
 import net.minecraft.block.BlockState
 import net.minecraft.item.BlockItem
 import net.minecraft.item.ItemPlacementContext
 import net.minecraft.item.ItemStack
 import net.minecraft.item.tooltip.TooltipType
-import net.minecraft.registry.Registries
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
-import net.minecraft.world.World
 
 public open class TestBlockItem(block: TestBlockImpl, builder: Settings): BlockItem(block, builder) {
-    public val config: TestBlock = block.config
+    public val config: TestBlockConfig = block.config
 
     override fun getBlock(): TestBlockImpl {
         return super.getBlock() as TestBlockImpl

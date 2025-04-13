@@ -1,24 +1,19 @@
 package com.teamwizardry.librarianlib.testcore.test
 
-import com.teamwizardry.librarianlib.testcore.TestModContentManager
-import com.teamwizardry.librarianlib.testcore.content.TestBlock
-import com.teamwizardry.librarianlib.testcore.content.TestEntity
-import com.teamwizardry.librarianlib.testcore.content.TestItem
-import com.teamwizardry.librarianlib.testcore.junit.UnitTestSuite
-import net.fabricmc.api.ModInitializer
-import net.minecraft.registry.Registry
+import com.google.auto.service.AutoService
+import com.teamwizardry.librarianlib.testcore.content.*
+import com.teamwizardry.librarianlib.testcore.module.TestModuleCommon
 
-internal object LLTestCoreTestCommon : ModInitializer {
-    val manager: TestModContentManager = TestModContentManager("liblib-testcore-test", "Test Core", LLTestCoreTest.logManager)
+@AutoService(TestModuleCommon::class)
+internal class LLTestCoreTestCommon : TestModuleCommon {
+    override val moduleId: String = "testcore"
 
-    private val logger = LLTestCoreTest.logManager.makeLogger<LLTestCoreTestCommon>()
-
-    override fun onInitialize() {
-        Registry.register(UnitTestSuite.REGISTRY, manager.id("unit_tests"), UnitTestSuite().apply {
+    override fun initializeCommon(config: TestModuleConfig) {
+        config.unitTest("unit_tests") {
             add<UnitTestTests>()
-        })
+        }
 
-        manager.create<TestItem>("right_click_item") {
+        config.item("right_click_item") {
             name = "Right Click"
 
             common {
@@ -47,7 +42,7 @@ internal object LLTestCoreTestCommon : ModInitializer {
             }
         }
 
-        manager.create<TestItem>("left_click_item") {
+        config.item("left_click_item") {
             name = "Left Click"
             common {
                 leftClickBlock { chat("[Common] leftClickBlock") }
@@ -63,7 +58,7 @@ internal object LLTestCoreTestCommon : ModInitializer {
             }
         }
 
-        manager.create<TestItem>("inventory_tick_item") {
+        config.item("inventory_tick_item") {
             name = "Inventory Tick"
             description = "Logs to chat when sneaking"
             common {
@@ -80,7 +75,7 @@ internal object LLTestCoreTestCommon : ModInitializer {
             }
         }
 
-        manager.create<TestItem>("sided_item") {
+        config.item("sided_item") {
             name = "Right Click"
 
             common {
@@ -90,33 +85,33 @@ internal object LLTestCoreTestCommon : ModInitializer {
             }
         }
 
-        manager.create<TestEntity>("simple_entity") {
+        config.entity("simple_entity") {
             name = "Simple Entity"
         }
 
-        manager.create<TestItem>("empty_screen") {
+        config.item("empty_screen") {
             name = "Empty Screen"
         }
-        manager.create<TestItem>("simple_screen") {
+        config.item("simple_screen") {
             name = "Simple Screen"
             description = "(0, 0) should be located at the center of the screen"
         }
-        manager.create<TestItem>("sized_screen") {
+        config.item("sized_screen") {
             name = "Sized Screen"
             description = "The (20, 20) size means (10, 10) should be located at the center of the screen"
         }
 
-        manager.create<TestBlock>("simple_block") {
+        config.block("simple_block") {
             name = "Simple Block"
         }
-        manager.create<TestBlock>("transparent_block") {
+        config.block("transparent_block") {
             name = "Transparent Block"
             transparent = true
         }
-        manager.create<TestBlock>("facing_block") {
+        config.block("facing_block") {
             name = "Facing Block"
         }
-        manager.create<TestBlock>("events_block") {
+        config.block("events_block") {
             name = "Events Block"
             common {
                 rightClick { chat("[Common] rightClick") }
@@ -139,7 +134,5 @@ internal object LLTestCoreTestCommon : ModInitializer {
                 destroy { chat("[Client] destroy") } // not emitted clientside
             }
         }
-
-        manager.registerCommon()
     }
 }

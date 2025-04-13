@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.testcore.content.impl
 
-import com.teamwizardry.librarianlib.testcore.content.TestBlock
+import com.teamwizardry.librarianlib.testcore.content.TestBlockConfig
 import net.minecraft.block.BlockEntityProvider
 import net.minecraft.block.BlockState
 import net.minecraft.block.entity.BlockEntity
@@ -9,7 +9,7 @@ import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
-public class TestBlockWithEntityImpl(config: TestBlock) : TestBlockImpl(config), BlockEntityProvider {
+public class TestBlockWithEntityImpl(config: TestBlockConfig) : TestBlockImpl(config), BlockEntityProvider {
     private val ticker: BlockEntityTicker<BlockEntity>? = config.blockEntityTickFunction?.let { tickFunction ->
         BlockEntityTicker<BlockEntity> { _, _, _, blockEntity -> tickFunction(blockEntity) }
     }

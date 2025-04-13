@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.testcore.content.impl
 
-import com.teamwizardry.librarianlib.testcore.content.TestEntity
+import com.teamwizardry.librarianlib.testcore.content.TestEntityConfig
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityPose
 import net.minecraft.entity.EntityType
@@ -13,13 +13,13 @@ import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 
-public open class TestEntityImpl(public val config: TestEntity, type: EntityType<TestEntityImpl>, world: World): Entity(type, world) {
+public open class TestEntityImpl(public val config: TestEntityConfig, type: EntityType<TestEntityImpl>, world: World): Entity(type, world) {
     override fun canHit(): Boolean {
         return true
     }
 
     override fun handleAttack(attacker: Entity): Boolean {
-        val context = TestEntity.HitContext(this, attacker, attacker is PlayerEntity)
+        val context = TestEntityConfig.HitContext(this, attacker, attacker is PlayerEntity)
 
         config.hit.run(world.isClient, context)
         if (context.kill) {
@@ -49,7 +49,7 @@ public open class TestEntityImpl(public val config: TestEntity, type: EntityType
 
     override fun tick() {
         super.tick()
-        config.tick.run(this.world.isClient, TestEntity.TickContext(this))
+        config.tick.run(this.world.isClient, TestEntityConfig.TickContext(this))
     }
 
     // TODO: forge patch?
@@ -59,7 +59,7 @@ public open class TestEntityImpl(public val config: TestEntity, type: EntityType
 //    }
 
     override fun interactAt(player: PlayerEntity, hitPos: Vec3d, hand: Hand): ActionResult {
-        config.rightClick.run(this.world.isClient, TestEntity.RightClickContext(this, player, hand, hitPos))
+        config.rightClick.run(this.world.isClient, TestEntityConfig.RightClickContext(this, player, hand, hitPos))
         if (config.rightClick.exists)
             return ActionResult.SUCCESS
         return super.interactAt(player, hitPos, hand)

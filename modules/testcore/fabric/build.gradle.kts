@@ -3,9 +3,10 @@ plugins {
 }
 
 configureFabricModJson {
-    entrypoint("main", adapter = "kotlin", value = "com.teamwizardry.librarianlib.testcore.fabric.TestCoreCommonInitializer")
-    entrypoint("client", adapter = "kotlin", value = "com.teamwizardry.librarianlib.testcore.fabric.TestCoreClientInitializer")
-    entrypoint("server", adapter = "kotlin", value = "com.teamwizardry.librarianlib.testcore.fabric.TestCoreServerInitializer")
+    entrypoint("main", adapter = "kotlin", value = "com.teamwizardry.librarianlib.testcore.fabric.FabricTestCoreCommonInitializer")
+    entrypoint("client", adapter = "kotlin", value = "com.teamwizardry.librarianlib.testcore.fabric.FabricTestCoreClientInitializer")
+    entrypoint("server", adapter = "kotlin", value = "com.teamwizardry.librarianlib.testcore.fabric.FabricTestCoreServerInitializer")
+    iconFile.set(rootDir.resolve("logo/test_icon.png"))
     mixin("ll/testcore/testcore.mixins.json")
 }
 

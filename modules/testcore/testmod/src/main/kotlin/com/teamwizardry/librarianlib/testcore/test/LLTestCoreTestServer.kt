@@ -1,14 +1,13 @@
 package com.teamwizardry.librarianlib.testcore.test
 
-import com.teamwizardry.librarianlib.testcore.TestModContentManager
-import net.fabricmc.api.DedicatedServerModInitializer
+import com.google.auto.service.AutoService
+import com.teamwizardry.librarianlib.testcore.content.TestModuleConfig
+import com.teamwizardry.librarianlib.testcore.module.TestModuleServer
 
-internal object LLTestCoreTestServer : DedicatedServerModInitializer {
-    val manager: TestModContentManager = LLTestCoreTestCommon.manager
+@AutoService(TestModuleServer::class)
+internal class LLTestCoreTestServer : TestModuleServer {
+    override val moduleId: String = "testcore"
 
-    private val logger = LLTestCoreTest.logManager.makeLogger<LLTestCoreTestServer>()
-
-    override fun onInitializeServer() {
-        manager.registerServer()
+    override fun initializeServer(config: TestModuleConfig) {
     }
 }

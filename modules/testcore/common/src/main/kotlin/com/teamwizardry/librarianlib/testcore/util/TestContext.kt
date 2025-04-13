@@ -1,10 +1,10 @@
 package com.teamwizardry.librarianlib.testcore.util
 
-import com.teamwizardry.librarianlib.testcore.objects.TestObjectDslMarker
+import com.teamwizardry.librarianlib.testcore.content.TestConfigDslMarker
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.text.Text
 
-@TestObjectDslMarker
+@TestConfigDslMarker
 public abstract class TestContext {
 }
 

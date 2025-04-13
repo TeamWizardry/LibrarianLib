@@ -8,12 +8,14 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import com.teamwizardry.librarianlib.testcore.TestCore
+import com.teamwizardry.librarianlib.testcore.Registrars
+import com.teamwizardry.librarianlib.testcore.TestCoreMod
+import com.teamwizardry.librarianlib.testcore.content.UnitTestSuite
 import com.teamwizardry.librarianlib.testcore.junit.runner.TestResult
 import com.teamwizardry.librarianlib.testcore.junit.runner.TestSuiteResult
 import com.teamwizardry.librarianlib.testcore.junit.runner.UnitTestRunner
-import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
+import com.teamwizardry.librarianlib.testcore.platform.TestCoreCommonPlatform
+import dev.architectury.event.events.common.CommandRegistrationEvent
 import net.minecraft.command.CommandSource
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer
 import net.minecraft.registry.RegistryKey
@@ -29,18 +31,17 @@ import kotlin.jvm.optionals.getOrNull
 
 public object UnitTestCommand {
     public fun register() {
-        ArgumentTypeRegistry.registerArgumentType(
+        TestCoreCommonPlatform.instance.registerArgumentType(
             Identifier.of("liblib-testcore:unit_test"),
             UnitTestArgument::class.java,
             ConstantArgumentSerializer.of { registryAccess ->
-                UnitTestArgument(registryAccess.getWrapperOrThrow(UnitTestSuite.REGISTRY_KEY))
+                UnitTestArgument(registryAccess.getWrapperOrThrow(Registrars.UNIT_TEST_KEY))
             }
         )
-
-        CommandRegistrationCallback.EVENT.register { dispatcher, registryAccess, environment ->
+        CommandRegistrationEvent.EVENT.register { dispatcher, registryAccess, environment ->
             dispatcher.register(
                 CommandManager.literal("unittest").then(
-                    CommandManager.argument("test", UnitTestArgument(registryAccess.getWrapperOrThrow(UnitTestSuite.REGISTRY_KEY)))
+                    CommandManager.argument("test", UnitTestArgument(registryAccess.getWrapperOrThrow(Registrars.UNIT_TEST_KEY)))
                         .executes { context ->
                             runTestSuite(context.source, context.input, UnitTestArgument.getUnitTest(context, "test"))
                             Command.SINGLE_SUCCESS
@@ -51,13 +52,12 @@ public object UnitTestCommand {
     }
 
     private fun runTestSuite(source: ServerCommandSource, input: String, suite: UnitTestSuite) {
-        val suiteId = UnitTestSuite.REGISTRY.getId(suite)
-        source.sendFeedback({ Text.literal("Running §5${suiteId}§r tests...") }, true)
+        source.sendFeedback({ Text.literal("Running §5${suite.id}§r tests...") }, true)
         suite.description?.also {
             source.sendFeedback({ Text.literal("§7> ${it}§r") }, true)
         }
         val report = UnitTestRunner.runUnitTests(suite.tests)
-        logger.info("Unit tests for ${suiteId}\n" + report.roots.joinToString("\n") { UnitTestRunner.format(it) })
+        logger.info("Unit tests for ${suite.id}\n" + report.roots.joinToString("\n") { UnitTestRunner.format(it) })
         source.sendFeedback({ makeTextComponent(input, report) }, true)
     }
 
@@ -100,19 +100,19 @@ public object UnitTestCommand {
             .append(Text.literal("(Rerun)").setStyle(rerunStyle))
     }
 
-    private val logger = TestCore.logManager.makeLogger<UnitTestCommand>()
+    private val logger = TestCoreMod.logManager.makeLogger<UnitTestCommand>()
 }
 
 public class UnitTestArgument(private val registryWrapper: RegistryWrapper.Impl<UnitTestSuite>) : ArgumentType<UnitTestSuite> {
     @Throws(CommandSyntaxException::class)
     override fun parse(reader: StringReader): UnitTestSuite {
         val identifier = Identifier.fromCommandInput(reader)
-        val entry = this.registryWrapper.getOptional(RegistryKey.of(UnitTestSuite.REGISTRY_KEY, identifier)).getOrNull()
+        val entry = this.registryWrapper.getOptional(RegistryKey.of(Registrars.UNIT_TEST_KEY, identifier)).getOrNull()
         return entry?.value() ?: throw TEST_NOT_FOUND.create(identifier)
     }
 
     override fun <S> listSuggestions(context: CommandContext<S>, suggestions: SuggestionsBuilder): CompletableFuture<Suggestions> {
-        return CommandSource.suggestIdentifiers(registryWrapper.streamKeys().map { it.value }, suggestions)
+        return CommandSource.suggestIdentifiers(registryWrapper.streamKeys().map { it.value }, suggestions, "liblib-testcore:")
     }
 
     public companion object {
