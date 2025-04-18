@@ -34,6 +34,7 @@ tasks.withType<KotlinCompile> {
             "kotlin.ExperimentalStdlibApi",
             "kotlin.ExperimentalUnsignedTypes",
             "kotlin.contracts.ExperimentalContracts",
+            "com.teamwizardry.librarianlib.LibLibInternal",
         )
         freeCompilerArgs.addAll(
             "-Xjvm-default=all"
