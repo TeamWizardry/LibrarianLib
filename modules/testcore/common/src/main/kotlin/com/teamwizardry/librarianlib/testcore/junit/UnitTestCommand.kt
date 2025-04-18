@@ -90,7 +90,7 @@ public object UnitTestCommand {
         val rerunStyle = Style.EMPTY
             .withFormatting(Formatting.BLUE)
             .withUnderline(true)
-            .withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND, input))
+            .withClickEvent(ClickEvent(ClickEvent.Action.RUN_COMMAND, "/$input"))
 
         return Text.literal("[ $fullCount tests found | ")
             .append(Text.literal("${passed.size} tests passed").setStyle(passedStyle))
@@ -112,7 +112,7 @@ public class UnitTestArgument(private val registryWrapper: RegistryWrapper.Impl<
     }
 
     override fun <S> listSuggestions(context: CommandContext<S>, suggestions: SuggestionsBuilder): CompletableFuture<Suggestions> {
-        return CommandSource.suggestIdentifiers(registryWrapper.streamKeys().map { it.value }, suggestions, "liblib-testcore:")
+        return CommandSource.suggestIdentifiers(registryWrapper.streamKeys().map { it.value }, suggestions)
     }
 
     public companion object {
