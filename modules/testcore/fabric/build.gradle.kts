@@ -12,4 +12,8 @@ configureFabricModJson {
 
 dependencies {
     modImplementation("dev.architectury:architectury-fabric:${rootProject.property("architectury_api_version")}")
+
+    commonConfig.modules.forEach { module ->
+        shadowBundle(project(path = module.testModPath, configuration = "transformProductionFabric"))
+    }
 }

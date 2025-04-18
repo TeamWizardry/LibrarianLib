@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.transformers.DontIncludeResourceTransformer
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -52,6 +53,10 @@ dependencies {
 val shadowJar = tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(project.configurations.getByName("shadowBundle"))
     archiveClassifier = "dev-shadow"
+
+    // The common module needs a `fabric.mod.json` file for assets to load from it. Don't include it in the shadow jar.
+    // (classpath entries without a mod json aren't treated like resource packs)
+    transform(DontIncludeResourceTransformer::class.java) { resource = "fabric.mod.json" }
 
     commonConfig.shadowRules {
         relocate(it.from, it.to)

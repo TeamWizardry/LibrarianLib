@@ -4,7 +4,6 @@ import org.gradle.kotlin.dsl.getByType
 plugins {
     id("liblib-shared-langs")
     id("liblib-shared-loom")
-    id("com.github.johnrengelman.shadow")
 }
 
 val module = parent!!.extensions.getByType<ModuleExtension>()
@@ -24,11 +23,20 @@ dependencies {
     implementation(project(path = ":testcore:common", configuration = "namedElements"))
 }
 
-val shadowJar = tasks.named<ShadowJar>("shadowJar") {
-    configurations = listOf()
-    archiveClassifier = "dev-shadow"
+// Classpath entries without a mod json aren't treated like resource packs, so we need to generate a dummy file.
+// This file is excluded when making the shadow jar
+val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod") {
+    outputRoot.set(generatedResourcesDir.map { it.asFile })
 
-    commonConfig.shadowRules {
-        relocate(it.from, it.to)
-    }
+    id.set("generated-${module.moduleInfo.modid}-testmod")
+    version.set("0.0.0")
+
+    name.set(provider { "${module.moduleInfo.name} - :testmod assets" })
+
+    modMenu.badges.add("library")
+    modMenu.parent(module.moduleInfo.modid)
+}
+
+tasks.named<ProcessResources>("processResources") {
+    dependsOn(generateFabricMod)
 }
