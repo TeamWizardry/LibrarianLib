@@ -2,17 +2,17 @@ package com.teamwizardry.librarianlib.testcore
 
 import com.teamwizardry.librarianlib.testcore.content.impl.TestEntityRenderer
 import com.teamwizardry.librarianlib.testcore.module.TestModuleClient
-import com.teamwizardry.librarianlib.testcore.module.TestModuleCommon
+import com.teamwizardry.librarianlib.testcore.resources.RuntimeResources
+import com.teamwizardry.librarianlib.testcore.resources.TestBlockModelGenerator
+import com.teamwizardry.librarianlib.testcore.resources.TestItemModelGenerator
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry
-import net.minecraft.data.client.BlockStateVariant
-import net.minecraft.data.client.BlockStateVariantMap
-import net.minecraft.data.client.VariantSettings
-import net.minecraft.data.client.VariantsBlockStateSupplier
-import net.minecraft.state.property.Properties
-import net.minecraft.util.Identifier
-import net.minecraft.util.math.Direction
+import dev.architectury.registry.client.rendering.RenderTypeRegistry
+import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.RenderLayers
 
 public object TestCoreClientInitializer {
+    private val logger = TestCoreMod.logManager.makeLogger<TestCoreClientInitializer>()
+
     public fun onInitialize() {
         for (moduleClient in TestModuleClient.instances) {
             moduleClient.initializeClient(TestModContentManager.getOrCreateModule(moduleClient.moduleId))
@@ -23,64 +23,18 @@ public object TestCoreClientInitializer {
                 TestEntityRenderer(dispatcher)
             }
         }
-//        logger.info("Performing client registration")
-//        for(config in objects.values) {
-//            logger.info("Registering ${config.id}")
-//            config.registerClient(resources)
-//        }
-//        resources.writeLang()
-//        RRPCallback.BEFORE_VANILLA.register {
-//            it.add(resources.runtimeResourcePack)
-//        }
-    }
 
-    private fun registerItems() {
-//        val testModel = TestItemModel(id)
-//        resources.runtimeResourcePack.addModel(Identifier.of(id.namespace, "item/${id.path}"), testModel.model)
-//        ColorProviderRegistry.ITEM.register(testModel.colorProvider, instance)
-    }
+        for(itemConfig in TestModContentManager.items.values) {
+            RuntimeResources.addAsset(TestItemModelGenerator.generateModel(itemConfig.id))
+            RuntimeResources.addAsset(TestItemModelGenerator.generateModelDef(itemConfig.id))
+        }
 
-    private fun registerBlocks() {
-//        val model = Identifier.of("liblib-testcore:block/test_block/${blockInstance.modelName}")
-//
-//        val state = VariantsBlockStateSupplier.create(blockInstance, BlockStateVariant.create().put(VariantSettings.MODEL, model))
-//        if(directional) {
-//            state.coordinate(
-//                BlockStateVariantMap.create(Properties.FACING)
-//                    .register(Direction.DOWN, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R180))
-//                    .register(Direction.UP, BlockStateVariant.create())
-//                    .register(Direction.NORTH, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R90))
-//                    .register(
-//                        Direction.SOUTH,
-//                        BlockStateVariant.create()
-//                            .put(VariantSettings.X, VariantSettings.Rotation.R90)
-//                            .put(VariantSettings.Y, VariantSettings.Rotation.R180)
-//                    )
-//                    .register(
-//                        Direction.WEST,
-//                        BlockStateVariant.create()
-//                            .put(VariantSettings.X, VariantSettings.Rotation.R90)
-//                            .put(VariantSettings.Y, VariantSettings.Rotation.R270)
-//                    )
-//                    .register(
-//                        Direction.EAST,
-//                        BlockStateVariant.create()
-//                            .put(VariantSettings.X, VariantSettings.Rotation.R90)
-//                            .put(VariantSettings.Y, VariantSettings.Rotation.R90)
-//                    )
-//            )
-//        }
-//        resources.runtimeResourcePack.addBlockState(Identifier.of(id.namespace, "blockstates/${id.path}"), state)
-//
-//        resources.runtimeResourcePack.addModel(
-//            Identifier.of(id.namespace, "item/${id.path}"),
-//            ModelJsonBuilder.create("$model")
-//        )
-    }
+        for(blockConfig in TestModContentManager.blocks.values) {
+            RuntimeResources.addAsset(TestBlockModelGenerator.generateBlockStates(blockConfig))
+            RuntimeResources.addAsset(TestBlockModelGenerator.generateItemModel(blockConfig))
+            RenderTypeRegistry.register(RenderLayer.getCutout(), blockConfig.blockInstance)
+        }
 
-    private fun registerEntities() {
-
-
-//        resources.lang.add(this.type, name)
+        logger.info("Generated {} assets", RuntimeResources.resources.size)
     }
 }

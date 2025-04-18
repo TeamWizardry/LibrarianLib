@@ -1,11 +1,11 @@
 {
-  "parent": "liblib-testbase:block/test_block/directional/base",
+  "parent": "liblib-testcore:block/test_block/directional/base",
   "textures": {
-    "front_bg": "liblib-testbase:block/test_block/directional/solid/front",
-    "front_fg": "liblib-testbase:block/test_block/directional/solid/front_color",
-    "side_bg": "liblib-testbase:block/test_block/directional/solid/side",
-    "side_fg": "liblib-testbase:block/test_block/directional/solid/side_color",
-    "back_bg": "liblib-testbase:block/test_block/directional/solid/back",
-    "back_fg": "liblib-testbase:block/test_block/directional/solid/back_color"
+    "front_bg": "liblib-testcore:block/test_block/directional/solid/front",
+    "front_fg": "liblib-testcore:block/test_block/directional/solid/front_color",
+    "side_bg": "liblib-testcore:block/test_block/directional/solid/side",
+    "side_fg": "liblib-testcore:block/test_block/directional/solid/side_color",
+    "back_bg": "liblib-testcore:block/test_block/directional/solid/back",
+    "back_fg": "liblib-testcore:block/test_block/directional/solid/back_color"
   }
 }

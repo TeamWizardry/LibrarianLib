@@ -1,6 +1,6 @@
 package com.teamwizardry.librarianlib.testcore.mixin;
 
-import com.teamwizardry.librarianlib.testcore.bridge.InjectedTranslations;
+import com.teamwizardry.librarianlib.testcore.resources.RuntimeResources;
 import net.minecraft.client.resource.language.TranslationStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,7 +14,7 @@ public class TranslationInjectionMixin {
     @Inject(method = "get", at = @At("RETURN"), cancellable = true)
     private void translateKeyPrivateHook(String key, String fallback, CallbackInfoReturnable<String> cir) {
         if (Objects.equals(fallback, cir.getReturnValue())) {
-            String injectedName = InjectedTranslations.INSTANCE.getTranslations().get(key);
+            String injectedName = RuntimeResources.INSTANCE.getTranslations().get(key);
             if (injectedName != null)
                 cir.setReturnValue(injectedName);
         }
@@ -23,6 +23,6 @@ public class TranslationInjectionMixin {
     @Inject(method = "hasTranslation", at = @At("RETURN"), cancellable = true)
     private void keyExistsHook(String key, CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValueZ())
-            cir.setReturnValue(InjectedTranslations.INSTANCE.getTranslations().containsKey(key));
+            cir.setReturnValue(RuntimeResources.INSTANCE.getTranslations().containsKey(key));
     }
 }

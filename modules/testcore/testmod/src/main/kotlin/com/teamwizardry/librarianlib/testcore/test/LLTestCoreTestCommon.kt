@@ -110,6 +110,7 @@ internal class LLTestCoreTestCommon : TestModuleCommon {
         }
         config.block("facing_block") {
             name = "Facing Block"
+            directional = true
         }
         config.block("events_block") {
             name = "Events Block"

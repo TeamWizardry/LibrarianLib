@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "refmap": "ll/testcore/testcore-refmap.json",
   "mixins": [
+    "LifecycledResourceManagerImplMixin"
   ],
   "client": [
     "TranslationInjectionMixin"

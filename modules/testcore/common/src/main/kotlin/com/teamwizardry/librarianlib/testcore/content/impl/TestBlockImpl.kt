@@ -28,9 +28,6 @@ public open class TestBlockImpl(public val config: TestBlockConfig): Block(confi
         }
     }
 
-    public open val modelName: String
-        get() = "${if (config.directional) "directional" else "normal"}/${if (config.transparent) "transparent" else "solid"}"
-
     override fun getDroppedStacks(state: BlockState, builder: LootContextParameterSet.Builder): MutableList<ItemStack> {
         return mutableListOf()
     }

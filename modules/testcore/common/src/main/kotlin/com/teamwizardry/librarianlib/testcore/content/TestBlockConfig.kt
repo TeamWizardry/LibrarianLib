@@ -20,10 +20,18 @@ import net.minecraft.world.World
 
 @TestConfigDslMarker
 public class TestBlockConfig(module: TestModuleConfig, id: Identifier): TestConfig(module, id) {
-    public val properties: AbstractBlock.Settings = AbstractBlock.Settings.create()
-        .mapColor(MapColor.PINK)
-        .pistonBehavior(PistonBehavior.NORMAL)
-        .nonOpaque()
+    public val properties: AbstractBlock.Settings
+        get() {
+            val props = AbstractBlock.Settings.create()
+                .mapColor(MapColor.PINK)
+                .pistonBehavior(PistonBehavior.NORMAL)
+            if (transparent) {
+                props
+                    .nonOpaque()
+                    .solidBlock { state, world, pos -> false }
+            }
+            return props
+        }
 
     /**
      * Whether the model should be transparent

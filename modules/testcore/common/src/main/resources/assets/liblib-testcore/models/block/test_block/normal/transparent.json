@@ -1,7 +1,7 @@
 {
-  "parent": "liblib-testbase:block/test_block/normal/base",
+  "parent": "liblib-testcore:block/test_block/normal/base",
   "textures": {
-    "bg": "liblib-testbase:block/test_block/normal/transparent/base",
-    "fg": "liblib-testbase:block/test_block/normal/transparent/color"
+    "bg": "liblib-testcore:block/test_block/normal/transparent/base",
+    "fg": "liblib-testcore:block/test_block/normal/transparent/color"
   }
 }
