@@ -13,9 +13,14 @@ architectury {
 }
 
 configurations {
+    create("devRuntime") {
+        canBe(consumed = true, resolved = false)
+    }
 }
 
 dependencies {
+    "devRuntime"(sourceSets.main.get().output)
+
     // Architectury API. This is optional, and you can comment it out if you don't need it.
     modImplementation("dev.architectury:architectury:${rootProject.property("architectury_api_version")}")
 

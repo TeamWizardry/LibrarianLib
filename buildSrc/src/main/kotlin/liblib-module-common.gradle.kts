@@ -20,7 +20,15 @@ loom {
     mixin.defaultRefmapName.set("ll/${module.name}/${module.name}-refmap.json")
 }
 
+configurations {
+    create("devRuntime") {
+        canBe(consumed = true, resolved = false)
+    }
+}
+
 dependencies {
+    "devRuntime"(sourceSets.main.get().output)
+
     api(project(path = module.path, configuration = "shade"))
     api(project(path = module.path, configuration = "transitiveShade"))
     module.dependencies {

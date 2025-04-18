@@ -16,9 +16,9 @@ configurations {
 
 dependencies {
     commonConfig.modules.forEach {
-        runtimeOnly(project(it.commonPath, configuration = "namedElements"))
-        runtimeOnly(project(it.fabricPath, configuration = "namedElements"))
-        runtimeOnly(project(it.testModPath, configuration = "namedElements"))
+        runtimeOnly(project(it.commonPath, configuration = "devRuntime"))
+        runtimeOnly(project(it.fabricPath, configuration = "devRuntime"))
+        runtimeOnly(project(it.testModPath, configuration = "devRuntime"))
         runtimeOnly(project(it.path, configuration = "shade"))
         runtimeOnly(project(it.path, configuration = "transitiveShade"))
         modRuntimeOnly(project(it.path, configuration = "includeFabric")) { isTransitive = false }

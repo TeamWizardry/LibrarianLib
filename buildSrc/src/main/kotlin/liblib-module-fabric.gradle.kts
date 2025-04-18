@@ -30,9 +30,14 @@ configurations {
     create("shadowBundle") {
         canBe(consumed = false, resolved = true)
     }
+    create("devRuntime") {
+        canBe(consumed = true, resolved = false)
+    }
 }
 
 dependencies {
+    "devRuntime"(sourceSets.main.get().output)
+
     modImplementation("net.fabricmc:fabric-loader:${rootProject.property("fabric_loader_version")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.property("fabric_api_version")}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${rootProject.property("fabric_kotlin_version")}")
