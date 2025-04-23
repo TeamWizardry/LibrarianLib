@@ -15,7 +15,7 @@ public object TestCoreClientInitializer {
 
     public fun onInitialize() {
         for (moduleClient in TestModuleClient.instances) {
-            moduleClient.initializeClient(TestModContentManager.getOrCreateModule(moduleClient.moduleId))
+            moduleClient.initializeClient(TestModContentManager.getOrCreateModule(moduleClient.module))
         }
 
         for(moduleConfig in TestModContentManager.modules.values) {

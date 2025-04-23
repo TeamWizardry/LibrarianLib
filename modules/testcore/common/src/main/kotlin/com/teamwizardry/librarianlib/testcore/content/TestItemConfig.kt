@@ -18,7 +18,7 @@ import net.minecraft.world.World
  * The DSL for configuring an item
  */
 @TestConfigDslMarker
-public class TestItemConfig(module: TestModuleConfig, id: Identifier): TestConfig(module, id) {
+public class TestItemConfig(moduleConfig: TestModuleConfig, id: Identifier): TestConfig(moduleConfig, id) {
     /**
      * The maximum stack size. Defaults to 1
      */
@@ -48,7 +48,7 @@ public class TestItemConfig(module: TestModuleConfig, id: Identifier): TestConfi
      */
     public val properties: Item.Settings = Item.Settings()
         .maxCount(maxCount)
-        .`arch$tab`(module.itemGroup.instance)
+        .`arch$tab`(moduleConfig.itemGroup.instance)
 
     /**
      * Called when this item is right clicked.

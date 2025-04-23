@@ -1,38 +1,44 @@
 package com.teamwizardry.librarianlib.testcore
 
+import com.teamwizardry.librarianlib.testcore.content.UnitTestSuite
 import com.teamwizardry.librarianlib.testcore.junit.UnitTestCommand
 import com.teamwizardry.librarianlib.testcore.module.TestModuleCommon
+import dev.architectury.registry.registries.RegistrarManager
 
 public object TestCoreCommonInitializer {
     private val logger = TestCoreMod.logManager.makeLogger<TestCoreCommonInitializer>()
 
+    public val manager: RegistrarManager by lazy { RegistrarManager.get(TestCoreMod.MODID) }
+
     public fun onInitialize() {
+        manager.builder<UnitTestSuite>(UnitTestSuite.REGISTRY_KEY.value).build()
+
         for (moduleCommon in TestModuleCommon.instances) {
-            moduleCommon.initializeCommon(TestModContentManager.getOrCreateModule(moduleCommon.moduleId))
+            moduleCommon.initializeCommon(TestModContentManager.getOrCreateModule(moduleCommon.module))
         }
 
         for(itemGroupConfig in TestModContentManager.itemGroups.values) {
-            Registrars.ITEM_GROUP.register(itemGroupConfig.id) { itemGroupConfig.instance }
+            itemGroupConfig.module.registrars.itemGroup.register(itemGroupConfig.id) { itemGroupConfig.instance }
         }
 
         for(itemConfig in TestModContentManager.items.values) {
-            Registrars.ITEM.register(itemConfig.id) { itemConfig.instance }
+            itemConfig.module.registrars.item.register(itemConfig.id) { itemConfig.instance }
         }
 
         for(blockConfig in TestModContentManager.blocks.values) {
             blockConfig.blockEntityType?.also { blockEntityType ->
-                Registrars.BLOCK_ENTITY_TYPE.register(blockConfig.id) { blockEntityType }
+                blockConfig.module.registrars.blockEntityType.register(blockConfig.id) { blockEntityType }
             }
-            Registrars.BLOCK.register(blockConfig.id) { blockConfig.blockInstance }
-            Registrars.ITEM.register(blockConfig.id) { blockConfig.itemInstance }
+            blockConfig.module.registrars.block.register(blockConfig.id) { blockConfig.blockInstance }
+            blockConfig.module.registrars.item.register(blockConfig.id) { blockConfig.itemInstance }
         }
 
         for(entityConfig in TestModContentManager.entities.values) {
-            Registrars.ENTITY_TYPE.register(entityConfig.id) { entityConfig.entityTypeInstance }
+            entityConfig.module.registrars.entityType.register(entityConfig.id) { entityConfig.entityTypeInstance }
         }
 
         for (unitTestConfig in TestModContentManager.unitTests.values) {
-            Registrars.UNIT_TEST.register(unitTestConfig.id) { unitTestConfig }
+            unitTestConfig.module.registrars.unitTest.register(unitTestConfig.id) { unitTestConfig }
         }
 
         UnitTestCommand.register()

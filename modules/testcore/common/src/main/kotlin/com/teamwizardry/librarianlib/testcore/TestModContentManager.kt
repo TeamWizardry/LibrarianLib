@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.testcore
 
 import com.teamwizardry.librarianlib.testcore.content.*
 import com.teamwizardry.librarianlib.testcore.content.UnitTestSuite
+import com.teamwizardry.librarianlib.testcore.module.TestModule
 import net.minecraft.util.Identifier
 
 @PublishedApi
@@ -15,23 +16,23 @@ internal object TestModContentManager {
 
     var locked = false
 
-    fun getOrCreateModule(moduleId: String) =
-        getOrCreate(modules, moduleId) { TestModuleConfig(moduleId) }
+    fun getOrCreateModule(module: TestModule) =
+        getOrCreate(modules, module.moduleId) { TestModuleConfig(module) }
 
-    fun getOrCreateItemGroup(module: TestModuleConfig, id: Identifier) =
-        getOrCreate(itemGroups, id) { TestItemGroupConfig(module, id) }
+    fun getOrCreateItemGroup(moduleConfig: TestModuleConfig, id: Identifier) =
+        getOrCreate(itemGroups, id) { TestItemGroupConfig(moduleConfig, id) }
 
-    fun getOrCreateItem(module: TestModuleConfig, id: Identifier) =
-        getOrCreate(items, id) { TestItemConfig(module, id) }
+    fun getOrCreateItem(moduleConfig: TestModuleConfig, id: Identifier) =
+        getOrCreate(items, id) { TestItemConfig(moduleConfig, id) }
 
-    fun getOrCreateBlock(module: TestModuleConfig, id: Identifier) =
-        getOrCreate(blocks, id) { TestBlockConfig(module, id) }
+    fun getOrCreateBlock(moduleConfig: TestModuleConfig, id: Identifier) =
+        getOrCreate(blocks, id) { TestBlockConfig(moduleConfig, id) }
 
-    fun getOrCreateEntity(module: TestModuleConfig, id: Identifier) =
-        getOrCreate(entities, id) { TestEntityConfig(module, id) }
+    fun getOrCreateEntity(moduleConfig: TestModuleConfig, id: Identifier) =
+        getOrCreate(entities, id) { TestEntityConfig(moduleConfig, id) }
 
-    fun getOrCreateUnitTest(module: TestModuleConfig, id: Identifier): UnitTestSuite =
-        getOrCreate(unitTests, id) { UnitTestSuite(module, id) }
+    fun getOrCreateUnitTest(moduleConfig: TestModuleConfig, id: Identifier): UnitTestSuite =
+        getOrCreate(unitTests, id) { UnitTestSuite(moduleConfig, id) }
 
     private fun <K : Any, V : Any> getOrCreate(map: MutableMap<K, V>, key: K, fn: () -> V): V {
         if (locked && key !in map)

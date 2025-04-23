@@ -8,9 +8,9 @@ import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 
 @TestConfigDslMarker
-public class TestItemGroupConfig(module: TestModuleConfig, id: Identifier) : TestConfig(module, id) {
+public class TestItemGroupConfig(moduleConfig: TestModuleConfig, id: Identifier) : TestConfig(moduleConfig, id) {
     init {
-        this.name = module.moduleId
+        this.name = moduleConfig.module.name
     }
     public val translationKey: String = id.toTranslationKey("itemGroup")
     public val instance: ItemGroup =

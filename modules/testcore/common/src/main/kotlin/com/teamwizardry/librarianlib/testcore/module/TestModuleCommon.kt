@@ -4,7 +4,7 @@ import com.teamwizardry.librarianlib.core.util.ServiceLoaderHelper
 import com.teamwizardry.librarianlib.testcore.content.TestModuleConfig
 
 public interface TestModuleCommon {
-    public val moduleId: String
+    public val module: TestModule
     public fun initializeCommon(config: TestModuleConfig)
 
     public companion object {

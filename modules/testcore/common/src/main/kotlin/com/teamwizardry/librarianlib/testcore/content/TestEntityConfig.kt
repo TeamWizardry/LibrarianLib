@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 
-public class TestEntityConfig(module: TestModuleConfig, id: Identifier) : TestConfig(module, id) {
+public class TestEntityConfig(moduleConfig: TestModuleConfig, id: Identifier) : TestConfig(moduleConfig, id) {
 
     public val entityTypeInstance: EntityType<TestEntityImpl> by lazy {
         EntityType.Builder.create(
@@ -26,7 +26,7 @@ public class TestEntityConfig(module: TestModuleConfig, id: Identifier) : TestCo
     }
 
 
-    public val spawnerItem: TestItemConfig = module.item(Identifier.of("${id}_spawner")) {
+    public val spawnerItem: TestItemConfig = moduleConfig.item(Identifier.of("${id}_spawner")) {
         name = this@TestEntityConfig.name
         rightClick.server {
             spawn(player)

@@ -19,7 +19,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 
 @TestConfigDslMarker
-public class TestBlockConfig(module: TestModuleConfig, id: Identifier): TestConfig(module, id) {
+public class TestBlockConfig(moduleConfig: TestModuleConfig, id: Identifier): TestConfig(moduleConfig, id) {
     public val properties: AbstractBlock.Settings
         get() {
             val props = AbstractBlock.Settings.create()
@@ -72,7 +72,7 @@ public class TestBlockConfig(module: TestModuleConfig, id: Identifier): TestConf
     }
 
     internal val itemInstance: TestBlockItem by lazy {
-        TestBlockItem(blockInstance, Item.Settings().maxCount(1).`arch$tab`(module.itemGroup.instance))
+        TestBlockItem(blockInstance, Item.Settings().maxCount(1).`arch$tab`(moduleConfig.itemGroup.instance))
     }
 
     internal val blockEntityType: BlockEntityType<BlockEntity>? by lazy {

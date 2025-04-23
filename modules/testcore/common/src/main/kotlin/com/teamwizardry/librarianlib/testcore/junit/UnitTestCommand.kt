@@ -8,7 +8,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import com.teamwizardry.librarianlib.testcore.Registrars
 import com.teamwizardry.librarianlib.testcore.TestCoreMod
 import com.teamwizardry.librarianlib.testcore.content.UnitTestSuite
 import com.teamwizardry.librarianlib.testcore.junit.runner.TestResult
@@ -35,13 +34,13 @@ public object UnitTestCommand {
             Identifier.of("liblib-testcore:unit_test"),
             UnitTestArgument::class.java,
             ConstantArgumentSerializer.of { registryAccess ->
-                UnitTestArgument(registryAccess.getWrapperOrThrow(Registrars.UNIT_TEST_KEY))
+                UnitTestArgument(registryAccess.getWrapperOrThrow(UnitTestSuite.REGISTRY_KEY))
             }
         )
         CommandRegistrationEvent.EVENT.register { dispatcher, registryAccess, environment ->
             dispatcher.register(
                 CommandManager.literal("unittest").then(
-                    CommandManager.argument("test", UnitTestArgument(registryAccess.getWrapperOrThrow(Registrars.UNIT_TEST_KEY)))
+                    CommandManager.argument("test", UnitTestArgument(registryAccess.getWrapperOrThrow(UnitTestSuite.REGISTRY_KEY)))
                         .executes { context ->
                             runTestSuite(context.source, context.input, UnitTestArgument.getUnitTest(context, "test"))
                             Command.SINGLE_SUCCESS
@@ -107,7 +106,7 @@ public class UnitTestArgument(private val registryWrapper: RegistryWrapper.Impl<
     @Throws(CommandSyntaxException::class)
     override fun parse(reader: StringReader): UnitTestSuite {
         val identifier = Identifier.fromCommandInput(reader)
-        val entry = this.registryWrapper.getOptional(RegistryKey.of(Registrars.UNIT_TEST_KEY, identifier)).getOrNull()
+        val entry = this.registryWrapper.getOptional(RegistryKey.of(UnitTestSuite.REGISTRY_KEY, identifier)).getOrNull()
         return entry?.value() ?: throw TEST_NOT_FOUND.create(identifier)
     }
 

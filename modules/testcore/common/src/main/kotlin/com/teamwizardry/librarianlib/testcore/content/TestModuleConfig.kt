@@ -1,10 +1,10 @@
 package com.teamwizardry.librarianlib.testcore.content
 
-import com.teamwizardry.librarianlib.testcore.TestCoreMod
 import com.teamwizardry.librarianlib.testcore.TestModContentManager
+import com.teamwizardry.librarianlib.testcore.module.TestModule
 import net.minecraft.util.Identifier
 
-public class TestModuleConfig(public val moduleId: String) {
+public class TestModuleConfig(public val module: TestModule) {
     public val itemGroup: TestItemGroupConfig =
         TestModContentManager.getOrCreateItemGroup(this, createId("item_group"))
 
@@ -32,7 +32,5 @@ public class TestModuleConfig(public val moduleId: String) {
     internal fun entity(id: Identifier, config: TestEntityConfig.() -> Unit = {}): TestEntityConfig =
         TestModContentManager.getOrCreateEntity(this, id).apply(config)
 
-    public fun createId(name: String): Identifier {
-        return Identifier.of(TestCoreMod.MODID, "${moduleId}_$name")
-    }
+    public fun createId(name: String): Identifier = Identifier.of(module.modId, name)
 }
