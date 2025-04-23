@@ -1,32 +1,22 @@
 package com.teamwizardry.librarianlib.etcetera.test
 
-import com.teamwizardry.librarianlib.core.util.Client
-import net.fabricmc.fabric.api.client.particle.v1.FabricSpriteProvider
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry
-import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes
+import com.teamwizardry.librarianlib.testcore.platform.TestCoreClientPlatform
 import net.minecraft.client.particle.*
 import net.minecraft.client.world.ClientWorld
 import net.minecraft.particle.SimpleParticleType
-import net.minecraft.registry.Registries
-import net.minecraft.util.Identifier
-import net.minecraft.registry.Registry
 
-object Particles {
-    val TARGET_RED: SimpleParticleType = FabricParticleTypes.simple(true)
-    val TARGET_BLUE: SimpleParticleType = FabricParticleTypes.simple(true)
+internal object Particles {
+    val TARGET_RED: SimpleParticleType = object : SimpleParticleType(true) {}
+    val TARGET_BLUE: SimpleParticleType = object : SimpleParticleType(true) {}
 
     fun register() {
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of("liblib-etcetera-test:target_red"), TARGET_RED)
-        Registry.register(Registries.PARTICLE_TYPE, Identifier.of("liblib-etcetera-test:target_blue"), TARGET_BLUE)
+        LibLibEtceteraTest.registrars.particleType.register(LibLibEtceteraTest.createId("target_red")) { TARGET_RED }
+        LibLibEtceteraTest.registrars.particleType.register(LibLibEtceteraTest.createId("target_blue")) { TARGET_BLUE }
     }
 
     fun registerClient() {
-        ParticleFactoryRegistry.getInstance().register(TARGET_RED) { spriteProvider ->
-            HitParticle.Factory(spriteProvider)
-        }
-        ParticleFactoryRegistry.getInstance().register(TARGET_BLUE) { spriteProvider ->
-            HitParticle.Factory(spriteProvider)
-        }
+        TestCoreClientPlatform.instance.registerParticleFactory(TARGET_RED, HitParticle::Factory)
+        TestCoreClientPlatform.instance.registerParticleFactory(TARGET_BLUE, HitParticle::Factory)
     }
 }
 

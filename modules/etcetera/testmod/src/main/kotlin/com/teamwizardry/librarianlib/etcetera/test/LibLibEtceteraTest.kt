@@ -1,15 +1,13 @@
 package com.teamwizardry.librarianlib.etcetera.test
 
-import com.teamwizardry.librarianlib.core.util.ModLogManager
+import com.google.auto.service.AutoService
 import com.teamwizardry.librarianlib.etcetera.Raycaster
 import com.teamwizardry.librarianlib.math.times
-import com.teamwizardry.librarianlib.testcore.TestModContentManager
-import com.teamwizardry.librarianlib.testcore.content.TestEntity
-import com.teamwizardry.librarianlib.testcore.content.TestItem
+import com.teamwizardry.librarianlib.testcore.content.TestModuleConfig
 import com.teamwizardry.librarianlib.testcore.content.configure
-import net.fabricmc.api.ClientModInitializer
-import net.fabricmc.api.DedicatedServerModInitializer
-import net.fabricmc.api.ModInitializer
+import com.teamwizardry.librarianlib.testcore.module.TestModule
+import com.teamwizardry.librarianlib.testcore.module.TestModuleClient
+import com.teamwizardry.librarianlib.testcore.module.TestModuleCommon
 import net.minecraft.block.Blocks
 import net.minecraft.fluid.Fluids
 import net.minecraft.particle.BlockStateParticleEffect
@@ -18,55 +16,62 @@ import net.minecraft.particle.ParticleTypes
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.shape.VoxelShapes
-import java.util.function.Predicate
 
-internal object LibLibEtceteraTest {
-    val logManager: ModLogManager = ModLogManager("liblib-etcetera-test", "LibrarianLib Etcetera Test")
-    val manager: TestModContentManager = TestModContentManager("liblib-etcetera-test", "Etcetera", logManager)
+internal object LibLibEtceteraTest : TestModule("etcetera", "Etcetera") {
+    @AutoService(TestModuleCommon::class)
+    class CommonInit : TestModuleCommon {
+        override val module = LibLibEtceteraTest
 
-    object CommonInitializer : ModInitializer {
-        private val logger = logManager.makeLogger<CommonInitializer>()
-
-        override fun onInitialize() {
+        override fun initializeCommon(config: TestModuleConfig) {
             Particles.register()
 
             raycaster(
+                config,
                 "raycast_collision", "Collision",
                 "Block mode: COLLISION",
             ) {
                 it.withBlockMode(Raycaster.BlockMode.COLLISION)
             }
             raycaster(
+                config,
                 "raycast_visual", "Visual",
                 "Block mode: VISUAL",
             ) {
                 it.withBlockMode(Raycaster.BlockMode.VISUAL)
             }
             raycaster(
+                config,
                 "raycast_fluids", "Fluids",
                 "Fluid mode: ANY",
             ) {
                 it.withFluidMode(Raycaster.FluidMode.ANY)
             }
             raycaster(
+                config,
                 "raycast_source", "Fluid Source",
                 "Fluid mode: SOURCE",
             ) {
                 it.withFluidMode(Raycaster.FluidMode.SOURCE)
             }
-            raycaster("raycast_entities", "Entities",
+            raycaster(
+                config,
+                "raycast_entities", "Entities",
                 "Entities: <all>",
             ) {
                 it.withEntities(null, null)
             }
-            raycaster("raycast_all", "All",
+            raycaster(
+                config,
+                "raycast_all", "All",
                 "Block mode: COLLISION\nFluid mode: ANY\nEntities: <all>",
             ) {
                 it.withBlockMode(Raycaster.BlockMode.COLLISION)
                     .withFluidMode(Raycaster.FluidMode.ANY)
                     .withEntities(null, null)
             }
-            raycaster("raycast_scaffolding", "Collision + Scaffolding",
+            raycaster(
+                config,
+                "raycast_scaffolding", "Collision + Scaffolding",
                 "Block mode: COLLISION\nBlock override: scaffolding=full block",
             ) {
                 it.withBlockMode(Raycaster.BlockMode.COLLISION)
@@ -77,7 +82,9 @@ internal object LibLibEtceteraTest {
                         }
                     }
             }
-            raycaster("raycast_fluid_no_lava", "Fluid + No Lava",
+            raycaster(
+                config,
+                "raycast_fluid_no_lava", "Fluid + No Lava",
                 "Fluid mode: ANY\nFluid override: lava=empty, flowing_lava=empty",
             ) {
                 it.withFluidMode(Raycaster.FluidMode.ANY)
@@ -90,7 +97,7 @@ internal object LibLibEtceteraTest {
                     }
             }
 
-            manager.create<TestItem>("raycast_types") {
+            config.item("raycast_types") {
                 name = "Raycaster: Hit Types"
                 description = "Spawns a different particle type for each hit type"
                 val serverRaycaster = Raycaster()
@@ -145,15 +152,14 @@ internal object LibLibEtceteraTest {
                     }
                 }
             }
-
-            manager.registerCommon()
         }
 
         private fun raycaster(
+            config: TestModuleConfig,
             id: String, name: String, desc: String,
             configure: (Raycaster.RaycastRequest) -> Unit
         ) {
-            manager.create<TestEntity>(id) {
+            config.entity(id) {
                 description = desc
                 val clientRaycaster = Raycaster()
                 val serverRaycaster = Raycaster()
@@ -262,20 +268,12 @@ internal object LibLibEtceteraTest {
         }
     }
 
-    internal object ClientInitializer : ClientModInitializer {
-        private val logger = logManager.makeLogger<ClientInitializer>()
+    @AutoService(TestModuleClient::class)
+    class ClientInit : TestModuleClient {
+        override val module = LibLibEtceteraTest
 
-        override fun onInitializeClient() {
-            manager.registerClient()
+        override fun initializeClient(config: TestModuleConfig) {
             Particles.registerClient()
-        }
-    }
-
-    internal object ServerInitializer : DedicatedServerModInitializer {
-        private val logger = logManager.makeLogger<ServerInitializer>()
-
-        override fun onInitializeServer() {
-            manager.registerServer()
         }
     }
 }
