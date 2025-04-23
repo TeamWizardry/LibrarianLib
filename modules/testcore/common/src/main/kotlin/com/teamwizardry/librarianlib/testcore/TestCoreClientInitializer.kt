@@ -18,21 +18,28 @@ public object TestCoreClientInitializer {
             moduleClient.initializeClient(TestModContentManager.getOrCreateModule(moduleClient.moduleId))
         }
 
+        for(moduleConfig in TestModContentManager.modules.values) {
+            RuntimeResources.addTranslation(moduleConfig.itemGroup.translationKey, moduleConfig.itemGroup.name)
+        }
+
         for(entityConfig in TestModContentManager.entities.values) {
             EntityRendererRegistry.register({ entityConfig.entityTypeInstance }) { dispatcher ->
                 TestEntityRenderer(dispatcher)
             }
+            RuntimeResources.addTranslation(entityConfig.entityTypeInstance.translationKey, entityConfig.name)
         }
 
         for(itemConfig in TestModContentManager.items.values) {
             RuntimeResources.addAsset(TestItemModelGenerator.generateModel(itemConfig.id))
             RuntimeResources.addAsset(TestItemModelGenerator.generateModelDef(itemConfig.id))
+            RuntimeResources.addTranslation(itemConfig.instance.translationKey, itemConfig.name)
         }
 
         for(blockConfig in TestModContentManager.blocks.values) {
             RuntimeResources.addAsset(TestBlockModelGenerator.generateBlockStates(blockConfig))
             RuntimeResources.addAsset(TestBlockModelGenerator.generateItemModel(blockConfig))
             RenderTypeRegistry.register(RenderLayer.getCutout(), blockConfig.blockInstance)
+            RuntimeResources.addTranslation(blockConfig.blockInstance.translationKey, blockConfig.name)
         }
 
         logger.info("Generated {} assets", RuntimeResources.resources.size)

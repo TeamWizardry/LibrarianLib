@@ -22,10 +22,6 @@ public sealed class TestConfig(public val module: TestModuleConfig, public val i
     public inline fun client(block: ClientActionScope.() -> Unit): ClientActionScope = ClientActionScope.apply(block)
     public inline fun server(block: ServerActionScope.() -> Unit): ServerActionScope = ServerActionScope.apply(block)
     public inline fun common(block: CommonActionScope.() -> Unit): CommonActionScope = CommonActionScope.apply(block)
-
-    public open fun getTranslations(): List<Pair<String, String>> {
-        return emptyList()
-    }
 }
 
 public inline fun <T: TestConfig> T.configure(block: T.() -> Unit): T = this.apply(block)

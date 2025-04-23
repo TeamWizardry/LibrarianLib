@@ -9,10 +9,10 @@ import net.minecraft.util.Identifier
 
 @TestConfigDslMarker
 public class TestItemGroupConfig(module: TestModuleConfig, id: Identifier) : TestConfig(module, id) {
+    init {
+        this.name = module.moduleId
+    }
+    public val translationKey: String = id.toTranslationKey("itemGroup")
     public val instance: ItemGroup =
-        CreativeTabRegistry.create(Text.translatable(id.toTranslationKey("itemGroup"))) { ItemStack(Items.STICK) }
-
-    override fun getTranslations(): List<Pair<String, String>> = listOf(
-        id.toTranslationKey("itemGroup") to name,
-    )
+        CreativeTabRegistry.create(Text.translatable(translationKey)) { ItemStack(Items.STICK) }
 }
