@@ -23,7 +23,7 @@ fun includeModule(name: String) {
     project(":$name:testmod").projectDir = rootDir.resolve("modules/$name/testmod")
 }
 
-//includeModule("albedo")
+includeModule("albedo")
 includeModule("core")
 ////includeModule("courier")
 includeModule("etcetera")

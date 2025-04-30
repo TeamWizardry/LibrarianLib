@@ -9,9 +9,9 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.GlResourceGc
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
 import com.teamwizardry.librarianlib.core.util.kotlin.weakSetOf
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper
-import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener
+import com.teamwizardry.librarianlib.platform.LibLibPlatformCommon
 import net.minecraft.resource.ResourceManager
+import net.minecraft.resource.ResourceReloader
 import net.minecraft.resource.ResourceType
 import net.minecraft.util.Identifier
 import net.minecraft.util.profiler.Profiler
@@ -301,37 +301,32 @@ public class Shader private constructor(
 
     public class ShaderFile(public val location: Identifier, public val defines: List<String>)
 
-    private object ReloadListener : SimpleResourceReloadListener<Unit> {
+    private object ReloadListener : ResourceReloader {
         val allShaders = weakSetOf<Shader>()
 
         init {
-            ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(ReloadListener)
+            LibLibPlatformCommon.instance.registerResourceReloadListener(
+                ResourceType.CLIENT_RESOURCES,
+                this,
+                Identifier.of("liblib-albedo:shaders")
+            )
         }
 
-        override fun getFabricId(): Identifier {
-            return Identifier.of("liblib-albedo:shaders")
-        }
-
-        override fun load(
+        override fun reload(
+            synchronizer: ResourceReloader.Synchronizer,
             manager: ResourceManager,
-            profiler: Profiler,
-            executor: Executor
-        ): CompletableFuture<Unit> {
-            return CompletableFuture.supplyAsync { }
-        }
-
-        override fun apply(
-            data: Unit,
-            manager: ResourceManager,
-            profiler: Profiler,
-            executor: Executor
+            prepareProfiler: Profiler,
+            applyProfiler: Profiler,
+            prepareExecutor: Executor,
+            applyExecutor: Executor
         ): CompletableFuture<Void> {
-            Client.minecraft.execute {
-                allShaders.forEach { shader ->
-                    shader.compile(manager)
+            return synchronizer.whenPrepared(null).thenAccept {
+                Client.minecraft.execute {
+                    allShaders.forEach { shader ->
+                        shader.compile(manager)
+                    }
                 }
             }
-            return CompletableFuture.runAsync {}
         }
     }
 

@@ -2,20 +2,19 @@ package com.teamwizardry.librarianlib.albedo.test
 
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.testcore.content.impl.TestEntityImpl
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.RotationAxis
 
-object AlbedoTestRenderManager : WorldRenderEvents.Last {
+object AlbedoTestRenderManager {
     val worldRenderers = mutableMapOf<Identifier, AlbedoTestRenderer>()
 
     fun registerEvents() {
-        WorldRenderEvents.LAST.register(this)
+//        WorldRenderEvents.LAST.register(this)
     }
 
+    /*
     override fun onLast(context: WorldRenderContext) {
         val matrices = MatrixStack()
         val viewPos = Client.minecraft.gameRenderer.camera.pos
@@ -50,6 +49,7 @@ object AlbedoTestRenderManager : WorldRenderEvents.Last {
                 matrices.pop()
             }
     }
+     */
 
     val logger = LibLibAlbedoTest.logManager.makeLogger<AlbedoTestRenderManager>()
 }
