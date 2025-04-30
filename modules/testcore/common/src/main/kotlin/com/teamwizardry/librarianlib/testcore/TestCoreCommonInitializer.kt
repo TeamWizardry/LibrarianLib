@@ -16,6 +16,7 @@ public object TestCoreCommonInitializer {
         for (moduleCommon in TestModuleCommon.instances) {
             moduleCommon.initializeCommon(TestModContentManager.getOrCreateModule(moduleCommon.module))
         }
+        TestModContentManager.locked = true
 
         for(itemGroupConfig in TestModContentManager.itemGroups.values) {
             itemGroupConfig.module.registrars.itemGroup.register(itemGroupConfig.id) { itemGroupConfig.instance }
