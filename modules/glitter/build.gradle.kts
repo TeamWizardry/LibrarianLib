@@ -1,5 +1,5 @@
 plugins {
-    `module-conventions`
+    `liblib-module-root`
 }
 
 module {
@@ -7,19 +7,6 @@ module {
     description = "High-performance particle systems"
     shadowPackages("org.magicwerk.brownies")
     moduleDependencies("core", "etcetera", "albedo")
-}
-
-configureFabricModJson {
-    entrypoint("main", adapter = "kotlin", value = "com.teamwizardry.librarianlib.glitter.LibLibGlitter\$CommonInitializer")
-    entrypoint("client", adapter = "kotlin", value = "com.teamwizardry.librarianlib.glitter.LibLibGlitter\$ClientInitializer")
-    entrypoint("server", adapter = "kotlin", value = "com.teamwizardry.librarianlib.glitter.LibLibGlitter\$ServerInitializer")
-    mixin("ll/glitter/glitter.mixins.json")
-}
-
-configureFabricTestModJson {
-    entrypoint("main", adapter = "kotlin", value = "com.teamwizardry.librarianlib.glitter.test.LibLibGlitterTest\$CommonInitializer")
-    entrypoint("client", adapter = "kotlin", value = "com.teamwizardry.librarianlib.glitter.test.LibLibGlitterTest\$ClientInitializer")
-    entrypoint("server", adapter = "kotlin", value = "com.teamwizardry.librarianlib.glitter.test.LibLibGlitterTest\$ServerInitializer")
 }
 
 dependencies {
