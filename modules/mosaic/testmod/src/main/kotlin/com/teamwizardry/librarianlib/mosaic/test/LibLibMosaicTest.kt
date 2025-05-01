@@ -1,59 +1,56 @@
 package com.teamwizardry.librarianlib.mosaic.test
 
+import com.google.auto.service.AutoService
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.ModLogManager
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.mosaic.Mosaic
 import com.teamwizardry.librarianlib.mosaic.Sprite
-import com.teamwizardry.librarianlib.testcore.TestModContentManager
-import com.teamwizardry.librarianlib.testcore.content.TestItem
+import com.teamwizardry.librarianlib.testcore.content.TestModuleConfig
 import com.teamwizardry.librarianlib.testcore.content.utils.TestScreen
-import net.fabricmc.api.ClientModInitializer
-import net.fabricmc.api.DedicatedServerModInitializer
-import net.fabricmc.api.ModInitializer
+import com.teamwizardry.librarianlib.testcore.module.TestModule
+import com.teamwizardry.librarianlib.testcore.module.TestModuleClient
+import com.teamwizardry.librarianlib.testcore.module.TestModuleCommon
 import net.minecraft.util.Identifier
 import java.awt.Color
 
-internal object LibLibMosaicTest {
-    val logManager: ModLogManager = ModLogManager("liblib-mosaic-test", "LibrarianLib Mosaic Test")
-    val manager: TestModContentManager = TestModContentManager("liblib-mosaic-test", "Mosaic", logManager)
+internal object LibLibMosaicTest : TestModule("mosaic", "Mosaic") {
+    @AutoService(TestModuleCommon::class)
+    class CommonInit : TestModuleCommon {
+        override val module = LibLibMosaicTest
+        val logger = logManager.makeLogger<CommonInit>()
 
-    object CommonInitializer : ModInitializer {
-        private val logger = logManager.makeLogger<CommonInitializer>()
-
-        override fun onInitialize() {
-            manager.create<TestItem>("no_mcmeta") {
+        override fun initializeCommon(config: TestModuleConfig) {
+            config.item("no_mcmeta") {
                 name = "No .mcmeta"
                 description = "A 32x32 texture with no .mcmeta file"
             }
-            manager.create<TestItem>("two_sprites") {
+            config.item("two_sprites") {
                 name = "Two Sprites"
                 description = "A spritesheet consisting of two sprites with opposing arrows, drawn so the arrows point together"
             }
-            manager.create<TestItem>("sprite_pinning") {
+            config.item("sprite_pinning") {
                 name = "Sprite Pinning"
                 description = "A spritesheet with all the valid combinations of pinned edges."
             }
-            manager.create<TestItem>("sprite_caps") {
+            config.item("sprite_caps") {
                 name = "Sprite Caps"
                 description = "A spritesheet with various sprite cap scenarios"
             }
-            manager.create<TestItem>("sprite_animation") {
+            config.item("sprite_animation") {
                 name = "Sprite Animation"
                 description = "A spritesheet with various types of animation"
             }
-
-            manager.registerCommon()
         }
     }
 
-    object ClientInitializer : ClientModInitializer {
-        private val logger = logManager.makeLogger<ClientInitializer>()
+    @AutoService(TestModuleClient::class)
+    class ClientInit : TestModuleClient {
+        override val module = LibLibMosaicTest
+        val logger = logManager.makeLogger<ClientInit>()
 
-        @Suppress("LocalVariableName")
-        override fun onInitializeClient() {
-            manager.named<TestItem>("no_mcmeta") {
+        override fun initializeClient(config: TestModuleConfig) {
+            config.item("no_mcmeta") {
                 rightClick.client {
                     Client.minecraft.setScreen(TestScreen {
                         val tex = Mosaic(Identifier.of("liblib-mosaic-test:textures/gui/no_mcmeta.png"), 32, 32)
@@ -69,7 +66,7 @@ internal object LibLibMosaicTest {
                 }
             }
 
-            manager.named<TestItem>("two_sprites") {
+            config.item("two_sprites") {
                 rightClick.client {
                     Client.minecraft.setScreen(TestScreen {
                         val tex = Mosaic(Identifier.of("liblib-mosaic-test:textures/gui/two_sprites.png"), 64, 64)
@@ -88,7 +85,7 @@ internal object LibLibMosaicTest {
                 }
             }
 
-            manager.named<TestItem>("sprite_pinning") {
+            config.item("sprite_pinning") {
                 rightClick.client {
                     Client.minecraft.setScreen(TestScreen {
                         val tex = Mosaic(Identifier.of("liblib-mosaic-test:textures/gui/edge_pinning.png"), 128, 128)
@@ -130,7 +127,7 @@ internal object LibLibMosaicTest {
                 }
             }
 
-            manager.named<TestItem>("sprite_caps") {
+            config.item("sprite_caps") {
                 rightClick.client {
                     Client.minecraft.setScreen(TestScreen {
                         val tex = Mosaic(Identifier.of("liblib-mosaic-test:textures/gui/sprite_caps.png"), 256, 128)
@@ -188,10 +185,11 @@ internal object LibLibMosaicTest {
                 }
             }
 
-            manager.named<TestItem>("sprite_animation") {
+            config.item("sprite_animation") {
                 rightClick.client {
                     Client.minecraft.setScreen(TestScreen {
-                        val tex = Mosaic(Identifier.of("liblib-mosaic-test:textures/gui/sprite_animations.png"), 128, 256)
+                        val tex =
+                            Mosaic(Identifier.of("liblib-mosaic-test:textures/gui/sprite_animations.png"), 128, 256)
                         val background = tex.getSprite("background")
 
                         size = vec(background.width, background.height)
@@ -213,12 +211,18 @@ internal object LibLibMosaicTest {
                     })
                 }
             }
-
-            manager.registerClient()
         }
 
         @Suppress("NOTHING_TO_INLINE")
-        inline fun Sprite.draw(matrix: Matrix4d, x: Number, y: Number, width: Number, height: Number, animTicks: Int, tint: Color) {
+        inline fun Sprite.draw(
+            matrix: Matrix4d,
+            x: Number,
+            y: Number,
+            width: Number,
+            height: Number,
+            animTicks: Int,
+            tint: Color
+        ) {
             this.draw(matrix, x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), animTicks, tint)
         }
 
@@ -235,14 +239,6 @@ internal object LibLibMosaicTest {
         @Suppress("NOTHING_TO_INLINE")
         inline fun Sprite.draw(matrix: Matrix4d, x: Number, y: Number) {
             this.draw(matrix, x.toFloat(), y.toFloat())
-        }
-    }
-
-    object ServerInitializer : DedicatedServerModInitializer {
-        private val logger = logManager.makeLogger<ServerInitializer>()
-
-        override fun onInitializeServer() {
-            manager.registerServer()
         }
     }
 }

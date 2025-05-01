@@ -9,10 +9,12 @@ import com.teamwizardry.librarianlib.math.ceilInt
 import com.teamwizardry.librarianlib.math.floorInt
 import com.teamwizardry.librarianlib.core.util.ivec
 import com.teamwizardry.librarianlib.core.util.vec
-import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener
+import com.teamwizardry.librarianlib.platform.LibLibPlatformCommon
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata
 import net.minecraft.resource.Resource
 import net.minecraft.resource.ResourceManager
+import net.minecraft.resource.ResourceReloader
+import net.minecraft.resource.ResourceType
 import net.minecraft.util.Identifier
 import net.minecraft.util.profiler.Profiler
 import java.awt.Color
@@ -23,13 +25,21 @@ import java.util.concurrent.Executor
 import javax.imageio.ImageIO
 import kotlin.jvm.optionals.getOrNull
 
-internal object MosaicLoader : SimpleResourceReloadListener<Map<Identifier, MosaicDefinition?>> {
+internal object MosaicLoader : ResourceReloader {
     private var definitions: MutableMap<Identifier, MosaicDefinition?> = mutableMapOf()
     private var missingno = Identifier.of("liblib-mosaic:textures/missingno.png")
 
     val missingnoSheet: MosaicDefinition get() = getDefinition(missingno)
     val missingnoSprite: SpriteDefinition get() = getDefinition(missingno).sprites[0]
     val missingnoColor: ColorDefinition get() = getDefinition(missingno).colors[0]
+
+    init {
+        LibLibPlatformCommon.instance.registerResourceReloadListener(
+            ResourceType.CLIENT_RESOURCES,
+            this,
+            Identifier.of("liblib-mosaic:loader")
+        )
+    }
 
     fun getDefinition(location: Identifier): MosaicDefinition {
         val def = definitions.getOrPut(location) {
@@ -40,9 +50,20 @@ internal object MosaicLoader : SimpleResourceReloadListener<Map<Identifier, Mosa
         return def ?: getDefinition(missingno)
     }
 
-    override fun getFabricId(): Identifier = Identifier.of("liblib-mosaic:loader")
+    override fun reload(
+        synchronizer: ResourceReloader.Synchronizer,
+        manager: ResourceManager,
+        prepareProfiler: Profiler,
+        applyProfiler: Profiler,
+        prepareExecutor: Executor,
+        applyExecutor: Executor
+    ): CompletableFuture<Void> {
+        return load(manager, prepareProfiler, prepareExecutor)
+            .thenCompose(synchronizer::whenPrepared)
+            .thenCompose { apply(it, manager, applyProfiler, applyExecutor) }
+    }
 
-    override fun load(
+    fun load(
         manager: ResourceManager,
         profiler: Profiler,
         executor: Executor
@@ -52,7 +73,7 @@ internal object MosaicLoader : SimpleResourceReloadListener<Map<Identifier, Mosa
         }, executor)
     }
 
-    override fun apply(
+    fun apply(
         data: Map<Identifier, MosaicDefinition?>,
         manager: ResourceManager,
         profiler: Profiler,

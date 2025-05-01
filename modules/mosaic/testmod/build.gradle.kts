@@ -1,0 +1,3 @@
+plugins {
+    `liblib-module-testmod`
+}
