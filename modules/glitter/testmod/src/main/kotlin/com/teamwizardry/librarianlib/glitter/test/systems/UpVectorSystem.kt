@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.glitter.test.modules.VelocityRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object UpVectorSystem : TestSystem(Identifier.of("liblib-glitter-test:up_vector")) {
+object UpVectorSystem : TestSystem(Identifier.of("liblib_glitter_test:up_vector")) {
     override fun configure() {
         val pos = bind(3)
         val color = bind(4)
@@ -14,7 +14,7 @@ object UpVectorSystem : TestSystem(Identifier.of("liblib-glitter-test:up_vector"
 
         renderModules.add(
             SpriteRenderModule.build(
-                Identifier.of("ll-glitter-test:textures/glitter/arrow.png"),
+                Identifier.of("liblib_glitter_test:textures/glitter/arrow.png"),
                 pos,
             )
                 .color(color)

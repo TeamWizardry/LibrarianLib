@@ -26,7 +26,7 @@ public data class MessagePacket(val windowId: Int, val name: String, val payload
 }
 
 internal object MessagePacketType :
-    PacketType<MessagePacket>(Identifier("liblib-facade:container_message"), MessagePacket::class.java) {
+    PacketType<MessagePacket>(Identifier("liblib_facade:container_message"), MessagePacket::class.java) {
 
     override fun encode(packet: MessagePacket, buffer: CourierBuffer) {
         buffer.writeVarInt(packet.windowId)

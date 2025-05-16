@@ -1,0 +1,11 @@
+{
+  "parent": "liblib_testcore:block/test_block/directional/base",
+  "textures": {
+    "front_bg": "liblib_testcore:block/test_block/directional/solid/front",
+    "front_fg": "liblib_testcore:block/test_block/directional/solid/front_color",
+    "side_bg": "liblib_testcore:block/test_block/directional/solid/side",
+    "side_fg": "liblib_testcore:block/test_block/directional/solid/side_color",
+    "back_bg": "liblib_testcore:block/test_block/directional/solid/back",
+    "back_fg": "liblib_testcore:block/test_block/directional/solid/back_color"
+  }
+}

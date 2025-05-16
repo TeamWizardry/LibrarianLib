@@ -48,8 +48,8 @@ internal object TestBoolUniform : ShaderTest() {
 
         companion object {
             private val defaultShader: Shader = Shader.build("bool_tests")
-                .vertex(Identifier.of("liblib-albedo-test:uniform_base.vert"))
-                .fragment(Identifier.of("liblib-albedo-test:bool_tests.frag"))
+                .vertex(Identifier.of("liblib_albedo_test:uniform_base.vert"))
+                .fragment(Identifier.of("liblib_albedo_test:bool_tests.frag"))
                 .build()
 
             val SHARED: TestBuffer by lazy {

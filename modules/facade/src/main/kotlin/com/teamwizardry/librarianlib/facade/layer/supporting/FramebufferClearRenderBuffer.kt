@@ -22,10 +22,10 @@ internal class FramebufferClearRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffe
 
     companion object {
         val shader = Shader.build("framebuffer_clear")
-            .vertex(Identifier("liblib-facade:framebuffer_clear.vert"))
-            .fragment(Identifier("liblib-facade:framebuffer_clear.frag"))
+            .vertex(Identifier("liblib_facade:framebuffer_clear.vert"))
+            .fragment(Identifier("liblib_facade:framebuffer_clear.frag"))
             .build()
-        val stencilState = object : RenderState.State(Identifier("liblib-facade:framebuffer_clear_stencil")) {
+        val stencilState = object : RenderState.State(Identifier("liblib_facade:framebuffer_clear_stencil")) {
             override fun apply() {
                 StencilUtil.enable()
                 RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0x00, 0x00)

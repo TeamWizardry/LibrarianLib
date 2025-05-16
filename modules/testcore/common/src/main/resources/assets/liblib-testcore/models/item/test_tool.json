@@ -1,7 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "liblib-testcore:item/test_tool",
-    "layer1": "liblib-testcore:item/test_tool_band"
-  }
-}

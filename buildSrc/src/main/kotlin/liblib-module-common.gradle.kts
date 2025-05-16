@@ -41,7 +41,7 @@ dependencies {
 val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod") {
     outputRoot.set(generatedResourcesDir.map { it.asFile })
 
-    id.set("generated-${module.moduleInfo.modid}-common")
+    id.set("generated_${module.moduleInfo.modid}_common")
     version.set("0.0.0")
 
     name.set(provider { "${module.moduleInfo.name} - :common assets" })

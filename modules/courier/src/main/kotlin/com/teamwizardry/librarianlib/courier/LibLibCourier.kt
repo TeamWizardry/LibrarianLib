@@ -5,7 +5,7 @@ import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.api.ModInitializer
 
-internal object LibLibCourier : LibLibModule("liblib-courier", "Courier") {
+internal object LibLibCourier : LibLibModule("liblib_courier", "Courier") {
     object CommonInitializer : ModInitializer {
         private val logger = LibLibCourier.makeLogger<CommonInitializer>()
 

@@ -20,7 +20,7 @@ open class ModuleInfo(val name: String) {
 
     val mavenName: String = name
 
-    val modid: String = "liblib-$name"
+    val modid: String = "liblib_$name"
 
     init {
         dependencies { dep ->

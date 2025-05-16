@@ -12,7 +12,7 @@ public object GlitterClientInitializer {
         LibLibPlatformCommon.instance.registerResourceReloadListener(
             ResourceType.CLIENT_RESOURCES,
             ParticleSystemManager,
-            Identifier.of("liblib-glitter:particle_system_manager")
+            Identifier.of("liblib_glitter:particle_system_manager")
         )
         GlitterPlatformClient.instance.registerClientTickEvent {
             GlitterLightingCache.tickCache()

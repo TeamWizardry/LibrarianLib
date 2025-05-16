@@ -56,8 +56,8 @@ internal object TestIntArrayUniform : ShaderTest() {
 
         companion object {
             private val defaultShader: Shader = Shader.build("int_array_tests")
-                .vertex(Identifier.of("liblib-albedo-test:uniform_base.vert"))
-                .fragment(Identifier.of("liblib-albedo-test:int_array_tests.frag"))
+                .vertex(Identifier.of("liblib_albedo_test:uniform_base.vert"))
+                .fragment(Identifier.of("liblib_albedo_test:int_array_tests.frag"))
                 .build()
 
             val SHARED: TestBuffer by lazy {

@@ -79,7 +79,7 @@ class TestControllerSet(val name: String, config: Entry.Group.() -> Unit) {
         }
 
         fun <T: TestController<*>> makeId(controllerClass: Class<T>): Identifier {
-            return Identifier("liblib-facade-test", controllerClass.simpleName.lowercase())
+            return Identifier("liblib_facade_test", controllerClass.simpleName.lowercase())
         }
     }
 }

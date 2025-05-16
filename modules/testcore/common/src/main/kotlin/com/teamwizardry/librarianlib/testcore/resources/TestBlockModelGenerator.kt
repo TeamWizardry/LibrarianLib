@@ -40,6 +40,6 @@ internal object TestBlockModelGenerator {
 
     private fun getBaseModel(blockConfig: TestBlockConfig): String {
         val modelName = "${if (blockConfig.directional) "directional" else "normal"}/${if (blockConfig.transparent) "transparent" else "solid"}"
-        return "liblib-testcore:block/test_block/${modelName}"
+        return "liblib_testcore:block/test_block/${modelName}"
     }
 }

@@ -18,15 +18,15 @@ public object Fonts : SimpleResourceReloadListener<Pair<Bitfont, Bitfont>> {
     public lateinit var unifont: Bitfont
         private set
 
-    override fun getFabricId(): Identifier = Identifier("liblib-facade:bitfont-fonts")
+    override fun getFabricId(): Identifier = Identifier("liblib_facade:bitfont-fonts")
 
     override fun load(
         manager: ResourceManager,
         profiler: Profiler,
         executor: Executor
     ): CompletableFuture<Pair<Bitfont, Bitfont>> {
-        val classicLoc = Identifier("liblib-facade:fonts/mcclassicplus.bitfont")
-        val unifontLoc = Identifier("liblib-facade:fonts/unifont.bitfont")
+        val classicLoc = Identifier("liblib_facade:fonts/mcclassicplus.bitfont")
+        val unifontLoc = Identifier("liblib_facade:fonts/unifont.bitfont")
         return CompletableFuture.supplyAsync {
             load(manager, classicLoc) to load(manager, unifontLoc)
         }

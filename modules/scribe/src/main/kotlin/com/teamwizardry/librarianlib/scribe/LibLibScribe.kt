@@ -5,7 +5,7 @@ import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.api.ModInitializer
 
-internal object LibLibScribe : LibLibModule("liblib-scribe", "Scribe") {
+internal object LibLibScribe : LibLibModule("liblib_scribe", "Scribe") {
     object CommonInitializer : ModInitializer {
         private val logger = LibLibScribe.makeLogger<CommonInitializer>()
 

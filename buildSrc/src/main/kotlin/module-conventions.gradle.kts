@@ -146,7 +146,7 @@ tasks.named<ProcessResources>("processResources") {
 val generateFabricTestMod = tasks.register<GenerateFabricModJson>("generateFabricTestMod") {
     outputRoot.set(generatedTest.resolve("resources"))
 
-    id.set(module.moduleInfo.modid + "-test")
+    id.set(module.moduleInfo.modid + "_test")
     version.set(commonConfig.version)
 
     name.set(project.provider { "${module.displayName} Tests" })
@@ -162,7 +162,7 @@ val generateFabricTestMod = tasks.register<GenerateFabricModJson>("generateFabri
 
     modMenu.badges.add("library")
     modMenu.parent(
-        id = "librarianlib-test",
+        id = "librarianlib_test",
         name = "LibrarianLib Test Mods",
         description = "The test mods for the various librarianlib modules",
         badges = listOf()

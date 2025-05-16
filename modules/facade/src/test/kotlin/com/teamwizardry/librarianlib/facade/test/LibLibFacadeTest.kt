@@ -34,8 +34,8 @@ import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 
 internal object LibLibFacadeTest {
-    val logManager: ModLogManager = ModLogManager("liblib-facade-test", "LibrarianLib Facade Test")
-    val manager: TestModContentManager = TestModContentManager("liblib-facade-test", "Facade", logManager)
+    val logManager: ModLogManager = ModLogManager("liblib_facade_test", "LibrarianLib Facade Test")
+    val manager: TestModContentManager = TestModContentManager("liblib_facade_test", "Facade", logManager)
 
     lateinit var simpleControllerType: FacadeControllerType<SimpleController>
     lateinit var simpleInventoryControllerType: FacadeControllerType<SimpleInventoryController>
@@ -54,15 +54,15 @@ internal object LibLibFacadeTest {
             }
 
             simpleControllerType = FacadeControllerRegistry.register(
-                Identifier("liblib-facade-test:simple_controller"),
+                Identifier("liblib_facade_test:simple_controller"),
                 SimpleController::class.java
             )
             simpleInventoryControllerType = FacadeControllerRegistry.register(
-                Identifier("liblib-facade-test:simple_inventory_controller"),
+                Identifier("liblib_facade_test:simple_inventory_controller"),
                 SimpleInventoryController::class.java
             )
             testControllerSelectorControllerType = FacadeControllerRegistry.register(
-                Identifier("liblib-facade-test:test_controller_selector"),
+                Identifier("liblib_facade_test:test_controller_selector"),
                 TestControllerSelectorController::class.java
             )
 

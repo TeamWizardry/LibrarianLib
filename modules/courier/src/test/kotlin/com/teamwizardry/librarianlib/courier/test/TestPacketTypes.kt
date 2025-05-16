@@ -10,7 +10,7 @@ import net.minecraft.block.Block
 import net.minecraft.util.Identifier
 
 object TestPacketTypes {
-    val testPacket = CourierPacketType(Identifier("liblib-courier-test:test_packet"), TestPacket::class.java)
+    val testPacket = CourierPacketType(Identifier("liblib_courier_test:test_packet"), TestPacket::class.java)
 }
 
 @RefractClass

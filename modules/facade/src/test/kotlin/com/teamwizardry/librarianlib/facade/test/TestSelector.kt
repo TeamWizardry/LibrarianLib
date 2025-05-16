@@ -74,7 +74,7 @@ data class SyncSelectionPacket @RefractConstructor constructor(
 
     companion object {
         val type: CourierPacketType<SyncSelectionPacket> = CourierPacketType(
-            Identifier("liblib-facade-test:sync_selection"),
+            Identifier("liblib_facade_test:sync_selection"),
             SyncSelectionPacket::class.java
         )
     }

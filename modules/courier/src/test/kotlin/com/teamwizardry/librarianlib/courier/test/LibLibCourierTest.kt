@@ -16,8 +16,8 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.LiteralText
 
 internal object LibLibCourierTest {
-    val logManager: ModLogManager = ModLogManager("liblib-courier-test", "LibrarianLib Courier Test")
-    val manager: TestModContentManager = TestModContentManager("liblib-courier-test", "Courier", logManager)
+    val logManager: ModLogManager = ModLogManager("liblib_courier_test", "LibrarianLib Courier Test")
+    val manager: TestModContentManager = TestModContentManager("liblib_courier_test", "Courier", logManager)
 
     object CommonInitializer : ModInitializer {
         private val logger = logManager.makeLogger<CommonInitializer>()

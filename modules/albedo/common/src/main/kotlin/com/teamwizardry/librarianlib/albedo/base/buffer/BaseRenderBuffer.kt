@@ -16,12 +16,12 @@ import org.joml.Matrix4f
  * The base class for most render buffers. It provides the basic vertex position functions and standard transform
  * matrices.
  *
- * In the shader, add `#include "liblib-albedo:base/transform.glsl"` to your attribute/uniform block and add
+ * In the shader, add `#include "liblib_albedo:base/transform.glsl"` to your attribute/uniform block and add
  * `gl_Position = albedo_base_transform();` to your `main()` body. e.g.
  * ```glsl
  * #version 150
  *
- * #include "liblib-albedo:base/transform.glsl"
+ * #include "liblib_albedo:base/transform.glsl"
  *
  * void main() {
  *     gl_Position = albedo_base_transform();

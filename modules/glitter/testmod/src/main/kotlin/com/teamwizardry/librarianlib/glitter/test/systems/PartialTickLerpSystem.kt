@@ -6,7 +6,7 @@ import com.teamwizardry.librarianlib.glitter.modules.SpriteRenderModule
 import net.minecraft.entity.Entity
 import net.minecraft.util.Identifier
 
-object PartialTickLerpSystem : TestSystem(Identifier.of("liblib-glitter-test:partial_tick_lerp")) {
+object PartialTickLerpSystem : TestSystem(Identifier.of("liblib_glitter_test:partial_tick_lerp")) {
     override fun configure() {
         val position = bind(3)
         val previousPosition = bind(3)

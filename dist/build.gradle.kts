@@ -86,7 +86,7 @@ configureFabricModJson {
 }
 
 configureFabricTestModJson {
-    id.set("librarianlib-test")
+    id.set("librarianlib_test")
     version.set(commonConfig.version)
 
     name.set("LibrarianLib Tests")
@@ -113,7 +113,7 @@ val jar = tasks.named<Jar>("jar") {
 }
 
 val testJar = tasks.register<Jar>("testJar") {
-    archiveBaseName.set("librarianlib-test")
+    archiveBaseName.set("librarianlib_test")
     from(sourceSets.test.get().output)
     from(configurations["includeTest"]) {
         into("META-INF/jars")

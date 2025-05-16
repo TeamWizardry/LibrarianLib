@@ -15,7 +15,7 @@ internal object PastryTexture {
 //        }
 
     val texture = Mosaic(Theme.NORMAL.location, 256, 256)
-    val shadowTexture = Mosaic(Identifier("liblib-facade:textures/pastry/shadow.png"), 256, 256)
+    val shadowTexture = Mosaic(Identifier("liblib_facade:textures/pastry/shadow.png"), 256, 256)
 
     val vanillaBackground: Sprite by texture
     val vanillaBackgroundEdges: Sprite by texture
@@ -73,9 +73,9 @@ internal object PastryTexture {
     val shadowSprite = shadowTexture.getSprite("shadow")
 
     enum class Theme(val location: Identifier) {
-        NORMAL(Identifier("liblib-facade:textures/pastry/light.png")),
-        DARK(Identifier("liblib-facade:textures/pastry/dark.png")),
-        HIGH_CONTRAST(Identifier("liblib-facade:textures/pastry/contrast.png")),
+        NORMAL(Identifier("liblib_facade:textures/pastry/light.png")),
+        DARK(Identifier("liblib_facade:textures/pastry/dark.png")),
+        HIGH_CONTRAST(Identifier("liblib_facade:textures/pastry/contrast.png")),
     }
 }
 

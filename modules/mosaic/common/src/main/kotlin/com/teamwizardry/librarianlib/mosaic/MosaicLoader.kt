@@ -27,7 +27,7 @@ import kotlin.jvm.optionals.getOrNull
 
 internal object MosaicLoader : ResourceReloader {
     private var definitions: MutableMap<Identifier, MosaicDefinition?> = mutableMapOf()
-    private var missingno = Identifier.of("liblib-mosaic:textures/missingno.png")
+    private var missingno = Identifier.of("liblib_mosaic:textures/missingno.png")
 
     val missingnoSheet: MosaicDefinition get() = getDefinition(missingno)
     val missingnoSprite: SpriteDefinition get() = getDefinition(missingno).sprites[0]
@@ -37,7 +37,7 @@ internal object MosaicLoader : ResourceReloader {
         LibLibPlatformCommon.instance.registerResourceReloadListener(
             ResourceType.CLIENT_RESOURCES,
             this,
-            Identifier.of("liblib-mosaic:loader")
+            Identifier.of("liblib_mosaic:loader")
         )
     }
 

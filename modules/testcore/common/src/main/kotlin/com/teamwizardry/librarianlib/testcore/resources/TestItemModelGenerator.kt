@@ -14,7 +14,7 @@ internal object TestItemModelGenerator {
         val head = heads.random(rng)
         val handle = handles.random(rng)
         val tail = tails.random(rng)
-        val prefix = "liblib-testcore:item/test_tool/"
+        val prefix = "liblib_testcore:item/test_tool/"
         val modelJson = mapOf(
             "parent" to "item/generated",
             "textures" to mapOf(

@@ -19,7 +19,7 @@ internal class RegistryEntryTests: NbtPrismTest() {
     fun `read+write with a mod item should be symmetrical`() {
         simple<Item, RegistryEntrySerializer<Item>>(
             LibLibScribeTest.CommonInitializer.exampleItem,
-            NbtBuilder.string("liblib-scribe-test:example_item")
+            NbtBuilder.string("liblib_scribe_test:example_item")
         )
     }
 
@@ -35,7 +35,7 @@ internal class RegistryEntryTests: NbtPrismTest() {
     fun `read+write with a custom registry should be symmetrical`() {
         simple<UnitTestSuite, RegistryEntrySerializer<UnitTestSuite>>(
             LibLibScribeTest.CommonInitializer.exampleSuite,
-            NbtBuilder.string("liblib-scribe-test:example_suite")
+            NbtBuilder.string("liblib_scribe_test:example_suite")
         )
     }
 

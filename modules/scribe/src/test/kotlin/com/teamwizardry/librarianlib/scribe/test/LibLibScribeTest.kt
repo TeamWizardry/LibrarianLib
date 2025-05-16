@@ -15,8 +15,8 @@ import net.minecraft.item.Item
 import net.minecraft.util.registry.Registry
 
 internal object LibLibScribeTest {
-    val logManager: ModLogManager = ModLogManager("liblib-scribe-test", "LibrarianLib Scribe Test")
-    val manager: TestModContentManager = TestModContentManager("liblib-scribe-test", "Scribe", logManager)
+    val logManager: ModLogManager = ModLogManager("liblib_scribe_test", "LibrarianLib Scribe Test")
+    val manager: TestModContentManager = TestModContentManager("liblib_scribe_test", "Scribe", logManager)
 
     object CommonInitializer : ModInitializer {
         private val logger = logManager.makeLogger<CommonInitializer>()

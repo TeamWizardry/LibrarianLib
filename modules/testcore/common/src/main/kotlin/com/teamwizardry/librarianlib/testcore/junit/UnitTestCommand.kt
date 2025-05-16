@@ -31,7 +31,7 @@ import kotlin.jvm.optionals.getOrNull
 public object UnitTestCommand {
     public fun register() {
         TestCoreCommonPlatform.instance.registerArgumentType(
-            Identifier.of("liblib-testcore:unit_test"),
+            Identifier.of("liblib_testcore:unit_test"),
             UnitTestArgument::class.java,
             ConstantArgumentSerializer.of { registryAccess ->
                 UnitTestArgument(registryAccess.getWrapperOrThrow(UnitTestSuite.REGISTRY_KEY))

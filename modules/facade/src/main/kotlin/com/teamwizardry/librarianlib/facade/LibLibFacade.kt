@@ -20,7 +20,7 @@ import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper
 import net.minecraft.resource.ResourceType
 
-internal object LibLibFacade : LibLibModule("liblib-facade", "Facade") {
+internal object LibLibFacade : LibLibModule("liblib_facade", "Facade") {
     object CommonInitializer : ModInitializer {
         private val logger = LibLibFacade.makeLogger<CommonInitializer>()
 

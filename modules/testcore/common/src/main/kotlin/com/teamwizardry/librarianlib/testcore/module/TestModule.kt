@@ -14,7 +14,7 @@ import net.minecraft.registry.RegistryKeys
 import net.minecraft.util.Identifier
 
 public abstract class TestModule(public val moduleId: String, public val name: String) {
-    public val modId: String = "liblib-$moduleId-test"
+    public val modId: String = "liblib_${moduleId}_test"
     public val logManager: ModLogManager = ModLogManager(modId, name)
     public val registrars: ModuleRegistrars = ModuleRegistrars(modId)
 

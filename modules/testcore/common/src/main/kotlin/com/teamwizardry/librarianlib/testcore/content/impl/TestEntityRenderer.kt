@@ -105,6 +105,6 @@ internal class TestEntityRenderer(dispatcher: EntityRendererFactory.Context) : E
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
     override fun getTexture(entity: TestEntityImpl): Identifier {
-        return Identifier.of("liblib-testcore:textures/entity/testentity.png")
+        return Identifier.of("liblib_testcore:textures/entity/testentity.png")
     }
 }

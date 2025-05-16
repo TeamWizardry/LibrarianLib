@@ -91,7 +91,7 @@ public class Cursor @JvmOverloads constructor(
     public companion object : SimpleResourceReloadListener<Unit> {
         private val cursors = mutableListOf<Cursor>()
 
-        private fun cursor(name: String, originX: Int, originY: Int, standardCursor: Int = -1) = Cursor(Identifier("liblib-facade:textures/cursors/$name.png"), originX, originY, standardCursor)
+        private fun cursor(name: String, originX: Int, originY: Int, standardCursor: Int = -1) = Cursor(Identifier("liblib_facade:textures/cursors/$name.png"), originX, originY, standardCursor)
 
         /**
          * The default arrow cursor.
@@ -308,7 +308,7 @@ public class Cursor @JvmOverloads constructor(
             GLFW.glfwSetCursor(Client.window.handle, cursor?.glfwCursor ?: 0L)
         }
 
-        override fun getFabricId(): Identifier = Identifier("liblib-facade:cursor")
+        override fun getFabricId(): Identifier = Identifier("liblib_facade:cursor")
 
         override fun load(
             manager: ResourceManager,

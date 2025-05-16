@@ -308,7 +308,7 @@ public class Shader private constructor(
             LibLibPlatformCommon.instance.registerResourceReloadListener(
                 ResourceType.CLIENT_RESOURCES,
                 this,
-                Identifier.of("liblib-albedo:shaders")
+                Identifier.of("liblib_albedo:shaders")
             )
         }
 

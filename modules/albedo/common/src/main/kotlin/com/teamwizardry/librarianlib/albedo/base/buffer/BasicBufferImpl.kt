@@ -138,8 +138,8 @@ public class BasicBufferImpl<T : Any>(
                 val flags = features.toTypedArray()
                 val name = "basic_buffer_" + features.joinToString("_") { it.removePrefix("ENABLE_").lowercase() }
                 Shader.build(name)
-                    .vertex(Identifier.of("liblib-albedo:builtin/basic.vert"), *flags)
-                    .fragment(Identifier.of("liblib-albedo:builtin/basic.frag"), *flags)
+                    .vertex(Identifier.of("liblib_albedo:builtin/basic.vert"), *flags)
+                    .fragment(Identifier.of("liblib_albedo:builtin/basic.frag"), *flags)
                     .build()
             }
         }
