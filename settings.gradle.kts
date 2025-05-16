@@ -34,7 +34,8 @@ includeModule("mosaic")
 ////includeModule("scribe")
 includeModule("testcore")
 
-include("runtime")
 include("runtime:fabric")
 include("runtime:neoforge")
-//include("dist")
+
+include("dist:fabric")
+include("dist:neoforge")

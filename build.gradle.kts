@@ -1,5 +1,6 @@
 @file:Suppress("PublicApiImplicitType", "UnstableApiUsage")
 
+import dev.architectury.plugin.TransformingTask
 import java.util.*
 
 plugins {
@@ -53,6 +54,21 @@ commonConfig {
 architectury {
     minecraft = project.property("minecraft_version") as String
     compileOnly()
+}
+
+
+// The `transformProduction*` tasks fail when run in parallel. It seems this is because artifactory-transformer takes
+// some of its parameters as java system properties, which are process-global.
+//
+// This block enforces that they run in a strict (arbitrary) order.
+val transformChain = mutableListOf<String>()
+allprojects {
+    tasks.configureEach {
+        if (this@configureEach is TransformingTask) {
+            this@configureEach.mustRunAfter(*transformChain.toTypedArray())
+            transformChain.add(this@configureEach.path)
+        }
+    }
 }
 
 // genSources fails when multiple projects are present, since they all try to write to the same cache file.

@@ -23,5 +23,7 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
+hs_err_*.log
+replay_*.log
 
 .DS_Store

@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 plugins {
     id("liblib-shared-langs")
     id("liblib-shared-loom")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 if (project.findProperty("loom.platform") != "neoforge") {
@@ -20,12 +20,10 @@ configure<KotlinProjectExtension> {
     explicitApi()
 }
 
+version = commonConfig.version
+
 architectury {
     neoForge()
-}
-
-loom {
-//    mixin.defaultRefmapName.set("ll/${module.name}/${module.name}-neoforge-refmap.json")
 }
 
 configurations {
@@ -35,6 +33,11 @@ configurations {
         canBe(consumed = false, resolved = true)
     }
     create("devRuntime") {
+        canBe(consumed = true, resolved = false)
+    }
+
+    create("modJar") {
+        description = "The mod jar to be bundled into the final release jar"
         canBe(consumed = true, resolved = false)
     }
 }
@@ -57,29 +60,9 @@ dependencies {
     "shadowBundle"(project(path = module.path, configuration = "transitiveShade"))
 }
 
-val shadowJar = tasks.named<ShadowJar>("shadowJar") {
-    configurations = listOf(project.configurations.getByName("shadowBundle"))
-    archiveClassifier = "dev-shadow"
-
-    // The common module needs a `fabric.mod.json` file for assets to load from it. Don't include it in the shadow jar.
-    // (classpath entries without a mod json aren't treated like resource packs by fabric)
-    transform(DontIncludeResourceTransformer::class.java) { resource = "fabric.mod.json" }
-
-    commonConfig.shadowRules {
-        relocate(it.from, it.to)
-    }
-}
-
-tasks.named<RemapJarTask>("remapJar") {
-    dependsOn(shadowJar)
-    inputFile.set(shadowJar.map { it.archiveFile.get() })
-}
-
 val generateNeoForgeMod = tasks.register<GenerateNeoForgeModsToml>("generateNeoForgeMod") {
     outputRoot.set(generatedResourcesDir.map { it.asFile })
 
-//    We don't use KFF for its mod loader, only the kotlin stdlib
-//    modLoader.set("kotlinforforge")
     license.set("LGPL-3.0")
 
     mod {
@@ -114,4 +97,27 @@ val generateNeoForgeMod = tasks.register<GenerateNeoForgeModsToml>("generateNeoF
 
 tasks.named<ProcessResources>("processResources") {
     dependsOn(generateNeoForgeMod)
+}
+
+val shadowJar = tasks.named<ShadowJar>("shadowJar") {
+    configurations = listOf(project.configurations.getByName("shadowBundle"))
+    archiveBaseName.set(module.archiveName)
+    archiveClassifier = "shadow"
+
+    commonConfig.shadowRules {
+        relocate(it.from, it.to)
+    }
+
+    mergeServiceFiles()
+}
+
+val remapJar = tasks.named<RemapJarTask>("remapJar") {
+    archiveBaseName.set(module.archiveName)
+    archiveClassifier.set("neoforge")
+    dependsOn(shadowJar)
+    inputFile.set(shadowJar.map { it.archiveFile.get() })
+}
+
+artifacts {
+    add("modJar", remapJar)
 }

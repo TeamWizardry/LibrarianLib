@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 plugins {
     id("liblib-shared-langs")
     id("liblib-shared-loom")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 val module = parent!!.extensions.getByType<ModuleExtension>()
@@ -16,12 +16,10 @@ configure<KotlinProjectExtension> {
     explicitApi()
 }
 
+version = commonConfig.version
+
 architectury {
     fabric()
-}
-
-loom {
-    mixin.defaultRefmapName.set("ll/${module.name}/${module.name}-fabric-refmap.json")
 }
 
 configurations {
@@ -31,6 +29,11 @@ configurations {
         canBe(consumed = false, resolved = true)
     }
     create("devRuntime") {
+        canBe(consumed = true, resolved = false)
+    }
+
+    create("modJar") {
+        description = "The mod jar to be bundled into the final release jar"
         canBe(consumed = true, resolved = false)
     }
 }
@@ -55,24 +58,6 @@ dependencies {
     "shadowBundle"(project(path = module.path, configuration = "transitiveShade"))
 }
 
-val shadowJar = tasks.named<ShadowJar>("shadowJar") {
-    configurations = listOf(project.configurations.getByName("shadowBundle"))
-    archiveClassifier = "dev-shadow"
-
-    // The common module needs a `fabric.mod.json` file for assets to load from it. Don't include it in the shadow jar.
-    // (classpath entries without a mod json aren't treated like resource packs)
-    transform(DontIncludeResourceTransformer::class.java) { resource = "fabric.mod.json" }
-
-    commonConfig.shadowRules {
-        relocate(it.from, it.to)
-    }
-}
-
-tasks.named<RemapJarTask>("remapJar") {
-    dependsOn(shadowJar)
-    inputFile.set(shadowJar.map { it.archiveFile.get() })
-}
-
 val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod") {
     outputRoot.set(generatedResourcesDir.map { it.asFile })
 
@@ -95,12 +80,35 @@ val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod
     modMenu.badges.add("library")
     modMenu.parent(
         id = "librarianlib",
-        name = project.property("fabric.modmenu.liblib_name") as String,
-        description = project.property("fabric.modmenu.liblib_description") as String,
+        name = project.property("liblib.mod_name") as String,
+        description = project.property("liblib.mod_description") as String,
         badges = listOf("library")
     )
 }
 
 tasks.named<ProcessResources>("processResources") {
     dependsOn(generateFabricMod)
+}
+
+val shadowJar = tasks.named<ShadowJar>("shadowJar") {
+    configurations = listOf(project.configurations.getByName("shadowBundle"))
+    archiveBaseName.set(module.archiveName)
+    archiveClassifier = "shadow"
+
+    commonConfig.shadowRules {
+        relocate(it.from, it.to)
+    }
+
+    mergeServiceFiles()
+}
+
+val remapJar = tasks.named<RemapJarTask>("remapJar") {
+    archiveBaseName.set(module.archiveName)
+    archiveClassifier.set("fabric")
+    dependsOn(shadowJar)
+    inputFile.set(shadowJar.map { it.archiveFile.get() })
+}
+
+artifacts {
+    add("modJar", remapJar)
 }

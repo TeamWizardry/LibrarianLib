@@ -10,7 +10,7 @@ plugins {
     //id("signing")
     id("kotlin-conventions")
     id("minecraft-conventions")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 apply<LibLibModulePlugin>()
@@ -133,8 +133,8 @@ val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod
     modMenu.badges.add("library")
     modMenu.parent(
         id = "librarianlib",
-        name = project.property("fabric.modmenu.liblib_name") as String,
-        description = project.property("fabric.modmenu.liblib_description") as String,
+        name = project.property("liblib.mod_name") as String,
+        description = project.property("liblib.mod_description") as String,
         badges = listOf("library")
     )
 }

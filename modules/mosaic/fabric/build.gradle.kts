@@ -3,5 +3,4 @@ plugins {
 }
 
 configureFabricModJson {
-    mixin("ll/mosaic/mosaic.mixins.json")
 }

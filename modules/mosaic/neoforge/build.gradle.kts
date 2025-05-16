@@ -3,5 +3,4 @@ plugins {
 }
 
 configureNeoForgeModsToml {
-    mixin("ll/mosaic/mosaic.mixins.json")
 }

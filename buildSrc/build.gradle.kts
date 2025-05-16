@@ -24,7 +24,7 @@ dependencies {
     implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:2.0.21-1.0.28")
     // only required so we can import `KspExperimental` for `@OptIn(KspExperimental::class)`
     implementation("com.google.devtools.ksp:symbol-processing-api:2.0.21-1.0.28")
-    implementation("gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0")
+    implementation("com.gradleup.shadow:shadow-gradle-plugin:8.3.6")
     implementation("org.freemarker:freemarker:2.3.31")
 }
 

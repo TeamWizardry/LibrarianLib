@@ -45,3 +45,10 @@ val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod
 tasks.named<ProcessResources>("processResources") {
     dependsOn(generateFabricMod)
 }
+
+/**
+ * Excludes the dev-env-only fabric.mod.json file generated above so it won't be shadowed into the testcore mod jar
+ */
+val jar = tasks.named<Jar>("jar") {
+    exclude("fabric.mod.json")
+}
