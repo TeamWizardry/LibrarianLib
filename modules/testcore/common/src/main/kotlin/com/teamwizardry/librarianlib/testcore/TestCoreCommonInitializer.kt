@@ -19,7 +19,8 @@ public object TestCoreCommonInitializer {
         TestModContentManager.locked = true
 
         for(itemGroupConfig in TestModContentManager.itemGroups.values) {
-            itemGroupConfig.module.registrars.itemGroup.register(itemGroupConfig.id) { itemGroupConfig.instance }
+            itemGroupConfig.registrySupplier = itemGroupConfig.module.registrars.itemGroup
+                .register(itemGroupConfig.id) { itemGroupConfig.createInstance() }
         }
 
         for(itemConfig in TestModContentManager.items.values) {

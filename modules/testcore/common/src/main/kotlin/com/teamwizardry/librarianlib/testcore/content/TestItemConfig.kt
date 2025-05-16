@@ -48,7 +48,6 @@ public class TestItemConfig(moduleConfig: TestModuleConfig, id: Identifier): Tes
      */
     public val properties: Item.Settings = Item.Settings()
         .maxCount(maxCount)
-        .`arch$tab`(moduleConfig.itemGroup.instance)
 
     /**
      * Called when this item is right clicked.
@@ -121,7 +120,12 @@ public class TestItemConfig(moduleConfig: TestModuleConfig, id: Identifier): Tes
      */
     public var tickInHand: SidedAction<InventoryTickContext> = SidedAction()
 
-    public val instance: Item by lazy { TestItemImpl(this) }
+    public val instance: Item by lazy {
+        properties.`arch$tab`(moduleConfig.itemGroup.registrySupplier)
+        TestItemImpl(this)
+    }
+
+    public val translationKey: String = id.toTranslationKey("item")
 
     public data class RightClickContext(val world: World, val player: PlayerEntity, val hand: Hand): PlayerTestContext(player) {
         val stack: ItemStack = player.getStackInHand(hand)

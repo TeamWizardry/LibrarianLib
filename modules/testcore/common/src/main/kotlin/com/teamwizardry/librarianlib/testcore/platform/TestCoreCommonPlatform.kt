@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier
 public interface TestCoreCommonPlatform {
     public fun <A : ArgumentType<*>, T : ArgumentSerializer.ArgumentTypeProperties<A>> registerArgumentType(
         id: Identifier,
-        clazz: Class<out A>,
+        clazz: Class<A>,
         serializer: ArgumentSerializer<A, T>
     )
 

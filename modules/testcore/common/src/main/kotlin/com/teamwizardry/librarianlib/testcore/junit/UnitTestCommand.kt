@@ -15,6 +15,7 @@ import com.teamwizardry.librarianlib.testcore.junit.runner.TestSuiteResult
 import com.teamwizardry.librarianlib.testcore.junit.runner.UnitTestRunner
 import com.teamwizardry.librarianlib.testcore.platform.TestCoreCommonPlatform
 import dev.architectury.event.events.common.CommandRegistrationEvent
+import net.minecraft.command.CommandRegistryAccess
 import net.minecraft.command.CommandSource
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer
 import net.minecraft.registry.RegistryKey
@@ -30,17 +31,18 @@ import kotlin.jvm.optionals.getOrNull
 
 public object UnitTestCommand {
     public fun register() {
+        TestCoreMod.argumentTypeRegistrar.register(UnitTestArgument.ARGUMENT_TYPE_ID) {
+            UnitTestArgument.ARGUMENT_SERIALIZER
+        }
         TestCoreCommonPlatform.instance.registerArgumentType(
-            Identifier.of("liblib_testcore:unit_test"),
+            UnitTestArgument.ARGUMENT_TYPE_ID,
             UnitTestArgument::class.java,
-            ConstantArgumentSerializer.of { registryAccess ->
-                UnitTestArgument(registryAccess.getWrapperOrThrow(UnitTestSuite.REGISTRY_KEY))
-            }
+            UnitTestArgument.ARGUMENT_SERIALIZER
         )
         CommandRegistrationEvent.EVENT.register { dispatcher, registryAccess, environment ->
             dispatcher.register(
                 CommandManager.literal("unittest").then(
-                    CommandManager.argument("test", UnitTestArgument(registryAccess.getWrapperOrThrow(UnitTestSuite.REGISTRY_KEY)))
+                    CommandManager.argument("test", UnitTestArgument.create(registryAccess))
                         .executes { context ->
                             runTestSuite(context.source, context.input, UnitTestArgument.getUnitTest(context, "test"))
                             Command.SINGLE_SUCCESS
@@ -116,6 +118,14 @@ public class UnitTestArgument(private val registryWrapper: RegistryWrapper.Impl<
 
     public companion object {
         public val TEST_NOT_FOUND: DynamicCommandExceptionType = DynamicCommandExceptionType { function: Any? -> Text.translatable("testcore.unitTestNotFound", function) }
+
+        public val ARGUMENT_TYPE_ID: Identifier = Identifier.of("liblib_testcore:unit_test")
+        public val ARGUMENT_SERIALIZER: ConstantArgumentSerializer<UnitTestArgument> =
+            ConstantArgumentSerializer.of(::create)
+
+        public fun create(registryAccess: CommandRegistryAccess): UnitTestArgument {
+            return UnitTestArgument(registryAccess.getWrapperOrThrow(UnitTestSuite.REGISTRY_KEY))
+        }
 
         @Throws(CommandSyntaxException::class)
         public fun getUnitTest(context: CommandContext<ServerCommandSource>, name: String): UnitTestSuite {

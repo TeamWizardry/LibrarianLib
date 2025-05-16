@@ -7,7 +7,6 @@ import com.modrinth.minotaur.TaskModrinthUpload
 import com.modrinth.minotaur.request.Dependency.DependencyType
 import com.modrinth.minotaur.request.VersionType
 //import net.fabricmc.loom.configuration.JarManifestConfiguration
-import java.util.jar.Manifest
 
 plugins {
     `java-library`
@@ -70,15 +69,15 @@ configureFabricModJson {
     id.set("librarianlib")
     version.set(commonConfig.version)
 
-    name.set(project.property("mod.modmenu.liblib_name") as String)
-    description.set(project.property("mod.modmenu.liblib_description") as String)
+    name.set(project.property("fabric.modmenu.liblib_name") as String)
+    description.set(project.property("fabric.modmenu.liblib_description") as String)
     icon.set("ll/icon.png")
     iconFile.set(rootDir.resolve("logo/icon.png"))
 
-    depends("fabric-api", project.property("mod.dependencies.fabricapi") as String)
-    depends("fabricloader", project.property("mod.dependencies.fabricloader") as String)
-    depends("minecraft", project.property("mod.dependencies.minecraft") as String)
-    depends("fabric-language-kotlin", project.property("mod.dependencies.flk") as String)
+    depends("fabric-api", project.property("fabric.dependencies.fabricapi") as String)
+    depends("fabricloader", project.property("fabric.dependencies.fabricloader") as String)
+    depends("minecraft", project.property("fabric.dependencies.minecraft") as String)
+    depends("fabric-language-kotlin", project.property("fabric.dependencies.flk") as String)
 
     modMenu.hidden.set(true)
 
@@ -94,10 +93,10 @@ configureFabricTestModJson {
     icon.set("ll/icon.png")
     iconFile.set(rootDir.resolve("logo/icon.png"))
 
-    depends("fabric-api", project.property("mod.dependencies.fabricapi") as String)
-    depends("fabricloader", project.property("mod.dependencies.fabricloader") as String)
-    depends("minecraft", project.property("mod.dependencies.minecraft") as String)
-    depends("fabric-language-kotlin", project.property("mod.dependencies.flk") as String)
+    depends("fabric-api", project.property("fabric.dependencies.fabricapi") as String)
+    depends("fabricloader", project.property("fabric.dependencies.fabricloader") as String)
+    depends("minecraft", project.property("fabric.dependencies.minecraft") as String)
+    depends("fabric-language-kotlin", project.property("fabric.dependencies.flk") as String)
 
     modMenu.hidden.set(false)
 

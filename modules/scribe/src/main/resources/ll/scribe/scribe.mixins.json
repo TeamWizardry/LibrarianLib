@@ -3,7 +3,6 @@
   "required": true,
   "package": "com.teamwizardry.librarianlib.scribe.mixin",
   "compatibilityLevel": "JAVA_16",
-  "refmap": "ll/scribe/scribe-refmap.json",
   "mixins": [
     "DefaultedListScribeHooks"
   ],

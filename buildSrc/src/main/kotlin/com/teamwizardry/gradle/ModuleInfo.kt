@@ -6,6 +6,7 @@ open class ModuleInfo(val name: String) {
     val path: String = ":$name"
     val commonPath = "$path:common"
     val fabricPath = "$path:fabric"
+    val neoForgePath = "$path:neoforge"
     val testModPath = "$path:testmod"
 
     /**

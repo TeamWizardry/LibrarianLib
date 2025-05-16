@@ -3,14 +3,13 @@
   "required": true,
   "package": "com.teamwizardry.librarianlib.albedo.mixin",
   "compatibilityLevel": "JAVA_21",
-  "refmap": "ll/albedo/albedo-refmap.json",
   "mixins": [
+  ],
+  "client": [
     "GlStateManagerMixin",
     "LightmapTextureManagerMixin",
     "RenderSystemMixin",
     "ShapeIndexBufferMixin"
-  ],
-  "client": [
   ],
   "server": [
   ],

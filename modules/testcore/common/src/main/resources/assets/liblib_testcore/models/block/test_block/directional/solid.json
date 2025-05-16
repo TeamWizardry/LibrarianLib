@@ -1,5 +1,6 @@
 {
   "parent": "liblib_testcore:block/test_block/directional/base",
+  "render_type": "minecraft:cutout_mipped",
   "textures": {
     "front_bg": "liblib_testcore:block/test_block/directional/solid/front",
     "front_fg": "liblib_testcore:block/test_block/directional/solid/front_color",

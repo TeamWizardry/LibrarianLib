@@ -17,8 +17,8 @@ fun includeModule(name: String) {
     project(":$name:common").projectDir = rootDir.resolve("modules/$name/common")
     include("$name:fabric")
     project(":$name:fabric").projectDir = rootDir.resolve("modules/$name/fabric")
-//    include("$name:neoforge")
-//    project(":$name:neoforge").projectDir = rootDir.resolve("modules/$name/neoforge")
+    include("$name:neoforge")
+    project(":$name:neoforge").projectDir = rootDir.resolve("modules/$name/neoforge")
     include("$name:testmod")
     project(":$name:testmod").projectDir = rootDir.resolve("modules/$name/testmod")
 }
@@ -36,4 +36,5 @@ includeModule("testcore")
 
 include("runtime")
 include("runtime:fabric")
+include("runtime:neoforge")
 //include("dist")

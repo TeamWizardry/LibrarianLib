@@ -5,7 +5,7 @@ import net.fabricmc.api.ClientModInitializer
 
 internal object FabricTestCoreClientInitializer : ClientModInitializer {
     override fun onInitializeClient() {
-        TestCoreClientInitializer.onInitialize()
+        TestCoreClientInitializer.onInitialize(true)
     }
 }
 

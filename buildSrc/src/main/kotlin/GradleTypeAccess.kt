@@ -18,6 +18,7 @@ typealias ModPublishingPlugin = com.teamwizardry.gradle.publish.ModPublishingPlu
 typealias ModPublishingExtension = com.teamwizardry.gradle.publish.ModPublishingExtension
 
 typealias GenerateFabricModJson = com.teamwizardry.gradle.task.GenerateFabricModJson
+typealias GenerateNeoForgeModsToml = com.teamwizardry.gradle.task.GenerateNeoForgeModsToml
 typealias ShadowSources = com.teamwizardry.gradle.task.ShadowSources
 typealias CopyFreemarker = com.teamwizardry.gradle.task.CopyFreemarker
 typealias ReplaceTextInPlace = com.teamwizardry.gradle.task.ReplaceTextInPlace
@@ -34,8 +35,8 @@ fun Project.configureFabricModJson(block: GenerateFabricModJson.() -> Unit) {
     this.tasks.named("generateFabricMod", block)
 }
 
-fun Project.configureFabricTestModJson(block: GenerateFabricModJson.() -> Unit) {
-    this.tasks.named("generateFabricTestMod", block)
+fun Project.configureNeoForgeModsToml(block: GenerateNeoForgeModsToml.() -> Unit) {
+    this.tasks.named("generateNeoForgeMod", block)
 }
 
 val Project.generatedResourcesDir get() = this.layout.buildDirectory.dir("generated/main/resources")

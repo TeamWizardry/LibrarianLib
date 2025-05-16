@@ -71,8 +71,10 @@ public class TestBlockConfig(moduleConfig: TestModuleConfig, id: Identifier): Te
             TestBlockImpl(this)
     }
 
+    internal val translationKey: String = id.toTranslationKey("block")
+
     internal val itemInstance: TestBlockItem by lazy {
-        TestBlockItem(blockInstance, Item.Settings().maxCount(1).`arch$tab`(moduleConfig.itemGroup.instance))
+        TestBlockItem(blockInstance, Item.Settings().maxCount(1).`arch$tab`(moduleConfig.itemGroup.registrySupplier))
     }
 
     internal val blockEntityType: BlockEntityType<BlockEntity>? by lazy {

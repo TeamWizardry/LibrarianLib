@@ -3,11 +3,10 @@
   "required": true,
   "package": "com.teamwizardry.librarianlib.glitter.mixin",
   "compatibilityLevel": "JAVA_21",
-  "refmap": "ll/glitter/glitter-refmap.json",
   "mixins": [
-    "DebugHudMixin"
   ],
   "client": [
+    "DebugHudMixin",
     "MinecraftClientHooks"
   ],
   "server": [

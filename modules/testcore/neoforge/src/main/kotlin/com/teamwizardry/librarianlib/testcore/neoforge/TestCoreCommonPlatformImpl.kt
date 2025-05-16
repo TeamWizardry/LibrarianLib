@@ -1,0 +1,19 @@
+package com.teamwizardry.librarianlib.testcore.neoforge
+
+import com.google.auto.service.AutoService
+import com.mojang.brigadier.arguments.ArgumentType
+import com.teamwizardry.librarianlib.testcore.platform.TestCoreCommonPlatform
+import net.minecraft.command.argument.ArgumentTypes
+import net.minecraft.command.argument.serialize.ArgumentSerializer
+import net.minecraft.util.Identifier
+
+@AutoService(TestCoreCommonPlatform::class)
+internal class TestCoreCommonPlatformImpl : TestCoreCommonPlatform {
+    override fun <A : ArgumentType<*>, T : ArgumentSerializer.ArgumentTypeProperties<A>> registerArgumentType(
+        id: Identifier,
+        clazz: Class<A>,
+        serializer: ArgumentSerializer<A, T>
+    ) {
+        ArgumentTypes.registerByClass(clazz, serializer)
+    }
+}

@@ -8,12 +8,13 @@ import com.teamwizardry.librarianlib.testcore.resources.TestItemModelGenerator
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry
 import dev.architectury.registry.client.rendering.RenderTypeRegistry
 import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.RenderLayers
 
 public object TestCoreClientInitializer {
     private val logger = TestCoreMod.logManager.makeLogger<TestCoreClientInitializer>()
 
-    public fun onInitialize() {
+    public fun onInitialize(
+        isFabric: Boolean
+    ) {
         for (moduleClient in TestModuleClient.instances) {
             moduleClient.initializeClient(TestModContentManager.getOrCreateModule(moduleClient.module))
         }
@@ -26,20 +27,23 @@ public object TestCoreClientInitializer {
             EntityRendererRegistry.register({ entityConfig.entityTypeInstance }) { dispatcher ->
                 TestEntityRenderer(dispatcher)
             }
-            RuntimeResources.addTranslation(entityConfig.entityTypeInstance.translationKey, entityConfig.name)
+            RuntimeResources.addTranslation(entityConfig.translationKey, entityConfig.name)
         }
 
         for(itemConfig in TestModContentManager.items.values) {
             RuntimeResources.addAsset(TestItemModelGenerator.generateModel(itemConfig.id))
             RuntimeResources.addAsset(TestItemModelGenerator.generateModelDef(itemConfig.id))
-            RuntimeResources.addTranslation(itemConfig.instance.translationKey, itemConfig.name)
+            RuntimeResources.addTranslation(itemConfig.translationKey, itemConfig.name)
         }
 
         for(blockConfig in TestModContentManager.blocks.values) {
             RuntimeResources.addAsset(TestBlockModelGenerator.generateBlockStates(blockConfig))
             RuntimeResources.addAsset(TestBlockModelGenerator.generateItemModel(blockConfig))
-            RenderTypeRegistry.register(RenderLayer.getCutout(), blockConfig.blockInstance)
-            RuntimeResources.addTranslation(blockConfig.blockInstance.translationKey, blockConfig.name)
+            if (isFabric) {
+                // NeoForge uses the "render_type" key in the model JSON
+                RenderTypeRegistry.register(RenderLayer.getCutout(), blockConfig.blockInstance)
+            }
+            RuntimeResources.addTranslation(blockConfig.translationKey, blockConfig.name)
         }
 
         logger.info("Generated {} assets", RuntimeResources.resources.size)

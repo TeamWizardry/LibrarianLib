@@ -25,6 +25,7 @@ public class TestEntityConfig(moduleConfig: TestModuleConfig, id: Identifier) : 
             .build(this.id.toString())
     }
 
+    public val translationKey: String = id.toTranslationKey("entity")
 
     public val spawnerItem: TestItemConfig = moduleConfig.item(Identifier.of("${id}_spawner")) {
         name = this@TestEntityConfig.name

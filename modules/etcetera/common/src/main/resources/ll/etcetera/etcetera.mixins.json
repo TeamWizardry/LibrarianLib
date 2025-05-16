@@ -3,7 +3,6 @@
   "required": true,
   "package": "com.teamwizardry.librarianlib.etcetera.mixin",
   "compatibilityLevel": "JAVA_21",
-  "refmap": "ll/etcetera/etcetera-refmap.json",
   "mixins": [
     "WorldEntityLookupMixin"
   ],

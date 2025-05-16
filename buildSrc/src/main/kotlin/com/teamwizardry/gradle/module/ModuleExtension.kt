@@ -27,6 +27,7 @@ open class ModuleExtension(private val ctx: DslContext) {
     val path get() = moduleInfo.path
     val commonPath get() = moduleInfo.commonPath
     val fabricPath get() = moduleInfo.fabricPath
+    val neoForgePath get() = moduleInfo.neoForgePath
     val testModPath get() = moduleInfo.testModPath
 
     /**

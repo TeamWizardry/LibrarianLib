@@ -23,6 +23,9 @@ allprojects {
         }
         maven("https://repo.spongepowered.org/repository/maven-public/")
         maven("https://maven.terraformersmc.com/releases") // for ModMenu
+
+        maven("https://maven.neoforged.net/releases")
+        maven("https://thedarkcolour.github.io/KotlinForForge/")
     }
 }
 
@@ -35,7 +38,7 @@ commonConfig {
     }
     val mod_version: String by project
     version = snapshotVersion ?: mod_version
-    platforms = listOf("fabric")
+    platforms = listOf("fabric", "neoforge")
 
     modules {
         subprojects

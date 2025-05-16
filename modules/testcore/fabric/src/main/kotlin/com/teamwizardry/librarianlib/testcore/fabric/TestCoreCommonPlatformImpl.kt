@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier
 internal class TestCoreCommonPlatformImpl : TestCoreCommonPlatform {
     override fun <A : ArgumentType<*>, T : ArgumentSerializer.ArgumentTypeProperties<A>> registerArgumentType(
         id: Identifier,
-        clazz: Class<out A>,
+        clazz: Class<A>,
         serializer: ArgumentSerializer<A, T>
     ) = ArgumentTypeRegistry.registerArgumentType(id, clazz, serializer)
 }

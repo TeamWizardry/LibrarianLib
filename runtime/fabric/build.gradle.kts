@@ -11,6 +11,12 @@ architectury {
     fabric()
 }
 
+loom {
+    runConfigs.configureEach {
+        property("librarianlib.logging.debug", "liblib_*")
+    }
+}
+
 configurations {
 }
 
