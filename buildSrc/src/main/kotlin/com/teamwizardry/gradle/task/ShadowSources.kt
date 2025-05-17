@@ -4,6 +4,7 @@ package com.teamwizardry.gradle.task
 
 import com.github.jengelman.gradle.plugins.shadow.relocation.RelocatePathContext
 import com.github.jengelman.gradle.plugins.shadow.relocation.Relocator
+import com.github.jengelman.gradle.plugins.shadow.ShadowStats
 import com.teamwizardry.gradle.util.DslContext
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.result.ResolvedArtifactResult
@@ -32,7 +33,7 @@ open class ShadowSources : Copy() {
     val relocators: ListProperty<Relocator> = ctx.listProperty() { emptyList() }
 
     /**
-     * Add the sources from the given configuration. Note that this does not resolve transitive dependencies.
+     * Add the sources from the given configuration.
      */
     fun sourcesFrom(configuration: Configuration) {
         this.from({ collectSources(configuration) })
@@ -41,7 +42,7 @@ open class ShadowSources : Copy() {
     private fun collectSources(configuration: Configuration): FileCollection {
         val components = configuration
             .incoming.resolutionResult
-            .root.dependencies
+            .allDependencies
             .filterIsInstance<ResolvedDependencyResult>()
             .map { it.selected.id }
 
@@ -73,6 +74,9 @@ open class ShadowSources : Copy() {
         }
     }
 
+    @Internal
+    val shadowStats = ShadowStats()
+
     private fun relocateFile(copyDetails: FileCopyDetails) {
         if(copyDetails.isDirectory) {
             // exclude directories. Any that are actually needed by the output files will be automatically created,
@@ -82,7 +86,7 @@ open class ShadowSources : Copy() {
         }
         relocators.get().forEach { relocator ->
             if(relocator.canRelocatePath(copyDetails.sourcePath)) {
-                copyDetails.path = relocator.relocatePath(RelocatePathContext(copyDetails.sourcePath))
+                copyDetails.path = relocator.relocatePath(RelocatePathContext(copyDetails.sourcePath, shadowStats))
             }
 
             copyDetails.filter { line ->
