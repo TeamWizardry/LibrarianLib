@@ -9,13 +9,7 @@ import org.gradle.api.publish.maven.MavenPomDeveloper
 import org.gradle.kotlin.dsl.the
 
 open class ModPublishingExtension(private val ctx: DslContext) {
-    val artifactId: Property<String> = ctx.property()
-    val pomName: Property<String> = ctx.property()
-    val pomDescription: Property<String> = ctx.property()
-    val developers: LiveCollection<MavenPomDeveloper.() -> Unit> = LiveCollection(mutableListOf())
-
-    fun developer(dev: MavenPomDeveloper.() -> Unit) {
-        developers.add(dev)
-    }
+    val component: AdhocComponentWithVariants
+        get() = ctx.project.components.getByName("mod") as AdhocComponentWithVariants
 }
 

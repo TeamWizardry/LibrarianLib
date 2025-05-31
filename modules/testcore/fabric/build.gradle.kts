@@ -17,3 +17,6 @@ dependencies {
         shadowBundle(project(path = module.testModPath, configuration = "transformProductionFabric"))
     }
 }
+
+tasks.withType<PublishToMavenRepository>().configureEach { enabled = false }
+tasks.withType<PublishToMavenLocal>().configureEach { enabled = false }

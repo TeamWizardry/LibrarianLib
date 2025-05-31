@@ -60,14 +60,12 @@ architectury {
 // The `transformProduction*` tasks fail when run in parallel. It seems this is because artifactory-transformer takes
 // some of its parameters as java system properties, which are process-global.
 //
-// This block enforces that they run in a strict (arbitrary) order.
+// This block enforces that they run in a strict (but arbitrary) order.
 val transformChain = mutableListOf<String>()
 allprojects {
-    tasks.configureEach {
-        if (this@configureEach is TransformingTask) {
-            this@configureEach.mustRunAfter(*transformChain.toTypedArray())
-            transformChain.add(this@configureEach.path)
-        }
+    tasks.withType<TransformingTask>().configureEach {
+        mustRunAfter(*transformChain.toTypedArray())
+        transformChain.add(path)
     }
 }
 

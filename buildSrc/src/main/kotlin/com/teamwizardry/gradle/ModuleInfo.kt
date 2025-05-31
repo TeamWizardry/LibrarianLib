@@ -20,6 +20,9 @@ open class ModuleInfo(val name: String) {
     val allDependencies: LiveCollection<ModuleInfo> = LiveCollection(mutableSetOf())
 
     val mavenName: String = name
+    val apiMavenName: String = name
+    val fabricMavenName: String = "$name-fabric"
+    val neoForgeMavenName: String = "$name-neoforge"
 
     val modid: String = "liblib_$name"
 

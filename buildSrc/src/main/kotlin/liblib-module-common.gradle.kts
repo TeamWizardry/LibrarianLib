@@ -1,10 +1,20 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.RemapSourcesJarTask
+import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.named
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 plugins {
     id("liblib-shared-langs")
     id("liblib-shared-loom")
+    id("com.gradleup.shadow")
+    id("maven-publish")
 }
+
+apply<ModPublishingPlugin>()
+val modComponent = the<ModPublishingExtension>().component
 
 val module = parent!!.extensions.getByType<ModuleExtension>()
 
@@ -21,7 +31,22 @@ loom {
 }
 
 configurations {
+    create("shadowBundle") {
+        canBe(consumed = false, resolved = true)
+    }
+    create("shadowSources") {
+        canBe(consumed = false, resolved = true)
+    }
     create("devRuntime") {
+        canBe(consumed = true, resolved = false)
+    }
+
+    create("modJar") {
+        description = "The common api jar to be published to maven"
+        canBe(consumed = true, resolved = false)
+    }
+    create("sourcesJar") {
+        description = "The remapped and shadowed common sources"
         canBe(consumed = true, resolved = false)
     }
 }
@@ -34,6 +59,11 @@ dependencies {
     module.dependencies {
         api(project(it.commonPath, configuration = "namedElements"))
     }
+
+    "shadowBundle"(project(path = module.path, configuration = "shade"))
+    "shadowBundle"(project(path = module.path, configuration = "transitiveShade"))
+    "shadowSources"(project(path = module.path, configuration = "shade"))
+    "shadowSources"(project(path = module.path, configuration = "transitiveShade"))
 }
 
 // Classpath entries without a mod json aren't treated like resource packs, so we need to generate a dummy file.
@@ -68,3 +98,105 @@ val jar = tasks.named<Jar>("jar") {
     }
     exclude("fabric.mod.json")
 }
+
+val shadowJar = tasks.named<ShadowJar>("shadowJar") {
+    configurations = listOf(project.configurations.getByName("shadowBundle"))
+    destinationDirectory.set(layout.buildDirectory.dir("devlibs"))
+    archiveClassifier = "shadow"
+
+    commonConfig.shadowRules {
+        relocate(it.from, it.to)
+    }
+
+    mergeServiceFiles()
+}
+
+val remapJar = tasks.named<RemapJarTask>("remapJar") {
+    archiveBaseName.set(module.archiveName)
+    dependsOn(shadowJar)
+    inputFile.set(shadowJar.map { it.archiveFile.get() })
+}
+
+val shadowSources = tasks.register<ShadowSources>("shadowSources") {
+    relocators.set(shadowJar.map { it.relocators })
+
+    from(sourceSets.main.map { it.allSource })
+    sourcesFrom(project.configurations.getByName("shadowSources"))
+    into(layout.buildDirectory.dir("shadowSources"))
+
+    dependsOn(generateFabricMod)
+}
+
+val sourcesJar = tasks.register<Jar>("sourcesJar") {
+    destinationDirectory.set(layout.buildDirectory.dir("devlibs"))
+    archiveClassifier = "dev-sources"
+
+    includeEmptyDirs = false
+    from(shadowSources.map { it.outputs })
+}
+
+val remapSourcesJar = tasks.named<RemapSourcesJarTask>("remapSourcesJar") {
+    archiveBaseName.set(module.archiveName)
+    archiveClassifier.set("sources")
+}
+
+artifacts {
+    add("modJar", remapJar)
+    add("sourcesJar", remapSourcesJar)
+}
+
+/* region == Publishing == */
+
+modComponent.addVariantsFromConfiguration(configurations["modJar"]) {
+    mapToMavenScope("compile")
+}
+modComponent.addVariantsFromConfiguration(configurations["modJar"]) {
+    mapToMavenScope("runtime")
+}
+modComponent.addVariantsFromConfiguration(configurations["sourcesJar"]) {
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("maven") {
+            groupId = commonConfig.mavenGroup
+            artifactId = module.apiMavenName
+            version = commonConfig.version
+
+            from(modComponent)
+
+            pom {
+                name.set(provider { module.modName })
+                description.set(provider { module.description })
+
+                withXml {
+                    val depsNode = asNode().appendNode("dependencies")
+
+                    fun addDependencyNode(groupId: String, artifactId: String, version: String, scope: String) {
+                        val depNode = depsNode.appendNode("dependency")
+                        depNode.appendNode("groupId", groupId)
+                        depNode.appendNode("artifactId", artifactId)
+                        depNode.appendNode("version", version)
+                        depNode.appendNode("scope", scope)
+                    }
+
+                    for (dep in module.moduleInfo.dependencies) {
+                        addDependencyNode(
+                            commonConfig.mavenGroup,
+                            dep.apiMavenName,
+                            commonConfig.version,
+                            "compile"
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+// disable publishing gradle module metadata
+tasks.withType<GenerateModuleMetadata> {
+    enabled = false
+}
+
+/* endregion == Publishing == */

@@ -9,11 +9,15 @@ plugins {
     id("liblib-shared-langs")
     id("liblib-shared-loom")
     id("com.gradleup.shadow")
+    id("maven-publish")
 }
 
 if (project.findProperty("loom.platform") != "neoforge") {
     throw IllegalStateException("NeoForge modules must have `loom.platform=neoforge` in their gradle.properties file")
 }
+
+apply<ModPublishingPlugin>()
+val modComponent = the<ModPublishingExtension>().component
 
 val module = parent!!.extensions.getByType<ModuleExtension>()
 
@@ -33,9 +37,6 @@ configurations {
     create("shadowBundle") {
         canBe(consumed = false, resolved = true)
     }
-    create("shadowSources") {
-        canBe(consumed = false, resolved = true)
-    }
     create("devRuntime") {
         canBe(consumed = true, resolved = false)
     }
@@ -44,8 +45,8 @@ configurations {
         description = "The mod jar to be bundled into the final release jar"
         canBe(consumed = true, resolved = false)
     }
-    create("sourcesJar") {
-        description = "The remapped and shadowed sources of the main mod"
+    create("pubJar") {
+        description = "The jar to be published to maven"
         canBe(consumed = true, resolved = false)
     }
 }
@@ -66,8 +67,6 @@ dependencies {
     "shadowBundle"(project(path = module.commonPath, configuration = "transformProductionNeoForge"))
     "shadowBundle"(project(path = module.path, configuration = "shade"))
     "shadowBundle"(project(path = module.path, configuration = "transitiveShade"))
-    "shadowSources"(project(path = module.path, configuration = "shade"))
-    "shadowSources"(project(path = module.path, configuration = "transitiveShade"))
 }
 
 val generateNeoForgeMod = tasks.register<GenerateNeoForgeModsToml>("generateNeoForgeMod") {
@@ -112,7 +111,8 @@ tasks.named<ProcessResources>("processResources") {
 val shadowJar = tasks.named<ShadowJar>("shadowJar") {
     configurations = listOf(project.configurations.getByName("shadowBundle"))
     destinationDirectory.set(layout.buildDirectory.dir("devlibs"))
-    archiveClassifier = "shadow"
+    archiveBaseName.set(module.neoForgeArchiveName)
+    archiveClassifier = ""
 
     commonConfig.shadowRules {
         relocate(it.from, it.to)
@@ -122,36 +122,77 @@ val shadowJar = tasks.named<ShadowJar>("shadowJar") {
 }
 
 val remapJar = tasks.named<RemapJarTask>("remapJar") {
-    archiveBaseName.set(module.archiveName)
-    archiveClassifier.set("neoforge")
+    archiveBaseName.set(module.neoForgeArchiveName)
     dependsOn(shadowJar)
     inputFile.set(shadowJar.map { it.archiveFile.get() })
 }
 
-val shadowSources = tasks.register<ShadowSources>("shadowSources") {
-    relocators.set(shadowJar.map { it.relocators })
-
-    from(
-        sourceSets.main.map { it.allSource },
-        project(module.commonPath).sourceSets.main.map { it.allSource }
-    )
-    sourcesFrom(project.configurations.getByName("shadowSources"))
-    into(layout.buildDirectory.dir("shadowSources"))
-
-    dependsOn(generateNeoForgeMod)
-}
-
-val sourcesJar = tasks.register<Jar>("sourcesJar") {
-    includeEmptyDirs = false
-    from(shadowSources.map { it.outputs })
-}
-
-val remapSourcesJar = tasks.named<RemapSourcesJarTask>("remapSourcesJar") {
-    archiveBaseName.set(module.archiveName)
-    archiveClassifier.set("neoforge-sources")
+val pubJar = tasks.register<Jar>("pubJar") {
+    destinationDirectory.set(layout.buildDirectory.dir("libs/pub"))
+    archiveBaseName.set(module.neoForgeArchiveName)
+    dependsOn(remapJar)
+    from(remapJar.map { zipTree(it.archiveFile.get()) })
+    exclude("**/*-refmap.json")
 }
 
 artifacts {
     add("modJar", remapJar)
-    add("sourcesJar", remapSourcesJar)
+    // neoforge doesn't like it when the published jar has refmaps, so we publish the unmapped jar. I hate this.
+    add("pubJar", pubJar)
 }
+
+/* region == Publishing == */
+
+val javaComponent = components["java"] as AdhocComponentWithVariants
+
+modComponent.addVariantsFromConfiguration(configurations["pubJar"]) {
+    mapToMavenScope("compile")
+}
+modComponent.addVariantsFromConfiguration(configurations["pubJar"]) {
+    mapToMavenScope("runtime")
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("maven") {
+            groupId = commonConfig.mavenGroup
+            artifactId = module.neoForgeMavenName
+            version = commonConfig.version
+
+            from(modComponent)
+
+            pom {
+                name.set(provider { module.modName })
+                description.set(provider { module.description })
+
+                withXml {
+                    val depsNode = asNode().appendNode("dependencies")
+
+                    fun addDependencyNode(groupId: String, artifactId: String, version: String, scope: String) {
+                        val depNode = depsNode.appendNode("dependency")
+                        depNode.appendNode("groupId", groupId)
+                        depNode.appendNode("artifactId", artifactId)
+                        depNode.appendNode("version", version)
+                        depNode.appendNode("scope", scope)
+                    }
+
+                    for (dep in module.moduleInfo.dependencies) {
+                        addDependencyNode(
+                            commonConfig.mavenGroup,
+                            dep.neoForgeMavenName,
+                            commonConfig.version,
+                            "compile"
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+// disable publishing gradle module metadata
+tasks.withType<GenerateModuleMetadata> {
+    enabled = false
+}
+
+/* endregion == Publishing == */

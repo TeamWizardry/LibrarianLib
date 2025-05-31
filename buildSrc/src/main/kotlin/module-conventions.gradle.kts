@@ -307,7 +307,7 @@ if (project.name != "testcore") {
                         }
 
                         for (dep in module.moduleInfo.dependencies) {
-                            addDependencyNode(commonConfig.mavenGroup, dep.mavenName, commonConfig.version, "compile")
+                            addDependencyNode(commonConfig.mavenGroup, dep.fabricMavenName, commonConfig.version, "compile")
                         }
 
                         addDependencyNode(

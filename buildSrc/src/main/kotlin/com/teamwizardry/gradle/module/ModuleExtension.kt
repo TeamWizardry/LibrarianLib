@@ -30,8 +30,15 @@ open class ModuleExtension(private val ctx: DslContext) {
     val neoForgePath get() = moduleInfo.neoForgePath
     val testModPath get() = moduleInfo.testModPath
 
+    val mavenName get() = moduleInfo.mavenName
+    val apiMavenName get() = moduleInfo.apiMavenName
+    val fabricMavenName get() = moduleInfo.fabricMavenName
+    val neoForgeMavenName get() = moduleInfo.neoForgeMavenName
+
     val commonRefmap get() = "ll/$name/$name-refmap.json"
     val archiveName get() = "librarianlib_$name"
+    val fabricArchiveName get() = "librarianlib_${name}_fabric"
+    val neoForgeArchiveName get() = "librarianlib_${name}_neoforge"
 
     /**
      * The direct dependencies of this module

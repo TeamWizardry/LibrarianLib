@@ -9,7 +9,11 @@ plugins {
     id("liblib-shared-langs")
     id("liblib-shared-loom")
     id("com.gradleup.shadow")
+    id("maven-publish")
 }
+
+apply<ModPublishingPlugin>()
+val modComponent = the<ModPublishingExtension>().component
 
 val module = parent!!.extensions.getByType<ModuleExtension>()
 
@@ -29,19 +33,12 @@ configurations {
     create("shadowBundle") {
         canBe(consumed = false, resolved = true)
     }
-    create("shadowSources") {
-        canBe(consumed = false, resolved = true)
-    }
     create("devRuntime") {
         canBe(consumed = true, resolved = false)
     }
 
     create("modJar") {
         description = "The mod jar to be bundled into the final release jar"
-        canBe(consumed = true, resolved = false)
-    }
-    create("sourcesJar") {
-        description = "The remapped and shadowed sources of the main mod"
         canBe(consumed = true, resolved = false)
     }
 }
@@ -64,8 +61,6 @@ dependencies {
     "shadowBundle"(project(path = module.commonPath, configuration = "transformProductionFabric"))
     "shadowBundle"(project(path = module.path, configuration = "shade"))
     "shadowBundle"(project(path = module.path, configuration = "transitiveShade"))
-    "shadowSources"(project(path = module.path, configuration = "shade"))
-    "shadowSources"(project(path = module.path, configuration = "transitiveShade"))
 }
 
 val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod") {
@@ -113,36 +108,86 @@ val shadowJar = tasks.named<ShadowJar>("shadowJar") {
 }
 
 val remapJar = tasks.named<RemapJarTask>("remapJar") {
-    archiveBaseName.set(module.archiveName)
-    archiveClassifier.set("fabric")
+    archiveBaseName.set(module.fabricArchiveName)
     dependsOn(shadowJar)
     inputFile.set(shadowJar.map { it.archiveFile.get() })
 }
 
-val shadowSources = tasks.register<ShadowSources>("shadowSources") {
-    relocators.set(shadowJar.map { it.relocators })
-
-    from(
-        sourceSets.main.map { it.allSource },
-        project(module.commonPath).sourceSets.main.map { it.allSource }
-    )
-    sourcesFrom(project.configurations.getByName("shadowSources"))
-    into(layout.buildDirectory.dir("shadowSources"))
-
-    dependsOn(generateFabricMod)
-}
-
-val sourcesJar = tasks.register<Jar>("sourcesJar") {
-    includeEmptyDirs = false
-    from(shadowSources.map { it.outputs })
-}
-
-val remapSourcesJar = tasks.named<RemapSourcesJarTask>("remapSourcesJar") {
-    archiveBaseName.set(module.archiveName)
-    archiveClassifier.set("fabric-sources")
-}
-
 artifacts {
     add("modJar", remapJar)
-    add("sourcesJar", remapSourcesJar)
 }
+
+/* region == Publishing == */
+
+val javaComponent = components["java"] as AdhocComponentWithVariants
+
+modComponent.addVariantsFromConfiguration(configurations["modJar"]) {
+    mapToMavenScope("compile")
+}
+modComponent.addVariantsFromConfiguration(configurations["modJar"]) {
+    mapToMavenScope("runtime")
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("maven") {
+            groupId = commonConfig.mavenGroup
+            artifactId = module.fabricMavenName
+            version = commonConfig.version
+
+            from(modComponent)
+
+            pom {
+                name.set(provider { module.modName })
+                description.set(provider { module.description })
+
+                withXml {
+                    val depsNode = asNode().appendNode("dependencies")
+
+                    fun addDependencyNode(groupId: String, artifactId: String, version: String, scope: String) {
+                        val depNode = depsNode.appendNode("dependency")
+                        depNode.appendNode("groupId", groupId)
+                        depNode.appendNode("artifactId", artifactId)
+                        depNode.appendNode("version", version)
+                        depNode.appendNode("scope", scope)
+                    }
+
+                    for (dep in module.moduleInfo.dependencies) {
+                        addDependencyNode(
+                            commonConfig.mavenGroup,
+                            dep.fabricMavenName,
+                            commonConfig.version,
+                            "compile"
+                        )
+                    }
+
+                    addDependencyNode(
+                        "net.fabricmc.fabric-api",
+                        "fabric-api",
+                        "[${project.property("fabric_api_version")},)",
+                        "compile"
+                    )
+                    addDependencyNode(
+                        "net.fabricmc",
+                        "fabric-language-kotlin",
+                        "[${project.property("fabric_kotlin_version")},)",
+                        "compile"
+                    )
+                    addDependencyNode(
+                        "net.fabricmc",
+                        "fabric-loader",
+                        "[${project.property("fabric_loader_version")},)",
+                        "runtime"
+                    )
+                }
+            }
+        }
+    }
+}
+
+// disable publishing gradle module metadata
+tasks.withType<GenerateModuleMetadata> {
+    enabled = false
+}
+
+/* endregion == Publishing == */
