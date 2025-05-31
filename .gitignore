@@ -27,3 +27,5 @@ hs_err_*.log
 replay_*.log
 
 .DS_Store
+.kotlin
+.architectury-transformer
