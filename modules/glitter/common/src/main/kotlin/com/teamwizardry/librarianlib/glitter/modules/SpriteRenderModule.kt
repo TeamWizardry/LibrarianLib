@@ -5,7 +5,6 @@ import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.albedo.state.RenderState
 import com.teamwizardry.librarianlib.core.util.Client
-import com.teamwizardry.librarianlib.core.util.kotlin.builder
 import com.teamwizardry.librarianlib.glitter.GlitterLightingCache
 import com.teamwizardry.librarianlib.glitter.ParticleRenderContext
 import com.teamwizardry.librarianlib.glitter.ParticleRenderModule
@@ -298,7 +297,7 @@ public class SpriteRenderModule private constructor(
         /**
          * The position of the particle last tick, used to interpolate between ticks
          */
-        public fun previousPosition(value: ReadParticleBinding): Builder = builder {
+        public fun previousPosition(value: ReadParticleBinding): Builder = apply {
             value.require(3)
             previousPosition = value
         }
@@ -306,7 +305,7 @@ public class SpriteRenderModule private constructor(
         /**
          * The tint color of the particle
          */
-        public fun color(value: ReadParticleBinding): Builder = builder {
+        public fun color(value: ReadParticleBinding): Builder = apply {
             value.require(4)
             color = value
         }
@@ -314,14 +313,14 @@ public class SpriteRenderModule private constructor(
         /**
          * The tint color of the particle
          */
-        public fun color(value: Color): Builder = builder {
+        public fun color(value: Color): Builder = apply {
             color = ConstantBinding(value.red / 255.0, value.green / 255.0, value.blue / 255.0, value.alpha / 255.0)
         }
 
         /**
          * The tint color of the particle
          */
-        public fun color(red: Double, green: Double, blue: Double, alpha: Double): Builder = builder {
+        public fun color(red: Double, green: Double, blue: Double, alpha: Double): Builder = apply {
             color = ConstantBinding(red, green, blue, alpha)
         }
 
@@ -330,7 +329,7 @@ public class SpriteRenderModule private constructor(
          * height, if it's a 2D binding the two axes are used as the width and height. Note that this does not affect UV
          * coordinates, so if you set this to non-square and have a square texture it will be distorted.
          */
-        public fun size(value: ReadParticleBinding): Builder = builder {
+        public fun size(value: ReadParticleBinding): Builder = apply {
             value.require(1, 2)
             size = value
         }
@@ -338,7 +337,7 @@ public class SpriteRenderModule private constructor(
         /**
          * The size of the particle in meters.
          */
-        public fun size(value: Double): Builder = builder {
+        public fun size(value: Double): Builder = apply {
             size = ConstantBinding(value)
         }
 
@@ -346,7 +345,7 @@ public class SpriteRenderModule private constructor(
          * The width and height of the particle in meters. Note that this does not affect UV coordinates, so if you set
          * this to non-square and have a square texture it will be distorted.
          */
-        public fun size(width: Double, height: Double): Builder = builder {
+        public fun size(width: Double, height: Double): Builder = apply {
             size = ConstantBinding(width, height)
         }
 
@@ -354,7 +353,7 @@ public class SpriteRenderModule private constructor(
          * If present, an artificial facing vector used instead of the player's look vector. This vector _does not need
          * to be normalized._
          */
-        public fun facingVector(value: ReadParticleBinding): Builder = builder {
+        public fun facingVector(value: ReadParticleBinding): Builder = apply {
             value.require(3)
             facingVector = value
         }
@@ -362,7 +361,7 @@ public class SpriteRenderModule private constructor(
         /**
          * If present, an artificial direction for the particle's "up" axis. This vector _does not need to be normalized._
          */
-        public fun upVector(value: ReadParticleBinding): Builder = builder {
+        public fun upVector(value: ReadParticleBinding): Builder = apply {
             value.require(3)
             upVector = value
         }
@@ -370,7 +369,7 @@ public class SpriteRenderModule private constructor(
         /**
          * The alpha multiplier for the color. Defaults to 1 if not present.
          */
-        public fun alphaMultiplier(value: ReadParticleBinding): Builder = builder {
+        public fun alphaMultiplier(value: ReadParticleBinding): Builder = apply {
             value.require(1)
             alphaMultiplier = value
         }
@@ -381,7 +380,7 @@ public class SpriteRenderModule private constructor(
          * @param size The size of the sprite sheet (must be a power of 2)
          * @param index A binding for the sprite index (indexed left-to-right, top-to-bottom)
          */
-        public fun spriteSheet(size: Int, index: ReadParticleBinding): Builder = builder {
+        public fun spriteSheet(size: Int, index: ReadParticleBinding): Builder = apply {
             if (size and (size - 1) != 0) {
                 throw IllegalArgumentException("Sprite sheet size $size is not a power of 2")
             }
@@ -394,7 +393,7 @@ public class SpriteRenderModule private constructor(
          * If present, an artificial U/V texture size. When used in combination with sprite sheets, this will be a size
          * within the particle's specific sprite.
          */
-        public fun uvSize(value: ReadParticleBinding): Builder = builder {
+        public fun uvSize(value: ReadParticleBinding): Builder = apply {
             value.require(2)
             uvSize = value
         }
@@ -403,7 +402,7 @@ public class SpriteRenderModule private constructor(
          * If present, an offset to apply to the UV coordinates of the sprite. When used in combination with sprite sheets,
          * this will be an offset within the particle's specific sprite.
          */
-        public fun uvOffset(value: ReadParticleBinding): Builder = builder {
+        public fun uvOffset(value: ReadParticleBinding): Builder = apply {
             value.require(2)
             uvOffset = value
         }
@@ -455,7 +454,7 @@ public class SpriteRenderOptions private constructor(
         private var worldLight: Boolean = false
         private var diffuseLight: Boolean = false
 
-        public fun addState(state: RenderState.State): Builder = builder {
+        public fun addState(state: RenderState.State): Builder = apply {
             renderState.add(state)
         }
 
@@ -477,14 +476,14 @@ public class SpriteRenderOptions private constructor(
         /**
          * Whether to blur the texture (i.e. interpolate colors vs. use nearest-neighbor scaling)
          */
-        public fun blur(value: Boolean): Builder = builder {
+        public fun blur(value: Boolean): Builder = apply {
             blur = value
         }
 
         /**
          * Whether to enable backface culling (defaults to true)
          */
-        public fun cull(value: Boolean): Builder = builder {
+        public fun cull(value: Boolean): Builder = apply {
             cull = value
         }
 
@@ -492,7 +491,7 @@ public class SpriteRenderOptions private constructor(
          * Whether to apply world light (i.e. block and sky light) to the particles. Note: At large scales this may have
          * some performance impact.
          */
-        public fun worldLight(value: Boolean): Builder = builder {
+        public fun worldLight(value: Boolean): Builder = apply {
             worldLight = value
         }
 
@@ -500,7 +499,7 @@ public class SpriteRenderOptions private constructor(
          * Whether to apply diffuse lighting (e.g. particles appear darker from below) to the particles. Note: At large
          * scales this may have some performance impact.
          */
-        public fun diffuseLight(value: Boolean): Builder = builder {
+        public fun diffuseLight(value: Boolean): Builder = apply {
             diffuseLight = value
         }
 

@@ -13,20 +13,6 @@ public fun Identifier.makeTranslationKey(type: String, suffix: String? = null): 
     = "$type.$namespace.$path${suffix?.let { ".$it" } ?: ""}"
 
 /**
- * Runs a block and then returns `this`.
- *
- * Technically this is the same as [also], but names matter.
- */
-@OptIn(ExperimentalContracts::class)
-public inline fun <T> T.builder(block: (T) -> Unit): T {
-    contract {
-        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
-    }
-    block(this)
-    return this
-}
-
-/**
  * Used for cases where code is unreachable, but the language demands a value be returned. For the case where the
  * condition should never fail, but theoretically could, use [inconceivable].
  *
