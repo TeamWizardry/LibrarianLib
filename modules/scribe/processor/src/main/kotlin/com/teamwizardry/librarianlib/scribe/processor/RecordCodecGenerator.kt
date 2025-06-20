@@ -105,6 +105,7 @@ class RecordCodecGenerator(
     }
 
     fun generateCodecsFile(registry: ScribeRegistry): FileSpec {
+        //todo: allow recursion
         return FileSpec.builder(packageName, objectName)
             .indent("    ")
             .addType(
@@ -140,7 +141,7 @@ class RecordCodecGenerator(
                 addStatement(
                     "val %N = %L",
                     field.fieldName + "Codec",
-                    registry.getCodec(field.type) ?: CodeBlock.of("null /* ERROR FINDING CODEC */")
+                    registry.getCodec(field.type)
                 )
             }
 
