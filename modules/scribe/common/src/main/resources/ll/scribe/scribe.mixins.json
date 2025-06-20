@@ -1,0 +1,16 @@
+{
+  "minVersion": "0.8.2",
+  "required": true,
+  "package": "com.teamwizardry.librarianlib.scribe.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "refmap": "${refmap_name}",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

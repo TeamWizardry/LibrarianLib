@@ -10,17 +10,16 @@ pluginManagement {
     }
 }
 
-fun includeModule(name: String) {
+fun includeWithDir(name: String, dir: String) {
     include(name)
-    project(":$name").projectDir = rootDir.resolve("modules/$name")
-    include("$name:common")
-    project(":$name:common").projectDir = rootDir.resolve("modules/$name/common")
-    include("$name:fabric")
-    project(":$name:fabric").projectDir = rootDir.resolve("modules/$name/fabric")
-    include("$name:neoforge")
-    project(":$name:neoforge").projectDir = rootDir.resolve("modules/$name/neoforge")
-    include("$name:testmod")
-    project(":$name:testmod").projectDir = rootDir.resolve("modules/$name/testmod")
+    project(":$name").projectDir = rootDir.resolve(dir)
+}
+fun includeModule(name: String) {
+    includeWithDir(name, "modules/$name")
+    includeWithDir("$name:common", "modules/$name/common")
+    includeWithDir("$name:fabric", "modules/$name/fabric")
+    includeWithDir("$name:neoforge", "modules/$name/neoforge")
+    includeWithDir("$name:testmod", "modules/$name/testmod")
 }
 
 includeModule("albedo")
@@ -31,7 +30,9 @@ includeModule("etcetera")
 //////includeModule("foundation")
 includeModule("glitter")
 includeModule("mosaic")
-////includeModule("scribe")
+includeModule("scribe")
+includeWithDir("scribe:annotations", "modules/scribe/annotations")
+includeWithDir("scribe:processor", "modules/scribe/processor")
 includeModule("testcore")
 
 include("runtime:fabric")
