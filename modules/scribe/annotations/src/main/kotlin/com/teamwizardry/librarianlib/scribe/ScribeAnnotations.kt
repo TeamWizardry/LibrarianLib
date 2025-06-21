@@ -2,24 +2,20 @@ package com.teamwizardry.librarianlib.scribe
 
 import kotlin.reflect.KClass
 
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.SOURCE)
-annotation class AutoElement
-
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.SOURCE)
-annotation class AutoFactory
-
 object AutoCodec {
     @Target(AnnotationTarget.CLASS)
-    @Retention(AnnotationRetention.SOURCE)
+    @Retention(AnnotationRetention.BINARY)
     annotation class Record()
 
     @Target(AnnotationTarget.VALUE_PARAMETER)
-    @Retention(AnnotationRetention.SOURCE)
+    @Retention(AnnotationRetention.BINARY)
     annotation class Field(val name: String)
 
     @Target(AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION)
-    @Retention(AnnotationRetention.SOURCE)
+    @Retention(AnnotationRetention.BINARY)
     annotation class Register(val type: KClass<*>)
 }
+
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
+annotation class ScribeMetadata(val data: String)

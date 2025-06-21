@@ -1,7 +1,5 @@
 package com.teamwizardry.librarianlib.scribe.processor
 
-import com.google.devtools.ksp.closestClassDeclaration
-import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.getFunctionDeclarationsByName
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
@@ -9,107 +7,69 @@ import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSNode
-import com.google.devtools.ksp.validate
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.ksp.toClassName
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ksp.writeTo
-import com.teamwizardry.librarianlib.scribe.AutoCodec
-import com.teamwizardry.librarianlib.scribe.AutoElement
-import com.teamwizardry.librarianlib.scribe.AutoFactory
+import com.teamwizardry.librarianlib.scribe.ScribeMetadata
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonObject
 
 class ScribeProcessor(
     private val codeGenerator: CodeGenerator,
     private val logger: KSPLogger
 ) : SymbolProcessor {
+    var round = 0
+    val registry = ScribeRegistry(logger)
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        val registry = ScribeRegistry(logger)
-        registry.process(resolver)
+        val externalMetadata = scanExternalMetadata(resolver)
 
-        val registryFiles = registry.files.toTypedArray()
+        registry.process(resolver, externalMetadata.map { it.getValue("registry") })
 
         val records = RecordCodecGenerator.scan(resolver, logger)
-        for(record in records) {
-            record.generateCodecsFile(registry)
-                .writeTo(codeGenerator, Dependencies(true, record.sourceFile, *registryFiles))
+        for (record in records) {
+            record.generateCodecsFile(registry).writeTo(codeGenerator, Dependencies.ALL_FILES)
         }
 
-        val factories = getFactories(resolver)
-        val data = getElements(resolver, factories)
-        data.forEach {
-            genFile(it.key, it.value).writeTo(codeGenerator, Dependencies(true))
+        if (registry.localCodecSources.isNotEmpty()) {
+            generateMetadataFile(buildJsonObject {
+                put("registry", registry.saveMetadata())
+            }).writeTo(codeGenerator, Dependencies.ALL_FILES)
         }
+
         return emptyList()
     }
 
-    private fun getFactories(resolver: Resolver): Set<KSClassDeclaration> {
-        return resolver.getSymbolsWithAnnotation(AutoFactory::class.qualifiedName.orEmpty())
-            .filterIsInstance<KSClassDeclaration>()
-            .filter(KSNode::validate)
-            .toSet()
+    fun scanExternalMetadata(resolver: Resolver): List<JsonObject> {
+        val metadataHolders = resolver.getFunctionDeclarationsByName(CommonNames.metadataHolderName.canonicalName, true)
+            .filter { it.containingFile == null }
+            .toList()
+        logger.info("Scribe: Found ${metadataHolders.size} metadata holders")
+
+        return metadataHolders
+            .mapNotNull { it.annotations.findByType<ScribeMetadata>() }
+            .map { it.arguments[0].value as String }
+            .map { Json.parseToJsonElement(it).jsonObject }
+            .toList()
     }
 
-    private fun genFile(clz: KSClassDeclaration, list: List<ClassName>): FileSpec {
-        val key = clz.toClassName()
-        val packageName = key.packageName
-        val funcName = key.simpleName + "Factory"
-        val enumName = key.simpleName + "Type"
-
-        return FileSpec.builder(packageName, funcName)
-            .addType(TypeSpec.enumBuilder(enumName)
-                .apply {
-                    list.forEach {
-                        addEnumConstant(it.simpleName.uppercase())
-                    }
-                }
-                .build())
-            .addFunction(FunSpec.builder(funcName)
-                .addParameter("key", ClassName(packageName, enumName))
-                .apply {
-                    clz.primaryConstructor?.parameters?.forEach {
-                        addParameter(
-                            it.name?.getShortName().toString(),
-                            it.type.resolve().toClassName()
-                        )
-                    }
-                }
-                .returns(key)
-                .beginControlFlow("return when (key)")
-                .apply {
-                    val extraParameter = clz.primaryConstructor?.parameters?.map { it.name?.getShortName() }?.joinToString()
-                    list.forEach {
-                        addStatement("${enumName}.${it.simpleName.uppercase()} -> %T($extraParameter)", it)
-                    }
-                }
-                .endControlFlow()
-                .build())
+    fun generateMetadataFile(metadata: JsonObject): FileSpec {
+        return FileSpec.builder(CommonNames.metadataHolderName.packageName, "ScribeMetadata")
+            .indent("    ")
+            .addFunction(
+                FunSpec.builder(CommonNames.metadataHolderName)
+                    .addModifiers(KModifier.PRIVATE)
+                    .addAnnotation(
+                        AnnotationSpec.builder(ScribeMetadata::class)
+                            .addMember("%S", metadata.toString())
+                            .build()
+                    )
+                    .build()
+            )
             .build()
-    }
-
-    private fun getElements(
-        resolver: Resolver,
-        factories: Set<KSClassDeclaration>
-    ): Map<KSClassDeclaration, List<ClassName>> {
-        val result = mutableMapOf<KSClassDeclaration, MutableList<ClassName>>()
-        factories.forEach { result[it] = mutableListOf() }
-        resolver.getSymbolsWithAnnotation(AutoElement::class.qualifiedName.orEmpty())
-            .filterIsInstance<KSClassDeclaration>()
-            .filter(KSNode::validate)
-            .forEach { d ->
-                d.superTypes
-                    .map { it.resolve().declaration.closestClassDeclaration() }
-                    .filter { result.containsKey(it) }
-                    .forEach { name ->
-                        result[name]?.add(d.toClassName())
-                    }
-            }
-        return result
     }
 }

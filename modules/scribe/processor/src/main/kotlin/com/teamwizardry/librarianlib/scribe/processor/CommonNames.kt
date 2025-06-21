@@ -9,6 +9,8 @@ object CommonNames {
     val DataResult = className("com.mojang.serialization.DataResult")
     val ScribeRecordCodec = className("com.teamwizardry.librarianlib.scribe.helpers.ScribeRecordCodec")
 
+    val metadataHolderName = MemberName("com.teamwizardry.librarianlib.scribe.metadata", "scribeMetadataHolder")
+
     private fun className(qualifiedName: String): ClassName {
         return ClassName(
             qualifiedName.substringBeforeLast('.'),
