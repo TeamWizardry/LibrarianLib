@@ -35,7 +35,6 @@ class RecordCodecGenerator(
         ): List<RecordCodecGenerator> {
             return resolver.getSymbolsWithAnnotation(AutoCodec.Record::class.qualifiedName.orEmpty())
                 .filterIsInstance<KSClassDeclaration>()
-                .filter(KSNode::validate)
                 .mapNotNull { build(it, logger) }
                 .toList()
         }
@@ -44,6 +43,8 @@ class RecordCodecGenerator(
             val classQualifiedName = classDeclaration.qualifiedName?.asString()
             val classPackageName = classDeclaration.packageName.asString()
             val className = classDeclaration.simpleName.asString()
+
+            logger.info("Scribe: Generating codec for type `$classQualifiedName`")
 
             val recordAnnotation = classDeclaration.annotations.findByType<AutoCodec.Record>() ?: return null
             val constructor = classDeclaration.primaryConstructor ?: run {
@@ -83,7 +84,8 @@ class RecordCodecGenerator(
                 RecordField(key, paramType, paramName)
             }
 
-            // todo: error for conflicting names
+            // todo: error for conflicting field keys
+            // todo: warning when class doesn't have `CODEC` field
 
             return RecordCodecGenerator(
                 classDeclaration.containingFile!!,
