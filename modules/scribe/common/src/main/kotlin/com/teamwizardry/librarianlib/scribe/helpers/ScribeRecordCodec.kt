@@ -64,13 +64,6 @@ public object ScribeRecordCodec {
 
     public abstract class DecodeContext<I : Any> {
         public abstract fun <T> decode(key: String, codec: Codec<T & Any>, optional: Boolean): DataResult<T>
-
-        public inline fun <T> DataResult<T>.orAbort(abortFn: (DataResult<I>) -> Nothing): T = when (this) {
-            is DataResult.Success -> value
-            is DataResult.Error ->
-                @Suppress("UNCHECKED_CAST")
-                abortFn(this as DataResult<I>) // we know it's an error state, so the type parameter is meaningless
-        }
     }
 
 }

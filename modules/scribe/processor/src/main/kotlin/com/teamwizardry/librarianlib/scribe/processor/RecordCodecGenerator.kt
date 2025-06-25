@@ -143,7 +143,7 @@ class RecordCodecGenerator(
                 addStatement(
                     "val %N = %L",
                     field.fieldName + "Codec",
-                    registry.getCodec(field.type)
+                    registry.getCodec(field.type.makeNotNullable())
                 )
             }
 
@@ -176,10 +176,11 @@ class RecordCodecGenerator(
                     withIndent {
                         for (field in fields) {
                             addStatement(
-                                "decode(%S, %N, %L).orAbort { return@decode it },",
+                                "decode(%S, %N, %L).%M { return@decode it },",
                                 field.key,
                                 field.fieldName + "Codec",
                                 field.optional,
+                                CommonNames.dataResult_orAbort,
                             )
                         }
                     }

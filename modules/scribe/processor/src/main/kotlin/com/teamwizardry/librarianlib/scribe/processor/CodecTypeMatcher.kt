@@ -30,7 +30,7 @@ class CodecTypeMatcher private constructor(private val matchType: KSType) : Comp
 
     companion object {
         fun create(type: KSType): CodecTypeMatcher {
-            return CodecTypeMatcher(type.makeNullable())
+            return CodecTypeMatcher(type.makeNotNullable())
         }
     }
 }

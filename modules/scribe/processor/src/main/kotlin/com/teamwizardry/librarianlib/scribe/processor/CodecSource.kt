@@ -13,8 +13,12 @@ sealed class CodecSource(val declarationName: String?, val matcher: CodecTypeMat
     override fun compareTo(other: CodecSource): Int = this.matcher.compareTo(other.matcher)
 
     companion object {
-        fun errorCodec(name: String): CodeBlock {
-            return CodeBlock.of("null /* ERROR FINDING CODEC FOR `$name` */")
+        fun codecNotFoundError(name: String): CodeBlock {
+            return CodeBlock.of("%M(%S)", CommonNames.resolutionError_codecNotFound, name)
+        }
+
+        fun unsupportedNullableGenericError(name: String): CodeBlock {
+            return CodeBlock.of("%M(%S)", CommonNames.resolutionError_unsupportedNullableGeneric, name)
         }
     }
 
@@ -31,7 +35,7 @@ sealed class CodecSource(val declarationName: String?, val matcher: CodecTypeMat
     class GenericCodecSource(declarationName: String?, matcher: CodecTypeMatcher, val member: MemberName) : CodecSource(declarationName, matcher) {
         override fun genCodec(registry: ScribeRegistry, type: KSType): CodeBlock {
             val typeArgs = type.arguments.map {
-                val argType = it.type?.resolve() ?: return errorCodec("<missing type>")
+                val argType = it.type?.resolve() ?: return codecNotFoundError("<missing type>")
                 registry.getCodec(argType)
             }
             val argFormat = type.arguments.joinToString(", ") { "%L" }
@@ -43,7 +47,7 @@ sealed class CodecSource(val declarationName: String?, val matcher: CodecTypeMat
         }
     }
 
-    class StaticFieldCodecSource(declarationName: String?, matcher: CodecTypeMatcher, val fieldName: String) : CodecSource(declarationName, matcher) {
+    class StaticFieldCodecSource(matcher: CodecTypeMatcher, val fieldName: String) : CodecSource(null, matcher) {
         override fun genCodec(registry: ScribeRegistry, type: KSType): CodeBlock {
             val targetClass = ClassName(type.declaration.packageName.asString(), type.declaration.simpleName.asString())
             return CodeBlock.of("%T.%N", targetClass, fieldName)

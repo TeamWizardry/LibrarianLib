@@ -48,8 +48,7 @@ class ScribeRegistry(
         logger.info("Scribe: Registered ${externalCodecSources.size} external codec sources")
 
         fallbackCodecSource = CodecSource.StaticFieldCodecSource(
-            null,
-            CodecTypeMatcher.create(resolver.builtIns.anyType),
+            CodecTypeMatcher.create(resolver.builtIns.anyType.makeNotNullable()),
             "CODEC"
         )
     }
@@ -59,8 +58,12 @@ class ScribeRegistry(
     )
 
     fun getCodec(type: KSType): CodeBlock {
-        return findCodecSource(type)?.genCodec(this, type)
-            ?: CodecSource.errorCodec(type.declaration.simpleName.asString())
+        if (type.isMarkedNullable) {
+            return CodecSource.unsupportedNullableGenericError(type.declaration.simpleName.asString())
+        } else {
+            return findCodecSource(type)?.genCodec(this, type)
+                ?: CodecSource.codecNotFoundError(type.declaration.simpleName.asString())
+        }
     }
 
     private fun findCodecSource(type: KSType): CodecSource? {
