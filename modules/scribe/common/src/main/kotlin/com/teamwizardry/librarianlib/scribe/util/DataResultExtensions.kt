@@ -8,6 +8,9 @@ public fun <T> DataResult<T>.getOrNull(): T? = when (this) {
 }
 
 @Suppress("UNCHECKED_CAST")
+public fun <T> DataResult.Error<*>.castError(): DataResult.Error<T> = this as DataResult.Error<T>
+
+@Suppress("UNCHECKED_CAST")
 public fun <T> DataResult<T>.assertNotNull(message: () -> String = { "Value is null" }): DataResult<T & Any> =
     when (this) {
         is DataResult.Success -> if (value == null) DataResult.error(message) else this as DataResult<T & Any>

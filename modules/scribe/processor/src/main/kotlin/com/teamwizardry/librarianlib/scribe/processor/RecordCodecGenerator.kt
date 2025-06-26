@@ -68,6 +68,7 @@ class RecordCodecGenerator(
             val fields = constructor.parameters.map { param ->
                 val key: String
                 val paramName = param.name?.asString().orEmpty()
+                param.hasDefault
                 val paramType = param.type.resolve()
 
                 val fieldAnnotation = param.annotations.findByType<AutoCodec.Field>()
@@ -81,7 +82,14 @@ class RecordCodecGenerator(
                     key = fieldAnnotation.arguments[0].value as String
                 }
 
-                RecordField(key, paramType, paramName)
+                RecordField(
+                    key = key,
+                    type = paramType,
+                    fieldName = paramName,
+                    nullable = paramType.nullability != Nullability.NOT_NULL,
+                    paramName = paramName,
+                    hasDefault = param.hasDefault,
+                )
             }
 
             // todo: error for conflicting field keys
@@ -101,10 +109,11 @@ class RecordCodecGenerator(
         val key: String,
         val type: KSType,
         val fieldName: String,
-    ) {
-        val optional: Boolean
-            get() = type.nullability != Nullability.NOT_NULL
-    }
+        val nullable: Boolean,
+        val paramName: String,
+        val hasDefault: Boolean,
+    )
+
 
     fun generateCodecsFile(registry: ScribeRegistry): FileSpec {
         //todo: allow recursion
@@ -138,58 +147,28 @@ class RecordCodecGenerator(
 
     private fun generateNBTCodec(registry: ScribeRegistry): CodeBlock {
         return buildCodeBlock {
-            beginControlFlow("run {")
-            for (field in fields) {
-                addStatement(
-                    "val %N = %L",
-                    field.fieldName + "Codec",
-                    registry.getCodec(field.type.makeNotNullable())
-                )
-            }
-
-            add("\n")
-
             addStatement("%M(", CommonNames.ScribeRecordCodec.member("recordCodec"))
             withIndent {
-                addStatement("codecName = %S,", recordClassName.simpleName)
-                val keysFormat = fields.joinToString(", ") { "%S" }
-                val keysArgs = fields.map { it.key }
-                addStatement("keys = setOf($keysFormat),", *keysArgs.toTypedArray())
-
-                addStatement("encode = {")
+                addStatement("::%T,", recordClassName)
+                addStatement("listOf(")
                 withIndent {
                     for (field in fields) {
-                        addStatement(
-                            "encode(%S, %N, %L, it.%N)",
+                        add("«%T::%N.%M(%S, %L",
+                            recordClassName,
+                            field.fieldName,
+                            CommonNames.ScribeRecordCodec.member("recordField"),
                             field.key,
-                            field.fieldName + "Codec",
-                            field.optional,
-                            field.fieldName
+                            registry.getCodec(field.type.makeNotNullable()),
                         )
+                        if (field.nullable) add(", nullable = true")
+                        if (field.hasDefault) add(", hasDefault = true")
+                        if (field.paramName != field.fieldName) add(", paramName = %S", field.paramName)
+                        add("),\n»")
                     }
                 }
-                addStatement("},")
-
-                addStatement("decode = decode@{")
-                withIndent {
-                    addStatement("%T.success(%T(", CommonNames.DataResult, recordClassName)
-                    withIndent {
-                        for (field in fields) {
-                            addStatement(
-                                "decode(%S, %N, %L).%M { return@decode it },",
-                                field.key,
-                                field.fieldName + "Codec",
-                                field.optional,
-                                CommonNames.dataResult_orAbort,
-                            )
-                        }
-                    }
-                    addStatement("))")
-                }
-                addStatement("}")
+                addStatement(")")
             }
             addStatement(")")
-            endControlFlow()
         }
     }
 }
