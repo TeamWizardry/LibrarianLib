@@ -1,6 +1,7 @@
 package com.teamwizardry.librarianlib.scribe.processor
 
 import com.google.devtools.ksp.symbol.KSAnnotation
+import com.google.devtools.ksp.symbol.KSValueArgument
 import kotlin.reflect.KClass
 
 fun Sequence<KSAnnotation>.filterByType(qualifiedName: String): Sequence<KSAnnotation> = this
@@ -20,3 +21,11 @@ fun Sequence<KSAnnotation>.findByType(annotationClass: KClass<*>): KSAnnotation?
 
 inline fun <reified T : Any> Sequence<KSAnnotation>.findByType(): KSAnnotation? =
     filterByType(T::class).firstOrNull()
+
+fun KSAnnotation.findArgument(name: String): KSValueArgument? = arguments.firstOrNull { it.name?.asString() == name }
+fun KSAnnotation.findArgumentOrDefault(name: String): KSValueArgument =
+    arguments.firstOrNull { it.name?.asString() == name }
+        ?: defaultArguments.firstOrNull { it.name?.asString() == name }
+        ?: throw IllegalArgumentException("No argument named `$name` on annotation `${this.annotationType.resolve().declaration.qualifiedName?.asString()}`")
+
+inline fun <reified T> KSAnnotation.findArgumentValue(name: String): T = findArgumentOrDefault(name).value as T

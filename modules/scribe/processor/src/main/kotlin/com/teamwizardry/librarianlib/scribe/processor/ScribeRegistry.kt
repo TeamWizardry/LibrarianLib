@@ -48,7 +48,7 @@ class ScribeRegistry(
         logger.info("Scribe: Registered ${externalCodecSources.size} external codec sources")
 
         fallbackCodecSource = CodecSource.StaticFieldCodecSource(
-            CodecTypeMatcher.create(resolver.builtIns.anyType.makeNotNullable()),
+            CodecTypeMatcher.FallbackTypeMatcher,
             "CODEC"
         )
     }
@@ -110,8 +110,13 @@ class ScribeRegistry(
             return null
         }
 
-        val registerType = (registerAnnotation.arguments[0].value as KSType).makeNullable()
-        val matcher = CodecTypeMatcher.create(registerType)
+        val registerType = registerAnnotation.findArgumentValue<KSType>("type").makeNullable()
+        val registerArray = registerAnnotation.findArgumentValue<Boolean>("array")
+        val matcher = if (registerArray) {
+            CodecTypeMatcher.ArrayTypeMatcher(registerType.makeNotNullable())
+        } else {
+            CodecTypeMatcher.SimpleTypeMatcher(registerType.makeNotNullable())
+        }
         val member = MemberName(declaration.packageName.asString(), declaration.simpleName.asString())
 
         return when (declaration) {

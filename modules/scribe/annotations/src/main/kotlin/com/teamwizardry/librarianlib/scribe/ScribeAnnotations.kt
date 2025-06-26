@@ -13,7 +13,7 @@ object AutoCodec {
 
     @Target(AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION)
     @Retention(AnnotationRetention.BINARY)
-    annotation class Register(val type: KClass<*>)
+    annotation class Register(val type: KClass<*>, val array: Boolean = false)
 }
 
 @Target(AnnotationTarget.FUNCTION)

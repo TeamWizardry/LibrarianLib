@@ -4,6 +4,10 @@ import com.mojang.serialization.Codec
 import com.teamwizardry.librarianlib.scribe.AutoCodec
 import kotlin.collections.toMutableList
 
+@AutoCodec.Register(Any::class, array = true)
+public inline fun <reified E> arrayCodec(e: Codec<E>): Codec<Array<E>> = Codec.list(e)
+    .xmap({ it.toTypedArray() }, { it.toList() })
+
 @AutoCodec.Register(List::class)
 public fun <E> listCodec(e: Codec<E>): Codec<List<E>> = Codec.list(e)
 
