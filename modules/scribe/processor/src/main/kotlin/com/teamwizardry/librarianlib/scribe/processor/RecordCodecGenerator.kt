@@ -149,7 +149,12 @@ class RecordCodecGenerator(
         return buildCodeBlock {
             addStatement("%M(", CommonNames.ScribeRecordCodec.member("recordCodec"))
             withIndent {
-                addStatement("::%T,", recordClassName)
+                val enclosingClassName = recordClassName.enclosingClassName()
+                if (enclosingClassName != null) {
+                    addStatement("%T::%N,", enclosingClassName, recordClassName.simpleName)
+                } else {
+                    addStatement("::%T,", recordClassName)
+                }
                 addStatement("listOf(")
                 withIndent {
                     for (field in fields) {
