@@ -1,41 +1,88 @@
 package com.teamwizardry.librarianlib.scribe.test.util
 
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DataResult
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.AssertionFailureBuilder
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.opentest4j.AssertionFailedError
+import org.junit.jupiter.api.assertAll
+import kotlin.contracts.contract
 
-fun <T> assertJsonCodec(codec: Codec<T>, value: T, @Language("json") expectedJson: String, message: String? = null) {
-    val parsedExpected = JsonParser.parseString(expectedJson)
+fun <T> assertJsonEncode(codec: Codec<T>, value: T, @Language("json") json: String, message: String? = null) {
+    val expectedJson = JsonParser.parseString(json)
     val messagePrefix = if (message == null) "" else "$message > "
     val encodeResult = assertSuccess(codec.encodeJson(value), "${messagePrefix}JSON encode")
-    if (parsedExpected != encodeResult) {
+    if (expectedJson != encodeResult) {
         throwFailure(
             message = "${messagePrefix}Encoded JSON",
-            expected = parsedExpected.prettyPrint(),
+            expected = expectedJson.prettyPrint(),
             actual = encodeResult.prettyPrint()
         )
     }
+}
 
-    val decodeResult = assertSuccess(codec.decodeJson(encodeResult), "${messagePrefix}JSON decode")
+fun <T> assertJsonEncodeError(codec: Codec<T>, value: T, expectedError: String, assertMessage: String? = null) {
+    assertError(codec.encodeJson(value), expectedError, assertMessage)
+}
+
+fun <T> assertJsonDecode(codec: Codec<T>, value: T, @Language("json") json: String, message: String? = null) {
+    val parsedJson = JsonParser.parseString(json)
+    val messagePrefix = if (message == null) "" else "$message > "
+    val decodeResult = assertSuccess(codec.decodeJson(parsedJson), "${messagePrefix}JSON decode")
     assertEquals(value, decodeResult, "${messagePrefix}Decoded value")
+}
+
+fun <T> assertJsonDecodeError(codec: Codec<T>, @Language("json") json: String, expectedError: String, assertMessage: String? = null) {
+    assertError(codec.decodeJson(json), expectedError, assertMessage)
+}
+
+fun <T> assertJsonEncodeDecode(codec: Codec<T>, value: T, @Language("json") json: String, message: String? = null) {
+    assertAll(
+        { assertJsonEncode(codec, value, json, message) },
+        { assertJsonDecode(codec, value, json, message) }
+    )
 }
 
 /**
  * Asserts the DataResult is successful, and returns its value
  */
 fun <T> assertSuccess(dataResult: DataResult<T>, message: String? = null): T {
+    contract {
+        returns() implies (dataResult is DataResult.Success)
+    }
     when (dataResult) {
         is DataResult.Success -> return dataResult.value
         is DataResult.Error -> throwFailure(
             message = message,
             expected = "DataResult.Success",
-            actual = dataResult.message()
+            actual = dataResult
         )
+    }
+}
+
+/**
+ * Asserts the DataResult is successful, and returns its value
+ */
+fun <T> assertError(dataResult: DataResult<T>, expectedMessage: String, assertMessage: String? = null) {
+    contract {
+        returns() implies (dataResult is DataResult.Error)
+    }
+    when (dataResult) {
+        is DataResult.Success -> throwFailure(
+            message = assertMessage,
+            expected = "DataResult.Error['$expectedMessage']",
+            actual = dataResult
+        )
+        is DataResult.Error -> {
+            if (dataResult.message() != expectedMessage) {
+                throwFailure(
+                    message = assertMessage,
+                    expected = "DataResult.Error['$expectedMessage']",
+                    actual = dataResult.toString()
+                )
+            }
+        }
     }
 }
 

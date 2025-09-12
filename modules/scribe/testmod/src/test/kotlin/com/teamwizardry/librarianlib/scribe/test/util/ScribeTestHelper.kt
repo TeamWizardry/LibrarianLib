@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.scribe.test.util
 
+import com.mojang.serialization.Codec
 import com.teamwizardry.librarianlib.scribe.AutoCodec
 import com.teamwizardry.librarianlib.scribe.processor.ScribeProcessorProvider
 import com.tschuchort.compiletesting.JvmCompilationResult
@@ -144,5 +145,12 @@ class ScribeTestHelper {
 
         fun getClass(name: String): KClass<*> = compilationResult.classLoader.loadClass(name).kotlin
 
+        fun getRecordClass(name: String): RecordClassHelper = RecordClassHelper(getClass(name))
+
     }
+}
+
+class RecordClassHelper(val recordClass: KClass<*>) {
+    val codec: Codec<Any> = recordClass._getStaticFieldValue("CODEC")
+    operator fun invoke(vararg args: Any?): Any = recordClass._createSimpleInstance(*args)
 }

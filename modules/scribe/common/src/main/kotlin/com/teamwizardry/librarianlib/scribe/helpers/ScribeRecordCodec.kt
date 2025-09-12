@@ -15,7 +15,7 @@ public object ScribeRecordCodec {
         nullable: Boolean = false,
         hasDefault: Boolean = false,
         paramName: String = this.name,
-    ) = RecordField(this, key, codec, nullable, hasDefault, paramName)
+    ): RecordField<I, V> = RecordField(this, key, codec, nullable, hasDefault, paramName)
 
     public data class RecordField<I, V>(
         val property: KProperty1<I, V>,
@@ -28,7 +28,7 @@ public object ScribeRecordCodec {
         internal lateinit var param: KParameter
     }
 
-    public fun <I : Any> recordCodec(constructor: KFunction<I>, fields: List<RecordField<I, *>>): MapCodec<I> {
+    public fun <I : Any> recordCodec(typeName: String, constructor: KFunction<I>, fields: List<RecordField<I, *>>): MapCodec<I> {
         @Suppress("UNCHECKED_CAST")
         val erasedFields = fields.map { it as RecordField<I, Any?> }
         val keys = fields.map { it.key }
@@ -57,30 +57,45 @@ public object ScribeRecordCodec {
             }
 
             override fun <T : Any> decode(ops: DynamicOps<T>, input: MapLike<T>): DataResult<I> {
+
                 val callParams = mutableMapOf<KParameter, Any?>()
+                val decodeErrors = mutableMapOf<String, DataResult.Error<*>>()
+
                 for (field in erasedFields) {
                     val mapValue = input.get(field.key)
-                    if (mapValue == null && field.hasDefault) continue
-                    if (mapValue == null && !field.nullable) return DataResult.error { "No key `${field.key}` in $input" }
-
-                    val result: DataResult<Any?> = if(mapValue == null) {
-                        DataResult.success(null)
-                    } else {
-                        field.codec.parse(ops, mapValue)
+                    val decodeValue = when {
+                        mapValue != null -> {
+                            val parseResult = field.codec.parse(ops, mapValue)
+                            if (parseResult is DataResult.Success<*> && parseResult.value() == null && !field.nullable) {
+                                DataResult.error { "Non-nullable field decoded to null" }
+                            } else {
+                                parseResult
+                            }
+                        }
+                        field.hasDefault -> continue
+                        field.nullable -> DataResult.success(null)
+                        else -> DataResult.error { "Key missing" }
                     }
 
-                    val decoded = result.orAbort { return it }
-
-                    if (decoded == null && !field.nullable) return DataResult.error { "Non-nullable key `${field.key}` decoded to null" }
-
-                    callParams[field.param] = decoded
+                    when (decodeValue) {
+                        is DataResult.Error<*> -> decodeErrors[field.key] = decodeValue
+                        is DataResult.Success<*> -> callParams[field.param] = decodeValue.value
+                    }
                 }
+
+                if (decodeErrors.isNotEmpty()) {
+                    return DataResult.error {
+                        "Errors decoding $typeName from $input: " +
+                            decodeErrors.entries.joinToString(", ") { (key, value) ->
+                                "$key => [ ${value.message()} ]"
+                            }
+                    }
+                }
+
                 return DataResult.success(constructor.callBy(callParams))
             }
 
-            override fun toString(): String {
-                return constructor.name
-            }
+            override fun toString(): String = typeName
         }
     }
 
