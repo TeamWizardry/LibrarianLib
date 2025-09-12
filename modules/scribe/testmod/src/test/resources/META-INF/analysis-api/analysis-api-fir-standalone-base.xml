@@ -1,0 +1,4 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+  <xi:include href="/META-INF/kapt/analysis-api/analysis-api-fir-standalone-base.xml"/>
+  <xi:include href="/META-INF/ksp/analysis-api/analysis-api-fir-standalone-base.xml"/>
+</idea-plugin>

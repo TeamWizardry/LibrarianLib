@@ -1,0 +1,84 @@
+<idea-plugin>
+  <extensionPoints>
+    <extensionPoint
+        qualifiedName="ksp.org.jetbrains.kotlin.llFirSessionConfigurator"
+        interface="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.sessions.LLFirSessionConfigurator"
+        area="IDEA_PROJECT"
+        dynamic="true"/>
+  </extensionPoints>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <registryKey
+        defaultValue="false"
+        description="Run resolve under a global lock."
+        key="kotlin.parallel.resolve.under.global.lock"
+        restartRequired="true"
+    />
+
+    <projectService
+        serviceInterface="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.api.services.LLFirElementByPsiElementChooser"
+        serviceImplementation="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.services.LLRealFirElementByPsiElementChooser"
+    />
+
+    <projectService serviceImplementation="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.projectStructure.LLFirBuiltinsSessionFactory"/>
+    <projectService serviceImplementation="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.sessions.LLFirSessionCache"/>
+    <projectService serviceImplementation="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.sessions.LLFirSessionInvalidationService"/>
+    <projectService
+        serviceImplementation="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.sessions.LLFirSessionInvalidationEventPublisher"
+    />
+    <projectService serviceImplementation="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.LLFirGlobalResolveComponents"/>
+    <projectService serviceImplementation="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.LLFirResolveSessionService"/>
+    <projectService
+        serviceImplementation="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.file.structure.LLFirDeclarationModificationService"
+    />
+    <projectService
+        serviceImplementation="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.file.structure.LLFirInBlockModificationTracker"
+    />
+    <projectService
+        serviceImplementation="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.statistics.LLStatisticsService"
+    />
+  </extensions>
+
+  <projectListeners>
+    <listener
+        class="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.sessions.LLFirSessionInvalidationService$LLKotlinModuleStateModificationListener"
+        topic="ksp.org.jetbrains.kotlin.analysis.api.platform.modification.KotlinModuleStateModificationListener"
+    />
+    <listener
+        class="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.sessions.LLFirSessionInvalidationService$LLKotlinModuleOutOfBlockModificationListener"
+        topic="ksp.org.jetbrains.kotlin.analysis.api.platform.modification.KotlinModuleOutOfBlockModificationListener"
+    />
+    <listener
+        class="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.sessions.LLFirSessionInvalidationService$LLKotlinGlobalModuleStateModificationListener"
+        topic="ksp.org.jetbrains.kotlin.analysis.api.platform.modification.KotlinGlobalModuleStateModificationListener"
+    />
+    <listener
+        class="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.sessions.LLFirSessionInvalidationService$LLKotlinGlobalSourceModuleStateModificationListener"
+        topic="ksp.org.jetbrains.kotlin.analysis.api.platform.modification.KotlinGlobalSourceModuleStateModificationListener"
+    />
+    <listener
+        class="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.sessions.LLFirSessionInvalidationService$LLKotlinGlobalSourceOutOfBlockModificationListener"
+        topic="ksp.org.jetbrains.kotlin.analysis.api.platform.modification.KotlinGlobalSourceOutOfBlockModificationListener"
+    />
+    <listener
+        class="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.sessions.LLFirSessionInvalidationService$LLKotlinCodeFragmentContextModificationListener"
+        topic="ksp.org.jetbrains.kotlin.analysis.api.platform.modification.KotlinCodeFragmentContextModificationListener"
+    />
+    <listener
+        class="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.sessions.LLFirSessionInvalidationService$LLPsiModificationTrackerListener"
+        topic="ksp.com.intellij.psi.util.PsiModificationTracker$Listener"
+    />
+    <listener
+        class="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.file.structure.LLFirInBlockModificationListenerForCodeFragments"
+        topic="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.file.structure.LLFirInBlockModificationListener"
+    />
+    <listener
+        class="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.file.structure.LLFirInBlockModificationTracker$Listener"
+        topic="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.file.structure.LLFirInBlockModificationListener"
+    />
+    <listener
+        class="ksp.org.jetbrains.kotlin.analysis.low.level.api.fir.sessions.LLFirSessionInvalidationService$LLKotlinGlobalScriptModuleStateModificationListener"
+        topic="ksp.org.jetbrains.kotlin.analysis.api.platform.modification.KotlinGlobalScriptModuleStateModificationListener"
+    />
+  </projectListeners>
+</idea-plugin>

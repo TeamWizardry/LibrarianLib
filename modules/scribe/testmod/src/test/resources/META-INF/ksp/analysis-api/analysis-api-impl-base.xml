@@ -1,0 +1,56 @@
+<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+<!--  <xi:include href="/META-INF/extensions/ksp_compiler.xml"/>-->
+  <xi:include href="/META-INF/ksp/analysis-api/analysis-api-platform-interface.xml"/>
+
+  <extensionPoints>
+    <extensionPoint
+        qualifiedName="ksp.org.jetbrains.kotlin.kaResolveExtensionProvider"
+        interface="ksp.org.jetbrains.kotlin.analysis.api.resolve.extensions.KaResolveExtensionProvider"
+        area="IDEA_PROJECT"
+        dynamic="true"
+    />
+  </extensionPoints>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <projectService serviceImplementation="ksp.org.jetbrains.kotlin.resolve.jvm.KotlinJavaPsiFacade"/>
+
+    <projectService
+        serviceInterface="ksp.org.jetbrains.kotlin.load.java.structure.impl.source.JavaElementSourceFactory"
+        serviceImplementation="ksp.org.jetbrains.kotlin.analysis.api.impl.base.java.source.JavaElementSourceWithSmartPointerFactory"
+    />
+
+    <projectService
+        serviceInterface="ksp.org.jetbrains.kotlin.psi.KotlinReferenceProvidersService"
+        serviceImplementation="ksp.org.jetbrains.kotlin.analysis.api.impl.base.references.HLApiReferenceProviderService"
+    />
+
+    <projectService
+        serviceInterface="ksp.org.jetbrains.kotlin.analysis.api.projectStructure.KaModuleProvider"
+        serviceImplementation="ksp.org.jetbrains.kotlin.analysis.api.impl.base.projectStructure.KaBaseModuleProvider"
+    />
+
+    <projectService
+        serviceInterface="ksp.org.jetbrains.kotlin.analysis.api.platform.KotlinMessageBusProvider"
+        serviceImplementation="ksp.org.jetbrains.kotlin.analysis.api.platform.KotlinProjectMessageBusProvider"
+    />
+
+    <projectService
+        serviceInterface="ksp.org.jetbrains.kotlin.analysis.api.platform.permissions.KaAnalysisPermissionChecker"
+        serviceImplementation="ksp.org.jetbrains.kotlin.analysis.api.impl.base.permissions.KaBaseAnalysisPermissionChecker"
+    />
+
+    <projectService
+        serviceInterface="ksp.org.jetbrains.kotlin.analysis.api.platform.lifetime.KaLifetimeTracker"
+        serviceImplementation="ksp.org.jetbrains.kotlin.analysis.api.impl.base.lifetime.KaBaseLifetimeTracker"
+    />
+
+    <java.elementFinder implementation="ksp.org.jetbrains.kotlin.asJava.finder.JavaElementFinder"/>
+
+    <registryKey
+        defaultValue="false"
+        description="Throw an exception in the case of inconsistency in decompiled light classes"
+        key="kotlin.decompiled.light.classes.check.inconsistency"
+        restartRequired="false"
+    />
+  </extensions>
+</idea-plugin>
