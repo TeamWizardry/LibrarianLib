@@ -10,8 +10,9 @@ import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import com.teamwizardry.librarianlib.testcore.TestCoreMod
 import com.teamwizardry.librarianlib.testcore.content.UnitTestSuite
+import com.teamwizardry.librarianlib.testcore.junit.runner.TestBaseListener
+import com.teamwizardry.librarianlib.testcore.junit.runner.TestReport
 import com.teamwizardry.librarianlib.testcore.junit.runner.TestResult
-import com.teamwizardry.librarianlib.testcore.junit.runner.TestSuiteResult
 import com.teamwizardry.librarianlib.testcore.junit.runner.UnitTestRunner
 import com.teamwizardry.librarianlib.testcore.platform.TestCoreCommonPlatform
 import dev.architectury.event.events.common.CommandRegistrationEvent
@@ -53,23 +54,66 @@ public object UnitTestCommand {
     }
 
     private fun runTestSuite(source: ServerCommandSource, input: String, suite: UnitTestSuite) {
-        source.sendFeedback({ Text.literal("Running §5${suite.id}§r tests...") }, true)
+        source.sendFeedback({ Text.literal("Running §5${suite.id}§r tests...") }, false)
         suite.description?.also {
-            source.sendFeedback({ Text.literal("§7> ${it}§r") }, true)
+            source.sendFeedback({ Text.literal("§7> ${it}§r") }, false)
         }
-        val report = UnitTestRunner.runUnitTests(suite.tests)
-        logger.info("Unit tests for ${suite.id}\n" + report.roots.joinToString("\n") { UnitTestRunner.format(it) })
-        source.sendFeedback({ makeTextComponent(input, report) }, true)
+
+        val listener = object : TestBaseListener() {
+            var maxPathWidth = 0
+            var digitsWidth = 0
+
+            var totalCount = 0
+            var finishedCount = 0
+            var skipCount = 0
+            var successCount = 0
+            var failedCount = 0
+
+            override fun runStarted() {
+                totalCount = reports.count { it.key.isTest }
+                maxPathWidth = reports.maxOf { it.value.displayPathString.length }
+                digitsWidth = "$totalCount".length
+            }
+
+            private fun padCount(count: Int) = "$count".padStart(digitsWidth)
+
+            override fun testStarted(report: TestReport) {
+                val statusText =
+                    Text.literal("[ ${padCount(finishedCount + 1)} / ${padCount(totalCount)} ] ")
+                        .setStyle(Style.EMPTY.withFormatting(Formatting.GRAY))
+                        .append(Text.literal(report.displayPathString).setStyle(Style.EMPTY.withFormatting(Formatting.WHITE)))
+                source.player?.sendMessageToClient(statusText, true)
+            }
+
+            override fun testFinished(report: TestReport, result: TestResult) {
+                if (!report.identifier.isTest) return
+                finishedCount++
+                when {
+                    result is TestResult.Skipped -> skipCount++
+                    result is TestResult.Finished && result.result.status == TestExecutionResult.Status.SUCCESSFUL -> successCount++
+                    result is TestResult.Finished && result.result.status == TestExecutionResult.Status.FAILED -> failedCount++
+                }
+            }
+        }
+
+        UnitTestRunner.runUnitTests(suite.tests, listener)
+
+        logger.info("Unit tests for ${suite.id}\n" + listener.roots.joinToString("\n") { UnitTestRunner.format(it) })
+        source.player?.sendMessageToClient(Text.literal(" "), true)
+        source.sendFeedback({ makeTextComponent(input, listener) }, false)
     }
 
-    private fun makeTextComponent(input: String, report: TestSuiteResult): Text {
+    private fun makeTextComponent(input: String, listener: TestBaseListener): Text {
         // [ $ tests found | $ tests passed | $ tests failed ]
-        val fullCount = report.reports.asSequence().filter { it.key.isTest }.count()
-        val passed = report.reports.filter { (key, value) ->
+        val fullCount = listener.reports.count { it.key.isTest }
+        val passed = listener.reports.filter { (key, value) ->
             key.isTest && (value.result as? TestResult.Finished)?.result?.status == TestExecutionResult.Status.SUCCESSFUL
         }
-        val failed = report.reports.filter { (key, value) ->
+        val failed = listener.reports.filter { (key, value) ->
             key.isTest && (value.result as? TestResult.Finished)?.result?.status == TestExecutionResult.Status.FAILED
+        }
+        val skipped = listener.reports.filter { (key, value) ->
+            key.isTest && value.result is TestResult.Skipped
         }
 
         val passedStyle = Style.EMPTY
@@ -77,7 +121,7 @@ public object UnitTestCommand {
             .withHoverEvent(
                 HoverEvent(HoverEvent.Action.SHOW_TEXT,
                     Text.literal("${passed.size} tests passed\n").formatted(Formatting.GREEN)
-                        .append(Text.literal(passed.values.joinToString("\n") { it.displayPath.joinToString(" > ") }))
+                        .append(Text.literal(passed.values.joinToString("\n") { it.displayPathString }))
                 )
             )
         val failedStyle = Style.EMPTY
@@ -85,7 +129,15 @@ public object UnitTestCommand {
             .withHoverEvent(
                 HoverEvent(HoverEvent.Action.SHOW_TEXT,
                     Text.literal("${failed.size} tests failed\n").formatted(Formatting.RED)
-                        .append(Text.literal(failed.values.joinToString("\n") { it.displayPath.joinToString(" > ") }))
+                        .append(Text.literal(failed.values.joinToString("\n") { it.displayPathString }))
+                )
+            )
+        val skippedStyle = Style.EMPTY
+            .withFormatting(Formatting.GRAY)
+            .withHoverEvent(
+                HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    Text.literal("${skipped.size} tests skipped\n").formatted(Formatting.GRAY)
+                        .append(Text.literal(skipped.values.joinToString("\n") { it.displayPathString }))
                 )
             )
         val rerunStyle = Style.EMPTY

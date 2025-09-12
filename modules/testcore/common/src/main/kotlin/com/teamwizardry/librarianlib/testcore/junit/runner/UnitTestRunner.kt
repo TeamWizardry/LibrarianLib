@@ -11,18 +11,15 @@ import java.io.PrintWriter
 import java.io.StringWriter
 
 public object UnitTestRunner {
-    public fun runUnitTests(tests: Collection<Class<*>>): TestSuiteResult {
+    public fun runUnitTests(tests: Collection<Class<*>>, listener: TestBaseListener) {
         val request: LauncherDiscoveryRequest = LauncherDiscoveryRequestBuilder.request()
             .selectors(tests.map { selectClass(it) })
             .build()
 
         val launcher: Launcher = LauncherFactory.create()
 
-        val listener = TestBaseListener()
         launcher.registerTestExecutionListeners(listener)
         launcher.execute(request)
-
-        return listener.createReport()
     }
 
     public fun format(report: TestReport): String {
