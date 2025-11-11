@@ -2,8 +2,8 @@ package com.teamwizardry.librarianlib.facade.input
 
 import com.mojang.blaze3d.platform.TextureUtil
 import com.teamwizardry.librarianlib.core.util.Client
-import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener
 import net.minecraft.resource.ResourceManager
+import net.minecraft.resource.ResourceReloader
 import net.minecraft.util.Identifier
 import net.minecraft.util.profiler.Profiler
 import org.apache.commons.io.IOUtils
@@ -13,9 +13,11 @@ import org.lwjgl.stb.STBImage
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil
 import java.io.IOException
+import java.io.InputStream
 import java.nio.ByteBuffer
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
+import kotlin.jvm.optionals.getOrNull
 
 public class Cursor @JvmOverloads constructor(
     /**
@@ -55,9 +57,10 @@ public class Cursor @JvmOverloads constructor(
             if (glfwCursor != 0L)
                 return
         }
-        val stream = Client.resourceManager.getResource(texture).inputStream
+        var stream: InputStream? = null
         var bytebuffer: ByteBuffer? = null
         try {
+            stream = Client.resourceManager.getResourceOrThrow(texture).inputStream
             bytebuffer = TextureUtil.readResource(stream)
             bytebuffer!!.rewind()
 
@@ -67,7 +70,7 @@ public class Cursor @JvmOverloads constructor(
                 val comp = stack.mallocInt(1)
                 val pixels = STBImage.stbi_load_from_memory(bytebuffer, w, h, comp, 4)
                     ?: throw IOException("Could not load image: " + STBImage.stbi_failure_reason())
-                val img = GLFWImage.mallocStack(stack)
+                val img = GLFWImage.malloc(stack)
                     .width(w[0])
                     .height(h[0])
                     .pixels(pixels)
@@ -75,7 +78,7 @@ public class Cursor @JvmOverloads constructor(
             }
         } finally {
             MemoryUtil.memFree(bytebuffer)
-            IOUtils.closeQuietly(stream)
+            stream?.let(IOUtils::closeQuietly)
         }
     }
 
@@ -88,10 +91,10 @@ public class Cursor @JvmOverloads constructor(
      * macOS [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/macos/user-interaction/mouse-and-trackpad/#pointers)
      */
     @Suppress("unused")
-    public companion object : SimpleResourceReloadListener<Unit> {
+    public companion object : ResourceReloader {
         private val cursors = mutableListOf<Cursor>()
 
-        private fun cursor(name: String, originX: Int, originY: Int, standardCursor: Int = -1) = Cursor(Identifier("liblib_facade:textures/cursors/$name.png"), originX, originY, standardCursor)
+        private fun cursor(name: String, originX: Int, originY: Int, standardCursor: Int = -1) = Cursor(Identifier.of("liblib_facade:textures/cursors/$name.png"), originX, originY, standardCursor)
 
         /**
          * The default arrow cursor.
@@ -192,27 +195,27 @@ public class Cursor @JvmOverloads constructor(
          * Arrow pointing up and down. Used to indicate resizing by dragging the edge of an object up or down.
          */
         @JvmField
-        public val RESIZE_NS: Cursor = cursor("resize_ns", 10, 10)
+        public val RESIZE_NS: Cursor = cursor("resize_ns", 10, 10, GLFW.GLFW_RESIZE_NS_CURSOR)
 
         /**
          * Arrow pointing left and right. Used to indicate resizing by dragging the edge of an object left or right.
          */
         @JvmField
-        public val RESIZE_EW: Cursor = cursor("resize_ew", 10, 10)
+        public val RESIZE_EW: Cursor = cursor("resize_ew", 10, 10, GLFW.GLFW_RESIZE_EW_CURSOR)
 
         /**
          * Arrow pointing towards the top-right and bottom-left. Used to indicate resizing by dragging the corner of an
          * object up and to the right or down and to the left.
          */
         @JvmField
-        public val RESIZE_NESW: Cursor = cursor("resize_nesw", 10, 10)
+        public val RESIZE_NESW: Cursor = cursor("resize_nesw", 10, 10, GLFW.GLFW_RESIZE_NESW_CURSOR)
 
         /**
          * Arrow pointing towards the top-left and bottom-right. Used to indicate resizing by dragging the corner of an
          * object up and to the left or down and to the right.
          */
         @JvmField
-        public val RESIZE_NWSE: Cursor = cursor("resize_nwse", 10, 10)
+        public val RESIZE_NWSE: Cursor = cursor("resize_nwse", 10, 10, GLFW.GLFW_RESIZE_NWSE_CURSOR)
         // endregion
 
         /**
@@ -226,7 +229,7 @@ public class Cursor @JvmOverloads constructor(
          * A circle slash symbol. Indicates the inability to do something or interact with something
          */
         @JvmField
-        public val NO: Cursor = cursor("no", 7, 8)
+        public val NO: Cursor = cursor("no", 7, 8, GLFW.GLFW_NOT_ALLOWED_CURSOR)
 
         /**
          * A text insertion cursor. Indicates selectable or editable text.
@@ -241,7 +244,7 @@ public class Cursor @JvmOverloads constructor(
          * around
          */
         @JvmField
-        public val MOVE: Cursor = cursor("move", 8, 8)
+        public val MOVE: Cursor = cursor("move", 8, 8, GLFW.GLFW_RESIZE_ALL_CURSOR)
 
         /**
          * A watch icon. Indicates a long-running process is underway
@@ -308,23 +311,15 @@ public class Cursor @JvmOverloads constructor(
             GLFW.glfwSetCursor(Client.window.handle, cursor?.glfwCursor ?: 0L)
         }
 
-        override fun getFabricId(): Identifier = Identifier("liblib_facade:cursor")
-
-        override fun load(
+        override fun reload(
+            synchronizer: ResourceReloader.Synchronizer,
             manager: ResourceManager,
-            profiler: Profiler,
-            executor: Executor
-        ): CompletableFuture<Unit> {
-            return CompletableFuture.supplyAsync { Unit }
-        }
-
-        override fun apply(
-            data: Unit?,
-            manager: ResourceManager?,
-            profiler: Profiler?,
-            executor: Executor?
+            prepareProfiler: Profiler,
+            applyProfiler: Profiler,
+            prepareExecutor: Executor,
+            applyExecutor: Executor
         ): CompletableFuture<Void> {
-            return CompletableFuture.runAsync {
+            return synchronizer.whenPrepared(null).thenAccept {
                 for(cursor in cursors) {
                     cursor.loadCursor()
                 }

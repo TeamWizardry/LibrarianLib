@@ -14,7 +14,7 @@ import java.awt.Color
 
 class EventPriorityScreen(title: Text): FacadeScreen(title) {
     init {
-        val dirt = Mosaic(Identifier("minecraft:textures/block/dirt.png"), 16, 16)
+        val dirt = Mosaic(Identifier.of("minecraft:textures/block/dirt.png"), 16, 16)
 
         val bus = EventBus()
         val fireOrder = mutableListOf<Int>()

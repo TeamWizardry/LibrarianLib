@@ -201,7 +201,7 @@ public class PastryColorPicker : GuiLayer(0, 0, 80, 50) {
     }
 
     private companion object {
-        val hueLoc = Identifier("liblib_facade:textures/pastry/colorpicker_hue.png")
+        val hueLoc = Identifier.of("liblib_facade:textures/pastry/colorpicker_hue.png")
         val hueSprite = Mosaic(hueLoc, 8, 256).getSprite("")
     }
 
@@ -222,8 +222,8 @@ public class PastryColorPicker : GuiLayer(0, 0, 80, 50) {
 
         companion object {
             val colorPickerShader = Shader.build("pastry_color_picker")
-                .vertex(Identifier("liblib_facade:pastry_color_picker.vert"))
-                .fragment(Identifier("liblib_facade:pastry_color_picker.frag"))
+                .vertex(Identifier.of("liblib_facade:pastry_color_picker.vert"))
+                .fragment(Identifier.of("liblib_facade:pastry_color_picker.frag"))
                 .build()
 
             val SHARED = ColorPickerRenderBuffer(VertexBuffer.SHARED)

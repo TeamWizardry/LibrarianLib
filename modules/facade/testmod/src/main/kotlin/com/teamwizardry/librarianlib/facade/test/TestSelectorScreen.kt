@@ -4,16 +4,14 @@ import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.math.clamp
 import com.teamwizardry.librarianlib.core.util.vec
-import com.teamwizardry.librarianlib.courier.CourierClientPlayNetworking
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
+import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.text.LiteralText
-import net.minecraft.util.Identifier
+import net.minecraft.text.Text
 import java.awt.Color
 import kotlin.math.max
 
-class TestSelectorScreen(name: String, val selector: TestSelector): Screen(LiteralText(name)) {
+class TestSelectorScreen(name: String, val selector: TestSelector, val onSelect: (String) -> Unit): Screen(Text.literal(name)) {
     val entries: List<SelectorEntry> = selector.entries
 
     val itemHeight: Int = Client.textRenderer.fontHeight + 1
@@ -31,10 +29,10 @@ class TestSelectorScreen(name: String, val selector: TestSelector): Screen(Liter
         guiPos = (vec(width, height) - this.size) / 2
     }
 
-    override fun render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        super.render(matrixStack, mouseX, mouseY, partialTicks)
+    override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
+        super.render(context, mouseX, mouseY, delta)
 
-        fill(matrixStack,
+        context.fill(
             guiPos.xi - border, guiPos.yi - border,
             guiPos.xi + size.xi + border, guiPos.yi + size.yi + border,
             Color.lightGray.rgb
@@ -49,26 +47,32 @@ class TestSelectorScreen(name: String, val selector: TestSelector): Screen(Liter
         for(i in scrollCount until entries.size) {
             val entry = entries[i]
             if(i == hoveredIndex && entry.screen != null) {
-                fill(matrixStack,
+                context.fill(
                     guiPos.xi, guiPos.yi + i * itemHeight,
                     guiPos.xi + size.xi, guiPos.yi + i * itemHeight + Client.textRenderer.fontHeight,
                     Color.gray.rgb
                 )
             }
 
-            Client.textRenderer.draw(
-                matrixStack,
+            context.drawText(
+                Client.textRenderer,
                 entry.path.name,
-                guiPos.xf + indentWidth * entry.path.depth,
-                guiPos.yf + i * itemHeight,
-                Color(0, 0, 0, 0).rgb
+                guiPos.xi + indentWidth * entry.path.depth,
+                guiPos.yi + i * itemHeight,
+                Color(0, 0, 0, 0).rgb,
+                false
             )
         }
     }
 
-    override fun mouseScrolled(x: Double, y: Double, delta: Double): Boolean {
-        scrollAmount = (scrollAmount + delta).clamp(0.0, scrollMax)
-        return false
+    override fun mouseScrolled(
+        mouseX: Double,
+        mouseY: Double,
+        horizontalAmount: Double,
+        verticalAmount: Double
+    ): Boolean {
+        scrollAmount = (scrollAmount + verticalAmount).clamp(0.0, scrollMax)
+        return true
     }
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
@@ -83,9 +87,9 @@ class TestSelectorScreen(name: String, val selector: TestSelector): Screen(Liter
         val start = System.nanoTime()
         val screen = entry?.create()
         if(screen != null) {
-            logger.debug("Creating `${entry.path}` screen took ${(System.nanoTime() - start) / 1_000_000} ms")
-            CourierClientPlayNetworking.send(SyncSelectionPacket.type, SyncSelectionPacket(entry.path.toString()))
-            logger.debug("Sent path `${entry.path}` to be recorded for reopening")
+            logger.debug("Creating `{}` screen took {} ms", entry.path, (System.nanoTime() - start) / 1_000_000)
+            onSelect(entry.path.toString())
+            logger.debug("Sent path `{}` to be recorded for reopening", entry.path)
             Client.openScreen(screen)
         }
 

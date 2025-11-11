@@ -1,9 +1,9 @@
 package com.teamwizardry.librarianlib.facade
 
-import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
+import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.navigation.GuiNavigationPath
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
 
 /**
@@ -13,7 +13,7 @@ import net.minecraft.text.Text
  * be added.
  *
  * [main] is automatically repositioned to remain centered on the screen, so setting its size is the equivalent of
- * setting its size is equivalent to setting [xSize][ContainerScreen.xSize] and [ySize][ContainerScreen.ySize].
+ * setting [xSize][ContainerScreen.xSize] and [ySize][ContainerScreen.ySize].
  * If [main] is too tall or too wide to fit on the screen at the current GUI scale it will attempt to downscale to fit
  * (decreasing the effective GUI scale setting until either the GUI fits or the scale reaches "Small"). [root] doesn't
  * scale with [main] and so always reflects Minecraft's GUI scale.
@@ -30,70 +30,55 @@ public open class FacadeScreen(title: Text): Screen(title) {
      */
     public val main: GuiLayer = facade.main
 
-    override fun render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        this.renderBackground(matrixStack)
-        super.render(matrixStack, mouseX, mouseY, partialTicks)
+    override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
+        super.render(context, mouseX, mouseY, delta)
         this.facade.update()
-        this.facade.render(matrixStack)
+        this.facade.render(context)
     }
 
-    override fun mouseMoved(xPos: Double, p_212927_3_: Double) {
-        facade.mouseMoved(xPos, p_212927_3_)
+    override fun mouseMoved(mouseX: Double, mouseY: Double) {
+        facade.mouseMoved(mouseX, mouseY)
     }
 
-    override fun charTyped(p_charTyped_1_: Char, p_charTyped_2_: Int): Boolean {
-        return facade.charTyped(p_charTyped_1_, p_charTyped_2_)
+    override fun charTyped(chr: Char, modifiers: Int): Boolean {
+        return facade.charTyped(chr, modifiers)
     }
 
-    override fun init() {
-        Client.minecraft.keyboard.setRepeatEvents(true)
-        super.init()
-    }
-
-    override fun removed() {
-        super.removed()
-        Client.minecraft.keyboard.setRepeatEvents(false)
-    }
-
-    override fun keyPressed(p_keyPressed_1_: Int, p_keyPressed_2_: Int, p_keyPressed_3_: Int): Boolean {
-        return facade.keyPressed(p_keyPressed_1_, p_keyPressed_2_, p_keyPressed_3_)
+    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        return facade.keyPressed(keyCode, scanCode, modifiers)
     }
 
     override fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
         return facade.keyReleased(keyCode, scanCode, modifiers)
     }
 
-    override fun mouseClicked(p_mouseClicked_1_: Double, p_mouseClicked_3_: Double, p_mouseClicked_5_: Int): Boolean {
-        facade.mouseClicked(p_mouseClicked_1_, p_mouseClicked_3_, p_mouseClicked_5_)
+    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        facade.mouseClicked(mouseX, mouseY, button)
         return true
     }
 
-    override fun mouseReleased(p_mouseReleased_1_: Double, p_mouseReleased_3_: Double, p_mouseReleased_5_: Int): Boolean {
-        facade.mouseReleased(p_mouseReleased_1_, p_mouseReleased_3_, p_mouseReleased_5_)
+    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        facade.mouseReleased(mouseX, mouseY, button)
         return true
     }
 
-    override fun mouseScrolled(p_mouseScrolled_1_: Double, p_mouseScrolled_3_: Double, p_mouseScrolled_5_: Double): Boolean {
-        facade.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_)
+    override fun mouseScrolled(
+        mouseX: Double,
+        mouseY: Double,
+        horizontalAmount: Double,
+        verticalAmount: Double
+    ): Boolean {
+        facade.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
         return true
     }
 
-//    override fun setFocusedDefault(eventListener: IGuiEventListener?) {
-//        facade.setFocusedDefault(eventListener)
-//    }
-
-    override fun mouseDragged(p_mouseDragged_1_: Double, p_mouseDragged_3_: Double, p_mouseDragged_5_: Int, p_mouseDragged_6_: Double, p_mouseDragged_8_: Double): Boolean {
-        facade.mouseDragged(p_mouseDragged_1_, p_mouseDragged_3_, p_mouseDragged_5_, p_mouseDragged_6_, p_mouseDragged_8_)
+    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
+        facade.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
         return true
     }
 
-    override fun changeFocus(p_changeFocus_1_: Boolean): Boolean {
-        facade.changeFocus(p_changeFocus_1_)
-        return true
-    }
-
-    override fun onClose() {
-        super.onClose()
+    override fun close() {
+        super.close()
         facade.onClose()
     }
 }

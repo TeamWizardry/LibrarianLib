@@ -8,6 +8,7 @@ import com.teamwizardry.librarianlib.albedo.base.state.BaseRenderStates
 import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
 import com.teamwizardry.librarianlib.albedo.buffer.Framebuffer
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
+import com.teamwizardry.librarianlib.albedo.state.RenderState
 import com.teamwizardry.librarianlib.core.rendering.BlendMode
 import com.teamwizardry.librarianlib.core.util.*
 import com.teamwizardry.librarianlib.core.util.kotlin.unmodifiableView
@@ -1126,22 +1127,26 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
                 // Based on observation and originating from this in GameRenderer.render()
                 /*
-                   MatrixStack matrixStack = RenderSystem.getModelViewStack();
-                   matrixStack.loadIdentity();
-                   matrixStack.translate(0.0D, 0.0D, -2000.0D);
+                    Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+                    matrix4fStack.pushMatrix();
+                    matrix4fStack.translation(0.0F, 0.0F, -11000.0F);
+                    RenderSystem.applyModelViewMatrix();
                  */
+
                 val systemStack = RenderSystem.getModelViewStack()
-                systemStack.push()
-                systemStack.loadIdentity()
-                systemStack.translate(0.0, 0.0, -2000.0)
+                systemStack.pushMatrix()
+                systemStack.identity()
+                systemStack.translate(0f, 0f, -11000f)
+                RenderSystem.applyModelViewMatrix()
 
                 try {
                     val rasterScale = max(1, rasterizationScale)
                     val flatMatrix = Matrix3dStack()
                     flatMatrix.scale(rasterScale / Client.scaleFactor)
-                    GuiDrawContext(MatrixStack(), flatMatrix, context.debugOptions, context.isInMask)
+                    GuiDrawContext(context.vanillaContext, flatMatrix, context.debugOptions, context.isInMask)
                 } finally {
-                    systemStack.pop()
+                    systemStack.popMatrix()
+                    RenderSystem.applyModelViewMatrix()
                 }
             } else {
                 context
@@ -1222,7 +1227,7 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
             context.matrix.assertEvenDepth {
                 draw(context)
             }
-            context.popModelViewMatrix()
+            context.popVanillaMatrix()
             context.matrix.pop()
         }
         forEachChild(false) {
@@ -1283,20 +1288,22 @@ public open class GuiLayer(posX: Int, posY: Int, width: Int, height: Int): Coord
 
         val options = context.debugOptions
         val debugColor = Color(.75f, 0f, .75f, .5f)
-        if (options.showDebugBoundingBox) {
-            drawBoundingBox(context, if (mouseOver) Color.WHITE else debugColor, 1f)
-        }
-        if (options.showClippedBoundingBoxes && clipToBounds) {
-            drawBoundingBox(context, Color.RED, 4f)
-        }
+        RenderState.normal.use {
+            if (options.showDebugBoundingBox) {
+                drawBoundingBox(context, if (mouseOver) Color.WHITE else debugColor, 1f)
+            }
+            if (options.showClippedBoundingBoxes && clipToBounds) {
+                drawBoundingBox(context, Color.RED, 4f)
+            }
 
-        if (options.highlightLayout && didLayout) {
-            drawLayerOverlay(context, Color(1f, 0f, 0f, 0.1f))
-        }
-        if (options.highlightFractionalScale &&
-            (abs(scale2d.x - scale2d.xi) > 0.001 || abs(scale2d.y - scale2d.yi) > 0.001)
-        ) {
-            drawBoundingBox(context, Color.RED, 2f)
+            if (options.highlightLayout && didLayout) {
+                drawLayerOverlay(context, Color(1f, 0f, 0f, 0.1f))
+            }
+            if (options.highlightFractionalScale &&
+                (abs(scale2d.x - scale2d.xi) > 0.001 || abs(scale2d.y - scale2d.yi) > 0.001)
+            ) {
+                drawBoundingBox(context, Color.RED, 2f)
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.teamwizardry.librarianlib.facade.pastry
 
+import com.teamwizardry.librarianlib.LibLibInternal
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.math.Axis2d
 import com.teamwizardry.librarianlib.math.Direction2d
@@ -32,8 +33,9 @@ public class Rect2dUnion(rects: List<Rect2d>) {
         computeDepths()
     }
 
+    @LibLibInternal
     @JvmSynthetic
-    internal fun mergeCollinear() {
+    public fun mergeCollinear() {
         mergeCollinear(verticalSegments)
         mergeCollinear(horizontalSegments)
     }
@@ -59,8 +61,9 @@ public class Rect2dUnion(rects: List<Rect2d>) {
         }
     }
 
+    @LibLibInternal
     @JvmSynthetic
-    internal fun computeDepths() {
+    public fun computeDepths() {
         horizontalSegments = computeDepths(horizontalSegments, rawVerticalSegments)
         verticalSegments = computeDepths(verticalSegments, rawHorizontalSegments)
     }

@@ -1,10 +1,8 @@
 package com.teamwizardry.librarianlib.facade.layer.supporting
 
-import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.teamwizardry.librarianlib.albedo.base.buffer.BaseRenderBuffer
 import com.teamwizardry.librarianlib.albedo.base.state.DefaultRenderStates
-import com.teamwizardry.librarianlib.albedo.buffer.RenderBuffer
 import com.teamwizardry.librarianlib.albedo.buffer.VertexBuffer
 import com.teamwizardry.librarianlib.albedo.shader.Shader
 import com.teamwizardry.librarianlib.albedo.state.RenderState
@@ -22,10 +20,10 @@ internal class FramebufferClearRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffe
 
     companion object {
         val shader = Shader.build("framebuffer_clear")
-            .vertex(Identifier("liblib_facade:framebuffer_clear.vert"))
-            .fragment(Identifier("liblib_facade:framebuffer_clear.frag"))
+            .vertex(Identifier.of("liblib_facade:framebuffer_clear.vert"))
+            .fragment(Identifier.of("liblib_facade:framebuffer_clear.frag"))
             .build()
-        val stencilState = object : RenderState.State(Identifier("liblib_facade:framebuffer_clear_stencil")) {
+        val stencilState = object : RenderState.State(Identifier.of("liblib_facade:framebuffer_clear_stencil")) {
             override fun apply() {
                 StencilUtil.enable()
                 RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0x00, 0x00)

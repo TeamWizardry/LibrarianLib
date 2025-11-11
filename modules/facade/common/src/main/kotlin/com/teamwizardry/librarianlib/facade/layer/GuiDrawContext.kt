@@ -1,15 +1,15 @@
 package com.teamwizardry.librarianlib.facade.layer
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.math.Matrix3d
 import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Matrix4d
 import com.teamwizardry.librarianlib.math.MutableMatrix4d
+import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.util.math.MatrixStack
 
 public class GuiDrawContext(
-    rootStack: MatrixStack,
+    public val vanillaContext: DrawContext,
     public val matrix: Matrix3dStack,
     public val debugOptions: FacadeDebugOptions,
     isInMask: Boolean
@@ -18,9 +18,9 @@ public class GuiDrawContext(
         @JvmSynthetic
         internal set
 
-    private val rootTransform = Matrix4d(rootStack.peek().model)
+    private val rootTransform = Matrix4d(vanillaContext.matrices.peek().positionMatrix)
     private val combinedTransform = MutableMatrix4d()
-    private val normal = Matrix3d(rootStack.peek().normal) // this won't change, since our transforms are 2d
+    private val normal = Matrix3d(vanillaContext.matrices.peek().normalMatrix) // this won't change, since our transforms are 2d
     private val managedStack = MatrixStack()
     private var lastMatrixVersion = -1
 
@@ -56,39 +56,36 @@ public class GuiDrawContext(
      */
     public val transformStack: MatrixStack
         get() {
-            transform.copyToMatrix4f(managedStack.peek().model)
-            // at the moment we only do 3d transforms, so the normal is always the same
-            normal.copyToMatrix3f(managedStack.peek().normal)
+            transform.copyToMatrix4f(managedStack.peek().positionMatrix)
+            // at the moment we only do 2d transforms, so the normal is always the same
+            normal.copyToMatrix3f(managedStack.peek().normalMatrix)
             return managedStack
         }
 
-    private var glMatrixPushed = false
+    private var vanillaMatrixPushed = false
 
     /**
-     * Pushes the current matrix to RenderSystem model-view matrix. This matrix can be popped using
-     * [popModelViewMatrix] or, if it isn't, it will be popped after the layer is drawn. Calling this multiple times
+     * Pushes the current matrix to [vanillaContext]'s matrix stack. This matrix can be popped using
+     * [popVanillaMatrix] or, if it isn't, it will be popped after the layer is drawn. Calling this multiple times
      * will update the pushed matrix, not push the matrix multiple times.
-     *
-     * This doesn't update the OpenGL transform matrix. To do that, call [RenderSystem.applyModelViewMatrix]
      */
     @Suppress("CAST_NEVER_SUCCEEDS")
-    public fun pushModelViewMatrix() {
-        if (glMatrixPushed) {
-            RenderSystem.getModelViewStack().pop()
+    public fun pushVanillaMatrix() {
+        if (vanillaMatrixPushed) {
+            vanillaContext.matrices.pop()
         }
-        RenderSystem.getModelViewStack().push()
-        RenderSystem.getModelViewStack().peek().model.multiply(transformStack.peek().model)
+        vanillaContext.matrices.push()
+        vanillaContext.matrices.multiplyPositionMatrix(transformStack.peek().positionMatrix)
         RenderSystem.applyModelViewMatrix()
-        glMatrixPushed = true
+        vanillaMatrixPushed = true
     }
 
     /**
-     * Pops the matrix pushed by [pushModelViewMatrix], if it has been pushed.
+     * Pops the matrix pushed by [pushVanillaMatrix], if it has been pushed.
      */
-    public fun popModelViewMatrix() {
-        if (!glMatrixPushed) return
-        glMatrixPushed = false
-        RenderSystem.getModelViewStack().pop()
-        RenderSystem.applyModelViewMatrix()
+    public fun popVanillaMatrix() {
+        if (!vanillaMatrixPushed) return
+        vanillaMatrixPushed = false
+        vanillaContext.matrices.pop()
     }
 }

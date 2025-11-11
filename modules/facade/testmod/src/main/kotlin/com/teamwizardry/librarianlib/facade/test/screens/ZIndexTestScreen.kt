@@ -14,8 +14,8 @@ class ZIndexTestScreen(title: Text): FacadeScreen(title) {
         main.size = bg.size
         main.add(bg)
 
-        val dirt = Mosaic(Identifier("minecraft:textures/block/dirt.png"), 16, 16).getSprite("")
-        val stone = Mosaic(Identifier("minecraft:textures/block/stone.png"), 16, 16).getSprite("")
+        val dirt = Mosaic(Identifier.of("minecraft:textures/block/dirt.png"), 16, 16).getSprite("")
+        val stone = Mosaic(Identifier.of("minecraft:textures/block/stone.png"), 16, 16).getSprite("")
         val layer1 = SpriteLayer(dirt, 16, 16, 48, 48)
         val layer2 = SpriteLayer(stone, 36, 36, 48, 48)
         bg.zIndex = -10.0

@@ -35,8 +35,8 @@ internal class FlatLayerRenderBuffer(vbo: VertexBuffer) : BaseRenderBuffer<FlatL
 
     companion object {
         val shader = Shader.build("flat_layer")
-            .vertex(Identifier("liblib_facade:flat_layer.vert"))
-            .fragment(Identifier("liblib_facade:flat_layer.frag"))
+            .vertex(Identifier.of("liblib_facade:flat_layer.vert"))
+            .fragment(Identifier.of("liblib_facade:flat_layer.frag"))
             .build()
         val SHARED = FlatLayerRenderBuffer(VertexBuffer.SHARED)
     }
@@ -55,13 +55,23 @@ public enum class MaskMode {
 
     /**
      * The layer's alpha is multiplied by the mask's luma (brightness), blended with a white background.
-     * i.e. dark mask = transparent layer, transparent mask = white background = opaque layer.
+     *
+     * | Mask Color  | Layer Opacity |
+     * |------------:|:--------------|
+     * |       white | opaque        |
+     * | transparent | opaque        |
+     * |       black | transparent   |
      */
     LUMA_ON_WHITE,
 
     /**
      * The layer's alpha is multiplied by the mask's luma (brightness), blended with a black background.
-     * i.e. dark mask = transparent layer, transparent mask = black background = transparent layer.
+     *
+     * | Mask Color  | Layer Opacity |
+     * |------------:|:--------------|
+     * |       white | opaque        |
+     * | transparent | transparent   |
+     * |       black | transparent   |
      */
     LUMA_ON_BLACK,
 
@@ -71,14 +81,24 @@ public enum class MaskMode {
     INV_ALPHA,
 
     /**
-     * The inverse of [LUMA_ON_WHITE]. i.e. dark mask = opaque layer,
-     * transparent mask = white background = transparent layer.
+     * The inverse of [LUMA_ON_WHITE].
+     *
+     * | Mask Color  | Layer Opacity |
+     * |------------:|:--------------|
+     * |       white | transparent   |
+     * | transparent | transparent   |
+     * |       black | opaque        |
      */
     INV_LUMA_ON_WHITE,
 
     /**
-     * The inverse of [LUMA_ON_BLACK]. i.e. dark mask = opaque layer,
-     * transparent mask = black background = opaque layer.
+     * The inverse of [LUMA_ON_BLACK].
+     *
+     * | Mask Color  | Layer Opacity |
+     * |------------:|:--------------|
+     * |       white | transparent   |
+     * | transparent | opaque        |
+     * |       black | opaque        |
      */
     INV_LUMA_ON_BLACK;
 }
@@ -91,13 +111,13 @@ public enum class RenderMode {
 
     /**
      * The default when rendering to a texture, this renders onto an FBO which is then rendered onto the screen. This
-     * mode uses a technique that avoids issues of lost resolution due to scale.
+     * mode uses a technique that avoids issues of lost resolution due to layer scaling.
      */
     RENDER_TO_FBO,
 
     /**
      * Draws the layer to a texture at a native resolution multiple (one unit = N texture pixels) and draws that to a
-     * quad. This mode can lead to lost resolution, however sometimes this is the desired effect.
+     * quad. This mode can lead to lost resolution or aliasing, however sometimes this is the desired effect.
      */
     RENDER_TO_QUAD
 }

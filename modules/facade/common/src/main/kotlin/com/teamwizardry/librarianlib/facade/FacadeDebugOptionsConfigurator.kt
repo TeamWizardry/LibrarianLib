@@ -5,12 +5,10 @@ import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layer.FacadeDebugOptions
-import com.teamwizardry.librarianlib.facade.provided.VanillaTooltipRenderer
 import com.teamwizardry.librarianlib.math.Vec2d
-import net.minecraft.client.gui.DrawableHelper
+import net.minecraft.client.font.TextRenderer
+import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.text.LiteralText
-import net.minecraft.text.Style
 import net.minecraft.text.Text
 import org.lwjgl.glfw.GLFW
 import java.awt.Color
@@ -100,7 +98,8 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
         }
     }
 
-    fun render(matrixStack: MatrixStack) {
+    fun render(drawContext: DrawContext) {
+        val matrixStack = drawContext.matrices
         matrixStack.push()
         matrixStack.translate(.0, .0, 100.0)
         rows.forEach { it.computeStateText() }
@@ -145,9 +144,9 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
         buffer.draw(Primitive.QUADS)
 
         if(hoveredIndex in rows.indices) {
-            val wrapped = Client.textRenderer.wrapLines(LiteralText(rows[hoveredIndex].tooltip), width)
+            val wrapped = Client.textRenderer.wrapLines(Text.literal(rows[hoveredIndex].tooltip), width)
             wrapped.forEachIndexed { i, text ->
-                Client.textRenderer.draw(matrixStack, text, left.toFloat(), bottom + 3 + i * 9f, Color.lightGray.rgb)
+                drawContext.drawText(Client.textRenderer, text, left, bottom + 3 + i * 9, Color.lightGray.rgb, false)
             }
         }
 
@@ -155,18 +154,22 @@ internal class FacadeDebugOptionsConfigurator(private val options: FacadeDebugOp
             val row = rows[i]
             val rowY = top + i * itemHeight
 
-            Client.textRenderer.drawWithShadow(matrixStack,
+            drawContext.drawText(
+                Client.textRenderer,
                 row.label,
-                left.toFloat() + (maxLabelWidth - row.labelWidth),
-                rowY.toFloat(),
-                Color.WHITE.rgb
+                left + maxLabelWidth - row.labelWidth,
+                rowY,
+                Color.WHITE.rgb,
+                true
             )
 
-            Client.textRenderer.drawWithShadow(matrixStack,
+            drawContext.drawText(
+                Client.textRenderer,
                 row.stateText,
-                left.toFloat() + maxLabelWidth + 2,
-                rowY.toFloat(),
-                Color.WHITE.rgb
+                left + maxLabelWidth + 2,
+                rowY,
+                Color.WHITE.rgb,
+                true
             )
         }
         matrixStack.pop()

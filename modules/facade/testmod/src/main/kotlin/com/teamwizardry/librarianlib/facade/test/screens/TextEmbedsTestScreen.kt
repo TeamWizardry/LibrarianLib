@@ -13,11 +13,11 @@ import java.awt.Color
 
 class TextEmbedsTestScreen(title: Text): FacadeScreen(title) {
     init {
-        val dirt = Mosaic(Identifier("minecraft:textures/block/dirt.png"), 8, 8)
+        val dirt = Mosaic(Identifier.of("minecraft:textures/block/dirt.png"), 8, 8)
         val dirtEmbed = SpriteEmbed(9, 7, 1, 0, -7, dirt.getSprite(""), false)
-        val stone = Mosaic(Identifier("minecraft:textures/block/stone.png"), 8, 8)
+        val stone = Mosaic(Identifier.of("minecraft:textures/block/stone.png"), 8, 8)
         val stoneEmbed = SpriteEmbed(9, 7, 1, 0, -7, stone.getSprite(""), false)
-        val diamond = Mosaic(Identifier("minecraft:textures/item/diamond.png"), 8, 8)
+        val diamond = Mosaic(Identifier.of("minecraft:textures/item/diamond.png"), 8, 8)
         val diamondEmbed = SpriteEmbed(9, 7, 1, 0, -7, diamond.getSprite(""), false)
 
         val bg = RectLayer(Color.WHITE, 0, 0, 300, 200)

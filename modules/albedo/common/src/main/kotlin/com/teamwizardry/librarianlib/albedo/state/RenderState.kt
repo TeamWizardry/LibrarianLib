@@ -57,6 +57,15 @@ public class RenderState(parameters: Map<Identifier, State>) {
         return builder.build()
     }
 
+    public inline fun use(block: () -> Unit) {
+        try {
+            this.apply()
+            block()
+        } finally {
+            this.cleanup()
+        }
+    }
+
     public abstract class State(
         /**
          * The name identifying this parameter

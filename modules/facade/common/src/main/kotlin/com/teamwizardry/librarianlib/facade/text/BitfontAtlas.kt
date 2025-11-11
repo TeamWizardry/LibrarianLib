@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier
 import org.lwjgl.opengl.GL11
 
 public object BitfontAtlas: AbstractTexture() {
-    public val ATLAS_LOCATION: Identifier = Identifier("librarianlib:textures/atlas/bitfont.png")
+    public val ATLAS_LOCATION: Identifier = Identifier.of("librarianlib:textures/atlas/bitfont.png")
 
     public var width: Int = 128
         private set

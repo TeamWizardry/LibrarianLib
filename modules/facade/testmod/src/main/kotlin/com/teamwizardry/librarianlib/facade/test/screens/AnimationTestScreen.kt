@@ -17,9 +17,9 @@ class AnimationTestScreen(title: Text): FacadeScreen(title) {
         main.size = bg.size
         main.add(bg)
 
-        val dirt = Mosaic(Identifier("minecraft:textures/block/dirt.png"), 16, 16).getSprite("")
-        val stone = Mosaic(Identifier("minecraft:textures/block/stone.png"), 16, 16).getSprite("")
-        val sandstone = Mosaic(Identifier("minecraft:textures/block/sandstone.png"), 16, 16).getSprite("")
+        val dirt = Mosaic(Identifier.of("minecraft:textures/block/dirt.png"), 16, 16).getSprite("")
+        val stone = Mosaic(Identifier.of("minecraft:textures/block/stone.png"), 16, 16).getSprite("")
+        val sandstone = Mosaic(Identifier.of("minecraft:textures/block/sandstone.png"), 16, 16).getSprite("")
 
         val simpleAnimation = SpriteLayer(dirt)
 

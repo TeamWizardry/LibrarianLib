@@ -2,6 +2,7 @@ package com.teamwizardry.librarianlib.facade
 
 import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
+import com.teamwizardry.librarianlib.albedo.state.RenderState
 import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.facade.layer.supporting.StencilUtil
 import com.teamwizardry.librarianlib.facade.input.Cursor
@@ -12,6 +13,7 @@ import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.math.Matrix3dStack
 import com.teamwizardry.librarianlib.math.Vec2d
 import com.teamwizardry.librarianlib.core.util.vec
+import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.util.math.MatrixStack
 import org.lwjgl.glfw.GLFW
@@ -101,10 +103,10 @@ public open class FacadeWidget(
         }
     }
 
-    public fun mouseScrolled(xPos: Double, yPos: Double, deltaY: Double) {
+    public fun mouseScrolled(xPos: Double, yPos: Double, deltaX: Double, deltaY: Double) {
         if (debugConfigurator.isOpen) return
         val pos = vec(xPos, yPos)
-        val delta = vec(0.0, deltaY)
+        val delta = vec(deltaX, deltaY)
         computeMouseOver(pos)
         safetyNet("firing a MouseScroll event") {
             root.triggerEvent(GuiLayerEvents.MouseScroll(pos, delta))
@@ -141,7 +143,7 @@ public open class FacadeWidget(
                     debugConfigurator.isOpen = false
                 } else {
                     if (screen.shouldCloseOnEsc()) {
-                        screen.onClose()
+                        screen.close()
                         return true
                     }
                 }
@@ -287,11 +289,11 @@ public open class FacadeWidget(
     /**
      * The second step in rendering a frame. This can be split up into multiple passes using [filterRendering].
      */
-    public fun render(matrixStack: MatrixStack) {
+    public fun render(drawContext: DrawContext) {
         safetyNet("rendering") {
             StencilUtil.clear()
             StencilUtil.enable()
-            val context = GuiDrawContext(matrixStack, Matrix3dStack(), debugOptions, false)
+            val context = GuiDrawContext(drawContext, Matrix3dStack(), debugOptions, false)
             root.renderLayer(context)
             StencilUtil.disable()
 
@@ -300,7 +302,7 @@ public open class FacadeWidget(
             }
         }
         if(debugConfigurator.isOpen) {
-            debugConfigurator.render(matrixStack)
+            debugConfigurator.render(drawContext)
         }
     }
 
@@ -341,7 +343,9 @@ public open class FacadeWidget(
         drawRect(minSafeX + basisWidth, minSafeY, windowWidth, minSafeY + basisHeight)
         drawRect(0.0, minSafeY + basisHeight, windowWidth, windowHeight)
 
-        rb.draw(Primitive.QUADS)
+        RenderState.normal.use {
+            rb.draw(Primitive.QUADS)
+        }
     }
 
     /**

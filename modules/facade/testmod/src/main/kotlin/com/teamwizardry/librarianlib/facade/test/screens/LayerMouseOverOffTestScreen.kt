@@ -10,8 +10,8 @@ import net.minecraft.util.Identifier
 
 class LayerMouseOverOffTestScreen(title: Text): FacadeScreen(title) {
     init {
-        val dirt = Mosaic(Identifier("minecraft:textures/block/dirt.png"), 16, 16).getSprite("")
-        val stone = Mosaic(Identifier("minecraft:textures/block/stone.png"), 16, 16).getSprite("")
+        val dirt = Mosaic(Identifier.of("minecraft:textures/block/dirt.png"), 16, 16).getSprite("")
+        val stone = Mosaic(Identifier.of("minecraft:textures/block/stone.png"), 16, 16).getSprite("")
         val layer = SpriteLayer(dirt)
         layer.pos = vec(32, 32)
 

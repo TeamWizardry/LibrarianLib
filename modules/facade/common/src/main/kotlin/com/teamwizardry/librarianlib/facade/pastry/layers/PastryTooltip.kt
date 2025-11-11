@@ -3,19 +3,20 @@ package com.teamwizardry.librarianlib.facade.pastry.layers
 import com.teamwizardry.librarianlib.albedo.base.buffer.FlatColorRenderBuffer
 import com.teamwizardry.librarianlib.albedo.buffer.Primitive
 import com.teamwizardry.librarianlib.albedo.state.RenderState
+import com.teamwizardry.librarianlib.core.util.Client
 import com.teamwizardry.librarianlib.etcetera.eventbus.Hook
 import com.teamwizardry.librarianlib.facade.layer.GuiDrawContext
 import com.teamwizardry.librarianlib.facade.layer.GuiLayer
 import com.teamwizardry.librarianlib.facade.layer.GuiLayerEvents
 import com.teamwizardry.librarianlib.facade.layers.TextLayer
 import com.teamwizardry.librarianlib.facade.pastry.PastryBackgroundStyle
-import com.teamwizardry.librarianlib.facade.provided.VanillaTooltipRenderer
 import com.teamwizardry.librarianlib.facade.value.IMValue
 import com.teamwizardry.librarianlib.core.util.vec
 import com.teamwizardry.librarianlib.facade.layers.text.TextFit
 import dev.thecodewarrior.bitfont.typesetting.AttributedString
 import dev.thecodewarrior.bitfont.typesetting.TextAttribute
 import net.minecraft.item.ItemStack
+import net.minecraft.text.Text
 import java.awt.Color
 import kotlin.math.max
 
@@ -107,7 +108,7 @@ public class ItemStackTooltip: GuiLayer() {
         val rootMousePos = root.mousePos
 
         stack?.also { stack ->
-            VanillaTooltipRenderer.renderTooltip(context.transformStack, stack, rootMousePos.xi, rootMousePos.yi)
+            context.vanillaContext.drawItemTooltip(Client.textRenderer, stack, rootMousePos.xi, rootMousePos.yi)
         }
     }
 }
@@ -121,10 +122,9 @@ public class VanillaTooltip: GuiLayer() {
 
     override fun draw(context: GuiDrawContext) {
         val rootMousePos = root.mousePos
+        val lines = lines ?: text?.let(::listOf) ?: return
 
-        (lines ?: text?.let { listOf(it) })?.also { lines ->
-            VanillaTooltipRenderer.renderTooltip(context.transformStack, lines, rootMousePos.xi, rootMousePos.yi)
-        }
+        context.vanillaContext.drawTooltip(Client.textRenderer, lines.map(Text::literal), rootMousePos.xi, rootMousePos.yi)
     }
 }
 

@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier
 
 class SimpleSpriteTestScreen(title: Text): FacadeScreen(title) {
     init {
-        val dirt = Mosaic(Identifier("minecraft:textures/block/dirt.png"), 16, 16)
+        val dirt = Mosaic(Identifier.of("minecraft:textures/block/dirt.png"), 16, 16)
         val layer = SpriteLayer(dirt.getSprite(""))
         facade.root.add(layer)
     }

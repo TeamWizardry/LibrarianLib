@@ -1,14 +1,6 @@
 package com.teamwizardry.librarianlib.facade.test
 
-import com.teamwizardry.librarianlib.courier.CourierPacket
-import com.teamwizardry.librarianlib.courier.CourierPacketType
-import com.teamwizardry.librarianlib.facade.provided.SafetyNetErrorScreen
-import dev.thecodewarrior.prism.annotation.Refract
-import dev.thecodewarrior.prism.annotation.RefractClass
-import dev.thecodewarrior.prism.annotation.RefractConstructor
-import net.minecraft.block.Block
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.text.LiteralText
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import kotlin.math.max
@@ -58,7 +50,7 @@ class TestSelectorBuilder private constructor(private val selector: TestSelector
 
     fun screen(name: String, factory: (Text) -> Screen) {
         selector.add(SelectorEntry(path.append(name)) {
-            factory(LiteralText(name))
+            factory(Text.literal(name))
         })
     }
 
@@ -66,17 +58,3 @@ class TestSelectorBuilder private constructor(private val selector: TestSelector
         return selector
     }
 }
-
-@RefractClass
-data class SyncSelectionPacket @RefractConstructor constructor(
-    @Refract("id") val id: String,
-) : CourierPacket {
-
-    companion object {
-        val type: CourierPacketType<SyncSelectionPacket> = CourierPacketType(
-            Identifier("liblib_facade_test:sync_selection"),
-            SyncSelectionPacket::class.java
-        )
-    }
-}
-
