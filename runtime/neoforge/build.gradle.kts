@@ -42,14 +42,14 @@ configurations {
 }
 
 dependencies {
-    "neoForge"("net.neoforged:neoforge:${rootProject.property("neoforge_version")}")
+    "neoForge"(libs.platform.neoforge)
 
     for (module in commonConfig.modules) {
         modRuntimeOnly(project(module.path, configuration = "includeNeoForge")) { isTransitive = false }
     }
 
-    implementation("thedarkcolour:kotlinforforge-neoforge:${rootProject.property("kotlin_for_forge_version")}")
-    modImplementation("dev.architectury:architectury-neoforge:${rootProject.property("architectury_api_version")}")
+    implementation(libs.mods.kotlinForForge)
+    modImplementation(libs.mods.architecturyNeoforge)
 }
 
 /**

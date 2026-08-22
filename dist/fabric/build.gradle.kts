@@ -36,10 +36,10 @@ val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod
     icon.set("ll/icon.png")
     iconFile.set(rootDir.resolve("logo/icon.png"))
 
-    depends("fabric-api", ">=${project.property("fabric_kotlin_version")}")
-    depends("fabricloader", ">=${project.property("fabric_loader_version")}")
-    depends("minecraft", project.property("minecraft_version") as String)
-    depends("fabric-language-kotlin", ">=${project.property("fabric_kotlin_version")}")
+    depends("fabric-api", ">=${getVersion("platform_fabricApi")}")
+    depends("fabricloader", ">=${getVersion("platform_fabricLoader")}")
+    depends("minecraft", getVersion("platform_minecraft"))
+    depends("fabric-language-kotlin", ">=${getVersion("mods_fabricLanguageKotlin")}")
 
     modMenu.badges.add("library")
 }

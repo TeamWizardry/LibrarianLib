@@ -10,5 +10,5 @@ module {
 }
 
 dependencies {
-    shade("org.magicwerk:brownies-collections:0.9.13")
+    shade(libs.modules.glitter.browniesCollections)
 }

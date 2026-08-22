@@ -11,7 +11,7 @@ module {
 }
 
 dependencies {
-    transitiveShade("org.junit.jupiter:junit-jupiter-api:${project.property("junit_version")}")
-    transitiveShade("org.junit.jupiter:junit-jupiter-engine:${project.property("junit_version")}")
-    transitiveShade("org.junit.platform:junit-platform-launcher:${project.property("junit_platform_version")}")
+    transitiveShade(libs.modules.testcore.junitApi)
+    transitiveShade(libs.modules.testcore.junitEngine)
+    transitiveShade(libs.modules.testcore.junitPlatform)
 }

@@ -1,0 +1,65 @@
+[versions]
+
+# see: https://fabricmc.net/versions.html
+platform_minecraft = "1.21.1"
+platform_yarnMappings = "1.21.1+build.3"
+platform_yarnMappingsNeoforgePatch = "1.21+build.4"
+platform_mixin = "0.8.5"
+platform_mixinExtras = "0.4.1"
+
+platform_neoforge = "21.1.84"
+platform_fabricLoader = "0.16.10"
+platform_fabricApi = "0.115.3+1.21.1"
+
+mods_fabricLanguageKotlin = "1.13.11+kotlin.2.3.21"
+mods_kotlinForForge = "5.11.0"
+mods_architectury = "13.0.8"
+
+build_autoServiceAnnotations = "1.1.0"
+build_autoServiceKsp = "1.2.0"
+
+# https://mvnrepository.com/artifact/dev.architectury.loom/dev.architectury.loom.gradle.plugin
+buildSrc_plugin_loom = "1.17.491"
+# https://mvnrepository.com/artifact/architectury-plugin/architectury-plugin.gradle.plugin
+buildSrc_plugin_architectury = "3.5.169"
+buildSrc_plugin_shadow = "8.3.6"
+buildSrc_plugin_kotlin = "2.3.21"
+buildSrc_plugin_ksp = "2.3.11"
+buildSrc_lib_freemarker = "2.3.31"
+
+[libraries]
+modules_core_mirror = "dev.thecodewarrior:mirror:1.0.0-beta.4"
+modules_glitter_browniesCollections = "org.magicwerk:brownies-collections:0.9.13"
+modules_testcore_junitApi = "org.junit.jupiter:junit-jupiter-api:5.12.2"
+modules_testcore_junitEngine = "org.junit.jupiter:junit-jupiter-engine:5.12.2"
+modules_testcore_junitPlatform = "org.junit.platform:junit-platform-launcher:1.12.2"
+
+runtime_mods_modmenu = "com.terraformersmc:modmenu:11.0.3"
+
+platform_minecraft = { group = "net.minecraft", name = "minecraft", version.ref = "platform_minecraft" }
+# platform_yarnMappings = (declared inline as it requires a ':v2' classifier, which version catalogs don't support)
+platform_yarnMappingsNeoforgePatch = { group = "dev.architectury", name = "yarn-mappings-patch-neoforge", version.ref = "platform_yarnMappingsNeoforgePatch" }
+platform_mixin = { group = "org.spongepowered", name = "mixin", version.ref = "platform_mixin"}
+platform_mixinExtras = { group = "io.github.llamalad7", name = "mixinextras-common", version.ref = "platform_mixinExtras" }
+
+platform_neoforge = { group = "net.neoforged", name = "neoforge", version.ref = "platform_neoforge" }
+platform_fabricLoader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "platform_fabricLoader" }
+platform_fabricApi = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "platform_fabricApi" }
+
+mods_fabricLanguageKotlin = { group = "net.fabricmc", name = "fabric-language-kotlin", version.ref = "mods_fabricLanguageKotlin" }
+mods_kotlinForForge = { group = "thedarkcolour", name = "kotlinforforge-neoforge", version.ref = "mods_kotlinForForge" }
+mods_architecturyApi = { group = "dev.architectury", name = "architectury", version.ref = "mods_architectury" }
+mods_architecturyFabric = { group = "dev.architectury", name = "architectury-fabric", version.ref = "mods_architectury" }
+mods_architecturyNeoforge = { group = "dev.architectury", name = "architectury-neoforge", version.ref = "mods_architectury" }
+
+build_autoServiceAnnotations = { group = "com.google.auto.service", name = "auto-service-annotations", version.ref = "build_autoServiceAnnotations" }
+build_autoServiceKsp = { group = "dev.zacsweers.autoservice", name = "auto-service-ksp", version.ref = "build_autoServiceKsp" }
+
+buildSrc_plugins_loom = { group = "dev.architectury.loom", name = "dev.architectury.loom.gradle.plugin", version.ref = "buildSrc_plugin_loom" }
+buildSrc_plugins_architectury = { group = "architectury-plugin", name = "architectury-plugin.gradle.plugin", version.ref = "buildSrc_plugin_architectury" }
+buildSrc_plugins_kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "buildSrc_plugin_kotlin" }
+buildSrc_plugins_shadow = { group = "com.gradleup.shadow", name = "shadow-gradle-plugin", version.ref = "buildSrc_plugin_shadow" }
+buildSrc_plugins_ksp = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "buildSrc_plugin_ksp" }
+buildSrc_deps_ksp = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "buildSrc_plugin_ksp" }
+buildSrc_deps_freemarker = { group = "org.freemarker", name = "freemarker", version.ref = "buildSrc_lib_freemarker" }
+

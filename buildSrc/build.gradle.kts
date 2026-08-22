@@ -12,19 +12,13 @@ repositories {
     maven { url = uri("https://files.minecraftforge.net/maven/") }
 }
 
-val gradle_kotlin_version = project.property("gradle_kotlin_version") as String
-
 dependencies {
-    // https://mvnrepository.com/artifact/dev.architectury.loom/dev.architectury.loom.gradle.plugin
-    implementation("dev.architectury.loom:dev.architectury.loom.gradle.plugin:1.17.491")
-    // https://mvnrepository.com/artifact/architectury-plugin/architectury-plugin.gradle.plugin
-    implementation("architectury-plugin:architectury-plugin.gradle.plugin:3.5.169")
-
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$gradle_kotlin_version")
-    implementation("com.google.devtools.ksp:symbol-processing-gradle-plugin:2.3.11")
+    implementation(libs.buildSrc.plugins.loom)
+    implementation(libs.buildSrc.plugins.architectury)
+    implementation(libs.buildSrc.plugins.kotlin)
+    implementation(libs.buildSrc.plugins.ksp)
     // only required so we can import `KspExperimental` for `@OptIn(KspExperimental::class)`
-    implementation("com.google.devtools.ksp:symbol-processing-api:2.3.11")
-    implementation("com.gradleup.shadow:shadow-gradle-plugin:8.3.6")
-    implementation("org.freemarker:freemarker:2.3.31")
+    implementation(libs.buildSrc.deps.ksp)
+    implementation(libs.buildSrc.plugins.shadow)
+    implementation(libs.buildSrc.deps.freemarker)
 }
-

@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    modImplementation("dev.architectury:architectury:${rootProject.property("architectury_api_version")}")
+    modImplementation(libs.mods.architecturyApi)
 }
 
 tasks.withType<PublishToMavenRepository>().configureEach { enabled = false }

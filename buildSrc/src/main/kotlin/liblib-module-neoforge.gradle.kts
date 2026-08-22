@@ -54,7 +54,7 @@ configurations {
 dependencies {
     "devRuntime"(sourceSets.main.get().output)
 
-    "neoForge"("net.neoforged:neoforge:${rootProject.property("neoforge_version")}")
+    "neoForge"(getLibrary("platform_neoforge"))
 
     api(project(path = module.commonPath, configuration = "namedElements"))
     module.dependencies {
@@ -85,18 +85,9 @@ val generateNeoForgeMod = tasks.register<GenerateNeoForgeModsToml>("generateNeoF
         // credits.set("")
         // authors.set("")
 
-        dependency(
-            "neoforge",
-            project.property("neoforge.dependencies.neoforge") as String
-        )
-        dependency(
-            "minecraft",
-            project.property("minecraft_version") as String
-        )
-        dependency(
-            "kotlinforforge",
-            "[${project.property("kotlin_for_forge_version")},)"
-        )
+        dependency("neoforge", "[${getVersion("platform_neoforge")},)")
+        dependency("minecraft", getVersion("platform_minecraft"))
+        dependency("kotlinforforge", "[${getVersion("mods_kotlinForForge")},)")
 
         module.moduleInfo.dependencies {
             dependency(it.modid, commonConfig.version)

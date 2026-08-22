@@ -5,10 +5,13 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ModuleDependency
+import org.gradle.api.artifacts.VersionCatalog
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.the
 import java.io.File
+import kotlin.jvm.optionals.getOrNull
 
 typealias CommonConfigPlugin = com.teamwizardry.gradle.CommonConfigPlugin
 typealias CommonConfigExtension = com.teamwizardry.gradle.CommonConfigExtension
@@ -23,6 +26,12 @@ typealias ShadowSources = com.teamwizardry.gradle.task.ShadowSources
 typealias CopyFreemarker = com.teamwizardry.gradle.task.CopyFreemarker
 typealias ReplaceTextInPlace = com.teamwizardry.gradle.task.ReplaceTextInPlace
 
+fun Project.getLibs() = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
+fun Project.getVersion(alias: String) = getLibs().findVersion(alias).getOrNull()?.requiredVersion
+    ?: throw IllegalArgumentException("No such version alias '$alias'")
+
+fun Project.getLibrary(alias: String) =
+    getLibs().findLibrary(alias).getOrNull() ?: throw IllegalArgumentException("No such library alias '$alias'")
 
 inline fun <reified T: Named> Project.namedAttribute(value: String): T = objects.named(T::class.java, value)
 

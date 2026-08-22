@@ -29,10 +29,10 @@ dependencies {
         runtimeOnly(project(it.path, configuration = "transitiveShade"))
         modRuntimeOnly(project(it.path, configuration = "includeFabric")) { isTransitive = false }
     }
-    modRuntimeOnly("com.terraformersmc:modmenu:11.0.3")
+    modRuntimeOnly(libs.runtime.mods.modmenu)
 
-    modImplementation("net.fabricmc:fabric-loader:${rootProject.property("fabric_loader_version")}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.property("fabric_api_version")}")
-    modImplementation("net.fabricmc:fabric-language-kotlin:${rootProject.property("fabric_kotlin_version")}")
-    modImplementation("dev.architectury:architectury-fabric:${rootProject.property("architectury_api_version")}")
+    modImplementation(libs.platform.fabricLoader)
+    modImplementation(libs.platform.fabricApi)
+    modImplementation(libs.mods.fabricLanguageKotlin)
+    modImplementation(libs.mods.architecturyFabric)
 }

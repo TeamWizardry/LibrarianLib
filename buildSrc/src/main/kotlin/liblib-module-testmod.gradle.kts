@@ -21,8 +21,7 @@ configurations {
 dependencies {
     "devRuntime"(sourceSets.main.get().output)
 
-    // Architectury API. This is optional, and you can comment it out if you don't need it.
-    modImplementation("dev.architectury:architectury:${rootProject.property("architectury_api_version")}")
+    modImplementation(getLibrary("mods_architecturyApi"))
 
     implementation(project(path = module.commonPath, configuration = "namedElements"))
     implementation(project(path = ":testcore:common", configuration = "namedElements"))

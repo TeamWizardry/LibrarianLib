@@ -9,13 +9,13 @@ architectury {
 }
 
 dependencies {
-    minecraft("net.minecraft:minecraft:${rootProject.property("minecraft_version")}")
+    minecraft(getLibrary("platform_minecraft"))
     mappings(loom.layered {
-        mappings("net.fabricmc:yarn:${rootProject.property("yarn_mappings")}:v2")
-        mappings("dev.architectury:yarn-mappings-patch-neoforge:${rootProject.property("yarn_mappings_patch_neoforge_version")}")
+        mappings("net.fabricmc:yarn:${getVersion("platform_yarnMappings")}:v2")
+        mappings(getLibrary("platform_yarnMappingsNeoforgePatch"))
     })
-    compileOnly("org.spongepowered:mixin:0.8.5")
+    compileOnly(getLibrary("platform_mixin"))
     // fabric and neoforge both bundle mixinextras, so it is safe to use it in common
-    compileOnly("io.github.llamalad7:mixinextras-common:0.4.1")
-    annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1")
+    compileOnly(getLibrary("platform_mixinExtras"))
+    annotationProcessor(getLibrary("platform_mixinExtras"))
 }

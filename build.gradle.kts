@@ -37,8 +37,7 @@ commonConfig {
         val branch = ref.removePrefix("refs/heads/")
         branch.replace("[^.\\w-]".toRegex(), "-") + "-SNAPSHOT"
     }
-    val mod_version: String by project
-    version = snapshotVersion ?: mod_version
+    version = snapshotVersion ?: project.property("liblib.mod_version") as String
     platforms = listOf("fabric", "neoforge")
 
     modules {
@@ -52,7 +51,7 @@ commonConfig {
 }
 
 architectury {
-    minecraft = project.property("minecraft_version") as String
+    minecraft = getVersion("platform_minecraft")
     compileOnly()
 }
 

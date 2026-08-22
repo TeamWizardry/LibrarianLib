@@ -9,5 +9,5 @@ module {
 }
 
 dependencies {
-    shade("dev.thecodewarrior:mirror:1.0.0-beta.4")
+    shade(libs.modules.core.mirror)
 }

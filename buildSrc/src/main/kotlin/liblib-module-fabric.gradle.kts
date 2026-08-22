@@ -46,9 +46,9 @@ configurations {
 dependencies {
     "devRuntime"(sourceSets.main.get().output)
 
-    modImplementation("net.fabricmc:fabric-loader:${rootProject.property("fabric_loader_version")}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${rootProject.property("fabric_api_version")}")
-    modImplementation("net.fabricmc:fabric-language-kotlin:${rootProject.property("fabric_kotlin_version")}")
+    modImplementation(getLibrary("platform_fabricLoader"))
+    modImplementation(getLibrary("platform_fabricApi"))
+    modImplementation(getLibrary("mods_fabricLanguageKotlin"))
 
     api(project(path = module.commonPath, configuration = "namedElements"))
     module.dependencies {
@@ -74,10 +74,10 @@ val generateFabricMod = tasks.register<GenerateFabricModJson>("generateFabricMod
     icon.set("ll/icon.png")
     iconFile.set(rootDir.resolve("logo/icon.png"))
 
-    depends("fabric-api", ">=${project.property("fabric_kotlin_version")}")
-    depends("fabricloader", ">=${project.property("fabric_loader_version")}")
-    depends("minecraft", project.property("minecraft_version") as String)
-    depends("fabric-language-kotlin", ">=${project.property("fabric_kotlin_version")}")
+    depends("fabric-api", ">=${getVersion("platform_fabricApi")}")
+    depends("fabricloader", ">=${getVersion("platform_fabricLoader")}")
+    depends("minecraft", getVersion("platform_minecraft"))
+    depends("fabric-language-kotlin", ">=${getVersion("mods_fabricLanguageKotlin")}")
 
     module.moduleInfo.dependencies {
         depends(it.modid, commonConfig.version)
@@ -164,19 +164,19 @@ publishing {
                     addDependencyNode(
                         "net.fabricmc.fabric-api",
                         "fabric-api",
-                        "[${project.property("fabric_api_version")},)",
+                        "[${getVersion("platform_fabricApi")},)",
                         "compile"
                     )
                     addDependencyNode(
                         "net.fabricmc",
                         "fabric-language-kotlin",
-                        "[${project.property("fabric_kotlin_version")},)",
+                        "[${getVersion("mods_fabricLanguageKotlin")},)",
                         "compile"
                     )
                     addDependencyNode(
                         "net.fabricmc",
                         "fabric-loader",
-                        "[${project.property("fabric_loader_version")},)",
+                        "[${getVersion("platform_fabricLoader")},)",
                         "runtime"
                     )
                 }

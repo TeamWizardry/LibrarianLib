@@ -18,7 +18,7 @@ configurations {
 }
 
 dependencies {
-    "neoForge"("net.neoforged:neoforge:${rootProject.property("neoforge_version")}")
+    "neoForge"(libs.platform.neoforge)
 
     commonConfig.modules.forEach { module ->
         if (module.name != "testcore") {
@@ -43,18 +43,9 @@ val generateNeoForgeMod = tasks.register<GenerateNeoForgeModsToml>("generateNeoF
         // credits.set("")
         // authors.set("")
 
-        dependency(
-            "neoforge",
-            project.property("neoforge.dependencies.neoforge") as String
-        )
-        dependency(
-            "minecraft",
-            project.property("minecraft_version") as String
-        )
-        dependency(
-            "kotlinforforge",
-            "[${project.property("kotlin_for_forge_version")},)"
-        )
+        dependency("neoforge", "[${getVersion("platform_neoforge")},)")
+        dependency("minecraft", getVersion("platform_minecraft"))
+        dependency("kotlinforforge", "[${getVersion("mods_kotlinForForge")},)")
     }
 }
 
