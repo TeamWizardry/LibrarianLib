@@ -1,6 +1,7 @@
 plugins {
     id("dev.architectury.loom")
     id("architectury-plugin")
+    kotlin("kapt")
 }
 
 architectury {

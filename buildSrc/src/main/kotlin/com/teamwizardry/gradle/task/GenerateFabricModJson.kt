@@ -90,7 +90,7 @@ open class GenerateFabricModJson : DefaultTask() {
         }
 
     @TaskAction
-    private fun runTask() {
+    fun runTask() {
         val root = outputRoot.get()
         root.mkdirs()
         root.resolve("fabric.mod.json").writeText(makeJson())

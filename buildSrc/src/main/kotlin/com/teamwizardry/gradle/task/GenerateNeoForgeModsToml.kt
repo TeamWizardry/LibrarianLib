@@ -109,7 +109,7 @@ open class GenerateNeoForgeModsToml : DefaultTask() {
         }
 
     @TaskAction
-    private fun runTask() {
+    fun runTask() {
         val root = outputRoot.get()
         root.resolve("META-INF").mkdirs()
         root.resolve("META-INF/neoforge.mods.toml").writeText(makeToml())

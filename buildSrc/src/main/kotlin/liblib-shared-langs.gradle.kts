@@ -1,6 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.google.devtools.ksp.KspExperimental
 
 plugins {
@@ -18,7 +17,7 @@ tasks.withType<JavaCompile> {
     options.release = 21
 }
 
-tasks.withType<KotlinCompile> {
+kotlin {
     compilerOptions {
         languageVersion.set(KotlinVersion.KOTLIN_2_0)
         apiVersion.set(KotlinVersion.KOTLIN_2_0)

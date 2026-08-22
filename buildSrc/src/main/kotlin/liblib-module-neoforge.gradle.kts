@@ -91,11 +91,11 @@ val generateNeoForgeMod = tasks.register<GenerateNeoForgeModsToml>("generateNeoF
         )
         dependency(
             "minecraft",
-            project.property("neoforge.dependencies.minecraft") as String
+            project.property("minecraft_version") as String
         )
         dependency(
             "kotlinforforge",
-            project.property("neoforge.dependencies.kotlinforforge") as String
+            "[${project.property("kotlin_for_forge_version")},)"
         )
 
         module.moduleInfo.dependencies {

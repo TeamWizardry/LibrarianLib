@@ -21,7 +21,7 @@ open class ReplaceTextInPlace : DefaultTask() {
     }
 
     @TaskAction
-    private fun runTask() {
+    fun runTask() {
         for(spec in specs) {
             spec.run()
         }

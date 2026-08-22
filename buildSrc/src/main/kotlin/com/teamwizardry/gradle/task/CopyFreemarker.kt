@@ -48,7 +48,7 @@ open class CopyFreemarker : DefaultTask() {
     }
 
     @TaskAction
-    private fun runTask() {
+    fun runTask() {
         val inputRoot = template.get()
         val outputRoot = outputDirectory.get()
         cfg.setDirectoryForTemplateLoading(inputRoot)

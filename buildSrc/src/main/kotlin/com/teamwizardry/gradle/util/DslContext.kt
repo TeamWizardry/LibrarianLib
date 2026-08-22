@@ -34,7 +34,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.newInstance]
      */
-    inline fun <reified T> newInstance(vararg parameters: Any): T =
+    inline fun <reified T : Any> newInstance(vararg parameters: Any): T =
         objects.newInstance(T::class.java, *parameters)
 
 
@@ -43,7 +43,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.property]
      */
-    inline fun <reified T> property(): Property<T> =
+    inline fun <reified T : Any> property(): Property<T> =
         objects.property(T::class.java)
 
     /**
@@ -51,7 +51,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.property]
      */
-    inline fun <reified T> property(noinline convention: () -> T): Property<T> =
+    inline fun <reified T : Any> property(noinline convention: () -> T): Property<T> =
         objects.property(T::class.java).convention(project.provider(convention))
 
     /**
@@ -59,7 +59,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.property]
      */
-    inline fun <reified T> property(convention: T): Property<T> =
+    inline fun <reified T : Any> property(convention: T): Property<T> =
         objects.property(T::class.java).convention(convention)
 
     /**
@@ -67,7 +67,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.setProperty]
      */
-    inline fun <reified T> setProperty(): SetProperty<T> =
+    inline fun <reified T : Any> setProperty(): SetProperty<T> =
         objects.setProperty(T::class.java)
 
     /**
@@ -75,7 +75,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.setProperty]
      */
-    inline fun <reified T> setProperty(noinline convention: () -> Set<T>): SetProperty<T> =
+    inline fun <reified T : Any> setProperty(noinline convention: () -> Set<T>): SetProperty<T> =
         objects.setProperty(T::class.java).convention(project.provider(convention))
 
     /**
@@ -83,7 +83,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.setProperty]
      */
-    inline fun <reified T> setProperty(convention: Set<T>): SetProperty<T> =
+    inline fun <reified T : Any> setProperty(convention: Set<T>): SetProperty<T> =
         objects.setProperty(T::class.java).convention(convention)
 
     /**
@@ -91,7 +91,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.listProperty]
      */
-    inline fun <reified T> listProperty(): ListProperty<T> =
+    inline fun <reified T : Any> listProperty(): ListProperty<T> =
         objects.listProperty(T::class.java)
 
     /**
@@ -99,7 +99,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.listProperty]
      */
-    inline fun <reified T> listProperty(noinline convention: () -> List<T>): ListProperty<T> =
+    inline fun <reified T : Any> listProperty(noinline convention: () -> List<T>): ListProperty<T> =
         objects.listProperty(T::class.java).convention(project.provider(convention))
 
     /**
@@ -107,7 +107,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.listProperty]
      */
-    inline fun <reified T> listProperty(convention: List<T>): ListProperty<T> =
+    inline fun <reified T : Any> listProperty(convention: List<T>): ListProperty<T> =
         objects.listProperty(T::class.java).convention(convention)
 
     /**
@@ -115,7 +115,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.mapProperty]
      */
-    inline fun <reified K, reified V> mapProperty(): MapProperty<K, V> =
+    inline fun <reified K : Any, reified V : Any> mapProperty(): MapProperty<K, V> =
         objects.mapProperty(K::class.java, V::class.java)
 
     /**
@@ -123,7 +123,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.mapProperty]
      */
-    inline fun <reified K, reified V> mapProperty(noinline convention: () -> Map<K, V>): MapProperty<K, V> =
+    inline fun <reified K : Any, reified V : Any> mapProperty(noinline convention: () -> Map<K, V>): MapProperty<K, V> =
         objects.mapProperty(K::class.java, V::class.java).convention(project.provider(convention))
 
     /**
@@ -131,7 +131,7 @@ class DslContext(val project: Project) {
      *
      * @see [ObjectFactory.mapProperty]
      */
-    inline fun <reified K, reified V> mapProperty(convention: Map<K, V>): MapProperty<K, V> =
+    inline fun <reified K : Any, reified V : Any> mapProperty(convention: Map<K, V>): MapProperty<K, V> =
         objects.mapProperty(K::class.java, V::class.java).convention(convention)
 
     /**
@@ -147,7 +147,7 @@ class DslContext(val project: Project) {
      * @return The container. Never returns null.
      * @since 5.5
      */
-    inline fun <reified T> domainObjectContainer(): NamedDomainObjectContainer<T> =
+    inline fun <reified T : Any> domainObjectContainer(): NamedDomainObjectContainer<T> =
         objects.domainObjectContainer(T::class.java)
 
     /**
@@ -160,7 +160,7 @@ class DslContext(val project: Project) {
      * @return The container. Never returns null.
      * @since 5.5
      */
-    inline fun <reified T> domainObjectContainer(factory: NamedDomainObjectFactory<T>): NamedDomainObjectContainer<T> =
+    inline fun <reified T : Any> domainObjectContainer(factory: NamedDomainObjectFactory<T>): NamedDomainObjectContainer<T> =
         objects.domainObjectContainer(T::class.java, factory)
 
     /**
@@ -172,7 +172,7 @@ class DslContext(val project: Project) {
      * @return The container.
      * @since 6.1
      */
-    inline fun <reified T> polymorphicDomainObjectContainer(): ExtensiblePolymorphicDomainObjectContainer<T> =
+    inline fun <reified T : Any> polymorphicDomainObjectContainer(): ExtensiblePolymorphicDomainObjectContainer<T> =
         objects.polymorphicDomainObjectContainer(T::class.java)
 
     /**
@@ -183,7 +183,7 @@ class DslContext(val project: Project) {
      * @since 5.5
      */
     @Incubating
-    inline fun <reified T> domainObjectSet(): DomainObjectSet<T> =
+    inline fun <reified T : Any> domainObjectSet(): DomainObjectSet<T> =
         objects.domainObjectSet(T::class.java)
 
     /**
@@ -196,7 +196,7 @@ class DslContext(val project: Project) {
      * @since 6.1
      */
     @Incubating
-    inline fun <reified T> namedDomainObjectSet(): NamedDomainObjectSet<T> =
+    inline fun <reified T : Any> namedDomainObjectSet(): NamedDomainObjectSet<T> =
         objects.namedDomainObjectSet(T::class.java)
 
     /**
@@ -209,7 +209,7 @@ class DslContext(val project: Project) {
      * @since 6.1
      */
     @Incubating
-    inline fun <reified T> namedDomainObjectList(): NamedDomainObjectList<T> =
+    inline fun <reified T : Any> namedDomainObjectList(): NamedDomainObjectList<T> =
         objects.namedDomainObjectList(T::class.java)
 
 }

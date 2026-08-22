@@ -48,10 +48,7 @@ dependencies {
         modRuntimeOnly(project(module.path, configuration = "includeNeoForge")) { isTransitive = false }
     }
 
-    implementation("thedarkcolour:kotlinforforge-neoforge:${rootProject.property("kotlin_for_forge_version")}") {
-        exclude(group = "net.neoforged")
-        exclude(group = "net.neoforged.fancymodloader")
-    }
+    implementation("thedarkcolour:kotlinforforge-neoforge:${rootProject.property("kotlin_for_forge_version")}")
     modImplementation("dev.architectury:architectury-neoforge:${rootProject.property("architectury_api_version")}")
 }
 
