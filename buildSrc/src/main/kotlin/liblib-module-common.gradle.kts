@@ -118,7 +118,7 @@ val remapJar = tasks.named<RemapJarTask>("remapJar") {
 }
 
 val shadowSources = tasks.register<ShadowSources>("shadowSources") {
-    relocators.set(shadowJar.map { it.relocators })
+    relocators.set(shadowJar.map { it.relocators }.map { it.get() })
 
     from(sourceSets.main.map { it.allSource })
     sourcesFrom(project.configurations.getByName("shadowSources"))

@@ -4,7 +4,6 @@ package com.teamwizardry.gradle.task
 
 import com.github.jengelman.gradle.plugins.shadow.relocation.RelocatePathContext
 import com.github.jengelman.gradle.plugins.shadow.relocation.Relocator
-import com.github.jengelman.gradle.plugins.shadow.ShadowStats
 import com.teamwizardry.gradle.util.DslContext
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.result.ResolvedArtifactResult
@@ -74,9 +73,6 @@ abstract class ShadowSources : Copy() {
         }
     }
 
-    @Internal
-    val shadowStats = ShadowStats()
-
     private fun relocateFile(copyDetails: FileCopyDetails) {
         if(copyDetails.isDirectory) {
             // exclude directories. Any that are actually needed by the output files will be automatically created,
@@ -86,7 +82,7 @@ abstract class ShadowSources : Copy() {
         }
         relocators.get().forEach { relocator ->
             if(relocator.canRelocatePath(copyDetails.sourcePath)) {
-                copyDetails.path = relocator.relocatePath(RelocatePathContext(copyDetails.sourcePath, shadowStats))
+                copyDetails.path = relocator.relocatePath(RelocatePathContext(copyDetails.sourcePath))
             }
 
             copyDetails.filter { line ->
