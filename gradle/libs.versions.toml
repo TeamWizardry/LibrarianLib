@@ -3,7 +3,7 @@
 # see: https://fabricmc.net/versions.html
 platform_minecraft = "1.21.1"
 platform_yarnMappings = "1.21.1+build.3"
-platform_yarnMappingsNeoforgePatch = "1.21+build.4"
+platform_yarnMappingsNeoForgePatch = "1.21+build.4"
 platform_mixin = "0.8.5"
 platform_mixinExtras = "0.4.1"
 
@@ -38,7 +38,7 @@ runtime_mods_modmenu = "com.terraformersmc:modmenu:11.0.3"
 
 platform_minecraft = { group = "net.minecraft", name = "minecraft", version.ref = "platform_minecraft" }
 # platform_yarnMappings = (declared inline as it requires a ':v2' classifier, which version catalogs don't support)
-platform_yarnMappingsNeoforgePatch = { group = "dev.architectury", name = "yarn-mappings-patch-neoforge", version.ref = "platform_yarnMappingsNeoforgePatch" }
+platform_yarnMappingsNeoForgePatch = { group = "dev.architectury", name = "yarn-mappings-patch-neoforge", version.ref = "platform_yarnMappingsNeoForgePatch" }
 platform_mixin = { group = "org.spongepowered", name = "mixin", version.ref = "platform_mixin"}
 platform_mixinExtras = { group = "io.github.llamalad7", name = "mixinextras-common", version.ref = "platform_mixinExtras" }
 
@@ -50,7 +50,7 @@ mods_fabricLanguageKotlin = { group = "net.fabricmc", name = "fabric-language-ko
 mods_kotlinForForge = { group = "thedarkcolour", name = "kotlinforforge-neoforge", version.ref = "mods_kotlinForForge" }
 mods_architecturyApi = { group = "dev.architectury", name = "architectury", version.ref = "mods_architectury" }
 mods_architecturyFabric = { group = "dev.architectury", name = "architectury-fabric", version.ref = "mods_architectury" }
-mods_architecturyNeoforge = { group = "dev.architectury", name = "architectury-neoforge", version.ref = "mods_architectury" }
+mods_architecturyNeoForge = { group = "dev.architectury", name = "architectury-neoforge", version.ref = "mods_architectury" }
 
 build_autoServiceAnnotations = { group = "com.google.auto.service", name = "auto-service-annotations", version.ref = "build_autoServiceAnnotations" }
 build_autoServiceKsp = { group = "dev.zacsweers.autoservice", name = "auto-service-ksp", version.ref = "build_autoServiceKsp" }

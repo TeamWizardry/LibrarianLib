@@ -49,7 +49,7 @@ dependencies {
     }
 
     implementation(libs.mods.kotlinForForge)
-    modImplementation(libs.mods.architecturyNeoforge)
+    modImplementation(libs.mods.architecturyNeoForge)
 }
 
 /**

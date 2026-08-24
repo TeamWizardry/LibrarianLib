@@ -17,7 +17,7 @@ configureNeoForgeModsToml {
 }
 
 dependencies {
-    modImplementation(libs.mods.architecturyNeoforge)
+    modImplementation(libs.mods.architecturyNeoForge)
 
     commonConfig.modules.forEach { module ->
         shadowBundle(project(path = module.testModPath, configuration = "transformProductionNeoForge"))
