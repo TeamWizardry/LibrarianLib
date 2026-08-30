@@ -27,6 +27,12 @@ allprojects {
 
         maven("https://maven.neoforged.net/releases")
         maven("https://thedarkcolour.github.io/KotlinForForge/")
+        exclusiveContent {
+            forRepository { maven("https://maven.ryanhcode.dev/releases") }
+            filter {
+                includeGroup("dev.ryanhcode.sable-companion")
+            }
+        }
     }
 }
 

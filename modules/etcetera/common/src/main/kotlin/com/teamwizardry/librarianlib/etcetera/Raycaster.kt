@@ -2,6 +2,9 @@ package com.teamwizardry.librarianlib.etcetera
 
 import com.teamwizardry.librarianlib.core.util.mixinCast
 import com.teamwizardry.librarianlib.etcetera.mixin.WorldEntityLookupMixin
+import dev.ryanhcode.sable.companion.SableCompanion
+import dev.ryanhcode.sable.companion.SubLevelAccess
+import dev.ryanhcode.sable.companion.math.BoundingBox3d
 import net.minecraft.block.BlockState
 import net.minecraft.block.ShapeContext
 import net.minecraft.entity.Entity
@@ -13,8 +16,11 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.shape.VoxelShape
 import net.minecraft.util.shape.VoxelShapes
 import net.minecraft.world.World
-import java.util.function.Function
+import org.joml.Vector3d
+import org.joml.Vector3dc
 import java.util.function.Predicate
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * A class designed to efficiently raytrace collisions with the world. This class uses custom raytracing code to
@@ -28,22 +34,9 @@ public class Raycaster {
         private set
 
     /**
-     * The X component of the impacted block's position, or 0 if no impact occurred.
+     * The sublevel the raycast hit in
      */
-    public var blockX: Int = 0
-        private set
-
-    /**
-     * The Y component of the impacted block's position, or 0 if no impact occurred.
-     */
-    public var blockY: Int = 0
-        private set
-
-    /**
-     * The Z component of the impacted block's position, or 0 if no impact occurred.
-     */
-    public var blockZ: Int = 0
-        private set
+    public var sublevel: SubLevelAccess? = null
 
     /**
      * The entity that was hit
@@ -65,76 +58,118 @@ public class Raycaster {
         private set
 
     /**
-     * The hit position, or the end position if no hit occurred. Computed as `start + (end - start) * fraction`
+     * The impacted block's position, or (0,0,0) if no impact occurred. The underlying BlockPos is mutable, and will
+     * be updated when another raycast is performed.
      */
-    public val hitX: Double
-        get() = startX + (endX - startX) * fraction
+    public val block: BlockPos get() = hitBlock
 
     /**
-     * The hit position, or the end position if no hit occurred. Computed as `start + (end - start) * fraction`
+     * The hit position, or the end position if no hit occurred.
+     * This is always in the global coordinate space, even when the hit is in a sublevel.
      */
-    public val hitY: Double
-        get() = startY + (endY - startY) * fraction
+    public val hit: Vector3dc get() = globalHitPos
 
     /**
-     * The hit position, or the end position if no hit occurred. Computed as `start + (end - start) * fraction`
+     * The impacted face's normal, or (0,0,0) if no impact occurred.
+     * This is always in the global coordinate space, even when the hit is in a sublevel.
      */
-    public val hitZ: Double
-        get() = startZ + (endZ - startZ) * fraction
+    public val normal: Vector3dc get() = globalHitNormal
 
     /**
-     * The X component of the impacted face's normal, or 0.0 if no impact occurred
+     * The ray start position.
+     * This is always in the global coordinate space, even when the hit is in a sublevel.
      */
-    public var normalX: Double = 0.0
-        private set
+    public val start: Vector3dc get() = globalStartPos
 
     /**
-     * The Y component of the impacted face's normal, or 0.0 if no impact occurred
+     * The ray start position.
+     * This is always in the global coordinate space, even when the hit is in a sublevel.
      */
-    public var normalY: Double = 0.0
-        private set
+    public val end: Vector3dc get() = globalEndPos
 
     /**
-     * The Z component of the impacted face's normal, or 0.0 if no impact occurred
+     * The hit position, or the end position if no hit occurred.
+     * If [sublevel] is not null, this is in the sublevel's local space.
      */
-    public var normalZ: Double = 0.0
-        private set
+    public val localHit: Vector3dc get() = localHitPos
 
     /**
-     * The configured start position
+     * The impacted face's normal, or (0,0,0) if no impact occurred.
+     * If [sublevel] is not null, this is in the sublevel's local space.
      */
-    public var startX: Double = 0.0
-        private set
+    public val localNormal: Vector3dc get() = localHitNormal
 
     /**
-     * The configured start position
+     * The ray start position.
+     * If [sublevel] is not null, this is in the sublevel's local space.
      */
-    public var startY: Double = 0.0
-        private set
+    public val localStart: Vector3dc get() = localStartPos
 
     /**
-     * The configured start position
+     * The ray start position.
+     * If [sublevel] is not null, this is in the sublevel's local space.
      */
-    public var startZ: Double = 0.0
-        private set
+    public val localEnd: Vector3dc get() = localEndPos
 
-    /**
-     * The configured end position
-     */
-    public var endX: Double = 0.0
-        private set
+    /* region == Individual component accessors (deprecated) == */
+    @Deprecated("Use blockPos", replaceWith = ReplaceWith("this.block.x"))
+    public val blockX: Int get() = block.x
 
-    /**
-     * The configured end position
-     */
-    public var endY: Double = 0.0
-        private set
+    @Deprecated("Use blockPos", replaceWith = ReplaceWith("this.block.y"))
+    public val blockY: Int get() = block.y
 
-    /**
-     * The configured end position
-     */
-    public var endZ: Double = 0.0
-        private set
+    @Deprecated("Use blockPos", replaceWith = ReplaceWith("this.block.z"))
+    public val blockZ: Int get() = block.z
+
+    @Deprecated("Use vector", replaceWith = ReplaceWith("this.hit.x()"))
+    public val hitX: Double get() = hit.x()
+
+    @Deprecated("Use vector", replaceWith = ReplaceWith("this.hit.y()"))
+    public val hitY: Double get() = hit.y()
+
+    @Deprecated("Use vector", replaceWith = ReplaceWith("this.hit.z()"))
+    public val hitZ: Double get() = hit.z()
+
+    @Deprecated("Use vector", replaceWith = ReplaceWith("this.normal.x()"))
+    public val normalX: Double get() = normal.x()
+
+    @Deprecated("Use vector", replaceWith = ReplaceWith("this.normal.y()"))
+    public val normalY: Double get() = normal.y()
+
+    @Deprecated("Use vector", replaceWith = ReplaceWith("this.normal.z()"))
+    public val normalZ: Double get() = normal.z()
+
+    @Deprecated("Use vector", replaceWith = ReplaceWith("this.start.x()"))
+    public val startX: Double get() = start.x()
+
+    @Deprecated("Use vector", replaceWith = ReplaceWith("this.start.y()"))
+    public val startY: Double get() = start.y()
+
+    @Deprecated("Use vector", replaceWith = ReplaceWith("this.start.z()"))
+    public val startZ: Double get() = start.z()
+
+    @Deprecated("Use vector", replaceWith = ReplaceWith("this.end.x()"))
+    public val endX: Double get() = end.x()
+
+    @Deprecated("Use vector", replaceWith = ReplaceWith("this.end.y()"))
+    public val endY: Double get() = end.y()
+
+    @Deprecated("Use vector", replaceWith = ReplaceWith("this.end.z()"))
+    public val endZ: Double get() = end.z()
+    /* endregion == Individual component accessors (deprecated) == */
+
+    // populated by raycasts
+    private val hitBlock = BlockPos.Mutable()
+    private val localHitNormal = Vector3d()
+
+    // computed at the end of the cast
+    private val globalStartPos = Vector3d()
+    private val globalEndPos = Vector3d()
+    private val globalHitPos = Vector3d()
+    private val localStartPos = Vector3d()
+    private val localEndPos = Vector3d()
+    private val localHitPos = Vector3d()
+    private val globalHitNormal = Vector3d()
 
     /**
      * Cast the ray through the passed world, colliding with blocks using the specified mode, ignoring fluid and
@@ -250,30 +285,45 @@ public class Raycaster {
      */
     public fun cast(request: RaycastRequest) {
         reset()
-        this.startX = request.startX
-        this.startY = request.startY
-        this.startZ = request.startZ
 
-        this.endX = request.endX
-        this.endY = request.endY
-        this.endZ = request.endZ
-
-        invVelX = 1.0 / (endX - startX)
-        invVelY = 1.0 / (endY - startY)
-        invVelZ = 1.0 / (endZ - startZ)
-
-        if (request.blockMode != BlockMode.NONE || request.fluidMode != FluidMode.NONE) {
-            castBlocks(
-                request.world,
-                request.shapeContext,
-                request.blockMode,
-                request.fluidMode,
-                request.blockOverride,
-                request.fluidOverride
-            )
+        if (request.subLevelMode != SubLevelMode.ONLY_SUBLEVELS) {
+            castLevel(null, request)
         }
-        if (request.castEntities) {
-            castEntities(request.world, request.entityFilter, request.entityPredicate)
+
+        if (request.subLevelMode != SubLevelMode.NONE) {
+            val sublevels = SableCompanion.INSTANCE.getAllIntersecting(
+                request.world,
+                BoundingBox3d(
+                    min(request.startX, request.endX),
+                    min(request.startY, request.endY),
+                    min(request.startZ, request.endZ),
+                    max(request.startX, request.endX),
+                    max(request.startY, request.endY),
+                    max(request.startZ, request.endZ),
+                )
+            )
+
+            for (sublevel in sublevels) {
+                castLevel(sublevel, request)
+            }
+        }
+
+        globalStartPos.set(request.start)
+        globalEndPos.set(request.end)
+        globalHitPos.set(globalEndPos).sub(globalStartPos).mul(fraction).add(globalStartPos)
+
+        val sublevel = sublevel
+        if (sublevel == null) {
+            localStartPos.set(globalStartPos)
+            localEndPos.set(globalEndPos)
+            localHitPos.set(globalHitPos)
+            globalHitNormal.set(localHitNormal)
+        } else {
+            val pose = sublevel.logicalPose()
+            pose.transformPositionInverse(globalStartPos, localStartPos)
+            pose.transformPositionInverse(globalEndPos, localEndPos)
+            pose.transformPositionInverse(globalHitPos, localHitPos)
+            pose.transformNormal(localHitNormal, globalHitNormal)
         }
     }
 
@@ -282,35 +332,39 @@ public class Raycaster {
      */
     public fun reset() {
         hitType = HitType.NONE
+        entity = null
+        sublevel = null
         fraction = 1.0
         depth = 0.0
-        normalX = 0.0
-        normalY = 0.0
-        normalZ = 0.0
-        blockX = 0
-        blockY = 0
-        blockZ = 0
-        entity = null
 
-        startX = 0.0
-        startY = 0.0
-        startZ = 0.0
-        endX = 0.0
-        endY = 0.0
-        endZ = 0.0
-        invVelX = 0.0
-        invVelY = 0.0
-        invVelZ = 0.0
+        localHitNormal.set(0.0, 0.0, 0.0)
+        hitBlock.set(0, 0, 0)
+        globalStartPos.set(0.0, 0.0, 0.0)
+        globalEndPos.set(0.0, 0.0, 0.0)
+        localStartPos.set(0.0, 0.0, 0.0)
+        localEndPos.set(0.0, 0.0, 0.0)
         raycaster.reset()
     }
 
     public class RaycastRequest(
         public val world: World,
-        public val startX: Double, public val startY: Double, public val startZ: Double,
-        public val endX: Double, public val endY: Double, public val endZ: Double
+        startX: Double, startY: Double, startZ: Double,
+        endX: Double, endY: Double, endZ: Double
     ) {
         public var shapeContext: ShapeContext = ShapeContext.absent()
 
+        public val start: Vector3dc = Vector3d(startX, startY, startZ)
+        public val end: Vector3dc = Vector3d(endX, endY, endZ)
+
+        public val startX: Double get() = start.x()
+        public val startY: Double get() = start.y()
+        public val startZ: Double get() = start.z()
+
+        public val endX: Double get() = end.x()
+        public val endY: Double get() = end.y()
+        public val endZ: Double get() = end.z()
+
+        public var subLevelMode: SubLevelMode = SubLevelMode.NONE
         public var blockMode: BlockMode = BlockMode.NONE
         public var fluidMode: FluidMode = FluidMode.NONE
         public var castEntities: Boolean = false
@@ -331,6 +385,13 @@ public class Raycaster {
          * Sets the shape context using [ShapeContext.of(entity)][ShapeContext.of].
          */
         public fun withEntityContext(entity: Entity): RaycastRequest = withShapeContext(ShapeContext.of(entity))
+
+        /**
+         * Sets the type of collisions to make with Sable sublevels.
+         *
+         * The default sublevel mode is [SubLevelMode.NONE]
+         */
+        public fun withSubLevelMode(mode: SubLevelMode): RaycastRequest = apply { this.subLevelMode = mode }
 
         /**
          * Sets the type of collisions to make with blocks.
@@ -431,6 +492,23 @@ public class Raycaster {
         ANY;
     }
 
+    public enum class SubLevelMode {
+        /**
+         * Ignore sublevels
+         */
+        NONE,
+
+        /**
+         * Include sublevels
+         */
+        INCLUDE_SUBLEVELS,
+
+        /**
+         * Only cast in sublevels
+         */
+        ONLY_SUBLEVELS;
+    }
+
     public enum class HitType {
         /**
          * No hit occurred
@@ -457,6 +535,34 @@ public class Raycaster {
     // Note: Because each hit test is reusing the same `DirectRaycaster`, tests will only succeed if they are closer
     // than the closest hit so far. This allows us to trivially cast against multiple types of object.
 
+    private fun castLevel(sublevel: SubLevelAccess?, request: RaycastRequest) {
+        val start = sublevel?.logicalPose()?.transformPositionInverse(request.start, Vector3d()) ?: request.start
+        val end = sublevel?.logicalPose()?.transformPositionInverse(request.end, Vector3d()) ?: request.end
+        if (request.blockMode != BlockMode.NONE || request.fluidMode != FluidMode.NONE) {
+            castBlocks(
+                request.world,
+                sublevel,
+                start,
+                end,
+                request.shapeContext,
+                request.blockMode,
+                request.fluidMode,
+                request.blockOverride,
+                request.fluidOverride
+            )
+        }
+        if (request.castEntities) {
+            castEntities(
+                request.world,
+                sublevel,
+                start,
+                end,
+                request.entityFilter,
+                request.entityPredicate
+            )
+        }
+    }
+
     private val intersectingIterator = IntersectingBlocksIterator()
     private val raycaster = DirectRaycaster()
     private val boundingBoxSegmenter = RayBoundingBoxSegmenter()
@@ -464,31 +570,36 @@ public class Raycaster {
     // v-------------------------------- Blocks -------------------------------v
     private val mutablePos = BlockPos.Mutable()
 
-    private var invVelX: Double = 0.0
-    private var invVelY: Double = 0.0
-    private var invVelZ: Double = 0.0
-
     /**
      * The implementation of block raycasting.
      */
     private fun castBlocks(
         world: World,
+        sublevel: SubLevelAccess?,
+        start: Vector3dc,
+        end: Vector3dc,
         shapeContext: ShapeContext,
         blockMode: BlockMode,
         fluidMode: FluidMode,
         blockOverride: ShapeOverride<BlockState>?,
-        fluidOverride: ShapeOverride<FluidState>?
+        fluidOverride: ShapeOverride<FluidState>?,
     ) {
+        inverseLength.set(
+            1.0 / (end.x() - start.x()),
+            1.0 / (end.y() - start.y()),
+            1.0 / (end.z() - start.z())
+        )
+
         // Only blocks the ray directly passes through are checked.
         intersectingIterator.reset(
-            startX, startY, startZ,
-            endX, endY, endZ
+            start.x(), start.y(), start.z(),
+            end.x(), end.y(), end.z()
         )
         for (block in intersectingIterator) {
             if (
                 castBlock(
-                    world, shapeContext, blockMode,
-                    fluidMode, blockOverride, fluidOverride,
+                    world, sublevel, start,
+                    shapeContext, blockMode, fluidMode, blockOverride, fluidOverride,
                     block.x, block.y, block.z
                 )
             ) {
@@ -503,6 +614,8 @@ public class Raycaster {
      */
     private fun castBlock(
         world: World,
+        sublevel: SubLevelAccess?,
+        start: Vector3dc,
         shapeContext: ShapeContext,
         blockMode: BlockMode,
         fluidMode: FluidMode,
@@ -529,17 +642,12 @@ public class Raycaster {
                     ?: state.getOutlineShape(world, mutablePos, shapeContext)
             }
         }
-        val hitBlock = if(blockShape != null) {
-            castShape(blockX, blockY, blockZ, blockShape)
-        } else {
-            false
-        }
+        val hitBlock = blockShape != null && castShape(start, blockX, blockY, blockZ, blockShape)
         if (hitBlock) {
             entity = null
-            this.blockX = blockX
-            this.blockY = blockY
-            this.blockZ = blockZ
             hitType = HitType.BLOCK
+            this.hitBlock.set(blockX, blockY, blockZ)
+            this.sublevel = sublevel
         }
 
         val fluidShape = when (fluidMode) {
@@ -557,27 +665,22 @@ public class Raycaster {
                     ?: state.getShape(world, mutablePos)
             }
         }
-        val hitFluid = if(fluidShape != null) {
-            castShape(blockX, blockY, blockZ, fluidShape)
-        } else {
-            false
-        }
+        val hitFluid = fluidShape != null && castShape(start, blockX, blockY, blockZ, fluidShape)
         if (hitFluid) {
             entity = null
-            this.blockX = blockX
-            this.blockY = blockY
-            this.blockZ = blockZ
             hitType = HitType.FLUID
+            this.hitBlock.set(blockX, blockY, blockZ)
+            this.sublevel = sublevel
         }
         return hitBlock || hitFluid
     }
 
+    private val inverseLength = Vector3d()
+
     /**
      * The ray start relative to the block currently being tested. Used by [boxConsumer]
      */
-    private var relativeStartX: Double = 0.0
-    private var relativeStartY: Double = 0.0
-    private var relativeStartZ: Double = 0.0
+    private val relativeStart = Vector3d()
 
     /**
      * This is reset to false before each shape is tested, and is set to true if any of the boxes sent to [boxConsumer]
@@ -598,15 +701,13 @@ public class Raycaster {
                 true,
                 minX, minY, minZ,
                 maxX, maxY, maxZ,
-                relativeStartX, relativeStartY, relativeStartZ,
-                invVelX, invVelY, invVelZ
+                relativeStart.x, relativeStart.y, relativeStart.z,
+                inverseLength.x, inverseLength.y, inverseLength.z,
             )
         ) {
             fraction = raycaster.distance
             depth = raycaster.depth
-            normalX = raycaster.normalX
-            normalY = raycaster.normalY
-            normalZ = raycaster.normalZ
+            localHitNormal.set(raycaster.normalX, raycaster.normalY, raycaster.normalZ)
             didHitShape = true
         }
     }
@@ -614,15 +715,13 @@ public class Raycaster {
     /**
      * Cast the ray through the passed shape.
      */
-    private fun castShape(blockX: Int, blockY: Int, blockZ: Int, shape: VoxelShape): Boolean {
+    private fun castShape(start: Vector3dc, blockX: Int, blockY: Int, blockZ: Int, shape: VoxelShape): Boolean {
         if (shape === VoxelShapes.empty())
             return false
 
         // the bounding boxes that get fed to [boxConsumer] are all relative to the block (they aren't in absolute world
         // coordinates), so we have to transform the start point to be relative to the block.
-        relativeStartX = startX - blockX
-        relativeStartY = startY - blockY
-        relativeStartZ = startZ - blockZ
+        relativeStart.set(start).sub(blockX.toDouble(), blockY.toDouble(), blockZ.toDouble())
         didHitShape = false
         shape.forEachBox(boxConsumer)
         return didHitShape
@@ -635,10 +734,18 @@ public class Raycaster {
      */
     private fun castEntities(
         world: World,
+        sublevel: SubLevelAccess?,
+        start: Vector3dc,
+        end: Vector3dc,
         entityFilter: TypeFilter<Entity, Entity>?,
         entityPredicate: Predicate<Entity>?
     ) {
-        boundingBoxSegmenter.reset(startX, startY, startZ, endX, endY, endZ, 32.0)
+        inverseLength.set(
+            1.0 / (end.x() - start.x()),
+            1.0 / (end.y() - start.y()),
+            1.0 / (end.z() - start.z())
+        )
+        boundingBoxSegmenter.reset(start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 32.0)
 
         val lookup = mixinCast<WorldEntityLookupMixin>(world).callGetEntityLookup()
         if (entityFilter == null) {
@@ -650,7 +757,7 @@ public class Raycaster {
                     )
                 ) {
                     if (entityPredicate == null || entityPredicate.test(it)) {
-                        castEntity(it)
+                        castEntity(sublevel, start, it)
                     }
                 }
             }
@@ -664,7 +771,7 @@ public class Raycaster {
                     ),
                     LazyIterationConsumer.forConsumer {
                         if (entityPredicate == null || entityPredicate.test(it)) {
-                            castEntity(it)
+                            castEntity(sublevel, start, it)
                         }
                     }
                 )
@@ -675,27 +782,24 @@ public class Raycaster {
     /**
      * Cast against a single entity
      */
-    private fun castEntity(entity: Entity) {
+    private fun castEntity(sublevel: SubLevelAccess?, start: Vector3dc, entity: Entity) {
         val box = entity.boundingBox
         if (raycaster.cast(
                 true,
                 box.minX, box.minY, box.minZ,
                 box.maxX, box.maxY, box.maxZ,
-                startX, startY, startZ,
-                invVelX, invVelY, invVelZ
+                start.x(), start.y(), start.z(),
+                inverseLength.x(), inverseLength.y(), inverseLength.z(),
             )
         ) {
             fraction = raycaster.distance
             depth = raycaster.depth
-            normalX = raycaster.normalX
-            normalY = raycaster.normalY
-            normalZ = raycaster.normalZ
+            localHitNormal.set(raycaster.normalX, raycaster.normalY, raycaster.normalZ)
+            hitBlock.set(0, 0, 0)
 
-            blockX = 0
-            blockY = 0
-            blockZ = 0
             this.entity = entity
             hitType = HitType.ENTITY
+            this.sublevel = sublevel
         }
     }
 }

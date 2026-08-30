@@ -11,7 +11,7 @@ architectury {
 dependencies {
     minecraft(getLibrary("platform_minecraft"))
     mappings(loom.layered {
-        mappings("net.fabricmc:yarn:${getVersion("platform_yarnMappings")}:v2")
+        mappings(variantOf(getLibrary("platform_yarnMappings")) { classifier("v2") })
         mappings(getLibrary("platform_yarnMappingsNeoForgePatch"))
     })
     compileOnly(getLibrary("platform_mixin"))

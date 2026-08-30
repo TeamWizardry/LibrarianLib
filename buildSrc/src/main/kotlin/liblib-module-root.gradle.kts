@@ -22,6 +22,10 @@ configurations {
         description = "Fabric mods to be included as jar-in-jar deps"
         canBe(consumed = true, resolved = false)
     }
+    create("includeOnlyFabric") {
+        description = "Fabric mods to be included as jar-in-jar deps, but not as normal deps"
+        canBe(consumed = true, resolved = false)
+    }
     create("includeNeoForge") {
         description = "NeoForge mods to be included as jar-in-jar deps"
         canBe(consumed = true, resolved = false)

@@ -39,6 +39,9 @@ loom {
 }
 
 configurations {
+    create("modJar") {
+        description = "jars to be placed in the mods directory (necessary to remap jar-in-jar dependencies)"
+    }
 }
 
 dependencies {
@@ -48,8 +51,14 @@ dependencies {
         modRuntimeOnly(project(module.path, configuration = "includeNeoForge")) { isTransitive = false }
     }
 
+    modImplementation(libs.modules.etcetera.sableCompanionNeoForge)
     implementation(libs.mods.kotlinForForge)
     modImplementation(libs.mods.architecturyNeoForge)
+}
+
+val downloadModJars = tasks.register("downloadModJars", Sync::class) {
+    from(configurations["modJar"])
+    into(project.projectDir.resolve("run/mods"))
 }
 
 /**
@@ -103,6 +112,7 @@ tasks.named("classes") {
 
 tasks.named("processResources") {
     dependsOn(mergeTestModServiceLoaders)
+    dependsOn(downloadModJars)
     for (module in commonConfig.modules) {
         dependsOn("${module.commonPath}:processResources")
         dependsOn("${module.neoForgePath}:processResources")

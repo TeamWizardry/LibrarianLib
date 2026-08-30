@@ -18,6 +18,9 @@ loom {
 }
 
 configurations {
+    create("modJar") {
+        description = "jars to be placed in the mods directory (necessary to remap jar-in-jar dependencies)"
+    }
 }
 
 dependencies {
@@ -30,9 +33,19 @@ dependencies {
         modRuntimeOnly(project(it.path, configuration = "includeFabric")) { isTransitive = false }
     }
     modRuntimeOnly(libs.runtime.mods.modmenu)
+    modApi(libs.runtime.mods.sableFabric)
 
     modImplementation(libs.platform.fabricLoader)
     modImplementation(libs.platform.fabricApi)
     modImplementation(libs.mods.fabricLanguageKotlin)
     modImplementation(libs.mods.architecturyFabric)
+}
+
+val downloadModJars = tasks.register("downloadModJars", Sync::class) {
+    from(configurations["modJar"])
+    into(project.projectDir.resolve("run/mods"))
+}
+
+tasks.processResources {
+    dependsOn(downloadModJars)
 }

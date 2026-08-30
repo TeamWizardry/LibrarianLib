@@ -152,6 +152,41 @@ internal object LibLibEtceteraTest : TestModule("etcetera", "Etcetera") {
                     }
                 }
             }
+
+            raycaster(
+                config,
+                "raycast_sable_collision", "Sable Collision",
+                "Block mode: COLLISION\nSubLevels: included",
+            ) {
+                it.withBlockMode(Raycaster.BlockMode.COLLISION)
+                    .withSubLevelMode(Raycaster.SubLevelMode.INCLUDE_SUBLEVELS)
+            }
+            raycaster(
+                config,
+                "raycast_sable_only_collision", "Sable Only Collision",
+                "Block mode: COLLISION\nSubLevels: only",
+            ) {
+                it.withBlockMode(Raycaster.BlockMode.COLLISION)
+                    .withSubLevelMode(Raycaster.SubLevelMode.ONLY_SUBLEVELS)
+            }
+            raycaster(
+                config,
+                "raycast_sable_entities", "Sable Entities",
+                "Entities: <all>\nSubLevels: included",
+            ) {
+                it.withEntities(null, null)
+                    .withSubLevelMode(Raycaster.SubLevelMode.INCLUDE_SUBLEVELS)
+            }
+            raycaster(
+                config,
+                "raycast_sable_all", "Sable All",
+                "Block mode: COLLISION\nFluid mode: ANY\nEntities: <all>\nSubLevels: included",
+            ) {
+                it.withBlockMode(Raycaster.BlockMode.COLLISION)
+                    .withFluidMode(Raycaster.FluidMode.ANY)
+                    .withEntities(null, null)
+                    .withSubLevelMode(Raycaster.SubLevelMode.INCLUDE_SUBLEVELS)
+            }
         }
 
         private fun raycaster(
